@@ -1,0 +1,15 @@
+# Normalizare consistentă a sfârșiturilor de linie.
+# Proiectul rulează în container Linux → LF peste tot (inclusiv pe Windows).
+* text=auto eol=lf
+
+# Fișiere binare (fără conversie EOL)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
