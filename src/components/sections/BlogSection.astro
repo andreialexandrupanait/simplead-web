@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 3);
+
+const readMin = (n: number) => [5, 7, 6][n] ?? 5;
+---
+
+<section class="section section--tint" id="blog">
+  <div class="container">
+    <div class="sec-head center">
+      <span class="sec-eyebrow">De pe blog</span>
+      <h2 class="sec-title">Idei și ghiduri din <span class="g">lumea marketingului</span></h2>
+      <p class="sec-sub">Despre branding, marketing digital și design — pe înțelesul tău.</p>
+    </div>
+    <div class="blog-grid">
+      {
+        posts.map((entry, i) => (
+          <a class="blog-card" href={`/blog/${entry.id}`}>
+            <div class="ph blog-thumb">
+              {entry.data.cover ? <img src={entry.data.cover} alt={entry.data.title} /> : 'imagine articol'}
+            </div>
+            <div class="blog-meta">
+              <span class="cat">{entry.data.tags[0] ?? 'Blog'}</span>
+              <span>{readMin(i)} min citire</span>
+            </div>
+            <h3>{entry.data.title}</h3>
+            <p>{entry.data.description}</p>
+          </a>
+        ))
+      }
+    </div>
+    <div class="blog-foot">
+      <a class="pill pill--ghost" href="/blog">
+        Vezi toate articolele
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </a>
+    </div>
+  </div>
+</section>

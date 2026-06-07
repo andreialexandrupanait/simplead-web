@@ -1,0 +1,217 @@
+@import 'tailwindcss';
+@import './sections.css';
+
+/* ============================================================
+   SIMPLEAD — DESIGN TOKENS
+   Sursa de adevăr: design/handoff/.../Acasă.html (:root)
+   ============================================================ */
+@theme {
+  /* Culori brand */
+  --color-blue: #0077fc;
+  --color-navy: #030d4a;
+  --color-yellow: #f5d93f;
+  --color-purple: #ecc0fe;
+  --color-graytext: #e1e6e8;
+
+  /* Fundal site */
+  --color-bg: #050a33;
+
+  /* Fonturi (Google Fonts, ca în export) */
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Hanken Grotesk', sans-serif;
+
+  /* Lățime maximă container */
+  --container-site: 1280px;
+
+  /* Înălțime navbar */
+  --spacing-nav: 88px;
+}
+
+/* Tokens ne-Tailwind (gradiente reutilizabile) */
+:root {
+  --grad: linear-gradient(118deg, #0077fc 0%, #6e5be0 58%, #b79bf2 100%);
+  --grad-text: linear-gradient(100deg, #4d9bff 0%, #9e8cf2 55%, #ecc0fe 100%);
+  --nav-h: 88px;
+  --maxw: 1280px;
+
+  /* Alias-uri de brand „bare" — `sections.css` (port fidel din Acasă.html)
+     le folosește ca var(--blue) etc. Tailwind @theme expune doar --color-*,
+     deci fără aceste alias-uri culorile din secțiuni rămân nedefinite. */
+  --blue: #0077fc;
+  --navy: #030d4a;
+  --yellow: #f5d93f;
+  --purple: #ecc0fe;
+  --gray: #e1e6e8;
+
+  /* Tema light (din noul design): text închis + borduri pe fundal alb/gri */
+  --ink: #0b1437;
+  --ink-soft: #57617d;
+  --line: #e7eaef;
+
+  /* Fundal site (alias „bar" folosit de modulele de secțiune din export) */
+  --bg: #050a33;
+
+  /* ===== Scale de design (sursa de adevăr, din noul export styles.css) =====
+     Consumate ca var(--…) de modulele CSS din sections.css. Nu sunt token-uri
+     Tailwind @theme — nu generează utilitare, doar variabile CSS brute. */
+  /* Radius */
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+  /* Spațiere (bază 4px) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+  --sp-section: 110px;
+  /* Borduri */
+  --border: 1px solid var(--line);
+  --border-strong: 1px solid #d7dde6;
+  /* Umbre (nuanță navy rece) */
+  --sh-sm: 0 4px 12px -4px rgba(3, 13, 74, 0.1);
+  --sh-md: 0 18px 40px -22px rgba(3, 13, 74, 0.3);
+  --sh-lg: 0 28px 56px -26px rgba(3, 13, 74, 0.36);
+  --sh-brand: 0 14px 30px -12px rgba(0, 119, 252, 0.55);
+  /* Easing */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset-uri de bază în @layer base: stau SUB @layer utilities în cascadă, ca
+   utilitarele Tailwind (padding/margin: px-*, py-*, mx-auto, mx-[11px]…) să
+   poată câștiga. Fără layer, `* { margin:0; padding:0 }` (nelayerat) ar
+   suprascrie toate utilitarele de spacing Tailwind v4 și ar strica
+   header-ul/butoanele. */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: #fff;
+    background: var(--color-bg);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  img {
+    display: block;
+  }
+}
+
+/* ============================================================
+   UTILITARE REUTILIZABILE
+   ============================================================ */
+
+/* Container centrat, identic cu --maxw din design */
+.site-container {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: 40px;
+}
+@media (max-width: 900px) {
+  .site-container {
+    padding-inline: 24px;
+  }
+}
+
+/* Text cu gradient (titluri / accente) */
+.grad-text {
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Suprafață gradient (butoane, iconițe) */
+.grad-surface {
+  background: var(--grad);
+}
+
+/* Card de suprafață închisă (glass) reutilizat în secțiuni */
+.surface-card {
+  background: rgba(10, 17, 58, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+}
+
+/* Font de titlu */
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* ============================================================
+   PROSE — conținut Markdown (blog + portofoliu)
+   ============================================================ */
+.prose-simplead {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--ink-soft);
+}
+.prose-simplead h2 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 2rem 0 0.75rem;
+}
+.prose-simplead h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 1.5rem 0 0.5rem;
+}
+.prose-simplead p {
+  margin: 0 0 1rem;
+}
+.prose-simplead ul {
+  margin: 0 0 1rem;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+.prose-simplead ol {
+  margin: 0 0 1rem;
+  padding-left: 1.25rem;
+  list-style: decimal;
+}
+.prose-simplead li {
+  margin: 0.35rem 0;
+}
+.prose-simplead a {
+  color: var(--color-blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-simplead blockquote {
+  border-left: 3px solid var(--color-blue);
+  padding-left: 1.25rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: var(--ink);
+}
+.prose-simplead strong {
+  color: var(--ink);
+}

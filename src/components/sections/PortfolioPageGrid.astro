@@ -1,0 +1,71 @@
+---
+/** Grilă portofoliu cu filtre (pf-filters + pf-page-grid). Filtrare client-side. */
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  projects: CollectionEntry<'portfolio'>[];
+  variant?: 'light' | 'tint';
+}
+const { projects, variant = 'light' } = Astro.props;
+
+// Categoriile, în ordinea preferată din export, intersectate cu ce există.
+const preferred = ['Branding', 'Web Design', 'Marketing', 'Grafică', 'Foto-Video', 'Social Media', 'Mentenanță'];
+const present = new Set<string>(projects.map((p) => p.data.service));
+const cats = ['Toate', ...preferred.filter((c) => present.has(c))];
+const trend = '<path d="M3 17l6-6 4 4 7-7"/><path d="M14 7h7v7"/>';
+---
+
+<section class:list={['section', `section--${variant}`]}>
+  <div class="container">
+    <div class="pf-filters" id="pfFilters" role="tablist" data-reveal>
+      {
+        cats.map((c, i) => (
+          <button class="pf-filter" role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-cat={c}>
+            {c}
+          </button>
+        ))
+      }
+    </div>
+    <div class="pf-page-grid" id="pfGrid" data-reveal-stagger>
+      {
+        projects.map((entry) => (
+          <a class="pf-page-card" href={`/portofoliu/${entry.id}`} data-cat={entry.data.service}>
+            <div class="ph thumb">
+              {entry.data.cover ? <img src={entry.data.cover} alt={entry.data.title} loading="lazy" /> : entry.data.title}
+            </div>
+            <div class="body">
+              <span class="tag">{entry.data.service}</span>
+              <h3>{entry.data.title}</h3>
+              <p>{entry.data.summary}</p>
+              {entry.data.result && (
+                <span class="pf-result">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={trend} />
+                  {entry.data.result}
+                </span>
+              )}
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  const filters = document.getElementById('pfFilters');
+  const grid = document.getElementById('pfGrid');
+  if (filters && grid) {
+    const btns = Array.from(filters.querySelectorAll<HTMLButtonElement>('.pf-filter'));
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>('.pf-page-card'));
+    filters.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.pf-filter');
+      if (!btn) return;
+      const cat = btn.dataset.cat;
+      btns.forEach((b) => b.setAttribute('aria-selected', String(b === btn)));
+      cards.forEach((c) => {
+        const show = cat === 'Toate' || c.dataset.cat === cat;
+        c.style.display = show ? '' : 'none';
+      });
+    });
+  }
+</script>

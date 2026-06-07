@@ -1,0 +1,91 @@
+---
+/** Proces serviciu (spp-grid): intro + acordeon (spp-acc). */
+import type { ServiceProcessStep } from '@data/services';
+
+interface Props {
+  steps: ServiceProcessStep[];
+  eyebrow?: string;
+  title?: string;
+  titleAccent?: string;
+  intro?: string;
+  variant?: 'light' | 'tint';
+}
+const {
+  steps,
+  eyebrow = 'Proces',
+  title = 'Cum ',
+  titleAccent = 'lucrăm',
+  intro = 'Un proces structurat, transparent și orientat pe rezultate. La fiecare etapă știi exact unde te afli.',
+  variant = 'tint',
+} = Astro.props;
+const arrow = '<path d="M7 17L17 7M7 7h10v10"/>';
+const minus = '<path d="M5 12h14"/>';
+const plus = '<path d="M12 5v14M5 12h14"/>';
+---
+
+<section class:list={['section', `section--${variant}`]}>
+  <div class="container">
+    <div class="spp-grid">
+      <div class="spp-intro" data-reveal>
+        <span class="sec-eyebrow">{eyebrow}</span>
+        <h2 class="sec-title">{title}<span class="g">{titleAccent}</span></h2>
+        <p>{intro}</p>
+        <div class="btn-cta">
+          <a href="/contact">Începe acum
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" set:html={arrow} />
+          </a>
+        </div>
+      </div>
+      <div class="spp-acc" id="sppAcc" data-reveal>
+        {
+          steps.map((s, i) => (
+            <div class:list={['spp-item', i === 0 && 'open']}>
+              <button class="spp-q">
+                <span class="pn">{s.n}</span>
+                <span class="pt">{s.title}</span>
+                <span class="pm">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" set:html={i === 0 ? minus : plus} />
+                </span>
+              </button>
+              <div class="spp-a">
+                <p>{s.body}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const acc = document.getElementById('sppAcc');
+  if (acc) {
+    const items = Array.from(acc.querySelectorAll<HTMLElement>('.spp-item'));
+    const minus = '<path d="M5 12h14"/>';
+    const plus = '<path d="M12 5v14M5 12h14"/>';
+    const setH = (it: HTMLElement) => {
+      const a = it.querySelector<HTMLElement>('.spp-a');
+      const open = it.classList.contains('open');
+      if (a) a.style.maxHeight = open ? a.scrollHeight + 'px' : '0px';
+      const ic = it.querySelector<HTMLElement>('.pm svg');
+      if (ic) ic.innerHTML = open ? minus : plus;
+    };
+    items.forEach((it) => {
+      const q = it.querySelector('.spp-q');
+      q?.addEventListener('click', () => {
+        const was = it.classList.contains('open');
+        items.forEach((o) => {
+          o.classList.remove('open');
+          setH(o);
+        });
+        if (!was) {
+          it.classList.add('open');
+          setH(it);
+        }
+      });
+    });
+    items.forEach(setH);
+    window.addEventListener('resize', () => items.forEach(setH));
+  }
+</script>

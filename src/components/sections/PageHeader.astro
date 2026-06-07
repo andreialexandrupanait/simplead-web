@@ -1,0 +1,82 @@
+---
+/** Antet de pagină interioară — pe fundalul dark cu gradient, sub navbar. */
+interface Crumb {
+  label: string;
+  href?: string;
+}
+interface Props {
+  eyebrow?: string;
+  title: string;
+  accent?: string;
+  subtitle?: string;
+  /** Breadcrumb opțional (ultimul element, fără href, e marcat ca activ). */
+  crumb?: Crumb[];
+}
+const { eyebrow, title, accent, subtitle, crumb } = Astro.props;
+const chev = '<path d="M9 6l6 6-6 6"/>';
+
+function splitTitle() {
+  if (accent && title.includes(accent)) {
+    const [before, after] = title.split(accent);
+    return { before, accent, after };
+  }
+  return { before: title, accent: '', after: '' };
+}
+const t = splitTitle();
+---
+
+<section class="page-header relative overflow-hidden pt-[var(--nav-h)]">
+  <div class="site-container py-16 md:py-24">
+    {
+      crumb && crumb.length > 0 && (
+        <div class="crumb">
+          {crumb.map((c, i) => (
+            <>
+              {i > 0 && (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
+              )}
+              {c.href ? <a href={c.href}>{c.label}</a> : <span class="cur">{c.label}</span>}
+            </>
+          ))}
+        </div>
+      )
+    }
+    {
+      eyebrow && (
+        <div class="mb-4 flex items-center gap-4 text-[13px] font-semibold uppercase tracking-[0.16em] text-[rgba(233,238,250,0.82)]">
+          <span>{eyebrow}</span>
+          <span class="h-px w-16 bg-gradient-to-r from-white/55 to-transparent" />
+        </div>
+      )
+    }
+    <h1
+      class="max-w-3xl font-display text-[clamp(32px,4vw,52px)] font-bold leading-[1.08] tracking-[-0.025em] text-balance"
+    >
+      {t.before}{t.accent && <span class="grad-text">{t.accent}</span>}{t.after}
+    </h1>
+    {
+      subtitle && (
+        <p class="mt-5 max-w-2xl text-[17px] leading-[1.6] text-[rgba(220,227,245,0.74)]">
+          {subtitle}
+        </p>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .page-header {
+    background:
+      radial-gradient(50% 60% at 80% 0%, rgba(0, 119, 252, 0.22) 0%, rgba(0, 119, 252, 0) 60%),
+      radial-gradient(40% 50% at 5% 30%, rgba(110, 91, 224, 0.18) 0%, rgba(110, 91, 224, 0) 60%),
+      var(--color-bg, #050a33);
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+  }
+</style>

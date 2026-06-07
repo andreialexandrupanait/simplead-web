@@ -1,0 +1,65 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHeader from '@components/sections/PageHeader.astro';
+import ValuesSection from '@components/sections/ValuesSection.astro';
+import CtaSection from '@components/sections/CtaSection.astro';
+
+const metaDescription =
+  'Simplead — marketing și design care nu se bazează pe noroc. Condus de Andrei Panait, doctor în marketing la Universitatea „Dunărea de Jos" Galați.';
+const brain =
+  '<path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2z"/><path d="M9 22h6"/>';
+const cap = '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.7 3 6 3s6-2 6-3v-5"/>';
+---
+
+<BaseLayout title="Despre" description={metaDescription} transparentNav={true}>
+  <PageHeader
+    crumb={[{ label: 'Acasă', href: '/' }, { label: 'Despre' }]}
+    eyebrow="Despre noi"
+    title="Marketing și design care nu se bazează pe noroc"
+    accent="nu se bazează pe noroc"
+    subtitle="Simplead s-a născut dintr-o frustrare: prea multe afaceri bune rămân nevăzute din cauza unui design slab sau a unui marketing făcut „după ureche”. Noi facem lucrurile altfel — simplu, dar fundamentat."
+  />
+
+  <section class="section section--light">
+    <div class="container">
+      <div class="about-grid">
+        <div class="ph about-photo" data-reveal>
+          {/* TODO: înlocuiește cu fotografia reală a lui Andrei Panait */}
+          <img
+            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=700&q=80&auto=format&fit=crop"
+            alt="Andrei Panait"
+          />
+        </div>
+        <div class="about-body" data-reveal>
+          <span class="sec-eyebrow">Povestea</span>
+          <h2 class="sec-title">Aceeași rigoare din cercetare, <span class="g">în fiecare proiect</span></h2>
+          <p>
+            La conducerea studioului e Andrei Panait, doctor în marketing la Universitatea „Dunărea de
+            Jos" din Galați, cu cercetare în marketing digital și neuromarketing. Aceeași rigoare pe
+            care o aplicăm în cercetare o aducem în fiecare proiect: testăm, măsurăm și optimizăm, în
+            loc să presupunem.
+          </p>
+          <p>
+            Am pornit Simplead dintr-o convingere simplă: marketingul și designul nu trebuie să fie un
+            joc de noroc. Combinăm creativitatea cu cercetarea, ca afacerile mici și mijlocii să
+            concureze de la egal la egal cu cele mari.
+          </p>
+          <div class="about-cred">
+            <div class="item">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" set:html={cap} /></span>
+              <div><b>Doctor în marketing</b><span>Univ. „Dunărea de Jos", Galați</span></div>
+            </div>
+            <div class="item">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" set:html={brain} /></span>
+              <div><b>Neuromarketing</b><span>decizii pe bază de date</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <ValuesSection />
+
+  <CtaSection href="/contact" />
+</BaseLayout>

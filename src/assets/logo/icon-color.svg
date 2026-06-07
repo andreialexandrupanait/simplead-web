@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<svg id="a" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000">
+  <defs>
+    <linearGradient id="b" x1="332.9" y1="-120.972" x2="1101.521" y2="605.284" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#014df9"></stop>
+      <stop offset="1" stop-color="#ecc0fd"></stop>
+    </linearGradient>
+    <linearGradient id="c" x1="175.862" y1="45.227" x2="944.483" y2="771.483" xlink:href="#b"></linearGradient>
+    <linearGradient id="d" x1="-129.45" y1="368.348" x2="639.171" y2="1094.604" xlink:href="#b"></linearGradient>
+    <linearGradient id="e" x1="27.589" y1="202.149" x2="796.21" y2="928.405" xlink:href="#b"></linearGradient>
+  </defs>
+  <polygon points="903.855 522.995 903.855 115.993 711.133 115.993 561.518 397.565 903.855 522.995" fill="url(#b)"></polygon>
+  <path d="m500.024,115.993h-201.94c-111.528,0-201.94,90.411-201.94,201.939h0c0,91.185,60.455,168.208,143.457,193.29L711.133,115.993h-211.109Z" fill="url(#c)"></path>
+  <polygon points="96.145 477.005 96.145 884.007 288.822 884.007 438.437 602.435 96.145 477.005" fill="url(#d)"></polygon>
+  <path d="m499.976,884.007h201.94c111.528,0,201.94-90.411,201.94-201.939h0c0-91.197-60.471-168.229-143.489-193.301l-471.544,395.24h211.154Z" fill="url(#e)"></path>
+</svg>

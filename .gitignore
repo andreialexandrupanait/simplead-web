@@ -1,0 +1,35 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+.pnpm-store/
+
+# local tooling / agent config
+.claude/
+
+# heavy archives & design source (kept locally, not committed)
+Simplead.zip
+*.zip
+# stray screenshots dropped in project root (real images live under public/)
+/*.png
+
+# env
+.env
+.env.*
+!.env.example
+
+# design reference material (heavy — kept locally, not shipped/committed)
+design/
+
+# logs & misc
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

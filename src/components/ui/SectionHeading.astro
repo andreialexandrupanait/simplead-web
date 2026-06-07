@@ -1,0 +1,56 @@
+---
+/** Antet de secțiune reutilizabil: eyebrow opțional + titlu + subtitlu. */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  /** Partea din titlu evidențiată cu gradient (trebuie să apară în `title`). */
+  accent?: string;
+  subtitle?: string;
+  align?: 'left' | 'center';
+  class?: string;
+}
+
+const { eyebrow, title, accent, subtitle, align = 'left', class: className = '' } = Astro.props;
+
+function renderTitle() {
+  if (accent && title.includes(accent)) {
+    const [before, after] = title.split(accent);
+    return { before, accent, after };
+  }
+  return { before: title, accent: '', after: '' };
+}
+const t = renderTitle();
+---
+
+<div class:list={[align === 'center' ? 'mx-auto max-w-2xl text-center' : 'max-w-2xl', className]}>
+  {
+    eyebrow && (
+      <div
+        class:list={[
+          'mb-4 flex items-center gap-4 text-[13px] font-semibold uppercase tracking-[0.16em] text-[rgba(233,238,250,0.82)]',
+          align === 'center' && 'justify-center',
+        ]}
+      >
+        <span>{eyebrow}</span>
+        <span class="h-px w-16 bg-gradient-to-r from-white/55 to-transparent" />
+      </div>
+    )
+  }
+  <h2
+    class="font-display text-[clamp(28px,3.2vw,42px)] font-bold leading-[1.1] tracking-[-0.025em] text-balance"
+  >
+    {t.before}{t.accent && <span class="grad-text">{t.accent}</span>}{t.after}
+  </h2>
+  {
+    subtitle && (
+      <p
+        class:list={[
+          'mt-5 text-[17px] leading-[1.6] text-[rgba(220,227,245,0.74)]',
+          align === 'center' && 'mx-auto',
+        ]}
+      >
+        {subtitle}
+      </p>
+    )
+  }
+</div>

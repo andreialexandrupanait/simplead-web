@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHeader from '@components/sections/PageHeader.astro';
+import BlogFeature from '@components/sections/BlogFeature.astro';
+import CtaSection from '@components/sections/CtaSection.astro';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+);
+const [featured, ...rest] = posts;
+const fmt = (d: Date) =>
+  d.toLocaleDateString('ro-RO', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<BaseLayout
+  title="Blog"
+  description="Idei și ghiduri din lumea marketingului: branding, neuromarketing și web design — pe înțelesul tău."
+  transparentNav={true}
+>
+  <PageHeader
+    crumb={[{ label: 'Acasă', href: '/' }, { label: 'Blog' }]}
+    eyebrow="De pe blog"
+    title="Idei și ghiduri din lumea marketingului"
+    accent="marketingului"
+    subtitle="Despre branding, marketing digital și design — pe înțelesul tău."
+  />
+
+  <section class="section section--light">
+    <div class="container">
+      {featured && <BlogFeature post={featured} />}
+
+      <div class="blog-page-grid" data-reveal-stagger>
+        {
+          rest.map((entry) => (
+            <a class="blog-card" href={`/blog/${entry.id}`}>
+              <div class="ph blog-thumb">
+                {entry.data.cover ? <img src={entry.data.cover} alt={entry.data.title} loading="lazy" /> : entry.data.title}
+              </div>
+              <div class="blog-meta">
+                <span class="cat">{entry.data.tags[0] ?? 'Blog'}</span>
+                <span>{fmt(entry.data.pubDate)}</span>
+              </div>
+              <h3>{entry.data.title}</h3>
+              <p>{entry.data.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaSection href="/contact" />
+</BaseLayout>

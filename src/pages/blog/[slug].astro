@@ -1,0 +1,44 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHeader from '@components/sections/PageHeader.astro';
+import CtaSection from '@components/sections/CtaSection.astro';
+import { site } from '@data/site';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('blog', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, description, pubDate, author, tags } = entry.data;
+const dateStr = pubDate.toLocaleDateString('ro-RO', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout title={title} description={description}>
+  <PageHeader eyebrow="Blog" title={title} />
+
+  <section class="section section--light">
+    <div class="container" style="max-width:820px">
+      <a href="/blog" style="font-size:14px;color:var(--ink-soft)">← Înapoi la blog</a>
+      <div style="margin-top:18px;display:flex;flex-wrap:wrap;gap:12px;font-size:14px;color:var(--ink-soft)">
+        <time datetime={pubDate.toISOString()}>{dateStr}</time>
+        <span>·</span>
+        <span>{author}</span>
+        {tags.length > 0 && <span style="color:var(--blue);font-weight:600">#{tags[0]}</span>}
+      </div>
+      <article class="prose-simplead" style="margin-top:28px"><Content /></article>
+    </div>
+  </section>
+
+  <CtaSection
+    title="Vrei rezultate ca acestea pentru afacerea ta?"
+    subtitle={`Scrie-ne sau sună la ${site.contact.phone}. Prima discuție e fără obligații.`}
+    href="/contact"
+  />
+</BaseLayout>

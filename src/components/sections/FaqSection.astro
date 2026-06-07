@@ -1,0 +1,88 @@
+---
+import { faqs as defaultFaqs, type Faq } from '@data/content';
+
+interface Props {
+  items?: Faq[];
+  variant?: 'light' | 'tint';
+  eyebrow?: string;
+  title?: string;
+  titleAccent?: string;
+}
+const {
+  items = defaultFaqs,
+  variant = 'light',
+  eyebrow = 'Întrebări frecvente',
+  title = 'Ai ',
+  titleAccent = 'întrebări?',
+} = Astro.props;
+const faqs = items;
+---
+
+<section class:list={['section', `section--${variant}`]} id="faq">
+  <div class="container">
+    <div class="sec-head center">
+      <span class="sec-eyebrow" style="display:inline-flex;justify-content:center;">{eyebrow}</span>
+      <h2 class="sec-title">{title}<span class="g">{titleAccent}</span></h2>
+    </div>
+    <div class="faq" id="faqList">
+      {
+        faqs.map((f, i) => (
+          <div class:list={['faq-item', i === 0 && 'open']}>
+            <button class="faq-q" aria-expanded={i === 0 ? 'true' : 'false'}>
+              {f.q}
+              <span class="faq-ic">
+                {i === 0 ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14" /></svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                )}
+              </span>
+            </button>
+            <div class="faq-a">
+              <div class="faq-a-inner">
+                <div class="faq-a-body">
+                  {f.body.map((p) => (
+                    <p>{p}</p>
+                  ))}
+                  {f.list && (
+                    <ul>
+                      {f.list.map((li) => (
+                        <li>{li}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  const list = document.getElementById('faqList');
+  if (list) {
+    const items = Array.from(list.querySelectorAll<HTMLElement>('.faq-item'));
+    const setOpen = (item: HTMLElement, open: boolean) => {
+      item.classList.toggle('open', open);
+      const a = item.querySelector<HTMLElement>('.faq-a');
+      const q = item.querySelector<HTMLButtonElement>('.faq-q');
+      const ic = item.querySelector<HTMLElement>('.faq-ic svg path');
+      if (a) a.style.maxHeight = open ? a.scrollHeight + 'px' : '0px';
+      if (q) q.setAttribute('aria-expanded', String(open));
+      if (ic) ic.setAttribute('d', open ? 'M5 12h14' : 'M12 5v14M5 12h14');
+    };
+    // initialise first open item height
+    items.forEach((it) => setOpen(it, it.classList.contains('open')));
+    items.forEach((item) => {
+      const q = item.querySelector('.faq-q');
+      q?.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        items.forEach((other) => setOpen(other, false));
+        setOpen(item, !isOpen);
+      });
+    });
+  }
+</script>

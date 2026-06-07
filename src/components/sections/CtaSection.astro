@@ -1,0 +1,29 @@
+---
+interface Props {
+  title?: string;
+  subtitle?: string;
+  href?: string;
+  cta?: string;
+}
+const {
+  title = 'Gata să-ți pui afacerea pe roți?',
+  subtitle = 'Hai să discutăm despre proiectul tău. Prima întâlnire e fără obligații.',
+  href = '#contact',
+  cta = 'Programează o întâlnire',
+} = Astro.props;
+---
+
+<section class="section section--light cta-final">
+  <div class="container">
+    <div class="cta-band">
+      <div>
+        <h2>{title}</h2>
+        <p>{subtitle}</p>
+      </div>
+      <a class="pill pill--solid" href={href}>
+        {cta}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </a>
+    </div>
+  </div>
+</section>

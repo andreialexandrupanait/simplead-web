@@ -1,0 +1,48 @@
+---
+/** Grilă de capabilități (cap-grid) pe pagina de detaliu serviciu. */
+import type { ServiceCapability } from '@data/services';
+
+interface Props {
+  items: ServiceCapability[];
+  eyebrow: string;
+  title: string;
+  titleAccent: string;
+  sub: string;
+  variant?: 'light' | 'tint';
+}
+const { items, eyebrow, title, titleAccent, sub, variant = 'light' } = Astro.props;
+const check = '<path d="M20 6L9 17l-5-5"/>';
+---
+
+<section class:list={['section', `section--${variant}`]}>
+  <div class="container">
+    <div class="sec-head center" data-reveal>
+      <span class="sec-eyebrow" style="display:inline-flex;justify-content:center;">{eyebrow}</span>
+      <h2 class="sec-title">{title}<span class="g">{titleAccent}</span></h2>
+      {sub && <p class="sec-sub">{sub}</p>}
+    </div>
+    <div class="cap-grid" data-reveal-stagger>
+      {
+        items.map((cap) => (
+          <div class="cap-card">
+            <div class="cap-head">
+              <span class="cap-ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" set:html={cap.icon} />
+              </span>
+              <h3>{cap.title}</h3>
+            </div>
+            <p class="cap-desc">{cap.desc}</p>
+            <ul class="cap-list">
+              {cap.items.map((it) => (
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" set:html={check} />
+                  {it}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

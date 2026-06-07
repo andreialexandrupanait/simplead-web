@@ -1,0 +1,78 @@
+---
+/**
+ * Buton înclinat (skew -11deg) — semnătura vizuală Simplead.
+ * Reproduce .btn-cta / .nav__cta din design.
+ */
+interface Props {
+  href: string;
+  variant?: 'primary' | 'outline' | 'yellow';
+  size?: 'md' | 'lg';
+  withArrow?: boolean;
+  class?: string;
+  rel?: string;
+  target?: string;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  withArrow = true,
+  class: className = '',
+  rel,
+  target,
+} = Astro.props;
+
+const pad = size === 'lg' ? 'px-[30px] py-[17px] text-[14.5px]' : 'px-6 py-[13px] text-[13.5px]';
+const shadow =
+  size === 'lg'
+    ? 'shadow-[0_16px_34px_-12px_rgba(0,119,252,0.7)]'
+    : 'shadow-[0_12px_26px_-10px_rgba(0,119,252,0.65)]';
+---
+
+<div
+  class:list={[
+    'btn-skew inline-block rounded-[7px] transition-[transform,filter] duration-200 hover:-translate-y-0.5 hover:brightness-110',
+    variant === 'primary' && `grad-surface ${shadow}`,
+    variant === 'yellow' && 'bg-yellow shadow-[0_14px_30px_-12px_rgba(245,217,63,0.7)]',
+    variant === 'outline' && 'border border-white/20 bg-white/5',
+    className,
+  ]}
+>
+  <a
+    href={href}
+    rel={rel}
+    target={target}
+    class:list={[
+      'btn-skew-inner inline-flex items-center gap-[10px] font-semibold uppercase tracking-[0.05em]',
+      pad,
+      variant === 'yellow' ? 'text-navy' : 'text-white',
+    ]}
+  >
+    <slot />
+    {
+      withArrow && (
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="h-4 w-4"
+        >
+          <path d="M7 17L17 7M7 7h10v10" />
+        </svg>
+      )
+    }
+  </a>
+</div>
+
+<style>
+  .btn-skew {
+    transform: skew(-11deg);
+  }
+  .btn-skew-inner {
+    transform: skew(11deg);
+  }
+</style>

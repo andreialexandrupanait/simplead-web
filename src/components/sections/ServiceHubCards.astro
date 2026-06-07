@@ -1,0 +1,57 @@
+---
+/** Cardurile mari de servicii (svc-hub) din hub-ul /servicii. */
+import { services } from '@data/services';
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  titleAccent?: string;
+  sub?: string;
+}
+const {
+  eyebrow = 'Ce facem',
+  title = 'Patru direcții, ',
+  titleAccent = 'un singur partener',
+  sub = 'Simplu de gestionat, ușor de scalat. Le poți lua separat sau ca pachet complet — le coordonăm noi.',
+} = Astro.props;
+const arrow = '<path d="M7 17L17 7M7 7h10v10"/>';
+const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
+---
+
+<section class="section section--light" id="servicii">
+  <div class="container">
+    <div class="sec-head center" data-reveal>
+      <span class="sec-eyebrow" style="display:inline-flex;justify-content:center;">{eyebrow}</span>
+      <h2 class="sec-title">{title}<span class="g">{titleAccent}</span></h2>
+      {sub && <p class="sec-sub">{sub}</p>}
+    </div>
+    <div class="svc-hub" data-reveal-stagger>
+      {
+        services.map((s, i) => (
+          <article class="svc-hub-card has-media">
+            <a class="svc-hub-media" href={`/servicii/${s.slug}`}>
+              <img src={s.image} alt={s.title} loading="lazy" />
+              <span class="num">{String(i + 1).padStart(2, '0')}</span>
+              <span class="svc-hub-ab">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" set:html={arrow} />
+              </span>
+            </a>
+            <div class="svc-hub-cont">
+              <h3>{s.title}</h3>
+              <p class="desc">{s.summary}</p>
+              <div class="tags">
+                {s.tags.map((t) => (
+                  <span>{t}</span>
+                ))}
+              </div>
+              <a class="more" href={`/servicii/${s.slug}`}>
+                Vezi detalii
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={arrowR} />
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

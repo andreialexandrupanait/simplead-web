@@ -1,0 +1,32 @@
+---
+/** Articol featured (blog-feature) din capul paginii de blog. */
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+const { post } = Astro.props;
+const fmt = (d: Date) =>
+  d.toLocaleDateString('ro-RO', { year: 'numeric', month: 'long', day: 'numeric' });
+const arrow = '<path d="M5 12h14M13 6l6 6-6 6"/>';
+---
+
+<article class="blog-feature">
+  <a class="ph thumb" href={`/blog/${post.id}`}>
+    {post.data.cover ? <img src={post.data.cover} alt={post.data.title} /> : post.data.title}
+  </a>
+  <div class="body pad">
+    <div class="blog-meta">
+      <span class="cat">{post.data.tags[0] ?? 'Blog'}</span>
+      <span>{fmt(post.data.pubDate)}</span>
+    </div>
+    <h2>{post.data.title}</h2>
+    <p>{post.data.description}</p>
+    <div style="margin-top:22px;">
+      <a class="link-more" href={`/blog/${post.id}`}>
+        Citește articolul
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={arrow} />
+      </a>
+    </div>
+  </div>
+</article>

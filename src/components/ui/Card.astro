@@ -1,0 +1,22 @@
+---
+/** Card de suprafață (glass). Hover opțional pentru carduri clicabile. */
+interface Props {
+  class?: string;
+  hover?: boolean;
+  as?: 'div' | 'article' | 'a';
+  href?: string;
+}
+const { class: className = '', hover = false, as: Tag = 'div', href } = Astro.props;
+---
+
+<Tag
+  href={href}
+  class:list={[
+    'surface-card p-7 transition-[transform,border-color,box-shadow] duration-300',
+    hover &&
+      'group hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)]',
+    className,
+  ]}
+>
+  <slot />
+</Tag>

@@ -1,0 +1,132 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+
+// Pagină internă de referință — nu în meniu, nu indexată.
+---
+
+<BaseLayout title="Design System" description="Sistemul de design Simplead — tokenuri, tipografie și componente." noindex={true}>
+  <div class="ds-page">
+    <section class="ds-section" style="padding-top:var(--sp-8)">
+      <div class="ds-h">Design System</div>
+      <h2 style="font-size:clamp(32px,4vw,52px);">Sistemul de design Simplead</h2>
+      <p class="ds-lead">Sursa unică de adevăr pentru tot site-ul: culori, tipografie, spațiere, raze, umbre și componente. Toate paginile folosesc aceleași tokenuri — așa obținem consistență 1:1 și un site care nu arată „lipit din bucăți".</p>
+      <div class="ds-note"><b>Cum funcționează:</b> tokenurile sunt definite o singură dată în <code>src/styles/global.css</code> (ex. <code>--r-md: 16px</code>, <code>--sp-5: 24px</code>). Schimbi valoarea într-un loc → se actualizează automat peste tot.</div>
+    </section>
+
+    <section class="ds-section">
+      <div class="ds-h">01 · Culori</div>
+      <h2>Paleta de brand</h2>
+      <p class="ds-lead">Cinci culori de brand. Albastru→mov este gradientul de accent principal, folosit pe butoane, titluri-cheie și iconițe.</p>
+      <div class="ds-grid cols-5">
+        <div class="ds-color"><div class="chip" style="background:#0077FC"></div><div class="meta"><b>Albastru</b><code>#0077FC · var(--blue)</code></div></div>
+        <div class="ds-color"><div class="chip" style="background:#030D4A"></div><div class="meta"><b>Bleumarin</b><code>#030D4A · var(--navy)</code></div></div>
+        <div class="ds-color"><div class="chip" style="background:#F5D93F"></div><div class="meta"><b>Galben</b><code>#F5D93F · var(--yellow)</code></div></div>
+        <div class="ds-color"><div class="chip" style="background:#ECC0FE"></div><div class="meta"><b>Mov deschis</b><code>#ECC0FE · var(--purple)</code></div></div>
+        <div class="ds-color"><div class="chip" style="background:#E1E6E8"></div><div class="meta"><b>Gri deschis</b><code>#E1E6E8 · var(--gray)</code></div></div>
+      </div>
+      <div class="ds-grid cols-2" style="margin-top:var(--sp-5)">
+        <div class="ds-tile"><div class="demo" style="background:var(--grad)"></div><b>Gradient accent</b><code>var(--grad)</code></div>
+        <div class="ds-tile"><div class="demo" style="background:var(--bg)"></div><b>Fundal închis (hero)</b><code>var(--bg)</code></div>
+      </div>
+    </section>
+
+    <section class="ds-section">
+      <div class="ds-h">02 · Tipografie</div>
+      <h2>Scara tipografică</h2>
+      <p class="ds-lead">Space Grotesk pentru titluri (geometric, cu caracter), Hanken Grotesk pentru text (lizibil, neutru).</p>
+      <div style="margin-top:var(--sp-5)">
+        <div class="ds-type-row"><span class="lab">Display / H1<br>clamp(34–62px) · 700</span><span class="sample" style="font-size:56px">Facem lucrurile simple</span></div>
+        <div class="ds-type-row"><span class="lab">Titlu secțiune<br>clamp(30–46px) · 700</span><span class="sample" style="font-size:40px">Patru direcții</span></div>
+        <div class="ds-type-row"><span class="lab">H3 / card<br>21–23px · 600</span><span class="sample" style="font-size:22px">Web Design</span></div>
+        <div class="ds-type-row"><span class="lab">Subtitlu<br>18px · 400</span><span class="sample" style="font-size:18px;font-weight:400">Un singur partener, zero presupuneri</span></div>
+        <div class="ds-type-row"><span class="lab">Body<br>15–16px · 400</span><span class="sample" style="font-size:16px;font-weight:400">Text de paragraf, lizibil și aerisit.</span></div>
+        <div class="ds-type-row"><span class="lab">Eyebrow<br>13px · 600 · 0.14em</span><span class="sample" style="font-size:13px;letter-spacing:0.14em">SERVICII</span></div>
+      </div>
+    </section>
+
+    <section class="ds-section">
+      <div class="ds-h">03 · Raze de colț</div>
+      <h2>Radius scale</h2>
+      <p class="ds-lead">O singură scară de raze: carduri (<code>--r-lg</code>), input-uri și tag-uri (<code>--r-sm</code>), butoane pill (<code>--r-pill</code>).</p>
+      <div class="ds-grid cols-3">
+        <div class="ds-tile"><div class="demo" style="border-radius:8px;"></div><b>8px</b><code>var(--r-xs)</code></div>
+        <div class="ds-tile"><div class="demo" style="border-radius:12px;"></div><b>12px</b><code>var(--r-sm)</code></div>
+        <div class="ds-tile"><div class="demo" style="border-radius:16px;"></div><b>16px</b><code>var(--r-md)</code></div>
+        <div class="ds-tile"><div class="demo" style="border-radius:22px;"></div><b>22px</b><code>var(--r-lg)</code></div>
+        <div class="ds-tile"><div class="demo" style="border-radius:28px;"></div><b>28px</b><code>var(--r-xl)</code></div>
+        <div class="ds-tile"><div class="demo" style="border-radius:999px;height:48px;"></div><b>999px</b><code>var(--r-pill)</code></div>
+      </div>
+    </section>
+
+    <section class="ds-section">
+      <div class="ds-h">04 · Spațiere</div>
+      <h2>Scara de spațiere (bază 4px)</h2>
+      <p class="ds-lead">Toate marginile și paddingurile folosesc aceste trepte — de aici ritmul vizual consistent.</p>
+      <div style="margin-top:var(--sp-5)">
+        {
+          [
+            ['var(--sp-2) · 8px', 8],
+            ['var(--sp-3) · 12px', 12],
+            ['var(--sp-4) · 16px', 16],
+            ['var(--sp-5) · 24px', 24],
+            ['var(--sp-6) · 32px', 32],
+            ['var(--sp-7) · 48px', 48],
+            ['var(--sp-8) · 64px', 64],
+            ['var(--sp-9) · 96px', 96],
+          ].map(([label, w]) => (
+            <div class="ds-swatch-line">
+              <span class="lab" style="width:130px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--ink-soft);">{label}</span>
+              <div class="ds-space-bar" style={`width:${w}px`}></div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="ds-section">
+      <div class="ds-h">05 · Umbre</div>
+      <h2>Elevație</h2>
+      <p class="ds-lead">Umbre reci, cu tentă bleumarin, pentru profunzime subtilă. Cresc la hover pe carduri.</p>
+      <div class="ds-grid cols-4">
+        <div class="ds-tile"><div class="demo sh" style="box-shadow:var(--sh-sm)"></div><b>sm</b><code>var(--sh-sm)</code></div>
+        <div class="ds-tile"><div class="demo sh" style="box-shadow:var(--sh-md)"></div><b>md</b><code>var(--sh-md)</code></div>
+        <div class="ds-tile"><div class="demo sh" style="box-shadow:var(--sh-lg)"></div><b>lg</b><code>var(--sh-lg)</code></div>
+        <div class="ds-tile"><div class="demo sh" style="box-shadow:var(--sh-brand)"></div><b>brand</b><code>var(--sh-brand)</code></div>
+      </div>
+    </section>
+
+    <section class="ds-section">
+      <div class="ds-h">06 · Componente</div>
+      <h2>Butoane & elemente</h2>
+      <p class="ds-lead">Construite din aceleași tokenuri — radius, umbre și gradient comune.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:var(--sp-4);align-items:center;margin-top:var(--sp-5)">
+        <div class="btn-cta"><a href="/contact">Buton accent <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a></div>
+        <a class="pill pill--grad" href="/servicii">Pill gradient <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        <a class="pill pill--ghost" href="/servicii" style="color:var(--navy);">Pill ghost <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        <a class="link-more" href="/blog">Link „mai multe" <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+      <div class="ds-grid cols-3" style="margin-top:var(--sp-6)">
+        <div class="cap-card"><div class="cap-head"><span class="cap-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 7.1-1.01z"></path></svg></span><h3>Card</h3></div><p class="cap-desc">Card standard cu border, radius <code>--r-lg</code> și umbră la hover. Folosit peste tot pentru conținut.</p></div>
+        <div class="value-card"><span class="vi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></span><h3>Value card</h3><p>Variantă cu iconiță gradient pentru beneficii și valori.</p></div>
+        <div class="ds-tile" style="justify-content:center;"><span style="display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:#1f8a5b;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 7-7"></path><path d="M14 7h7v7"></path></svg>Badge rezultat</span><span style="font-size:12.5px;font-weight:500;color:var(--navy);background:#eef1f6;border-radius:var(--r-pill);padding:6px 13px;">Tag / chip</span></div>
+      </div>
+    </section>
+
+    <section class="ds-section" style="text-align:center;">
+      <h2>Vrei să vezi sistemul în acțiune?</h2>
+      <p class="ds-lead" style="margin-left:auto;margin-right:auto;">Toate paginile site-ului sunt construite pe aceste tokenuri.</p>
+      <div style="display:flex;gap:var(--sp-4);justify-content:center;margin-top:var(--sp-5);flex-wrap:wrap;">
+        <a class="pill pill--grad" href="/servicii">Vezi pagina Servicii <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        <a class="pill pill--ghost" href="/" style="color:var(--navy);">Înapoi acasă <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  /* Pagina DS are fundal alb (cardurile folosesc text închis). */
+  .ds-page {
+    background: #fff;
+    color: var(--ink);
+  }
+</style>

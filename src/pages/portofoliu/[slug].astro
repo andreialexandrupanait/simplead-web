@@ -1,0 +1,44 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHeader from '@components/sections/PageHeader.astro';
+import CtaSection from '@components/sections/CtaSection.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('portfolio', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, client, service, summary, result, challenge, solution } = entry.data;
+---
+
+<BaseLayout title={title} description={summary}>
+  <PageHeader eyebrow={service} title={title} subtitle={summary} />
+
+  <section class="section section--light">
+    <div class="container">
+      <a href="/portofoliu" style="font-size:14px;color:var(--ink-soft)">← Înapoi la portofoliu</a>
+      <div style="display:grid;grid-template-columns:1.3fr 0.7fr;gap:56px;margin-top:28px" class="pf-detail-grid">
+        <article class="prose-simplead"><Content /></article>
+        <aside>
+          <div style="background:#f5f7fa;border:1px solid var(--line);border-radius:20px;padding:28px">
+            <dl style="display:flex;flex-direction:column;gap:16px;margin:0;font-size:14px">
+              <div><dt style="color:var(--ink-soft)">Client</dt><dd style="margin:4px 0 0;font-weight:600;color:var(--ink)">{client}</dd></div>
+              <div><dt style="color:var(--ink-soft)">Serviciu</dt><dd style="margin:4px 0 0;font-weight:600;color:var(--ink)">{service}</dd></div>
+              {result && <div><dt style="color:var(--ink-soft)">Rezultat</dt><dd style="margin:4px 0 0;color:var(--ink)" set:html={result} /></div>}
+            </dl>
+          </div>
+          {challenge && <div style="display:none">{challenge}{solution}</div>}
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <CtaSection href="/contact" />
+</BaseLayout>
+
+<style>
+  @media (max-width: 900px) { .pf-detail-grid { grid-template-columns: 1fr !important; } }
+</style>

@@ -1,0 +1,44 @@
+---
+import type { CollectionEntry } from 'astro:content';
+interface Props {
+  entry: CollectionEntry<'blog'>;
+}
+const { entry } = Astro.props;
+const { title, description, pubDate, tags, cover } = entry.data;
+const dateStr = pubDate.toLocaleDateString('ro-RO', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<a
+  href={`/blog/${entry.id}`}
+  class="group surface-card flex flex-col overflow-hidden p-0 transition-[transform,border-color] duration-300 hover:-translate-y-1 hover:border-white/20"
+>
+  <div
+    class="relative aspect-[16/9] overflow-hidden"
+    style="background: linear-gradient(135deg, rgba(110,91,224,0.22), rgba(0,119,252,0.16) 60%, rgba(236,192,254,0.14))"
+  >
+    {
+      cover && (
+        <img
+          src={cover}
+          alt={title}
+          class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
+        />
+      )
+    }
+  </div>
+  <div class="flex flex-1 flex-col p-6">
+    <div class="flex items-center gap-3 text-xs text-[rgba(220,227,245,0.5)]">
+      <time datetime={pubDate.toISOString()}>{dateStr}</time>
+      {tags[0] && <span class="text-blue">#{tags[0]}</span>}
+    </div>
+    <h3 class="mt-3 font-display text-lg font-semibold leading-snug text-white">{title}</h3>
+    <p class="mt-2 flex-1 text-[14px] leading-relaxed text-[rgba(220,227,245,0.66)]">
+      {description}
+    </p>
+  </div>
+</a>

@@ -1,0 +1,58 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import ServiceHero from '@components/sections/ServiceHero.astro';
+import CapabilitiesGrid from '@components/sections/CapabilitiesGrid.astro';
+import ServiceProcess from '@components/sections/ServiceProcess.astro';
+import ClientCase from '@components/sections/ClientCase.astro';
+import FaqSection from '@components/sections/FaqSection.astro';
+import CtaNotch from '@components/sections/CtaNotch.astro';
+import RelatedServices from '@components/sections/RelatedServices.astro';
+import { services, relatedServices, type ServiceProcessStep } from '@data/services';
+import { processSteps } from '@data/content';
+
+export function getStaticPaths() {
+  return services.map((s) => ({ params: { slug: s.slug }, props: { service: s } }));
+}
+const { service } = Astro.props;
+const others = relatedServices(service.slug);
+
+// Proces: specific serviciului, altfel procesul generic (content.ts).
+const proc: ServiceProcessStep[] =
+  service.process ??
+  processSteps.map((p) => ({ n: String(p.n).padStart(2, '0'), title: p.title, body: p.text }));
+---
+
+<BaseLayout title={`${service.title} — Servicii`} description={service.summary} transparentNav={true}>
+  <ServiceHero
+    title={service.heroTitle}
+    titleAccent={service.heroTitleAccent}
+    sub={service.heroSub}
+    image={service.image}
+    imageAlt={service.title}
+    current={service.title}
+  />
+
+  <CapabilitiesGrid
+    items={service.capabilities}
+    eyebrow={service.capHead.eyebrow}
+    title={service.capHead.title}
+    titleAccent={service.capHead.titleAccent}
+    sub={service.capHead.sub}
+  />
+
+  <ServiceProcess steps={proc} />
+
+  {service.caseStudy && <ClientCase caseStudy={service.caseStudy} />}
+
+  <FaqSection
+    items={service.faqs}
+    variant="tint"
+    eyebrow="FAQ"
+    title="Ce vor să știe "
+    titleAccent="clienții noștri"
+  />
+
+  <CtaNotch title={service.claim} />
+
+  <RelatedServices items={others} />
+</BaseLayout>

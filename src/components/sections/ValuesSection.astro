@@ -1,0 +1,49 @@
+---
+/** „Ce ne face diferiți" — values-grid (3 carduri) + vals-row (pill-uri). */
+import { aboutDifferentiators, values } from '@data/content';
+
+interface Props {
+  variant?: 'light' | 'tint';
+  eyebrow?: string;
+  title?: string;
+  titleAccent?: string;
+}
+const {
+  variant = 'tint',
+  eyebrow = 'Ce ne face diferiți',
+  title = 'Trei lucruri care ',
+  titleAccent = 'ne deosebesc',
+} = Astro.props;
+
+// Iconițe pentru cele 3 valori (din export), mapate pe index.
+const valueIcons = [
+  '<path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2z"/><path d="M9 22h6"/>',
+  '<path d="M4 7h16M4 12h16M4 17h10"/>',
+  '<path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M21 21v-2a4 4 0 0 0-3-3.9"/>',
+];
+---
+
+<section class:list={['section', `section--${variant}`]}>
+  <div class="container">
+    <div class="sec-head center" data-reveal>
+      <span class="sec-eyebrow" style="display:inline-flex;justify-content:center;">{eyebrow}</span>
+      <h2 class="sec-title">{title}<span class="g">{titleAccent}</span></h2>
+    </div>
+    <div class="values-grid" data-reveal-stagger>
+      {
+        aboutDifferentiators.map((d, i) => (
+          <div class="value-card">
+            <span class="vi">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" set:html={valueIcons[i % valueIcons.length]} />
+            </span>
+            <h3>{d.title}</h3>
+            <p>{d.text}</p>
+          </div>
+        ))
+      }
+    </div>
+    <div class="vals-row" style="justify-content:center;">
+      {values.map((v) => <span class="val-pill">{v}</span>)}
+    </div>
+  </div>
+</section>

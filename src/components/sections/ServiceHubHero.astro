@@ -1,0 +1,64 @@
+---
+/** Hero hub /servicii (svchero) — titlu + panel „De ce Simplead?" + stats. */
+import { whyPanel, svcHubStats } from '@data/content';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  titleAccent: string;
+  sub: string;
+}
+const { eyebrow = 'Servicii', title, titleAccent, sub } = Astro.props;
+const chev = '<path d="M9 6l6 6-6 6"/>';
+const arrow = '<path d="M7 17L17 7M7 7h10v10"/>';
+const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
+const check = '<path d="M20 6L9 17l-5-5"/>';
+---
+
+<section class="page-hero svchero">
+  <div class="svchero__inner page-hero__inner">
+    <div data-reveal>
+      <div class="crumb">
+        <a href="/">Acasă</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
+        <span class="cur">Servicii</span>
+      </div>
+      <span class="eyebrow">{eyebrow}</span>
+      <h1>{title}<span class="g">{titleAccent}</span></h1>
+      <p class="sub">{sub}</p>
+      <div class="svchero__actions">
+        <div class="btn-cta">
+          <a href="/contact">Cere o ofertă
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" set:html={arrow} />
+          </a>
+        </div>
+        <a class="link-more" href="#servicii" style="color:#fff;">Vezi serviciile
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={arrowR} />
+        </a>
+      </div>
+    </div>
+    <aside class="svchero__panel" data-reveal>
+      <h3><span class="d"></span>De ce Simplead?</h3>
+      <ul>
+        {
+          whyPanel.map((item) => (
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" set:html={check} />
+              {item}
+            </li>
+          ))
+        }
+      </ul>
+      <div class="svchero__stats">
+        {
+          svcHubStats.map((s) => (
+            <div class="s">
+              <b>{s.value}<em>{s.em}</em></b>
+              <span>{s.label}</span>
+            </div>
+          ))
+        }
+      </div>
+    </aside>
+  </div>
+</section>

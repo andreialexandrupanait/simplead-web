@@ -1,0 +1,303 @@
+---
+import Button from '@components/ui/Button.astro';
+import OrbitGraphic from '@components/sections/OrbitGraphic.astro';
+import { site } from '@data/site';
+import { heroPillars, stats } from '@data/content';
+import { useTranslations, resolveLocale } from '@i18n/index';
+
+const t = useTranslations(resolveLocale(Astro.currentLocale));
+---
+
+<section class="hero">
+  <div class="hero__inner site-container">
+    <!-- LEFT -->
+    <div class="hero__text">
+      <div class="eyebrow">
+        Grafică &amp; marketing digital<span class="line"></span>
+      </div>
+
+      <h1>Facem lucrurile simple. <span class="grad-text">Și le bazăm pe date.</span></h1>
+
+      <p class="sub">
+        Branding, grafică și marketing digital pentru afaceri care vor să fie remarcate. Un singur
+        partener, zero presupuneri.
+      </p>
+
+      <div class="pillars">
+        {
+          heroPillars.map((pillar) => (
+            <div class="pillar">
+              <span class="mk">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M8 6l6 6-6 6"
+                    stroke="url(#chev)"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <defs>
+                    <linearGradient id="chev" x1="8" y1="6" x2="14" y2="18" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#4D9BFF" />
+                      <stop offset="1" stop-color="#ECC0FE" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </span>
+              {pillar}
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="cta-row">
+        <Button href="/contact" size="lg">{t.common.requestOffer}</Button>
+        <a class="phone" href={site.contact.phoneHref}>
+          <span class="phone__ic">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z"
+              ></path>
+            </svg>
+          </span>
+          <span class="phone__txt">
+            <small>{t.common.callNow}</small>
+            <b>{site.contact.phone}</b>
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <!-- RIGHT: ORBIT -->
+    <div class="hero__graphic">
+      <OrbitGraphic />
+    </div>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats site-container">
+    <div class="stats__grid">
+      {
+        stats.map((s) => (
+          <div class="stat">
+            <div class="num">
+              {s.value}
+              {s.suffix && <em>{s.suffix}</em>}
+            </div>
+            <div class="lbl">{s.label}</div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--nav-h);
+    background:
+      radial-gradient(48% 46% at 74% 40%, rgba(0, 119, 252, 0.28) 0%, rgba(0, 119, 252, 0) 62%),
+      radial-gradient(42% 40% at 88% 26%, rgba(236, 192, 254, 0.18) 0%, rgba(236, 192, 254, 0) 60%),
+      radial-gradient(38% 50% at 6% 88%, rgba(110, 91, 224, 0.2) 0%, rgba(110, 91, 224, 0) 60%),
+      var(--color-bg, #050a33);
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+  }
+
+  .hero__inner {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    padding-top: 24px;
+    padding-bottom: 8px;
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    align-items: center;
+    gap: 32px;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: rgba(233, 238, 250, 0.82);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .eyebrow .line {
+    position: relative;
+    width: 70px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
+  }
+  .eyebrow .line::after {
+    content: '';
+    position: absolute;
+    right: 14px;
+    top: -3px;
+    width: 7px;
+    height: 7px;
+    border-top: 1px solid rgba(255, 255, 255, 0.55);
+    border-right: 1px solid rgba(255, 255, 255, 0.55);
+    transform: rotate(45deg);
+  }
+
+  .hero__text :global(h1) {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(34px, 3.8vw, 50px);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    margin-top: 26px;
+    text-wrap: balance;
+  }
+
+  .sub {
+    margin-top: 22px;
+    max-width: 480px;
+    color: rgba(220, 227, 245, 0.74);
+    font-size: 17px;
+    line-height: 1.62;
+  }
+
+  .pillars {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .pillar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 16.5px;
+    font-weight: 500;
+    color: #eef2fb;
+  }
+  .pillar .mk {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pillar .mk svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .cta-row {
+    margin-top: 38px;
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    flex-wrap: wrap;
+  }
+  .phone {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .phone__ic {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: var(--color-yellow, #f5d93f);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 14px 30px -12px rgba(245, 217, 63, 0.7);
+  }
+  .phone__ic svg {
+    width: 22px;
+    height: 22px;
+    color: var(--color-navy, #030d4a);
+  }
+  .phone__txt small {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(233, 238, 250, 0.6);
+    margin-bottom: 3px;
+  }
+  .phone__txt b {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .hero__graphic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .stats {
+    position: relative;
+    z-index: 2;
+    padding-top: 26px;
+    padding-bottom: 40px;
+  }
+  .stats__grid {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    padding-top: 26px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat .num {
+    font-family: var(--font-display);
+    font-size: clamp(30px, 3vw, 42px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .stat .num em {
+    font-style: normal;
+    color: var(--color-purple, #ecc0fe);
+  }
+  .stat .lbl {
+    margin-top: 8px;
+    font-size: 14px;
+    color: rgba(225, 230, 245, 0.66);
+  }
+
+  @media (max-width: 900px) {
+    .hero {
+      min-height: auto;
+    }
+    .hero__inner {
+      grid-template-columns: 1fr;
+      padding-top: 36px;
+      padding-bottom: 24px;
+      gap: 56px;
+    }
+    .hero__graphic {
+      order: 2;
+    }
+    .stats__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px 16px;
+    }
+  }
+</style>

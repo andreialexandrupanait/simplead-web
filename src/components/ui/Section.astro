@@ -1,0 +1,36 @@
+---
+/**
+ * Wrapper de secțiune: container centrat (--maxw) + spacing vertical consistent.
+ */
+interface Props {
+  id?: string;
+  class?: string;
+  containerClass?: string;
+  /** Spacing vertical. */
+  spacing?: 'sm' | 'md' | 'lg';
+  as?: 'section' | 'div';
+  'aria-label'?: string;
+}
+
+const {
+  id,
+  class: className = '',
+  containerClass = '',
+  spacing = 'lg',
+  as: Tag = 'section',
+  'aria-label': ariaLabel,
+} = Astro.props;
+
+const padMap: Record<string, string> = {
+  sm: 'py-12 md:py-16',
+  md: 'py-16 md:py-24',
+  lg: 'py-20 md:py-32',
+};
+const pad = padMap[spacing] ?? padMap.lg;
+---
+
+<Tag id={id} aria-label={ariaLabel} class:list={['relative', pad, className]}>
+  <div class:list={['site-container', containerClass]}>
+    <slot />
+  </div>
+</Tag>

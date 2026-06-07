@@ -1,0 +1,30 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: simplead-web
+    # Deps sunt instalate în imagine (volum node_modules seeded din imagine).
+    # La schimbarea dependențelor: `docker compose down -v && docker compose up --build`.
+    command: pnpm dev --host 0.0.0.0
+    ports:
+      - "4321:4321"
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - .env
+    volumes:
+      # Bind-mount the project for live editing...
+      - .:/app
+      # ...but keep node_modules in a named volume so the host (Windows) FS
+      # doesn't shadow the Linux-installed dependencies.
+      - simplead_node_modules:/app/node_modules
+      # .astro (types + content data-store) pe volum rapid Linux, NU pe
+      # bind-mount-ul Windows lent — altfel content layer-ul (getCollection)
+      # citește/scrie store-ul prea lent și SSR-ul expiră (fetchModule 60s).
+      - simplead_astro_cache:/app/.astro
+    restart: unless-stopped
+
+volumes:
+  simplead_node_modules:
+  simplead_astro_cache:

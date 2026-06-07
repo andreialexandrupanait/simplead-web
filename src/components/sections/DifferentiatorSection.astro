@@ -1,0 +1,53 @@
+---
+const points = [
+  {
+    icon: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+    title: 'Atenție vizuală',
+    text: 'Vedem exact unde se uită publicul tău și ce ignoră.',
+  },
+  {
+    icon: '<path d="M3 3v18h18"/><path d="M7 14l3-4 3 2 4-6"/>',
+    title: 'Date & conversii',
+    text: 'Măsurăm ce funcționează și ajustăm în timp real.',
+  },
+  {
+    icon: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+    title: 'Decizii justificate',
+    text: 'Fiecare alegere de design are un „de ce", nu doar un „mie îmi place".',
+  },
+];
+---
+
+<section class="section section--tint">
+  <div class="container">
+    <div class="diff-grid">
+      <div>
+        <span class="sec-eyebrow">Avantajul tău</span>
+        <h2 class="sec-title">Nu ghicim.<br /><span class="g">Măsurăm.</span></h2>
+        <p class="sec-sub">
+          Majoritatea „simt" că un design e bun. Noi îl testăm. Folosim instrumente de neuromarketing
+          — analiza atenției vizuale și hărți termice — alături de date din Google Analytics și
+          tracking de conversii. Mai puțin buget irosit, mai multă atenție din partea publicului
+          potrivit.
+        </p>
+
+        <div class="diff-points">
+          {
+            points.map((p) => (
+              <div class="diff-point">
+                <span class="n">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" set:html={p.icon} />
+                </span>
+                <div>
+                  <h4>{p.title}</h4>
+                  <p>{p.text}</p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+      <div class="ph diff-visual">heatmap / analiză atenție vizuală</div>
+    </div>
+  </div>
+</section>
