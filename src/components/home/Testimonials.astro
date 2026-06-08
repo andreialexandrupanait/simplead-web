@@ -1,0 +1,95 @@
+---
+import SectionHeading from '@components/ui/SectionHeading.astro';
+
+/** Testimoniale reale (preluate din proiectele existente). */
+const items = [
+  {
+    quote: 'Profesionalism, fairplay, pricepere, asumare. Suntem la al doilea proiect împreună.',
+    name: 'Ștefan Chelmu',
+    role: 'Blitzstudio',
+  },
+  {
+    quote: 'Originalitate și claritate în soluțiile propuse. Rezultatul a fost foarte apreciat de compania noastră.',
+    name: 'Silviu Costiniuc',
+    role: 'Echipamente-medicale.ro',
+  },
+  {
+    quote: 'Simply professional. Trustworthy, honest and creative.',
+    name: 'Bogdan Drăgan',
+    role: 'FEAA Galați',
+  },
+];
+---
+
+<section class="tst">
+  <div class="site-container">
+    <SectionHeading
+      eyebrow="Ce spun clienții"
+      title="Colaborări care continuă."
+      accent="continuă"
+      align="center"
+    />
+    <div class="tst__grid" data-reveal-stagger>
+      {
+        items.map((t) => (
+          <figure class="tst__card">
+            <blockquote>„{t.quote}"</blockquote>
+            <figcaption>
+              <span class="tst__name">{t.name}</span>
+              <span class="tst__role">{t.role}</span>
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .tst {
+    background: var(--canvas);
+    padding-block: clamp(64px, 9vw, 120px);
+  }
+  .tst :global(.sh) {
+    margin-bottom: 52px;
+  }
+  .tst__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .tst__card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+    background: var(--canvas-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 30px;
+  }
+  .tst__card blockquote {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.15rem;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .tst__name {
+    display: block;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .tst__role {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+  @media (max-width: 900px) {
+    .tst__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

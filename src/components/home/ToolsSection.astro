@@ -1,0 +1,107 @@
+---
+import SectionHeading from '@components/ui/SectionHeading.astro';
+import { toolCategories } from '@data/content';
+---
+
+<section class="tools">
+  <div class="site-container">
+    <SectionHeading
+      eyebrow="Cu ce lucrăm"
+      title="Uneltele potrivite, pentru fiecare etapă."
+      accent="pentru fiecare etapă"
+      align="center"
+    />
+
+    <div class="tools__cats" data-reveal-stagger>
+      {
+        toolCategories.map((cat) => (
+          <div class="tools__cat">
+            <h3 class="tools__cat-label">{cat.label}</h3>
+            <ul class="tools__grid">
+              {cat.tools.map((tool) => (
+                <li class="tools__tile">
+                  <img src={tool.logo} alt={tool.name} loading="lazy" width="32" height="32" />
+                  <span>{tool.name}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .tools {
+    background: var(--canvas);
+    padding-block: clamp(64px, 9vw, 120px);
+  }
+  .tools :global(.sh) {
+    margin-bottom: 52px;
+  }
+  .tools__cats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .tools__cat {
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 26px;
+    background: var(--canvas-soft);
+  }
+  .tools__cat-label {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--electric);
+    margin-bottom: 18px;
+  }
+  .tools__grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .tools__tile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: var(--canvas);
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    font-size: 0.86rem;
+    color: var(--ink);
+    transition:
+      border-color 0.18s var(--ease-snap),
+      box-shadow 0.18s var(--ease-snap);
+  }
+  .tools__tile:hover {
+    border-color: var(--cyan);
+  }
+  .tools__tile img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+  .tools__tile span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 820px) {
+    .tools__cats {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 460px) {
+    .tools__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

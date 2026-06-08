@@ -14,7 +14,7 @@ const { Content } = await render(entry);
 const { title, client, service, summary, result, challenge, solution } = entry.data;
 ---
 
-<BaseLayout title={title} description={summary}>
+<BaseLayout title={title} description={summary} transparentNav={true} navOverDark={true}>
   <PageHeader eyebrow={service} title={title} subtitle={summary} />
 
   <section class="section section--light">

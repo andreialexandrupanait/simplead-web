@@ -1,0 +1,162 @@
+---
+import { getCollection } from 'astro:content';
+import SectionHeading from '@components/ui/SectionHeading.astro';
+
+const items = (await getCollection('portfolio', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+---
+
+<section class="proof">
+  <div class="site-container">
+    <div class="proof__head">
+      <SectionHeading
+        eyebrow="Dovada"
+        title="Rezultate, nu doar imagini frumoase."
+        accent="nu doar imagini frumoase"
+      />
+      <a class="proof__all" href="/portofoliu">
+        Vezi tot portofoliul
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </a>
+    </div>
+
+    <div class="proof__grid" data-reveal-stagger>
+      {
+        items.map((p) => (
+          <a class="proof__card" href={`/portofoliu/${p.id}`}>
+            <div class="proof__media">
+              {p.data.cover ? (
+                <img src={p.data.cover} alt={p.data.title} loading="lazy" />
+              ) : (
+                <span class="proof__ph">{p.data.client}</span>
+              )}
+              <span class="proof__tag">{p.data.service}</span>
+            </div>
+            <div class="proof__body">
+              <h3>{p.data.title}</h3>
+              <p>{p.data.summary}</p>
+              <span class="proof__metric">Rezultat: [DATA]</span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .proof {
+    background: var(--canvas);
+    padding-block: clamp(64px, 9vw, 120px);
+  }
+  .proof__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .proof__all {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--electric);
+  }
+  .proof__all svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s var(--ease-snap);
+  }
+  .proof__all:hover svg {
+    transform: translateX(3px);
+  }
+  .proof__grid {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+  .proof__card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    background: var(--canvas);
+    transition:
+      transform 0.2s var(--ease-snap),
+      border-color 0.2s var(--ease-snap),
+      box-shadow 0.25s var(--ease-snap);
+  }
+  .proof__card:hover {
+    border-color: var(--cyan);
+    box-shadow: var(--sh-sm);
+  }
+  .proof__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: var(--canvas-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .proof__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .proof__ph {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--muted);
+  }
+  .proof__tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 5px 10px;
+    border-radius: var(--r-pill);
+    background: rgba(255, 255, 255, 0.92);
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .proof__body {
+    padding: 22px;
+  }
+  .proof__body h3 {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+  .proof__body p {
+    margin-top: 8px;
+    font-size: 0.94rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .proof__metric {
+    display: inline-block;
+    margin-top: 14px;
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    color: var(--electric);
+  }
+  @media (max-width: 960px) {
+    .proof__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 600px) {
+    .proof__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

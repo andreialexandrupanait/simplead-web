@@ -1,0 +1,145 @@
+---
+import { site } from '@data/site';
+import Button from '@components/ui/Button.astro';
+
+const points = [
+  {
+    title: 'Atenția vizuală, măsurată',
+    body: 'Validăm designul cu eye-tracking și heatmaps prin expoze.app — vedem unde se uită oamenii înainte de lansare, nu după.',
+  },
+  {
+    title: 'Decizii pe date, nu pe gust',
+    body: 'Fiecare alegere de layout, culoare sau mesaj pleacă de la principii de neuromarketing și date reale, nu de la „mie îmi place".',
+  },
+  {
+    title: 'Cercetare academică în spate',
+    body: `Studio condus de ${site.founder}, ${site.founderTitle}, specializat în neuromarketing — cercetarea ajunge direct în proiectele tale.`,
+  },
+];
+---
+
+<section class="diff">
+  <div class="site-container diff__inner">
+    <div class="diff__head" data-reveal>
+      <p class="kicker kicker--cyan">Diferențiatorul nostru</p>
+      <h2 class="diff__title">Nu ghicim. <span>Măsurăm.</span></h2>
+      <p class="diff__sub">
+        Cei mai mulți fac design „să arate bine". Noi îl construim ca să funcționeze — validat prin
+        cercetare de neuromarketing și testare a atenției vizuale.
+      </p>
+      <div class="diff__cta">
+        <Button href={site.founderSite} target="_blank" rel="noopener" variant="outline" onDark withArrow>
+          Vezi cercetarea — panaitandrei.ro
+        </Button>
+      </div>
+    </div>
+
+    <ul class="diff__points" data-reveal-stagger>
+      {
+        points.map((p, i) => (
+          <li class="diff__point">
+            <span class="diff__num">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <h3>{p.title}</h3>
+              <p>{p.body}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .diff {
+    position: relative;
+    background: var(--ink);
+    color: #fff;
+    padding-block: clamp(72px, 10vw, 128px);
+    overflow: hidden;
+  }
+  .diff::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-size: 72px 72px;
+    -webkit-mask-image: radial-gradient(110% 90% at 15% 0%, #000, transparent 70%);
+    mask-image: radial-gradient(110% 90% at 15% 0%, #000, transparent 70%);
+    pointer-events: none;
+  }
+  .diff__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: 64px;
+    align-items: start;
+  }
+  .kicker--cyan {
+    color: var(--cyan);
+  }
+  .diff__title {
+    margin-top: 16px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.2rem, 4vw, 3.4rem);
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+  }
+  .diff__title span {
+    color: var(--cyan);
+  }
+  .diff__sub {
+    margin-top: 22px;
+    max-width: 44ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--muted-dark);
+  }
+  .diff__cta {
+    margin-top: 30px;
+  }
+  .diff__points {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--r-md);
+    overflow: hidden;
+  }
+  .diff__point {
+    display: flex;
+    gap: 20px;
+    padding: 28px;
+    background: var(--ink-soft);
+  }
+  .diff__num {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    color: var(--cyan);
+    padding-top: 4px;
+  }
+  .diff__point h3 {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #fff;
+  }
+  .diff__point p {
+    margin-top: 8px;
+    font-size: 0.96rem;
+    line-height: 1.55;
+    color: var(--muted-dark);
+  }
+
+  @media (max-width: 900px) {
+    .diff__inner {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+</style>

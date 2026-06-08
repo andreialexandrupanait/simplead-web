@@ -20,9 +20,20 @@ const others = relatedServices(service.slug);
 const proc: ServiceProcessStep[] =
   service.process ??
   processSteps.map((p) => ({ n: String(p.n).padStart(2, '0'), title: p.title, body: p.text }));
+
+const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
+const serviceSchema = {
+  '@type': 'Service',
+  name: service.title,
+  description: service.summary,
+  serviceType: service.title,
+  url: `${origin}/servicii/${service.slug}`,
+  provider: { '@id': `${origin}#organization` },
+  areaServed: { '@type': 'Country', name: 'România' },
+};
 ---
 
-<BaseLayout title={`${service.title} — Servicii`} description={service.summary} transparentNav={true}>
+<BaseLayout title={`${service.title} — Servicii`} description={service.summary} transparentNav={true} navOverDark={true} schema={serviceSchema}>
   <ServiceHero
     title={service.heroTitle}
     titleAccent={service.heroTitleAccent}

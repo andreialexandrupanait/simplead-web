@@ -10,6 +10,7 @@ export const site = {
     'Studio de grafică și marketing digital din Galați. Branding, web și marketing validate cu date și neuromarketing — nu cu presupuneri. Condus de Andrei Panait, doctor în marketing.',
   founder: 'Andrei Panait',
   founderTitle: 'doctor în marketing', // TODO: confirmă „doctor" vs „doctorand"
+  founderSite: 'https://panaitandrei.ro', // identitatea academică (neuromarketing, cercetare)
   locale: 'ro_RO',
 
   contact: {

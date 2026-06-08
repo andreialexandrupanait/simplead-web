@@ -1,6 +1,7 @@
 ---
-/** Hero pagină detaliu serviciu (sp-hero) — crumb + titlu + acțiuni + foto. */
+/** Hero pagină detaliu serviciu — DARK (navy + glow albastru/turquoise + puncte). */
 import { site } from '@data/site';
+import Button from '@components/ui/Button.astro';
 
 interface Props {
   title: string;
@@ -8,40 +9,171 @@ interface Props {
   sub: string;
   image: string;
   imageAlt?: string;
-  /** Eticheta serviciului pentru breadcrumb (ultimul nod). */
   current: string;
 }
 const { title, titleAccent, sub, image, imageAlt = '', current } = Astro.props;
 const chev = '<path d="M9 6l6 6-6 6"/>';
 const phoneIcon =
   '<path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z"/>';
-const arrow = '<path d="M7 17L17 7M7 7h10v10"/>';
 ---
 
-<section class="sp-hero">
-  <div class="sp-hero__inner">
-    <div data-reveal>
+<section class="svc-hero">
+  <div class="site-container svc-hero__inner">
+    <div class="svc-hero__text" data-reveal>
       <div class="crumb">
         <a href="/">Acasă</a>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
         <a href="/servicii">Servicii</a>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
         <span class="cur">{current}</span>
       </div>
-      <h1>{title}<span class="g">{titleAccent}</span></h1>
-      <p class="sub">{sub}</p>
-      <div class="sp-hero__actions">
-        <div class="btn-cta">
-          <a href="/contact">Solicită ofertă
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" set:html={arrow} />
-          </a>
-        </div>
+      <h1 class="svc-hero__title">{title}<span class="accent">{titleAccent}</span></h1>
+      <p class="svc-hero__sub">{sub}</p>
+      <div class="svc-hero__actions">
+        <Button href="/contact" size="lg" withArrow>Solicită ofertă</Button>
         <a class="gphone" href={site.contact.phoneHref}>
           <span class="gic"><svg viewBox="0 0 24 24" fill="currentColor" set:html={phoneIcon} /></span>
           <span><small>Sună-ne acum</small><b>{site.contact.phone}</b></span>
         </a>
       </div>
     </div>
-    <div class="ph sp-hero__photo" data-reveal><img src={image} alt={imageAlt} /></div>
+    <div class="svc-hero__photo" data-reveal><img src={image} alt={imageAlt} loading="eager" /></div>
   </div>
 </section>
+
+<style>
+  .svc-hero {
+    position: relative;
+    background: #050a33;
+    color: #fff;
+    padding-top: var(--nav-h);
+    overflow: hidden;
+  }
+  .svc-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(46% 60% at 86% 10%, rgba(0, 119, 252, 0.26) 0%, transparent 60%),
+      radial-gradient(40% 60% at 4% 40%, rgba(0, 224, 198, 0.14) 0%, transparent 60%);
+  }
+  .svc-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+  }
+  .svc-hero__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 56px;
+    align-items: center;
+    padding-block: clamp(44px, 6vw, 80px);
+  }
+  .crumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86rem;
+    color: var(--muted-dark);
+    margin-bottom: 18px;
+  }
+  .crumb svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0.6;
+  }
+  .crumb a:hover {
+    color: var(--cyan);
+  }
+  .crumb .cur {
+    color: #fff;
+    font-weight: 600;
+  }
+  .svc-hero__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.9rem, 3.6vw, 3rem);
+    line-height: 1.07;
+    letter-spacing: -0.025em;
+    color: #fff;
+    text-wrap: balance;
+  }
+  .svc-hero__title .accent {
+    color: var(--cyan);
+  }
+  .svc-hero__sub {
+    margin-top: 18px;
+    max-width: 50ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--muted-dark);
+  }
+  .svc-hero__actions {
+    margin-top: 28px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .gphone {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .gic {
+    width: 46px;
+    height: 46px;
+    border-radius: var(--r-sm);
+    background: var(--signal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .gic svg {
+    width: 20px;
+    height: 20px;
+    color: var(--ink);
+  }
+  .gphone small {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted-dark);
+  }
+  .gphone b {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: #fff;
+  }
+  .svc-hero__photo {
+    position: relative;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: var(--sh-lg);
+    aspect-ratio: 4 / 3.2;
+  }
+  .svc-hero__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 900px) {
+    .svc-hero__inner {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+    .svc-hero__photo {
+      order: -1;
+    }
+  }
+</style>

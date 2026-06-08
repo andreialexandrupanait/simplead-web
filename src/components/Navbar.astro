@@ -2,14 +2,17 @@
 import Logo from '@components/ui/Logo.astro';
 import Button from '@components/ui/Button.astro';
 import MobileMenu from '@components/react/MobileMenu';
-import { mainNav } from '@data/nav';
+import { mainNav, servicesNav } from '@data/nav';
 import { useTranslations, resolveLocale } from '@i18n/index';
 
 interface Props {
+  /** Navbar-ul stă peste hero (fundal transparent până la scroll). */
   transparent?: boolean;
+  /** Hero-ul de dedesubt e dark → text/logo alb până la scroll. */
+  overDark?: boolean;
   activePath?: string;
 }
-const { transparent = false, activePath = Astro.url.pathname } = Astro.props;
+const { transparent = false, overDark = false, activePath = Astro.url.pathname } = Astro.props;
 const t = useTranslations(resolveLocale(Astro.currentLocale));
 
 const isActive = (href: string) =>
@@ -19,48 +22,64 @@ const isActive = (href: string) =>
 <header
   data-nav
   data-transparent={transparent ? 'true' : 'false'}
-  class:list={[
-    'z-50 flex h-[88px] items-center transition-all duration-300',
-    transparent ? 'fixed inset-x-0 top-0' : 'sticky top-0 border-b border-white/8 bg-[#050a33]/85 backdrop-blur-md',
-  ]}
+  class:list={['nav', transparent ? 'nav--over' : 'nav--solid', overDark && 'nav--dark']}
 >
-  <div class="site-container flex items-center gap-7">
-    <a class="flex-shrink-0" href="/" aria-label="Simplead — Acasă">
-      <Logo height={34} />
+  <div class="site-container nav__inner">
+    <a class="nav__logo" href="/" aria-label="Simplead — Acasă">
+      <Logo height={30} color="currentColor" />
     </a>
 
-    <nav class="mx-auto hidden items-center gap-1.5 md:flex" aria-label={t.nav.mainNav}>
+    <nav class="nav__links" aria-label={t.nav.mainNav}>
       {
-        mainNav.map((item) => (
-          <a
-            href={item.href}
-            class:list={[
-              'group relative mx-[11px] px-1 py-2.5 text-[15px] transition-colors',
-              isActive(item.href)
-                ? 'font-semibold text-white'
-                : 'font-medium text-[rgba(233,238,250,0.78)] hover:text-white',
-            ]}
-          >
-            {item.label}
-            <span
-              class:list={[
-                'absolute inset-x-0 bottom-0.5 h-0.5 origin-left bg-white transition-transform duration-300',
-                isActive(item.href) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100',
-              ]}
-            />
-          </a>
-        ))
+        mainNav.map((item) =>
+          item.href === '/servicii' ? (
+            <div class="nav__item nav__item--has-mega">
+              <a
+                href={item.href}
+                class:list={['nav__link', isActive(item.href) && 'is-active']}
+                aria-haspopup="true"
+              >
+                {item.label}
+                <svg class="nav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+              </a>
+              <div class="mega" role="menu">
+                <div class="mega__grid">
+                  {servicesNav.map((s) => (
+                    <a class="mega__card" href={s.href} role="menuitem">
+                      <span class="mega__title">{s.label}</span>
+                      <span class="mega__desc">{s.desc}</span>
+                    </a>
+                  ))}
+                </div>
+                <a class="mega__all" href="/servicii">
+                  Vezi toate serviciile
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                </a>
+              </div>
+            </div>
+          ) : (
+            <div class="nav__item">
+              <a
+                href={item.href}
+                class:list={['nav__link', isActive(item.href) && 'is-active']}
+              >
+                {item.label}
+              </a>
+            </div>
+          ),
+        )
       }
     </nav>
 
-    <div class="hidden flex-shrink-0 md:block">
+    <div class="nav__cta">
       <Button href="/contact" size="md">{t.nav.cta}</Button>
     </div>
 
-    <div class="ml-auto md:hidden">
+    <div class="nav__burger">
       <MobileMenu
         client:load
         items={mainNav}
+        services={servicesNav}
         ctaLabel={t.nav.cta}
         ctaHref="/contact"
         activePath={activePath}
@@ -70,27 +89,212 @@ const isActive = (href: string) =>
 </header>
 
 <style>
-  /* Navbar transparent (peste hero) devine solid la scroll — ca în export. */
-  header[data-transparent='true'].nav-solid {
-    height: 66px;
-    background: rgba(5, 10, 51, 0.78);
-    backdrop-filter: blur(16px) saturate(140%);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 14px 40px -22px rgba(0, 0, 0, 0.7);
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: var(--nav-h);
+    display: flex;
+    align-items: center;
+    transition:
+      height 0.3s var(--ease-snap),
+      background-color 0.3s var(--ease-snap),
+      box-shadow 0.3s var(--ease-snap),
+      border-color 0.3s var(--ease-snap);
   }
-  header[data-transparent='true'] :global(svg) {
-    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  .nav--solid {
+    background: rgba(255, 255, 255, 0.85);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: saturate(160%) blur(12px);
+    -webkit-backdrop-filter: saturate(160%) blur(12px);
   }
-  header[data-transparent='true'].nav-solid :global(a[aria-label] svg) {
-    height: 28px;
+  .nav--over {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+  }
+  /* Starea „scrolled" (adăugată din script pe varianta --over) */
+  .nav--over.nav-solid {
+    background: rgba(255, 255, 255, 0.88);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: saturate(160%) blur(12px);
+    -webkit-backdrop-filter: saturate(160%) blur(12px);
+    box-shadow: var(--sh-sm);
+  }
+
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .nav__logo {
+    flex-shrink: 0;
+    display: inline-flex;
+    color: var(--ink);
+  }
+
+  /* Peste hero dark: text/logo alb; la scroll (.nav-solid) revine la ink. */
+  .nav--over.nav--dark .nav__logo {
+    color: #fff;
+  }
+  .nav--over.nav--dark .nav__link {
+    color: rgba(255, 255, 255, 0.82);
+  }
+  .nav--over.nav--dark .nav__link:hover,
+  .nav--over.nav--dark .nav__link.is-active {
+    color: #fff;
+  }
+  .nav--over.nav--dark.nav-solid .nav__logo {
+    color: var(--ink);
+  }
+  .nav--over.nav--dark.nav-solid .nav__link {
+    color: var(--muted);
+  }
+  .nav--over.nav--dark.nav-solid .nav__link:hover,
+  .nav--over.nav--dark.nav-solid .nav__link.is-active {
+    color: var(--ink);
+  }
+
+  .nav__links {
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .nav__item {
+    position: relative;
+  }
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--muted);
+    border-radius: var(--r-xs);
+    transition: color 0.18s var(--ease-snap);
+  }
+  .nav__link:hover,
+  .nav__link.is-active {
+    color: var(--ink);
+  }
+  .nav__chev {
+    width: 15px;
+    height: 15px;
+    transition: transform 0.2s var(--ease-snap);
+  }
+  .nav__item--has-mega:hover .nav__chev {
+    transform: rotate(180deg);
+  }
+
+  /* ===== Mega-dropdown Servicii ===== */
+  .mega {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    width: min(680px, 90vw);
+    background: var(--canvas);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: var(--sh-lg);
+    padding: 14px;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.2s var(--ease-snap),
+      transform 0.2s var(--ease-snap);
+  }
+  .nav__item--has-mega:hover .mega,
+  .nav__item--has-mega:focus-within .mega {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+  .mega__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+  .mega__card {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 14px;
+    border-radius: var(--r-sm);
+    border: 1px solid transparent;
+    transition:
+      background-color 0.16s var(--ease-snap),
+      border-color 0.16s var(--ease-snap);
+  }
+  .mega__card:hover {
+    background: var(--canvas-soft);
+    border-color: var(--line);
+  }
+  .mega__title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--ink);
+  }
+  .mega__desc {
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+  .mega__all {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 10px 14px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--electric);
+  }
+  .mega__all svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s var(--ease-snap);
+  }
+  .mega__all:hover svg {
+    transform: translateX(3px);
+  }
+
+  .nav__cta {
+    flex-shrink: 0;
+  }
+  .nav__burger {
+    margin-left: auto;
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .nav__links,
+    .nav__cta {
+      display: none;
+    }
+    .nav__burger {
+      display: block;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav,
+    .mega,
+    .nav__chev,
+    .mega__all svg {
+      transition: none;
+    }
   }
 </style>
 
 <script>
+  // Navbar „over hero" devine solid la scroll.
   const nav = document.querySelector<HTMLElement>("header[data-nav][data-transparent='true']");
   if (nav) {
-    const onScroll = () => nav.classList.toggle('nav-solid', window.scrollY > 28);
+    const onScroll = () => nav.classList.toggle('nav-solid', window.scrollY > 24);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
   }

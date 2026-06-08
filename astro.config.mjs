@@ -29,6 +29,13 @@ export default defineConfig({
   // on-demand /api/contact. Se poate înlocui ulterior cu adaptorul platformei
   // de producție (Vercel/Netlify/Cloudflare).
   adapter: isDev ? undefined : node({ mode: 'standalone' }),
+  // Redirect-uri 301 de la slug-urile vechi de servicii (4) la noua structură (6).
+  redirects: {
+    '/servicii/marketing': '/servicii/consultanta-marketing',
+    '/servicii/web-design': '/servicii/ux-ui-web-design',
+    '/servicii/grafica': '/servicii/grafica-publicitara',
+    '/servicii/mentenanta': '/servicii/mentenanta-website',
+  },
   integrations: [react(), mdx(), sitemap()],
   vite: {
     plugins: [tailwindcss()],

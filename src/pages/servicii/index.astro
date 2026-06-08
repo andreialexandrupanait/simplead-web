@@ -2,11 +2,10 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import ServiceHubHero from '@components/sections/ServiceHubHero.astro';
 import ServiceHubCards from '@components/sections/ServiceHubCards.astro';
-import DifferentiatorSection from '@components/sections/DifferentiatorSection.astro';
-import StartSteps from '@components/sections/StartSteps.astro';
-import ProcessStepper from '@components/sections/ProcessStepper.astro';
-import ToolsTabs from '@components/sections/ToolsTabs.astro';
-import TestimonialsSection from '@components/sections/TestimonialsSection.astro';
+import Differentiator from '@components/home/Differentiator.astro';
+import ProcessTimeline from '@components/home/ProcessTimeline.astro';
+import ToolsSection from '@components/home/ToolsSection.astro';
+import Testimonials from '@components/home/Testimonials.astro';
 import FaqSection from '@components/sections/FaqSection.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
 import { servicesFaqs } from '@data/content';
@@ -16,6 +15,7 @@ import { servicesFaqs } from '@data/content';
   title="Servicii"
   description="Marketing, grafică, web și mentenanță — sub același acoperiș, cu un singur partener. Lucrăm pe obiective clare și validăm fiecare decizie cu date și neuromarketing."
   transparentNav={true}
+  navOverDark={true}
 >
   <ServiceHubHero
     eyebrow="Servicii"
@@ -24,11 +24,10 @@ import { servicesFaqs } from '@data/content';
     sub="Marketing, grafică, web și mentenanță — sub același acoperiș, cu un singur partener. Lucrăm pe obiective clare și validăm fiecare decizie cu date și neuromarketing, nu cu presupuneri. Tu te ocupi de afacere, noi de imaginea și promovarea ei."
   />
   <ServiceHubCards />
-  <DifferentiatorSection />
-  <StartSteps />
-  <ProcessStepper variant="tint" />
-  <ToolsTabs variant="light" eyebrow="Tehnologii & platforme" />
-  <TestimonialsSection />
+  <Differentiator />
+  <ProcessTimeline />
+  <ToolsSection />
+  <Testimonials />
   <FaqSection items={servicesFaqs} eyebrow="Întrebări frecvente" title="Ce vor să știe " titleAccent="clienții noștri" />
   <CtaSection href="/contact" />
 </BaseLayout>

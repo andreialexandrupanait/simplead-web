@@ -1,27 +1,16 @@
 ---
 import Button from '@components/ui/Button.astro';
-
-interface Props {
-  title?: string;
-  subtitle?: string;
-  href?: string;
-  cta?: string;
-}
-const {
-  title = 'Gata să-ți pui afacerea pe roți?',
-  subtitle = 'Hai să discutăm despre proiectul tău. Prima întâlnire e fără obligații.',
-  href = '/contact',
-  cta = 'Cere o ofertă',
-} = Astro.props;
 ---
 
 <section class="cta">
   <div class="site-container cta__inner" data-reveal>
-    <p class="cta__kicker">Hai să începem</p>
-    <h2 class="cta__title">{title}</h2>
-    <p class="cta__sub">{subtitle}</p>
+    <p class="kicker kicker--cyan">Hai să începem</p>
+    <h2 class="cta__title">Gata să arăți profesional și să vinzi mai mult?</h2>
+    <p class="cta__sub">
+      Spune-ne ce vrei să obții. Îți răspundem cu o propunere clară, pe obiective — nu cu un șablon.
+    </p>
     <div class="cta__actions">
-      <Button href={href} size="lg" withArrow>{cta}</Button>
+      <Button href="/contact" size="lg" withArrow>Cere o ofertă</Button>
       <Button href="/portofoliu" size="lg" variant="outline" onDark>Vezi portofoliu</Button>
     </div>
   </div>
@@ -32,7 +21,7 @@ const {
     position: relative;
     background: var(--ink);
     color: #fff;
-    padding-block: clamp(72px, 10vw, 128px);
+    padding-block: clamp(80px, 11vw, 140px);
     overflow: hidden;
   }
   .cta::before {
@@ -42,7 +31,7 @@ const {
     background-image:
       linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-    background-size: 64px 64px;
+    background-size: 72px 72px;
     -webkit-mask-image: radial-gradient(90% 120% at 50% 0%, #000, transparent 75%);
     mask-image: radial-gradient(90% 120% at 50% 0%, #000, transparent 75%);
     pointer-events: none;
@@ -53,31 +42,26 @@ const {
     margin-inline: auto;
     text-align: center;
   }
-  .cta__kicker {
-    font-family: var(--font-display);
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+  .kicker--cyan {
     color: var(--cyan);
   }
   .cta__title {
     margin-top: 16px;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(2rem, 4.2vw, 3.2rem);
+    font-size: clamp(2.1rem, 4.4vw, 3.4rem);
     line-height: 1.06;
     letter-spacing: -0.02em;
     text-wrap: balance;
   }
   .cta__sub {
-    margin-top: 18px;
+    margin-top: 20px;
     font-size: 1.0625rem;
     line-height: 1.6;
     color: var(--muted-dark);
   }
   .cta__actions {
-    margin-top: 32px;
+    margin-top: 34px;
     display: flex;
     gap: 14px;
     justify-content: center;

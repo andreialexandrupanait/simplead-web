@@ -2,64 +2,94 @@
 @import './sections.css';
 
 /* ============================================================
-   SIMPLEAD — DESIGN TOKENS
-   Sursa de adevăr: design/handoff/.../Acasă.html (:root)
+   SIMPLEAD — DESIGN TOKENS  ·  „Deep Tech, simplu"
+   Sistem vizual: culoare flat, zero gradienți decorativi, spațiu
+   alb generos, accente electrice punctuale + glow subtil.
    ============================================================ */
+
+/* Fonturi default site (Google Fonts): Space Grotesk (titluri) + Hanken Grotesk (text). */
+
 @theme {
-  /* Culori brand */
-  --color-blue: #0077fc;
-  --color-navy: #030d4a;
-  --color-yellow: #f5d93f;
-  --color-purple: #ecc0fe;
-  --color-graytext: #e1e6e8;
+  /* ===== Bază ===== */
+  --color-canvas: #ffffff; /* fundal principal light */
+  --color-canvas-soft: #f5f7fa; /* fundal secțiuni light, gri rece */
+  --color-ink: #030d4a; /* navy profund — text & secțiuni dark */
+  --color-ink-soft: #0a1b47; /* carduri pe fundal dark */
 
-  /* Fundal site */
-  --color-bg: #050a33;
+  /* ===== Accente ===== */
+  --color-electric: #0077fc; /* CTA principal, linkuri, accent #1 */
+  --color-cyan: #00e0c6; /* hover, glow, semnale AI, linii — rar */
+  --color-signal: #f5d93f; /* galben — pop foarte rar (energie/AI) */
 
-  /* Fonturi (Google Fonts, ca în export) */
-  --font-display: 'Space Grotesk', sans-serif;
-  --font-body: 'Hanken Grotesk', sans-serif;
+  /* ===== Neutre ===== */
+  --color-line: #e1e6e8; /* borduri & divizori 1px */
+  --color-muted: #5b6788; /* text secundar pe light */
+  --color-muted-dark: #9aa7c7; /* text secundar pe dark */
+  --color-lavender: #ecc0fe; /* DOAR tentă slabă de fundal */
 
-  /* Lățime maximă container */
+  /* ===== Alias-uri legacy (mapate la noua paletă) =====
+     Unele componente/Tailwind utilities încă folosesc numele vechi.
+     Le păstrăm până la migrarea fiecărei secțiuni. */
+  --color-blue: #0077fc; /* → electric */
+  --color-navy: #030d4a; /* → ink */
+  --color-yellow: #f5d93f; /* → signal */
+  --color-purple: #ecc0fe; /* → lavender */
+  --color-graytext: #e1e6e8; /* → line */
+  --color-bg: #ffffff; /* fundal site = canvas (era navy) */
+
+  /* ===== Fonturi default (Space Grotesk + Hanken Grotesk) ===== */
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', 'JetBrains Mono', Menlo, Consolas, monospace;
+
+  /* Lățime container + înălțime navbar */
   --container-site: 1280px;
-
-  /* Înălțime navbar */
-  --spacing-nav: 88px;
+  --spacing-nav: 80px;
 }
 
-/* Tokens ne-Tailwind (gradiente reutilizabile) */
+/* ============================================================
+   Tokens brute (consumate de sections.css ca var(--…))
+   ============================================================ */
 :root {
-  --grad: linear-gradient(118deg, #0077fc 0%, #6e5be0 58%, #b79bf2 100%);
-  --grad-text: linear-gradient(100deg, #4d9bff 0%, #9e8cf2 55%, #ecc0fe 100%);
-  --nav-h: 88px;
+  --nav-h: 80px;
   --maxw: 1280px;
 
-  /* Alias-uri de brand „bare" — `sections.css` (port fidel din Acasă.html)
-     le folosește ca var(--blue) etc. Tailwind @theme expune doar --color-*,
-     deci fără aceste alias-uri culorile din secțiuni rămân nedefinite. */
-  --blue: #0077fc;
-  --navy: #030d4a;
-  --yellow: #f5d93f;
-  --purple: #ecc0fe;
-  --gray: #e1e6e8;
+  /* Alias-uri „bare" de culoare → noua paletă flat */
+  --canvas: #ffffff;
+  --canvas-soft: #f5f7fa;
+  --blue: #0077fc; /* electric */
+  --electric: #0077fc;
+  --cyan: #00e0c6;
+  --signal: #f5d93f;
+  --navy: #030d4a; /* ink */
+  --ink: #030d4a;
+  --ink-soft: #0a1b47;
+  --yellow: #f5d93f; /* signal */
+  --purple: #ecc0fe; /* lavender */
+  --lavender: #ecc0fe;
+  --gray: #e1e6e8; /* line */
+  --line: #e1e6e8;
+  --muted: #5b6788; /* text secundar pe light */
+  --muted-dark: #9aa7c7; /* text secundar pe dark */
+  --bg: #ffffff;
 
-  /* Tema light (din noul design): text închis + borduri pe fundal alb/gri */
-  --ink: #0b1437;
-  --ink-soft: #57617d;
-  --line: #e7eaef;
+  /* Compat: vechile alias-uri de text light pointează acum la muted */
+  --text-ink: #030d4a;
+  --text-soft: #5b6788;
 
-  /* Fundal site (alias „bar" folosit de modulele de secțiune din export) */
-  --bg: #050a33;
+  /* Gradienți NEUTRALIZAȚI → culoare flat (zero gradienți decorativi).
+     Variabilele rămân definite ca să nu „dispară" textul/butoanele din
+     secțiunile încă nemigrate; ele degradează la electric flat. */
+  --grad: var(--electric);
+  --grad-text: var(--electric);
 
-  /* ===== Scale de design (sursa de adevăr, din noul export styles.css) =====
-     Consumate ca var(--…) de modulele CSS din sections.css. Nu sunt token-uri
-     Tailwind @theme — nu generează utilitare, doar variabile CSS brute. */
-  /* Radius */
+  /* ===== Scale de design ===== */
+  /* Radius — geometrie curată (8–12px) */
   --r-xs: 8px;
-  --r-sm: 12px;
-  --r-md: 16px;
-  --r-lg: 22px;
-  --r-xl: 28px;
+  --r-sm: 10px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
   --r-pill: 999px;
   /* Spațiere (bază 4px) */
   --sp-1: 4px;
@@ -71,24 +101,26 @@
   --sp-7: 48px;
   --sp-8: 64px;
   --sp-9: 96px;
-  --sp-section: 110px;
+  --sp-section: 120px;
   /* Borduri */
   --border: 1px solid var(--line);
   --border-strong: 1px solid #d7dde6;
-  /* Umbre (nuanță navy rece) */
-  --sh-sm: 0 4px 12px -4px rgba(3, 13, 74, 0.1);
-  --sh-md: 0 18px 40px -22px rgba(3, 13, 74, 0.3);
-  --sh-lg: 0 28px 56px -26px rgba(3, 13, 74, 0.36);
-  --sh-brand: 0 14px 30px -12px rgba(0, 119, 252, 0.55);
-  /* Easing */
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Umbre — discrete, nuanță navy rece */
+  --sh-sm: 0 4px 12px -4px rgba(3, 13, 74, 0.08);
+  --sh-md: 0 18px 40px -22px rgba(3, 13, 74, 0.18);
+  --sh-lg: 0 28px 56px -26px rgba(3, 13, 74, 0.22);
+  /* Glow — futurismul: box-shadow soft electric/cyan la 8–15% */
+  --glow-electric: 0 14px 34px -14px rgba(0, 119, 252, 0.45);
+  --glow-cyan: 0 14px 38px -12px rgba(0, 224, 198, 0.4);
+  --sh-brand: var(--glow-electric);
+  /* Inel focus accesibil */
+  --focus-ring: 0 0 0 2px #ffffff, 0 0 0 4px var(--cyan);
+  /* Easing — reveal la scroll (brief) */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snap: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Reset-uri de bază în @layer base: stau SUB @layer utilities în cascadă, ca
-   utilitarele Tailwind (padding/margin: px-*, py-*, mx-auto, mx-[11px]…) să
-   poată câștiga. Fără layer, `* { margin:0; padding:0 }` (nelayerat) ar
-   suprascrie toate utilitarele de spacing Tailwind v4 și ar strica
-   header-ul/butoanele. */
+/* Reset-uri de bază în @layer base (sub utilities în cascadă). */
 @layer base {
   * {
     margin: 0;
@@ -102,8 +134,8 @@
 
   body {
     font-family: var(--font-body);
-    color: #fff;
-    background: var(--color-bg);
+    color: var(--ink);
+    background: var(--canvas);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -115,6 +147,19 @@
 
   img {
     display: block;
+    max-width: 100%;
+  }
+
+  /* Focus vizibil, consistent (accesibilitate) */
+  :focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    border-radius: var(--r-xs);
+  }
+
+  ::selection {
+    background: var(--electric);
+    color: #fff;
   }
 }
 
@@ -122,7 +167,7 @@
    UTILITARE REUTILIZABILE
    ============================================================ */
 
-/* Container centrat, identic cu --maxw din design */
+/* Container centrat */
 .site-container {
   width: 100%;
   max-width: var(--maxw);
@@ -135,52 +180,60 @@
   }
 }
 
-/* Text cu gradient (titluri / accente) */
-.grad-text {
-  background: var(--grad-text);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+/* Micro-etichetă „tech" (kicker) — monospace, uppercase, accent */
+.kicker {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--electric);
 }
 
-/* Suprafață gradient (butoane, iconițe) */
-.grad-surface {
-  background: var(--grad);
-}
-
-/* Card de suprafață închisă (glass) reutilizat în secțiuni */
-.surface-card {
-  background: rgba(10, 17, 58, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  backdrop-filter: blur(8px);
-}
-
-/* Font de titlu */
+/* Font de titlu (Narrow) */
 .font-display {
   font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* ----- Compat gradienți: degradează la flat (fără text invizibil) ----- */
+.grad-text {
+  color: var(--electric);
+  -webkit-text-fill-color: currentColor;
+  background: none;
+}
+.grad-surface {
+  background: var(--electric);
+}
+/* Cardul „glass" devine card flat pe fundal dark (fără blur) */
+.surface-card {
+  background: var(--ink-soft);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--r-md);
+  backdrop-filter: none;
 }
 
 /* ============================================================
    PROSE — conținut Markdown (blog + portofoliu)
    ============================================================ */
 .prose-simplead {
-  font-size: 16px;
-  line-height: 1.8;
-  color: var(--ink-soft);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--muted);
 }
 .prose-simplead h2 {
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: 1.7rem;
   font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--ink);
-  margin: 2rem 0 0.75rem;
+  margin: 2.25rem 0 0.75rem;
 }
 .prose-simplead h3 {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--ink);
   margin: 1.5rem 0 0.5rem;
 }
@@ -201,12 +254,12 @@
   margin: 0.35rem 0;
 }
 .prose-simplead a {
-  color: var(--color-blue);
+  color: var(--electric);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 .prose-simplead blockquote {
-  border-left: 3px solid var(--color-blue);
+  border-left: 3px solid var(--electric);
   padding-left: 1.25rem;
   margin: 1.5rem 0;
   font-style: italic;
@@ -214,4 +267,5 @@
 }
 .prose-simplead strong {
   color: var(--ink);
+  font-weight: 700;
 }

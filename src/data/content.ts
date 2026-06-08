@@ -285,9 +285,9 @@ export interface HubStat {
   label: string;
 }
 export const svcHubStats: HubStat[] = [
-  { value: '120', em: '+', label: 'proiecte' },
-  { value: '60', em: '+', label: 'clienți' },
-  { value: '5', em: '+', label: 'ani' },
+  { value: 'zeci', em: '', label: 'proiecte' }, // TODO: nr. exact (confirmă Andrei)
+  { value: '10', em: '+', label: 'ani experiență' },
+  { value: 'Dr.', em: '', label: 'în marketing' },
 ];
 
 /** FAQ specific paginii hub /servicii (diferit de FAQ-ul de pe Acasă). */

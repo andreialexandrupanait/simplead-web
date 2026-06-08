@@ -1,16 +1,26 @@
 ---
-/** Antet de secțiune reutilizabil: eyebrow opțional + titlu + subtitlu. */
+/** Antet de secțiune: kicker monospace opțional + titlu + subtitlu. */
 interface Props {
   eyebrow?: string;
   title: string;
-  /** Partea din titlu evidențiată cu gradient (trebuie să apară în `title`). */
+  /** Partea din titlu evidențiată cu accent (trebuie să apară în `title`). */
   accent?: string;
   subtitle?: string;
   align?: 'left' | 'center';
+  /** Pe secțiuni dark (fundal --ink). */
+  onDark?: boolean;
   class?: string;
 }
 
-const { eyebrow, title, accent, subtitle, align = 'left', class: className = '' } = Astro.props;
+const {
+  eyebrow,
+  title,
+  accent,
+  subtitle,
+  align = 'left',
+  onDark = false,
+  class: className = '',
+} = Astro.props;
 
 function renderTitle() {
   if (accent && title.includes(accent)) {
@@ -22,35 +32,80 @@ function renderTitle() {
 const t = renderTitle();
 ---
 
-<div class:list={[align === 'center' ? 'mx-auto max-w-2xl text-center' : 'max-w-2xl', className]}>
+<div
+  class:list={[
+    'sh',
+    align === 'center' && 'sh--center',
+    onDark && 'sh--dark',
+    className,
+  ]}
+>
   {
     eyebrow && (
-      <div
-        class:list={[
-          'mb-4 flex items-center gap-4 text-[13px] font-semibold uppercase tracking-[0.16em] text-[rgba(233,238,250,0.82)]',
-          align === 'center' && 'justify-center',
-        ]}
-      >
+      <div class="sh__kicker">
         <span>{eyebrow}</span>
-        <span class="h-px w-16 bg-gradient-to-r from-white/55 to-transparent" />
       </div>
     )
   }
-  <h2
-    class="font-display text-[clamp(28px,3.2vw,42px)] font-bold leading-[1.1] tracking-[-0.025em] text-balance"
-  >
-    {t.before}{t.accent && <span class="grad-text">{t.accent}</span>}{t.after}
+  <h2 class="sh__title">
+    {t.before}{t.accent && <span class="sh__accent">{t.accent}</span>}{t.after}
   </h2>
-  {
-    subtitle && (
-      <p
-        class:list={[
-          'mt-5 text-[17px] leading-[1.6] text-[rgba(220,227,245,0.74)]',
-          align === 'center' && 'mx-auto',
-        ]}
-      >
-        {subtitle}
-      </p>
-    )
-  }
+  {subtitle && <p class="sh__sub">{subtitle}</p>}
 </div>
+
+<style>
+  .sh {
+    max-width: 40rem;
+  }
+  .sh--center {
+    margin-inline: auto;
+    text-align: center;
+  }
+  .sh__kicker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .sh--center .sh__kicker {
+    justify-content: center;
+  }
+  .sh__kicker span {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--electric);
+  }
+  .sh--dark .sh__kicker span {
+    color: var(--cyan);
+  }
+  .sh__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.9rem, 3.2vw, 2.85rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  .sh--dark .sh__title {
+    color: #fff;
+  }
+  .sh__accent {
+    color: var(--electric);
+  }
+  .sh--dark .sh__accent {
+    color: var(--cyan);
+  }
+  .sh__sub {
+    margin-top: 18px;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .sh--dark .sh__sub {
+    color: var(--muted-dark);
+  }
+</style>

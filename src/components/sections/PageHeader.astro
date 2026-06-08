@@ -1,5 +1,5 @@
 ---
-/** Antet de pagină interioară — pe fundalul dark cu gradient, sub navbar. */
+/** Antet de pagină interioară — hero DARK (navy + glow albastru/turquoise + puncte). */
 interface Crumb {
   label: string;
   href?: string;
@@ -9,7 +9,6 @@ interface Props {
   title: string;
   accent?: string;
   subtitle?: string;
-  /** Breadcrumb opțional (ultimul element, fără href, e marcat ca activ). */
   crumb?: Crumb[];
 }
 const { eyebrow, title, accent, subtitle, crumb } = Astro.props;
@@ -25,15 +24,15 @@ function splitTitle() {
 const t = splitTitle();
 ---
 
-<section class="page-header relative overflow-hidden pt-[var(--nav-h)]">
-  <div class="site-container py-16 md:py-24">
+<section class="page-header">
+  <div class="site-container page-header__inner">
     {
       crumb && crumb.length > 0 && (
         <div class="crumb">
           {crumb.map((c, i) => (
             <>
               {i > 0 && (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
               )}
               {c.href ? <a href={c.href}>{c.label}</a> : <span class="cur">{c.label}</span>}
             </>
@@ -41,42 +40,94 @@ const t = splitTitle();
         </div>
       )
     }
-    {
-      eyebrow && (
-        <div class="mb-4 flex items-center gap-4 text-[13px] font-semibold uppercase tracking-[0.16em] text-[rgba(233,238,250,0.82)]">
-          <span>{eyebrow}</span>
-          <span class="h-px w-16 bg-gradient-to-r from-white/55 to-transparent" />
-        </div>
-      )
-    }
-    <h1
-      class="max-w-3xl font-display text-[clamp(32px,4vw,52px)] font-bold leading-[1.08] tracking-[-0.025em] text-balance"
-    >
-      {t.before}{t.accent && <span class="grad-text">{t.accent}</span>}{t.after}
+    {eyebrow && <span class="page-header__kicker">{eyebrow}</span>}
+    <h1 class="page-header__title">
+      {t.before}{t.accent && <span class="accent">{t.accent}</span>}{t.after}
     </h1>
-    {
-      subtitle && (
-        <p class="mt-5 max-w-2xl text-[17px] leading-[1.6] text-[rgba(220,227,245,0.74)]">
-          {subtitle}
-        </p>
-      )
-    }
+    {subtitle && <p class="page-header__sub">{subtitle}</p>}
   </div>
 </section>
 
 <style>
   .page-header {
-    background:
-      radial-gradient(50% 60% at 80% 0%, rgba(0, 119, 252, 0.22) 0%, rgba(0, 119, 252, 0) 60%),
-      radial-gradient(40% 50% at 5% 30%, rgba(110, 91, 224, 0.18) 0%, rgba(110, 91, 224, 0) 60%),
-      var(--color-bg, #050a33);
+    position: relative;
+    background: #050a33;
+    color: #fff;
+    padding-top: var(--nav-h);
+    overflow: hidden;
   }
+  /* glow navy + albastru + turquoise (fără mov) */
+  .page-header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(50% 70% at 82% 0%, rgba(0, 119, 252, 0.26) 0%, transparent 60%),
+      radial-gradient(42% 60% at 6% 30%, rgba(0, 224, 198, 0.16) 0%, transparent 60%);
+  }
+  /* fundal cu puncte */
   .page-header::before {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
     background-size: 30px 30px;
     pointer-events: none;
+  }
+  .page-header__inner {
+    position: relative;
+    z-index: 1;
+    padding-block: clamp(52px, 7vw, 92px);
+  }
+  .crumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86rem;
+    color: var(--muted-dark);
+    margin-bottom: 18px;
+  }
+  .crumb svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0.6;
+  }
+  .crumb a:hover {
+    color: var(--cyan);
+  }
+  .crumb .cur {
+    color: #fff;
+    font-weight: 600;
+  }
+  .page-header__kicker {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 14px;
+  }
+  .page-header__title {
+    max-width: 18ch;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    line-height: 1.07;
+    letter-spacing: -0.025em;
+    color: #fff;
+    text-wrap: balance;
+  }
+  .page-header__title .accent {
+    color: var(--cyan);
+  }
+  .page-header__sub {
+    margin-top: 18px;
+    max-width: 60ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--muted-dark);
   }
 </style>

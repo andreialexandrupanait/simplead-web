@@ -105,9 +105,23 @@ docs/           Copy_site_Simplead.md
 
 ## 🎨 Design
 
-Sursa de adevăr a hero-ului e `design/handoff/simplead/project/Acasă.html` (export Claude Design),
-reprodus fidel. Tokens (culori, gradiente, fonturi) sunt în `src/styles/global.css`.
-Fonturi: **Space Grotesk** (titluri) + **Hanken Grotesk** (text), via Google Fonts.
+**Tokens** (culori, spațiere, raze, umbre, glow, easing) sunt în `src/styles/global.css`
+(`@theme` pentru utilitare Tailwind + `:root` pentru variabile brute folosite de `sections.css`).
+Modulele de secțiune: stiluri scoped în componente (`src/components/home/*`, `sections/*`) +
+`src/styles/sections.css` pentru paginile interioare.
+
+- **Fonturi:** **Space Grotesk** (titluri, 700) + **Hanken Grotesk** (text), via Google Fonts.
+- **Paletă:** navy `--ink #030D4A` (bază), albastru `--electric #0077FC` (butoane + linkuri
+  principale — *acțiune*), turquoise `--cyan #00E0C6` (**accentul-semnătură**: grafice, hover,
+  highlight-uri, kickere & accente pe secțiunile dark, focus ring), galben `--signal #F5D93F` (rar).
+  Regulă: `--cyan`/`--signal` nu se folosesc ca text pe alb (contrast). Zero gradienți decorativi
+  (excepție: glow-urile radiale subtile de pe hero-urile dark).
+- **Ritm:** homepage = hero light + mesh; paginile interioare = hero **dark gradient** (prop
+  `navOverDark` pe `BaseLayout` face navbar-ul alb peste ele). Butoane oblice (`ui/Button.astro`).
+- **Servicii:** 6 pagini (`src/data/services.ts`) + nav (`src/data/nav.ts`); homepage afișează doar
+  4 featured — vezi lista `FEATURED` din `src/components/sections/ServicesSection.astro`.
+- **SEO:** JSON-LD (Organization + LocalBusiness + WebSite) în `BaseLayout.astro`; paginile de
+  serviciu/blog injectează `Service` / `BlogPosting` prin prop-ul `schema`.
 
 ---
 

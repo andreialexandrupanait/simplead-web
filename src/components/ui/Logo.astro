@@ -1,15 +1,22 @@
 ---
 /**
- * Logo Simplead — wordmark orizontal alb (inline SVG din assets de brand).
- * `currentColor` nu se aplică (paths au fill alb fix), dar SVG-ul scalează curat.
+ * Logo Simplead — wordmark orizontal (inline SVG din assets de brand).
+ * `color` controlează fill-ul: ink (navy) pe fundal light, #fff pe fundal dark.
  */
 interface Props {
   class?: string;
   /** Înălțime în px (lățimea se calculează automat). */
   height?: number;
+  /** Culoarea wordmark-ului. Default: navy (pentru navbar light). */
+  color?: string;
   title?: string;
 }
-const { class: className = '', height = 34, title = 'Simplead' } = Astro.props;
+const {
+  class: className = '',
+  height = 32,
+  color = 'var(--ink)',
+  title = 'Simplead',
+} = Astro.props;
 ---
 
 <svg
@@ -21,7 +28,7 @@ const { class: className = '', height = 34, title = 'Simplead' } = Astro.props;
   class:list={['w-auto', className]}
   style={`height:${height}px`}
 >
-  <g fill="#fff">
+  <g fill={color}>
     <path
       d="m249.21,521.466l24.752-4.601c1.587,13.487,12.693,22.372,27.766,22.372,13.486,0,21.895-6.188,21.895-14.914,0-6.981-5.553-11.107-18.881-13.803l-15.708-3.015c-24.91-4.76-36.017-14.756-36.017-32.526,0-22.213,18.881-36.493,45.06-36.493,23.641,0,41.887,12.852,44.743,32.526l-24.275,5.395c-1.428-10.948-9.837-17.929-20.785-17.929-11.106,0-18.088,5.871-18.088,13.963,0,6.822,5.077,10.63,16.818,12.851l16.025,3.015c25.703,4.284,37.444,14.755,37.444,33.16,0,23.641-20.309,37.921-49.344,37.921-28.083,0-48.868-13.486-51.407-37.921Z"
     ></path>
@@ -45,7 +52,7 @@ const { class: className = '', height = 34, title = 'Simplead' } = Astro.props;
       d="m894.954,514.802c0-25.862,14.915-42.997,36.175-42.997,12.534,0,22.372,6.188,28.084,17.929h.159v-52.042h24.276v117.728h-20.309l-3.649-15.549h-.159c-5.712,11.741-15.708,17.929-28.401,17.929-21.261,0-36.175-17.294-36.175-42.998Zm65.369,0c0-12.852-8.568-22.53-20.626-22.53-11.899,0-20.626,9.678-20.626,22.53s8.727,22.53,20.626,22.53c12.059,0,20.626-9.837,20.626-22.53Z"
     ></path>
   </g>
-  <g fill="#fff">
+  <g fill={color}>
     <polygon points="201.669 504.641 201.669 411.26 157.452 411.26 123.126 475.863 201.669 504.641"
     ></polygon>
     <path

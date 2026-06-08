@@ -7,6 +7,18 @@
 import { services } from '@data/services';
 const arrow = '<path d="M7 17L17 7M7 7h10v10"/>';
 const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
+
+// Pe homepage afișăm cele 4 servicii principale (ca în vechiul design).
+// Hub-ul /servicii listează toate cele 6 (ServiceHubCards).
+const FEATURED = [
+  'consultanta-marketing',
+  'grafica-publicitara',
+  'ux-ui-web-design',
+  'mentenanta-website',
+];
+const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).filter(
+  (s): s is (typeof services)[number] => Boolean(s),
+);
 ---
 
 <section class="section section--light" id="servicii">
@@ -31,7 +43,7 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
 
     <div class="svc2-tiles" data-reveal-stagger>
       {
-        services.map((s, i) => (
+        featured.map((s, i) => (
           <a class:list={['svc2-tile', i === 0 && 'hot']} href={`/servicii/${s.slug}`}>
             <span class="svc2-media"><img src={s.image} alt={s.title} loading="lazy" /></span>
             <span class="svc2-lbl">{s.title}</span>

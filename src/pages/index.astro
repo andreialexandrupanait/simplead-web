@@ -1,32 +1,26 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import Hero from '@components/sections/Hero.astro';
+import HomeHero from '@components/home/HomeHero.astro';
 import ServicesSection from '@components/sections/ServicesSection.astro';
-import DifferentiatorSection from '@components/sections/DifferentiatorSection.astro';
-import ProcessStepper from '@components/sections/ProcessStepper.astro';
-import ToolsTabs from '@components/sections/ToolsTabs.astro';
-import PortfolioSection from '@components/sections/PortfolioSection.astro';
-import AboutSection from '@components/sections/AboutSection.astro';
-import TestimonialsSection from '@components/sections/TestimonialsSection.astro';
-import ClientsSection from '@components/sections/ClientsSection.astro';
-import BlogSection from '@components/sections/BlogSection.astro';
-import FaqSection from '@components/sections/FaqSection.astro';
-import ContactSection from '@components/sections/ContactSection.astro';
-import CtaSection from '@components/sections/CtaSection.astro';
+import Differentiator from '@components/home/Differentiator.astro';
+import ProofSection from '@components/home/ProofSection.astro';
+import ClientsStrip from '@components/home/ClientsStrip.astro';
+import ProcessTimeline from '@components/home/ProcessTimeline.astro';
+import ToolsSection from '@components/home/ToolsSection.astro';
+import AiSection from '@components/home/AiSection.astro';
+import Testimonials from '@components/home/Testimonials.astro';
+import CtaFinal from '@components/home/CtaFinal.astro';
 ---
 
 <BaseLayout transparentNav={true}>
-  <Hero />
+  <HomeHero />
   <ServicesSection />
-  <DifferentiatorSection />
-  <ProcessStepper />
-  <ToolsTabs />
-  <PortfolioSection />
-  <AboutSection />
-  <TestimonialsSection />
-  <ClientsSection />
-  <BlogSection />
-  <FaqSection />
-  <ContactSection />
-  <CtaSection />
+  <Differentiator />
+  <ProofSection />
+  <ClientsStrip />
+  <ProcessTimeline />
+  <ToolsSection />
+  <AiSection />
+  <Testimonials />
+  <CtaFinal />
 </BaseLayout>

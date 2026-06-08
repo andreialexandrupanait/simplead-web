@@ -60,19 +60,21 @@
   }
   .section--navy .sec-sub { color: rgba(225,230,245,0.72); }
 
-  /* striped image placeholders */
+  /* image placeholders — tilă soft brandată (titlul ca fallback) */
   .ph {
     position: relative; overflow: hidden;
     background:
-      repeating-linear-gradient(45deg, #eef1f6 0, #eef1f6 11px, #e4e9f1 11px, #e4e9f1 22px);
+      radial-gradient(120% 120% at 80% 0%, rgba(0,224,198,0.10), transparent 55%),
+      var(--canvas-soft);
     display: flex; align-items: center; justify-content: center;
-    color: #8a93a8; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px;
-    letter-spacing: 0.04em; text-align: center; padding: 12px;
+    color: var(--muted); font-family: var(--font-display); font-weight: 600; font-size: 15px;
+    letter-spacing: -0.01em; text-align: center; padding: 18px;
   }
   .ph--dark {
     background:
-      repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0, rgba(255,255,255,0.05) 11px, rgba(255,255,255,0.02) 11px, rgba(255,255,255,0.02) 22px);
-    color: rgba(255,255,255,0.5);
+      radial-gradient(120% 120% at 80% 0%, rgba(0,224,198,0.14), transparent 55%),
+      var(--ink-soft);
+    color: rgba(255,255,255,0.6);
   }
   /* drop a real photo into any .ph â€” the img covers the striped fill + label */
   .ph > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit; z-index: 1; }
@@ -347,6 +349,11 @@
   .footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.4fr; gap: 40px; padding: 80px 40px 56px; max-width: var(--maxw); margin: 0 auto; }
   .footer .brand img { height: 30px; }
   .footer-about { margin-top: 20px; font-size: 14.5px; line-height: 1.6; max-width: 32ch; }
+  .footer-founder { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; padding: 10px 14px; border: 1px solid rgba(255,255,255,0.14); border-radius: var(--r-sm); transition: border-color .18s ease, background .18s ease; }
+  .footer-founder:hover { border-color: rgba(0,224,198,0.5); background: rgba(255,255,255,0.04); }
+  .footer-founder span { font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(225,230,245,0.55); }
+  .footer-founder b { font-size: 14px; color: #fff; font-weight: 600; }
+  .footer-founder svg { width: 14px; height: 14px; color: var(--cyan); }
   .footer-col h5 { color: #fff; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; margin: 0 0 18px; }
   .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
   .footer-col a { font-size: 14.5px; transition: color .16s ease; }

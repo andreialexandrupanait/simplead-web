@@ -1,6 +1,7 @@
 ---
-/** Hero hub /servicii (svchero) — titlu + panel „De ce Simplead?" + stats. */
+/** Hero hub /servicii — DARK: titlu + panel „De ce Simplead?" + stats. */
 import { whyPanel, svcHubStats } from '@data/content';
+import Button from '@components/ui/Button.astro';
 
 interface Props {
   eyebrow?: string;
@@ -10,35 +11,31 @@ interface Props {
 }
 const { eyebrow = 'Servicii', title, titleAccent, sub } = Astro.props;
 const chev = '<path d="M9 6l6 6-6 6"/>';
-const arrow = '<path d="M7 17L17 7M7 7h10v10"/>';
-const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
 const check = '<path d="M20 6L9 17l-5-5"/>';
+const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
 ---
 
-<section class="page-hero svchero">
-  <div class="svchero__inner page-hero__inner">
-    <div data-reveal>
+<section class="svchub-hero">
+  <div class="site-container svchub-hero__inner">
+    <div class="svchub-hero__text" data-reveal>
       <div class="crumb">
         <a href="/">Acasă</a>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
         <span class="cur">Servicii</span>
       </div>
-      <span class="eyebrow">{eyebrow}</span>
-      <h1>{title}<span class="g">{titleAccent}</span></h1>
-      <p class="sub">{sub}</p>
-      <div class="svchero__actions">
-        <div class="btn-cta">
-          <a href="/contact">Cere o ofertă
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" set:html={arrow} />
-          </a>
-        </div>
-        <a class="link-more" href="#servicii" style="color:#fff;">Vezi serviciile
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={arrowR} />
+      <span class="svchub-hero__kicker">{eyebrow}</span>
+      <h1 class="svchub-hero__title">{title}<span class="accent">{titleAccent}</span></h1>
+      <p class="svchub-hero__sub">{sub}</p>
+      <div class="svchub-hero__actions">
+        <Button href="/contact" size="lg" withArrow>Cere o ofertă</Button>
+        <a class="link-more" href="#servicii">Vezi serviciile
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={arrowR} />
         </a>
       </div>
     </div>
-    <aside class="svchero__panel" data-reveal>
-      <h3><span class="d"></span>De ce Simplead?</h3>
+
+    <aside class="svchub-hero__panel" data-reveal>
+      <h3><span class="dot"></span>De ce Simplead?</h3>
       <ul>
         {
           whyPanel.map((item) => (
@@ -49,7 +46,7 @@ const check = '<path d="M20 6L9 17l-5-5"/>';
           ))
         }
       </ul>
-      <div class="svchero__stats">
+      <div class="svchub-hero__stats">
         {
           svcHubStats.map((s) => (
             <div class="s">
@@ -62,3 +59,187 @@ const check = '<path d="M20 6L9 17l-5-5"/>';
     </aside>
   </div>
 </section>
+
+<style>
+  .svchub-hero {
+    position: relative;
+    background: #050a33;
+    color: #fff;
+    padding-top: var(--nav-h);
+    overflow: hidden;
+  }
+  .svchub-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(48% 60% at 88% 8%, rgba(0, 119, 252, 0.26) 0%, transparent 60%),
+      radial-gradient(40% 60% at 2% 40%, rgba(0, 224, 198, 0.14) 0%, transparent 60%);
+  }
+  .svchub-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+  }
+  .svchub-hero__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 56px;
+    align-items: center;
+    padding-block: clamp(44px, 6vw, 80px);
+  }
+  .crumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86rem;
+    color: var(--muted-dark);
+    margin-bottom: 16px;
+  }
+  .crumb svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0.6;
+  }
+  .crumb a:hover {
+    color: var(--cyan);
+  }
+  .crumb .cur {
+    color: #fff;
+    font-weight: 600;
+  }
+  .svchub-hero__kicker {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 12px;
+  }
+  .svchub-hero__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.9rem, 3.6vw, 3rem);
+    line-height: 1.07;
+    letter-spacing: -0.025em;
+    color: #fff;
+    text-wrap: balance;
+  }
+  .svchub-hero__title .accent {
+    color: var(--cyan);
+  }
+  .svchub-hero__sub {
+    margin-top: 18px;
+    max-width: 52ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--muted-dark);
+  }
+  .svchub-hero__actions {
+    margin-top: 28px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .link-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--cyan);
+  }
+  .link-more svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  /* Panel „De ce Simplead?" — card dark */
+  .svchub-hero__panel {
+    background: var(--ink-soft);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--r-lg);
+    padding: 28px;
+  }
+  .svchub-hero__panel h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: #fff;
+    margin-bottom: 18px;
+  }
+  .svchub-hero__panel h3 .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 0 4px rgba(0, 224, 198, 0.2);
+  }
+  .svchub-hero__panel ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .svchub-hero__panel li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .svchub-hero__panel li svg {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    color: var(--cyan);
+    margin-top: 2px;
+  }
+  .svchub-hero__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .svchub-hero__stats .s {
+    text-align: center;
+  }
+  .svchub-hero__stats b {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.02em;
+  }
+  .svchub-hero__stats em {
+    font-style: normal;
+    color: var(--cyan);
+  }
+  .svchub-hero__stats span {
+    font-size: 0.82rem;
+    color: var(--muted-dark);
+  }
+
+  @media (max-width: 900px) {
+    .svchub-hero__inner {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+  }
+</style>

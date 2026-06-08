@@ -1,15 +1,15 @@
 /**
- * Cele 4 direcții de servicii. `icon` mapează la un set de iconițe SVG inline
- * (vezi src/components/ui/ServiceIcon.astro). Conținut din Copy_site_Simplead.md
- * + noul export (Servicii-Web-Design.html pentru template-ul bogat de serviciu).
+ * Cele 6 servicii (piloni). `icon` mapează la set-ul SVG din
+ * src/components/ui/ServiceIcon.astro. Slug-urile corespund cu
+ * src/data/nav.ts (servicesNav).
  *
- * Web Design este complet (conținut real din export). Marketing / Grafică /
- * Mentenanță au conținut funcțional derivat din `includes`/`description` —
- * marcat `TODO: confirmă conținut` acolo unde trebuie validat de client.
+ * Conținut real, derivat din Copy_site_Simplead.md, pentru: mentenanță,
+ * ux/ui, grafică, social media, consultanță. AI pentru business e nou —
+ * marcat [COPY] acolo unde Andrei trebuie să confirme.
  */
 import type { Faq } from './content';
 
-export type ServiceIcon = 'marketing' | 'grafica' | 'web' | 'mentenanta';
+export type ServiceIcon = 'marketing' | 'grafica' | 'web' | 'mentenanta' | 'social' | 'ai';
 
 /** O capabilitate (card) pe pagina de detaliu serviciu. `icon` = markup SVG intern. */
 export interface ServiceCapability {
@@ -28,16 +28,13 @@ export interface ServiceProcessStep {
 
 /** Caz / dovadă socială pe pagina de detaliu. */
 export interface ServiceCaseStudy {
-  /** Cifra mare (text simplu, fără accent). */
   statBig: string;
-  /** Partea cu accent gradient din cifra mare. */
   statBigAccent: string;
   statCap: string;
   quote: string;
   body: string;
   client: string;
   clientNote: string;
-  /** Logo „word" scurt (ex: „UGAL"). */
   clientLogo: string;
 }
 
@@ -45,7 +42,7 @@ export interface Service {
   slug: string;
   icon: ServiceIcon;
   title: string;
-  /** Sumar scurt (cardul de pe Acasă). */
+  /** Sumar scurt (cardul de pe Acasă / hub). */
   summary: string;
   /** Titlu/claim pe pagina dedicată. */
   claim: string;
@@ -60,21 +57,15 @@ export interface Service {
   /** Titlul H1 pe pagina de detaliu (partea simplă + partea cu accent). */
   heroTitle: string;
   heroTitleAccent: string;
-  /** Subtitlul hero pe pagina de detaliu. */
   heroSub: string;
-  /** Capabilități (carduri). */
   capabilities: ServiceCapability[];
-  /** Antet pentru secțiunea de capabilități. */
   capHead: { eyebrow: string; title: string; titleAccent: string; sub: string };
-  /** Pași de proces; dacă lipsește, pagina folosește procesul generic. */
   process?: ServiceProcessStep[];
-  /** Caz / dovadă socială (opțional). */
   caseStudy?: ServiceCaseStudy;
-  /** Întrebări frecvente specifice serviciului. */
   faqs: Faq[];
 }
 
-// Iconițe SVG (inner markup) pentru capabilități, reutilizate mai jos.
+// Iconițe SVG (inner markup) pentru capabilități.
 const ICON = {
   layout: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',
   globe: '<circle cx="12" cy="12" r="9"/><path d="M4 9h16M4 15h16M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
@@ -88,223 +79,127 @@ const ICON = {
   refresh: '<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
   shield: '<path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
   support: '<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M18 19a2 2 0 0 0 2-2v-3h-3a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2zM6 19a2 2 0 0 1-2-2v-3h3a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2z"/>',
+  brain: '<path d="M9 3a3 3 0 0 0-3 3 3 3 0 0 0-1 5.8V15a3 3 0 0 0 4 2.8A3 3 0 0 0 12 19a3 3 0 0 0 3-1.2 3 3 0 0 0 4-2.8v-3.2A3 3 0 0 0 18 6a3 3 0 0 0-3-3 3 3 0 0 0-3 1.5A3 3 0 0 0 9 3z"/>',
+  cog: '<circle cx="12" cy="12" r="3.2"/><path d="M19.4 13a7.8 7.8 0 0 0 0-2l1.6-1.3-1.6-2.8-2 .6a7.6 7.6 0 0 0-1.7-1l-.3-2H10.6l-.3 2a7.6 7.6 0 0 0-1.7 1l-2-.6L5 9.7 6.6 11a7.8 7.8 0 0 0 0 2L5 14.3l1.6 2.8 2-.6a7.6 7.6 0 0 0 1.7 1l.3 2h2.8l.3-2a7.6 7.6 0 0 0 1.7-1l2 .6 1.6-2.8L19.4 13z"/>',
+  spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18"/>',
 } as const;
 
 export const services: Service[] = [
+  // ============================ 1. MENTENANȚĂ WEBSITE ============================
   {
-    slug: 'marketing',
-    icon: 'marketing',
-    title: 'Marketing',
+    slug: 'mentenanta-website',
+    icon: 'mentenanta',
+    title: 'Mentenanță website',
     summary:
-      'Strategie, social media și campanii care aduc clienți, nu doar aprecieri. Construite pe date și neuromarketing.',
-    claim: 'Marketing digital care aduce clienți, nu doar aprecieri.',
+      'Tu te ocupi de afacere, noi de partea tehnică — actualizări, securitate și suport cu AI.',
+    claim: 'Tu te ocupi de afacere, noi de partea tehnică.',
     description:
-      'Construim și executăm strategii pe obiective clare, măsurabile. Combinăm creativitatea cu datele și neuromarketingul, ca bugetul tău să meargă acolo unde contează.',
+      'Site-ul tău rămâne rapid, sigur și actualizat, fără bătăi de cap. Monitorizăm, actualizăm și optimizăm — tot mai mult cu ajutorul AI — ca tu să te concentrezi pe ce contează.',
     includes: [
-      'Strategie de marketing și de brand',
-      'Administrare social media (Facebook, Instagram, TikTok, YouTube)',
-      'Campanii plătite (Meta Ads, Google Ads)',
-      'Conținut și copywriting',
-      'Analiză, raportare și optimizare (Analytics, tracking conversii)',
-      'Consultanță de marketing, inclusiv neuromarketing',
+      'Actualizări și backup-uri regulate',
+      'Securitate și monitorizare uptime',
+      'Mici modificări și suport prioritar',
+      'Optimizare și mentenanță asistată de AI',
+      'Rapoarte de performanță',
     ],
-    tags: ['Strategie', 'Social Media', 'Meta & Google Ads', 'Analytics'],
+    tags: ['Actualizări', 'Securitate', 'Backup', 'Suport cu AI'],
     image:
-      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=900&q=78&auto=format&fit=crop',
-    heroTitle: 'Marketing digital care aduce ',
-    heroTitleAccent: 'clienți, nu doar aprecieri',
+      'https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&q=78&auto=format&fit=crop',
+    heroTitle: 'Tu te ocupi de afacere, ',
+    heroTitleAccent: 'noi de partea tehnică',
     heroSub:
-      'Strategie, social media și campanii plătite construite pe obiective clare și măsurabile. Combinăm creativitatea cu datele și neuromarketingul, ca fiecare leu din buget să meargă acolo unde contează.',
+      'Site-ul tău rămâne rapid, sigur și actualizat, fără bătăi de cap. Ne ocupăm de actualizări, securitate, backup-uri și suport — tot mai mult cu ajutorul AI.',
     capHead: {
       eyebrow: 'Ce oferim',
-      title: 'De la strategie la ',
-      titleAccent: 'rezultate măsurabile',
-      sub: 'Trei zone de lucru care, împreună, transformă atenția în clienți reali.',
+      title: 'Liniște tehnică, ',
+      titleAccent: 'fără bătăi de cap',
+      sub: 'Trei zone de lucru care, împreună, îți țin site-ul rapid, sigur și mereu la zi.',
     },
     capabilities: [
       {
-        title: 'Strategie & Social Media',
-        icon: ICON.megaphone,
-        desc: 'Un plan clar pe obiective și o prezență coerentă pe canalele unde se află publicul tău.',
+        title: 'Actualizări & Backup',
+        icon: ICON.refresh,
+        desc: 'Site-ul tău rămâne mereu la zi, cu copii de siguranță regulate — fără surprize.',
         items: [
-          'Strategie de marketing și de brand',
-          'Administrare social media',
-          'Calendar editorial & conținut',
-          'Copywriting orientat pe acțiune',
+          'Actualizări platformă & pluginuri',
+          'Backup-uri regulate',
+          'Restaurare rapidă la nevoie',
+          'Verificări periodice',
         ],
       },
       {
-        title: 'Campanii plătite',
-        icon: ICON.target,
-        desc: 'Reclame pe Meta și Google gândite pe conversii, nu pe afișări — cu buget controlat.',
+        title: 'Securitate & Monitorizare',
+        icon: ICON.shield,
+        desc: 'Monitorizăm site-ul și îl protejăm, ca să rămână sigur și disponibil.',
         items: [
-          'Meta Ads (Facebook & Instagram)',
-          'Google Ads (Search & Display)',
-          'TikTok Ads',
-          'Optimizare buget & licitare',
+          'Monitorizare uptime',
+          'Protecție & întărire securitate',
+          'Scanare amenințări',
+          'Optimizare viteză continuă',
         ],
       },
       {
-        title: 'Analiză & Neuromarketing',
-        icon: ICON.chart,
-        desc: 'Măsurăm ce funcționează și ajustăm în timp real — decizii bazate pe date, nu pe presupuneri.',
+        title: 'Suport & Mentenanță cu AI',
+        icon: ICON.support,
+        desc: 'Mici modificări, suport prioritar și optimizări asistate de AI, plus rapoarte clare.',
         items: [
-          'Tracking conversii & evenimente',
-          'Rapoarte clare, pe înțelesul tău',
-          'Heatmaps & atenție vizuală',
-          'Optimizare continuă',
+          'Mici modificări de conținut',
+          'Suport prioritar',
+          'Optimizări asistate de AI',
+          'Rapoarte de performanță',
         ],
       },
     ],
     caseStudy: {
-      statBig: 'al doilea',
-      statBigAccent: 'proiect',
-      statCap: 'Clienți care revin pentru o nouă colaborare cu Simplead.',
-      quote: '„Profesionalism, fairplay, pricepere, asumare."',
-      body: 'Cuvinte ce definesc relația noastră cu Simplead. Suntem la al doilea proiect împreună, datorită implicării active și relaționării impecabile.',
-      client: 'Ștefan Chelmu',
-      clientNote: 'Blitzstudio',
-      clientLogo: 'BS',
+      statBig: 'Simply',
+      statBigAccent: 'professional',
+      statCap: 'Clienți care ne încredințează partea tehnică, pe termen lung.',
+      quote: '„Simply professional. Trustworthy, honest and creative."',
+      body: 'O colaborare bazată pe încredere, în care partea tehnică nu mai e o grijă. Ne ocupăm de tot ce ține de funcționarea site-ului, ca afacerea să meargă mai departe fără opriri.',
+      client: 'Bogdan Drăgan',
+      clientNote: 'FEAA Galați',
+      clientLogo: 'FE',
     },
     faqs: [
       {
-        q: 'Cum stabiliți strategia de marketing?',
+        q: 'Ce include un abonament de mentenanță?',
         body: [
-          'Pornim de la obiectivele tale de business și de la public, nu de la „ce e la modă". Analizăm ce ai deja, concurența și canalele potrivite, apoi construim un plan pe obiective măsurabile, cu buget și calendar clare.',
+          'Actualizări de platformă și pluginuri, backup-uri regulate, monitorizare de securitate și uptime, plus mici modificări și suport prioritar. La final primești și un raport clar.',
         ],
       },
       {
-        q: 'Pe ce canale faceți campanii plătite?',
+        q: 'Cum folosiți AI în mentenanță?',
         body: [
-          'În principal Meta (Facebook & Instagram) și Google Ads, iar la nevoie TikTok Ads. Alegem canalul în funcție de unde se află publicul tău și de obiectiv — vânzări, lead-uri sau notorietate.',
+          'Folosim AI pentru monitorizare, detectarea timpurie a problemelor și optimizări repetitive — ca să intervenim mai repede și să prevenim, nu doar să reparăm. Deciziile importante rămân la oameni.',
         ],
       },
       {
-        q: 'Ce înseamnă „bazat pe date și neuromarketing"?',
+        q: 'Faceți mentenanță și pentru site-uri create de altcineva?',
         body: [
-          'Validăm deciziile cu instrumente de analiză a atenției vizuale și cu date reale din Analytics și tracking de conversii — înainte și după lansare. Așa cheltui bugetul acolo unde chiar aduce rezultate.',
+          'Da. Analizăm întâi site-ul actual, identificăm riscurile și apoi îți propunem un plan de mentenanță potrivit.',
         ],
       },
       {
-        q: 'Cât costă o campanie de marketing?',
+        q: 'Ce se întâmplă dacă site-ul cade?',
         body: [
-          'Depinde de obiective și de canalele alese — de aceea pornim mereu de la o discuție și o ofertă personalizată. Spune-ne ce vrei să obții și îți facem o propunere cu buget pe obiective.',
+          'Monitorizăm disponibilitatea și intervenim. Cu backup-urile regulate putem restaura rapid site-ul la o versiune funcțională.',
         ],
       },
     ],
   },
+
+  // ============================ 2. UX/UI & WEB DESIGN ============================
   {
-    slug: 'grafica',
-    icon: 'grafica',
-    title: 'Grafică',
-    summary:
-      'Identitate vizuală, materiale de promovare și foto-video care te fac memorabil și coerent peste tot.',
-    claim: 'Imagine coerentă, care te face memorabil.',
-    description:
-      'De la logo și identitate vizuală completă, până la materiale de promovare și conținut foto-video. Totul gândit simplu, dar cu impact — și optimizat vizual cu neuromarketing.',
-    includes: [
-      'Identitate vizuală & branding (logo, brand guide)',
-      'Grafică publicitară (print, outdoor, social media)',
-      'Materiale de prezentare (broșuri, cărți de vizită, prezentări)',
-      'Foto & video (fotograf cu peste 10 ani experiență)',
-      'Design validat cu heatmaps și ierarhie vizuală',
-    ],
-    tags: ['Branding', 'Print', 'Social Media', 'Foto-Video'],
-    image:
-      'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=900&q=78&auto=format&fit=crop',
-    heroTitle: 'Imagine coerentă, ',
-    heroTitleAccent: 'care te face memorabil',
-    heroSub:
-      'De la logo și identitate vizuală completă, până la materiale de promovare și conținut foto-video. Totul gândit simplu, dar cu impact — și validat vizual cu neuromarketing.',
-    capHead: {
-      eyebrow: 'Ce oferim',
-      title: 'De la identitate la ',
-      titleAccent: 'materiale care vând',
-      sub: 'Trei zone de lucru care, împreună, îți construiesc o imagine coerentă și memorabilă.',
-    },
-    capabilities: [
-      {
-        title: 'Identitate vizuală & Branding',
-        icon: ICON.shapes,
-        desc: 'Un brand coerent, de la logo la regulile de folosire — recognoscibil peste tot.',
-        items: [
-          'Logo & sistem vizual',
-          'Brand guide complet',
-          'Paletă, tipografie & elemente grafice',
-          'Aplicații pe materiale',
-        ],
-      },
-      {
-        title: 'Grafică publicitară & Print',
-        icon: ICON.image,
-        desc: 'Materiale de promovare și prezentare gândite să atragă atenția potrivită.',
-        items: [
-          'Print, outdoor & social media',
-          'Broșuri, cărți de vizită, prezentări',
-          'Grafică pentru campanii',
-          'Design validat cu heatmaps',
-        ],
-      },
-      {
-        title: 'Foto & Video',
-        icon: ICON.camera,
-        desc: 'Conținut foto-video profesionist, realizat de un fotograf cu peste 10 ani experiență.',
-        items: [
-          'Fotografie de produs & brand',
-          'Conținut video pentru social',
-          'Editare & post-producție',
-          'Direcție creativă',
-        ],
-      },
-    ],
-    caseStudy: {
-      statBig: '10+',
-      statBigAccent: 'ani',
-      statCap: 'Experiență în foto-video și creație vizuală pentru branduri.',
-      quote: '„Originalitate și claritate în soluțiile propuse."',
-      body: 'Le-am studiat portofoliul și am remarcat originalitatea și claritatea soluțiilor. Proiectul a decurs conform așteptărilor, iar rezultatul a fost foarte apreciat de compania noastră.',
-      client: 'Silviu Costiniuc',
-      clientNote: 'Echipamente-medicale.ro',
-      clientLogo: 'EM',
-    },
-    faqs: [
-      {
-        q: 'Realizați doar logo sau și identitate completă?',
-        body: [
-          'Amândouă. Putem livra doar un logo, dar recomandăm un sistem vizual complet (brand guide) — cu paletă, tipografie și reguli de folosire — ca brandul tău să arate coerent peste tot.',
-        ],
-      },
-      {
-        q: 'Faceți și fotografie / video?',
-        body: [
-          'Da. Avem un fotograf cu peste 10 ani de experiență și ne ocupăm de fotografie de produs și brand, conținut video pentru social media și post-producție.',
-        ],
-      },
-      {
-        q: 'Ce înseamnă „design validat cu neuromarketing"?',
-        body: [
-          'Verificăm ierarhia vizuală și atenția cu heatmaps și principii de neuromarketing, ca materialele să comunice clar mesajul important — nu doar „să arate bine".',
-        ],
-      },
-      {
-        q: 'Pot primi materialele în formate pentru print și online?',
-        body: [
-          'Sigur. Livrăm fișierele în formatele de care ai nevoie, atât pentru print (CMYK, la rezoluție corectă), cât și pentru online (web/social).',
-        ],
-      },
-    ],
-  },
-  {
-    slug: 'web-design',
+    slug: 'ux-ui-web-design',
     icon: 'web',
-    title: 'Web Design',
+    title: 'UX/UI & web design',
     summary:
       'Site-uri și magazine online rapide, clare și gândite să transforme vizitatorii în clienți.',
     claim: 'Site-uri care transformă vizitatori în clienți.',
     description:
-      'Realizăm site-uri de prezentare și magazine online rapide, clare și ușor de administrat. Frumoase pentru oameni, prietenoase cu Google.',
+      'Realizăm site-uri de prezentare și magazine online rapide, clare și ușor de administrat. Frumoase pentru oameni, prietenoase cu Google — și validate cu principii de neuromarketing.',
     includes: [
-      'UX/UI design',
+      'UX/UI design validat pe atenția vizuală',
       'Site-uri de prezentare (WordPress)',
       'Magazine online (WooCommerce)',
       'Optimizare pentru viteză și mobil',
@@ -412,12 +307,6 @@ export const services: Service[] = [
         ],
       },
       {
-        q: 'Oferiți și hosting și mentenanță?',
-        body: [
-          'Da. Ne putem ocupa de găzduire, actualizări, backup-uri și suport, ca site-ul să rămână rapid și sigur — tu te ocupi de afacere.',
-        ],
-      },
-      {
         q: 'Site-urile sunt optimizate pentru SEO?',
         body: [
           'Da. Livrăm cu SEO de bază la lansare (structură, viteză, mobil, meta) și putem continua cu o strategie SEO dedicată.',
@@ -431,103 +320,384 @@ export const services: Service[] = [
       },
     ],
   },
+
+  // ============================ 3. GRAFICĂ PUBLICITARĂ ============================
   {
-    slug: 'mentenanta',
-    icon: 'mentenanta',
-    title: 'Mentenanță',
+    slug: 'grafica-publicitara',
+    icon: 'grafica',
+    title: 'Grafică publicitară',
     summary:
-      'Avem grijă de partea tehnică — actualizări, securitate, suport — ca tu să te ocupi de afacere.',
-    claim: 'Tu te ocupi de afacere, noi de partea tehnică.',
+      'Identitate vizuală, materiale de promovare și foto-video care te fac memorabil și coerent.',
+    claim: 'Imagine coerentă, care te face memorabil.',
     description:
-      'Site-ul tău rămâne rapid, sigur și actualizat, fără bătăi de cap.',
+      'De la logo și identitate vizuală completă, până la materiale de promovare și conținut foto-video. Totul gândit simplu, dar cu impact — și optimizat vizual cu neuromarketing.',
     includes: [
-      'Actualizări și backup-uri regulate',
-      'Securitate și monitorizare',
-      'Mici modificări și suport prioritar',
-      'Rapoarte de performanță',
+      'Identitate vizuală & branding (logo, brand guide)',
+      'Grafică publicitară (print, outdoor, social media)',
+      'Materiale de prezentare (broșuri, cărți de vizită, prezentări)',
+      'Foto & video (fotograf cu peste 10 ani experiență)',
+      'Design validat cu heatmaps și ierarhie vizuală',
     ],
-    tags: ['Actualizări', 'Securitate', 'Backup', 'Suport'],
+    tags: ['Branding', 'Print', 'Outdoor', 'Foto-Video'],
     image:
-      'https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&q=78&auto=format&fit=crop',
-    heroTitle: 'Tu te ocupi de afacere, ',
-    heroTitleAccent: 'noi de partea tehnică',
+      'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=900&q=78&auto=format&fit=crop',
+    heroTitle: 'Imagine coerentă, ',
+    heroTitleAccent: 'care te face memorabil',
     heroSub:
-      'Site-ul tău rămâne rapid, sigur și actualizat, fără bătăi de cap. Ne ocupăm de actualizări, securitate, backup-uri și suport — ca tu să te concentrezi pe ce contează.',
+      'De la logo și identitate vizuală completă, până la materiale de promovare și conținut foto-video. Totul gândit simplu, dar cu impact — și validat vizual cu neuromarketing.',
     capHead: {
       eyebrow: 'Ce oferim',
-      title: 'Liniște tehnică, ',
-      titleAccent: 'fără bătăi de cap',
-      sub: 'Trei zone de lucru care, împreună, îți țin site-ul rapid, sigur și mereu la zi.',
+      title: 'De la identitate la ',
+      titleAccent: 'materiale care vând',
+      sub: 'Trei zone de lucru care, împreună, îți construiesc o imagine coerentă și memorabilă.',
     },
     capabilities: [
       {
-        title: 'Actualizări & Backup',
-        icon: ICON.refresh,
-        desc: 'Site-ul tău rămâne mereu la zi, cu copii de siguranță regulate — fără surprize.',
+        title: 'Identitate vizuală & Branding',
+        icon: ICON.shapes,
+        desc: 'Un brand coerent, de la logo la regulile de folosire — recognoscibil peste tot.',
         items: [
-          'Actualizări platformă & pluginuri',
-          'Backup-uri regulate',
-          'Restaurare rapidă la nevoie',
-          'Verificări periodice',
+          'Logo & sistem vizual',
+          'Brand guide complet',
+          'Paletă, tipografie & elemente grafice',
+          'Aplicații pe materiale',
         ],
       },
       {
-        title: 'Securitate & Monitorizare',
-        icon: ICON.shield,
-        desc: 'Monitorizăm site-ul și îl protejăm, ca să rămână sigur și disponibil.',
+        title: 'Grafică publicitară & Print',
+        icon: ICON.image,
+        desc: 'Materiale de promovare și prezentare gândite să atragă atenția potrivită.',
         items: [
-          'Monitorizare uptime',
-          'Protecție & întărire securitate',
-          'Scanare amenințări',
-          'Optimizare viteză continuă',
+          'Print, outdoor & social media',
+          'Broșuri, cărți de vizită, prezentări',
+          'Grafică pentru campanii',
+          'Design validat cu heatmaps',
         ],
       },
       {
-        title: 'Suport & Rapoarte',
-        icon: ICON.support,
-        desc: 'Mici modificări și suport prioritar, plus rapoarte clare despre ce se întâmplă.',
+        title: 'Foto & Video',
+        icon: ICON.camera,
+        desc: 'Conținut foto-video profesionist, realizat de un fotograf cu peste 10 ani experiență.',
         items: [
-          'Mici modificări de conținut',
-          'Suport prioritar',
-          'Rapoarte de performanță',
-          'Recomandări pentru pasul următor',
+          'Fotografie de produs & brand',
+          'Conținut video pentru social',
+          'Editare & post-producție',
+          'Direcție creativă',
         ],
       },
     ],
     caseStudy: {
-      statBig: 'Simply',
-      statBigAccent: 'professional',
-      statCap: 'Clienți care ne încredințează partea tehnică, pe termen lung.',
-      quote: '„Simply professional. Trustworthy, honest and creative."',
-      body: 'O colaborare bazată pe încredere, în care partea tehnică nu mai e o grijă. Ne ocupăm de tot ce ține de funcționarea site-ului, ca afacerea să meargă mai departe fără opriri.',
-      client: 'Bogdan Drăgan',
-      clientNote: 'FEAA Galați',
-      clientLogo: 'FE',
+      statBig: '10+',
+      statBigAccent: 'ani',
+      statCap: 'Experiență în foto-video și creație vizuală pentru branduri.',
+      quote: '„Originalitate și claritate în soluțiile propuse."',
+      body: 'Le-am studiat portofoliul și am remarcat originalitatea și claritatea soluțiilor. Proiectul a decurs conform așteptărilor, iar rezultatul a fost foarte apreciat de compania noastră.',
+      client: 'Silviu Costiniuc',
+      clientNote: 'Echipamente-medicale.ro',
+      clientLogo: 'EM',
     },
     faqs: [
       {
-        q: 'Ce include un abonament de mentenanță?',
+        q: 'Realizați doar logo sau și identitate completă?',
         body: [
-          'Actualizări de platformă și pluginuri, backup-uri regulate, monitorizare de securitate și uptime, plus mici modificări și suport prioritar. La final primești și un raport clar.',
+          'Amândouă. Putem livra doar un logo, dar recomandăm un sistem vizual complet (brand guide) — cu paletă, tipografie și reguli de folosire — ca brandul tău să arate coerent peste tot.',
         ],
       },
       {
-        q: 'Faceți mentenanță și pentru site-uri create de altcineva?',
+        q: 'Faceți și fotografie / video?',
         body: [
-          'Da. Analizăm întâi site-ul actual, identificăm riscurile și apoi îți propunem un plan de mentenanță potrivit.',
+          'Da. Avem un fotograf cu peste 10 ani de experiență și ne ocupăm de fotografie de produs și brand, conținut video pentru social media și post-producție.',
         ],
       },
       {
-        q: 'Cât de repede răspundeți la o solicitare?',
+        q: 'Ce înseamnă „design validat cu neuromarketing"?',
         body: [
-          'Pentru clienții cu abonament oferim suport prioritar. Timpul exact de răspuns îl stabilim în funcție de pachet, la începutul colaborării.',
+          'Verificăm ierarhia vizuală și atenția cu heatmaps și principii de neuromarketing, ca materialele să comunice clar mesajul important — nu doar „să arate bine".',
         ],
       },
       {
-        q: 'Ce se întâmplă dacă site-ul cade?',
+        q: 'Pot primi materialele în formate pentru print și online?',
         body: [
-          'Monitorizăm disponibilitatea și intervenim. Cu backup-urile regulate putem restaura rapid site-ul la o versiune funcțională.',
+          'Sigur. Livrăm fișierele în formatele de care ai nevoie, atât pentru print (CMYK, la rezoluție corectă), cât și pentru online (web/social).',
         ],
+      },
+    ],
+  },
+
+  // ============================ 4. SOCIAL MEDIA ============================
+  {
+    slug: 'social-media',
+    icon: 'social',
+    title: 'Social media',
+    summary: 'Conținut și prezență care aduc clienți, nu doar aprecieri. Construite pe date.',
+    claim: 'Prezență în social media care aduce clienți, nu doar aprecieri.',
+    description:
+      'Administrăm prezența ta în social media cu o strategie clară, conținut coerent și campanii plătite gândite pe conversii — nu pe afișări.',
+    includes: [
+      'Strategie & calendar editorial',
+      'Administrare conturi (Facebook, Instagram, TikTok, YouTube)',
+      'Creație de conținut (vizual + copywriting)',
+      'Campanii plătite (Meta Ads, TikTok Ads)',
+      'Raportare și optimizare',
+    ],
+    tags: ['Strategie', 'Conținut', 'Meta & TikTok Ads', 'Raportare'],
+    image:
+      'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=900&q=78&auto=format&fit=crop',
+    heroTitle: 'Social media care aduce ',
+    heroTitleAccent: 'clienți, nu doar aprecieri',
+    heroSub:
+      'Prezență coerentă pe canalele unde se află publicul tău, conținut care prinde și campanii plătite gândite pe conversii. Cu măsurare reală, nu cu presupuneri.',
+    capHead: {
+      eyebrow: 'Ce oferim',
+      title: 'De la conținut la ',
+      titleAccent: 'clienți reali',
+      sub: 'Trei zone de lucru care, împreună, transformă atenția în rezultate.',
+    },
+    capabilities: [
+      {
+        title: 'Strategie & Conținut',
+        icon: ICON.megaphone,
+        desc: 'Un plan clar pe obiective și o prezență coerentă pe canalele potrivite.',
+        items: [
+          'Strategie de conținut',
+          'Calendar editorial',
+          'Creație vizuală & copywriting',
+          'Administrare conturi',
+        ],
+      },
+      {
+        title: 'Campanii plătite',
+        icon: ICON.target,
+        desc: 'Reclame pe Meta și TikTok gândite pe conversii, cu buget controlat.',
+        items: [
+          'Meta Ads (Facebook & Instagram)',
+          'TikTok Ads',
+          'Targetare & creative testing',
+          'Optimizare buget & licitare',
+        ],
+      },
+      {
+        title: 'Analiză & Optimizare',
+        icon: ICON.chart,
+        desc: 'Măsurăm ce funcționează și ajustăm — decizii pe date, nu pe presupuneri.',
+        items: [
+          'Tracking conversii & evenimente',
+          'Rapoarte clare, pe înțelesul tău',
+          'Heatmaps & atenție vizuală',
+          'Optimizare continuă',
+        ],
+      },
+    ],
+    caseStudy: {
+      statBig: 'al doilea',
+      statBigAccent: 'proiect',
+      statCap: 'Clienți care revin pentru o nouă colaborare cu Simplead.',
+      quote: '„Profesionalism, fairplay, pricepere, asumare."',
+      body: 'Cuvinte ce definesc relația noastră cu Simplead. Suntem la al doilea proiect împreună, datorită implicării active și relaționării impecabile.',
+      client: 'Ștefan Chelmu',
+      clientNote: 'Blitzstudio',
+      clientLogo: 'BS',
+    },
+    faqs: [
+      {
+        q: 'Pe ce canale lucrați?',
+        body: [
+          'În principal Facebook, Instagram și TikTok, iar la nevoie YouTube. Alegem canalele în funcție de unde se află publicul tău și de obiectiv.',
+        ],
+      },
+      {
+        q: 'Creați și conținutul, sau doar îl postați?',
+        body: [
+          'Creăm conținutul — vizual și text — și îl publicăm pe un calendar editorial clar. Putem integra și materiale pe care le ai deja.',
+        ],
+      },
+      {
+        q: 'Cât costă administrarea de social media?',
+        body: [
+          'Depinde de numărul de canale, frecvența postărilor și de bugetul de campanii. Pornim mereu de la o discuție și o ofertă pe obiective. [COPY: confirmă pachete/prețuri]',
+        ],
+      },
+    ],
+  },
+
+  // ============================ 5. CONSULTANȚĂ DE MARKETING ============================
+  {
+    slug: 'consultanta-marketing',
+    icon: 'marketing',
+    title: 'Consultanță de marketing',
+    summary:
+      'Decizii pe date și neuromarketing — nu pe presupuneri. Studio condus de un doctor în marketing.',
+    claim: 'Marketing fundamentat pe cercetare, nu pe noroc.',
+    description:
+      'Te ajutăm să iei deciziile de marketing potrivite, validate cu date și neuromarketing. Strategie, analiză a atenției vizuale (eye-tracking & heatmaps) și un plan clar de creștere.',
+    includes: [
+      'Strategie de marketing și de brand',
+      'Audit și analiză (Analytics, tracking conversii)',
+      'Neuromarketing: eye-tracking & heatmaps (expoze.app)',
+      'Poziționare și mesaje',
+      'Plan de creștere pe obiective măsurabile',
+    ],
+    tags: ['Strategie', 'Neuromarketing', 'Analiză', 'Poziționare'],
+    image:
+      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=900&q=78&auto=format&fit=crop',
+    heroTitle: 'Marketing fundamentat pe ',
+    heroTitleAccent: 'cercetare, nu pe noroc',
+    heroSub:
+      'Validăm fiecare decizie cu date și neuromarketing — inclusiv eye-tracking și heatmaps prin expoze.app. Studio condus de Andrei Panait, doctor în marketing.',
+    capHead: {
+      eyebrow: 'Ce oferim',
+      title: 'De la presupuneri la ',
+      titleAccent: 'decizii pe date',
+      sub: 'Trei zone de lucru care, împreună, îți dau un marketing pe care te poți baza.',
+    },
+    capabilities: [
+      {
+        title: 'Strategie & Poziționare',
+        icon: ICON.target,
+        desc: 'Un plan clar de marketing și o poziționare care te diferențiază — pe obiective măsurabile.',
+        items: [
+          'Strategie de marketing & brand',
+          'Poziționare și mesaje',
+          'Public-țintă & canale',
+          'Plan de creștere',
+        ],
+      },
+      {
+        title: 'Neuromarketing & Atenție vizuală',
+        icon: ICON.brain,
+        desc: 'Testăm atenția cu eye-tracking și heatmaps prin expoze.app — vedem ce funcționează înainte de lansare.',
+        items: [
+          'Eye-tracking & heatmaps (expoze.app)',
+          'Analiză a ierarhiei vizuale',
+          'Optimizare pe principii de neuromarketing',
+          'Validare pre-lansare',
+        ],
+      },
+      {
+        title: 'Analiză & Raportare',
+        icon: ICON.chart,
+        desc: 'Date reale din Analytics și tracking de conversii, traduse în decizii clare.',
+        items: [
+          'Audit de marketing',
+          'Tracking conversii & evenimente',
+          'Rapoarte pe înțelesul tău',
+          'Recomandări prioritizate',
+        ],
+      },
+    ],
+    caseStudy: {
+      statBig: 'doctorat',
+      statBigAccent: 'în marketing',
+      statCap: 'Cercetarea academică ajunge direct în proiectele tale.',
+      quote: '„Originalitate și claritate în soluțiile propuse."',
+      body: 'Decizii fundamentate pe cercetare, nu pe gust. Combinăm experiența academică în neuromarketing cu execuția practică, pentru rezultate pe care le poți măsura.',
+      client: 'Andrei Panait',
+      clientNote: 'panaitandrei.ro',
+      clientLogo: 'AP',
+    },
+    faqs: [
+      {
+        q: 'Ce înseamnă „marketing bazat pe neuromarketing"?',
+        body: [
+          'Validăm deciziile cu instrumente de analiză a atenției vizuale (eye-tracking, heatmaps prin expoze.app) și cu date reale din Analytics — înainte și după lansare. Așa investești acolo unde chiar aduce rezultate.',
+        ],
+      },
+      {
+        q: 'Lucrați doar consultanță sau și execuție?',
+        body: [
+          'Amândouă. Putem livra doar strategia și recomandările, sau să ne ocupăm și de execuție (web, grafică, social media) — în funcție de ce ai nevoie.',
+        ],
+      },
+      {
+        q: 'Pentru ce tip de afaceri e potrivită consultanța?',
+        body: [
+          'Pentru afaceri care vor să crească cu decizii informate — de la firme mici la organizații mai mari. Pornim de la obiectivele tale, nu de la un șablon.',
+        ],
+      },
+    ],
+  },
+
+  // ============================ 6. AI PENTRU BUSINESS ============================
+  {
+    slug: 'ai-pentru-business',
+    icon: 'ai',
+    title: 'AI pentru business',
+    summary:
+      'Automatizări, mentenanță și conținut asistate de AI — acolo unde îți aduc valoare reală.',
+    claim: 'AI folosit cu cap — economisești timp și bani.',
+    description:
+      'Nu vindem „AI" ca slogan. Identificăm unde îți aduce valoare reală și îl integrăm în fluxurile tale: automatizări, mentenanță inteligentă și producție de conținut asistată. [COPY: confirmă scope-ul exact al serviciului]',
+    includes: [
+      'Automatizarea proceselor repetitive',
+      'Mentenanță și monitorizare asistate de AI',
+      'Producție de conținut asistată (text, vizual)',
+      'Integrări cu uneltele pe care le folosești deja',
+      'Consultanță: unde merită (și unde nu) să folosești AI',
+    ],
+    tags: ['Automatizări', 'Mentenanță AI', 'Conținut', 'Integrări'],
+    image:
+      'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=900&q=78&auto=format&fit=crop',
+    heroTitle: 'AI pentru business, ',
+    heroTitleAccent: 'folosit cu cap',
+    heroSub:
+      'Îl folosim acolo unde îți aduce valoare reală — automatizări, mentenanță inteligentă și conținut asistat. Restul rămâne la oameni. [COPY: rafinează propunerea]',
+    capHead: {
+      eyebrow: 'Ce oferim',
+      title: 'AI integrat în ',
+      titleAccent: 'fluxurile tale',
+      sub: '[COPY] Trei direcții în care AI-ul îți economisește timp și reduce erorile.',
+    },
+    capabilities: [
+      {
+        title: 'Automatizări',
+        icon: ICON.cog,
+        desc: 'Fluxuri repetitive automatizate, ca să câștigi timp și să reduci erorile. [COPY]',
+        items: [
+          'Automatizarea sarcinilor repetitive',
+          'Integrări între unelte',
+          'Notificări & raportare automată',
+          '[COPY: exemple concrete]',
+        ],
+      },
+      {
+        title: 'Mentenanță cu AI',
+        icon: ICON.spark,
+        desc: 'Monitorizare și optimizări asistate de AI pentru site-ul și sistemele tale. [COPY]',
+        items: [
+          'Monitorizare inteligentă',
+          'Detectare timpurie a problemelor',
+          'Optimizări asistate',
+          '[COPY: detalii]',
+        ],
+      },
+      {
+        title: 'Conținut asistat',
+        icon: ICON.bolt,
+        desc: 'Idei, drafturi și variante generate cu AI, rafinate de oameni. [COPY]',
+        items: [
+          'Drafturi & idei de conținut',
+          'Variante pentru testare',
+          'Adaptare pe canale',
+          '[COPY: detalii]',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: 'Înlocuiește AI-ul oamenii din echipă?',
+        body: [
+          'Nu. Folosim AI ca să accelerăm munca repetitivă și să eliberăm timp pentru deciziile care contează. Calitatea și deciziile importante rămân la oameni. [COPY: confirmă mesajul]',
+        ],
+      },
+      {
+        q: 'De unde știu dacă afacerea mea are nevoie de AI?',
+        body: [
+          'Pornim de la o discuție: ne uităm la procesele tale și identificăm unde AI-ul aduce valoare reală — și unde nu merită. [COPY]',
+        ],
+      },
+      {
+        q: 'Cât costă un proiect de AI pentru business?',
+        body: ['[COPY: confirmă modelul de preț și pachetele.]'],
       },
     ],
   },

@@ -1,13 +1,18 @@
 ---
 /**
- * Buton înclinat (skew -11deg) — semnătura vizuală Simplead.
- * Reproduce .btn-cta / .nav__cta din design.
+ * Buton oblic (skew -10deg) — semnătura vizuală Simplead, păstrată din vechiul
+ * design dar pe paleta nouă FLAT (fără gradient mov).
+ *  - primary : fundal electric, text alb, glow electric→cyan la hover
+ *  - outline : 1px contur, fundal transparent (CTA secundar / low-commitment)
+ *  - yellow  : accent signal (rar)
  */
 interface Props {
   href: string;
   variant?: 'primary' | 'outline' | 'yellow';
   size?: 'md' | 'lg';
   withArrow?: boolean;
+  /** Pe fundal dark (ex. secțiuni navy), outline-ul devine deschis. */
+  onDark?: boolean;
   class?: string;
   rel?: string;
   target?: string;
@@ -17,38 +22,21 @@ const {
   href,
   variant = 'primary',
   size = 'md',
-  withArrow = true,
+  withArrow = false,
+  onDark = false,
   class: className = '',
   rel,
   target,
 } = Astro.props;
-
-const pad = size === 'lg' ? 'px-[30px] py-[17px] text-[14.5px]' : 'px-6 py-[13px] text-[13.5px]';
-const shadow =
-  size === 'lg'
-    ? 'shadow-[0_16px_34px_-12px_rgba(0,119,252,0.7)]'
-    : 'shadow-[0_12px_26px_-10px_rgba(0,119,252,0.65)]';
 ---
 
-<div
-  class:list={[
-    'btn-skew inline-block rounded-[7px] transition-[transform,filter] duration-200 hover:-translate-y-0.5 hover:brightness-110',
-    variant === 'primary' && `grad-surface ${shadow}`,
-    variant === 'yellow' && 'bg-yellow shadow-[0_14px_30px_-12px_rgba(245,217,63,0.7)]',
-    variant === 'outline' && 'border border-white/20 bg-white/5',
-    className,
-  ]}
+<a
+  href={href}
+  rel={rel}
+  target={target}
+  class:list={['btn', `btn--${variant}`, `btn--${size}`, onDark && 'btn--on-dark', className]}
 >
-  <a
-    href={href}
-    rel={rel}
-    target={target}
-    class:list={[
-      'btn-skew-inner inline-flex items-center gap-[10px] font-semibold uppercase tracking-[0.05em]',
-      pad,
-      variant === 'yellow' ? 'text-navy' : 'text-white',
-    ]}
-  >
+  <span class="btn__inner">
     <slot />
     {
       withArrow && (
@@ -56,23 +44,114 @@ const shadow =
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2.4"
+          stroke-width="2.3"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="h-4 w-4"
+          class="btn__arrow"
+          aria-hidden="true"
         >
-          <path d="M7 17L17 7M7 7h10v10" />
+          <path d="M5 12h14M13 6l6 6-6 6" />
         </svg>
       )
     }
-  </a>
-</div>
+  </span>
+</a>
 
 <style>
-  .btn-skew {
-    transform: skew(-11deg);
+  .btn {
+    display: inline-block;
+    transform: skew(-10deg);
+    border-radius: var(--r-xs);
+    border: 1px solid transparent;
+    transition:
+      transform 0.18s var(--ease-snap),
+      box-shadow 0.25s var(--ease-snap),
+      background-color 0.18s var(--ease-snap),
+      color 0.18s var(--ease-snap),
+      border-color 0.18s var(--ease-snap);
   }
-  .btn-skew-inner {
-    transform: skew(11deg);
+  .btn__inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    transform: skew(10deg);
+    font-family: var(--font-body);
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Mărimi (padding pe ancoră, ca skew-ul să prindă tot) */
+  .btn--md {
+    padding: 13px 24px;
+    font-size: 0.86rem;
+  }
+  .btn--lg {
+    padding: 16px 30px;
+    font-size: 0.92rem;
+  }
+
+  /* Primar — electric flat */
+  .btn--primary {
+    background: var(--electric);
+    color: #fff;
+    box-shadow: var(--glow-electric);
+  }
+  .btn--primary:hover {
+    transform: skew(-10deg) translateY(-2px);
+    box-shadow: var(--glow-electric);
+  }
+
+  /* Secundar — outline (low-commitment) */
+  .btn--outline {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .btn--outline:hover {
+    transform: skew(-10deg) translateY(-2px);
+    background: var(--canvas-soft);
+    border-color: var(--electric);
+    color: var(--electric);
+  }
+  .btn--outline.btn--on-dark {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+  .btn--outline.btn--on-dark:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  /* Accent rar — signal */
+  .btn--yellow {
+    background: var(--signal);
+    color: var(--ink);
+    box-shadow: 0 14px 30px -14px rgba(245, 217, 63, 0.6);
+  }
+  .btn--yellow:hover {
+    transform: skew(-10deg) translateY(-2px);
+    box-shadow: 0 14px 30px -14px rgba(245, 217, 63, 0.6);
+  }
+
+  .btn__arrow {
+    width: 17px;
+    height: 17px;
+    transition: transform 0.2s var(--ease-snap);
+  }
+  .btn:hover .btn__arrow {
+    transform: translateX(3px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn,
+    .btn__arrow {
+      transition: none;
+    }
+    .btn:hover {
+      transform: skew(-10deg);
+    }
   }
 </style>
