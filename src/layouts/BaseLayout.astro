@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Navbar from '@components/Navbar.astro';
 import Footer from '@components/Footer.astro';
 import Analytics from '@components/Analytics.astro';
+import CookieBanner from '@components/CookieBanner.astro';
 import { site } from '@data/site';
 import { resolveLocale } from '@i18n/index';
 
@@ -35,7 +36,6 @@ const {
 } = Astro.props;
 
 const locale = resolveLocale(Astro.currentLocale);
-const GTM_ID = import.meta.env.GTM_ID;
 const fullTitle = title ? `${title} · ${site.name}` : `${site.name} · Grafică & marketing digital`;
 const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
@@ -137,23 +137,15 @@ const jsonLd = {
   </head>
   <body>
     {
-      GTM_ID && (
-        <noscript>
-          <iframe
-            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
-            height="0"
-            width="0"
-            style="display:none;visibility:hidden"
-            title="gtm"
-          />
-        </noscript>
-      )
+      /* GTM noscript scos intenționat: ar fi rulat fără consimțământ (GDPR).
+        Trackerele pornesc doar după acceptul din CookieBanner. */
     }
     <Navbar transparent={transparentNav} overDark={navOverDark} activePath={activePath} />
     <main id="main">
       <slot />
     </main>
     <Footer />
+    <CookieBanner />
 
     <script>
       // Scroll reveal: subtil, accesibil ([data-reveal] / [data-reveal-stagger]).

@@ -83,7 +83,7 @@ const metaDescription =
                     </form>
                   )}
                   <Button
-                    href={`/contact?service=${encodeURIComponent(pkg.slug)}`}
+                    href={`/contact?service=${encodeURIComponent(pkg.name)}`}
                     variant={canBuy(pkg.priceCents) ? 'outline' : 'primary'}
                     withArrow={!canBuy(pkg.priceCents)}
                   >
@@ -130,7 +130,7 @@ const metaDescription =
                     </form>
                   )}
                   <Button
-                    href={`/contact?service=${encodeURIComponent(pkg.slug)}`}
+                    href={`/contact?service=${encodeURIComponent(pkg.name)}`}
                     variant={canBuy(pkg.priceCents) ? 'outline' : 'primary'}
                     withArrow={!canBuy(pkg.priceCents)}
                   >

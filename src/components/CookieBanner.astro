@@ -1,0 +1,117 @@
+---
+/**
+ * Banner de consimțământ cookies (GDPR). Apare DOAR dacă există trackere
+ * configurate și utilizatorul nu a decis încă. Acceptul pornește trackerele
+ * (window.__saLoadTrackers din Analytics.astro); refuzul le ține oprite.
+ */
+const hasTrackers = Boolean(
+  import.meta.env.GA4_ID || import.meta.env.GTM_ID || import.meta.env.CLARITY_ID,
+);
+---
+
+{
+  hasTrackers && (
+    <div class="cookie-banner" id="cookie-banner" hidden>
+      <p>
+        Folosim cookie-uri de analiză ca să înțelegem cum e folosit site-ul. Le activăm doar cu
+        acordul tău. Detalii în <a href="/cookies">politica de cookies</a>.
+      </p>
+      <div class="cookie-banner__actions">
+        <button
+          type="button"
+          class="cookie-banner__btn cookie-banner__btn--accept"
+          data-consent="accepted"
+        >
+          Accept
+        </button>
+        <button type="button" class="cookie-banner__btn" data-consent="rejected">
+          Refuz
+        </button>
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .cookie-banner {
+    position: fixed;
+    inset-inline: 16px;
+    bottom: 16px;
+    z-index: 90;
+    margin: 0 auto;
+    max-width: 560px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--ink);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--r-md);
+    padding: 16px 20px;
+    box-shadow: 0 24px 60px -24px rgba(3, 13, 74, 0.55);
+  }
+  .cookie-banner p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--muted-dark);
+    flex: 1 1 280px;
+  }
+  .cookie-banner a {
+    color: var(--cyan);
+    text-decoration: underline;
+  }
+  .cookie-banner__actions {
+    display: flex;
+    gap: 10px;
+  }
+  .cookie-banner__btn {
+    padding: 9px 18px;
+    border-radius: var(--r-xs);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+  }
+  .cookie-banner__btn--accept {
+    background: var(--electric);
+    border-color: transparent;
+    box-shadow: var(--glow-electric);
+  }
+</style>
+
+<script>
+  const KEY = 'sa_cookie_consent';
+  const banner = document.getElementById('cookie-banner');
+  if (banner) {
+    let stored: string | null = null;
+    try {
+      stored = localStorage.getItem(KEY);
+    } catch {
+      /* localStorage indisponibil */
+    }
+    if (!stored) banner.hidden = false;
+
+    banner.querySelectorAll<HTMLButtonElement>('[data-consent]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const value = btn.dataset.consent!;
+        try {
+          localStorage.setItem(KEY, value);
+        } catch {
+          /* localStorage indisponibil */
+        }
+        banner.hidden = true;
+        if (value === 'accepted') {
+          (window as Window & { __saLoadTrackers?: () => void }).__saLoadTrackers?.();
+        }
+      });
+    });
+  }
+</script>

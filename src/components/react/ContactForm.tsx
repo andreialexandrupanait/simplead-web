@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { contactSchema, type ContactInput } from '../../lib/contact-schema';
@@ -7,13 +7,24 @@ import { contactSchema, type ContactInput } from '../../lib/contact-schema';
 export default function ContactForm() {
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [serverError, setServerError] = useState<string | null>(null);
+  const [preselected, setPreselected] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<ContactInput>({ resolver: zodResolver(contactSchema) });
+
+  // Preselectare din funnel: /contact?service=<pachet> (linkurile de pe /pachete).
+  useEffect(() => {
+    const service = new URLSearchParams(window.location.search).get('service');
+    if (service) {
+      setValue('service', service.slice(0, 60));
+      setPreselected(service.slice(0, 60));
+    }
+  }, [setValue]);
 
   const onSubmit = async (data: ContactInput) => {
     setStatus('sending');
@@ -66,9 +77,26 @@ export default function ContactForm() {
 
   return (
     <form className="cform" onSubmit={handleSubmit(onSubmit)} noValidate>
+      {preselected && (
+        <p
+          style={{
+            margin: '0 0 18px',
+            fontSize: 14,
+            color: 'var(--muted)',
+          }}
+        >
+          Cerere pentru: <strong style={{ color: 'var(--ink)' }}>{preselected}</strong>
+        </p>
+      )}
+      <input type="hidden" {...register('service')} />
       <div className="cf">
         <label htmlFor="cf-name">Cum te cheamă?</label>
-        <input id="cf-name" type="text" placeholder="Numele tău (sau al firmei)" {...register('name')} />
+        <input
+          id="cf-name"
+          type="text"
+          placeholder="Numele tău (sau al firmei)"
+          {...register('name')}
+        />
         {errors.name && <div className="cf-error">{errors.name.message}</div>}
       </div>
 
@@ -108,7 +136,11 @@ export default function ContactForm() {
         <input type="checkbox" {...register('consent')} />
         Sunt de acord ca Simplead să-mi folosească datele ca să-mi răspundă la acest mesaj.
       </label>
-      {errors.consent && <div className="cf-error" style={{ marginTop: -14, marginBottom: 18 }}>{errors.consent.message}</div>}
+      {errors.consent && (
+        <div className="cf-error" style={{ marginTop: -14, marginBottom: 18 }}>
+          {errors.consent.message}
+        </div>
+      )}
 
       {status === 'error' && (
         <div className="cf-error" style={{ marginBottom: 16 }}>
@@ -119,7 +151,14 @@ export default function ContactForm() {
       <div className="cform-foot">
         <button type="submit" className="cf-submit" disabled={status === 'sending'}>
           {status === 'sending' ? 'Se trimite...' : 'Trimite mesajul'}
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2.4}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
         </button>

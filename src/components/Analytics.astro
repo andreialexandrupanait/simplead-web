@@ -1,65 +1,81 @@
 ---
 /**
- * Tracking condiționat de env. Dacă un ID lipsește, scriptul aferent NU se
- * randează. Astfel pornirea/oprirea se face doar din .env, fără cod.
+ * Tracking condiționat de env + CONSIMȚĂMÂNT (GDPR). Dacă un ID lipsește,
+ * scriptul aferent nu se randează deloc. Dacă există trackere, ele se
+ * încarcă DOAR după acceptul din CookieBanner (sau la revenire, dacă
+ * acceptul e deja salvat în localStorage sub cheia `sa_cookie_consent`).
  */
 const GA4_ID = import.meta.env.GA4_ID;
 const GTM_ID = import.meta.env.GTM_ID;
 const CLARITY_ID = import.meta.env.CLARITY_ID;
+const hasTrackers = Boolean(GA4_ID || GTM_ID || CLARITY_ID);
 ---
 
 {
-  GTM_ID && (
-    <script is:inline define:vars={{ GTM_ID }}>
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != 'dataLayer' ? '&l=' + l : '';
-        j.async = true;
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', GTM_ID);
-    </script>
-  )
-}
+  hasTrackers && (
+    <script is:inline define:vars={{ GA4_ID, GTM_ID, CLARITY_ID }}>
+      (function () {
+        var KEY = 'sa_cookie_consent';
+        var loaded = false;
 
-{
-  GA4_ID && (
-    <>
-      <script
-        is:inline
-        async
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}
-      />
-      <script is:inline define:vars={{ GA4_ID }}>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() {
-          dataLayer.push(arguments);
+        function loadTrackers() {
+          if (loaded) return;
+          loaded = true;
+
+          if (GTM_ID) {
+            (function (w, d, s, l, i) {
+              w[l] = w[l] || [];
+              w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+              var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s),
+                dl = l != 'dataLayer' ? '&l=' + l : '';
+              j.async = true;
+              j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+              f.parentNode.insertBefore(j, f);
+            })(window, document, 'script', 'dataLayer', GTM_ID);
+          }
+
+          if (GA4_ID) {
+            var s = document.createElement('script');
+            s.async = true;
+            s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA4_ID;
+            document.head.appendChild(s);
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              dataLayer.push(arguments);
+            }
+            window.gtag = gtag;
+            gtag('js', new Date());
+            gtag('config', GA4_ID);
+          }
+
+          if (CLARITY_ID) {
+            (function (c, l, a, r, i, t, y) {
+              c[a] =
+                c[a] ||
+                function () {
+                  (c[a].q = c[a].q || []).push(arguments);
+                };
+              t = l.createElement(r);
+              t.async = 1;
+              t.src = 'https://www.clarity.ms/tag/' + i;
+              y = l.getElementsByTagName(r)[0];
+              y.parentNode.insertBefore(t, y);
+            })(window, document, 'clarity', 'script', CLARITY_ID);
+          }
         }
-        gtag('js', new Date());
-        gtag('config', GA4_ID);
-      </script>
-    </>
-  )
-}
 
-{
-  CLARITY_ID && (
-    <script is:inline define:vars={{ CLARITY_ID }}>
-      (function (c, l, a, r, i, t, y) {
-        c[a] =
-          c[a] ||
-          function () {
-            (c[a].q = c[a].q || []).push(arguments);
-          };
-        t = l.createElement(r);
-        t.async = 1;
-        t.src = 'https://www.clarity.ms/tag/' + i;
-        y = l.getElementsByTagName(r)[0];
-        y.parentNode.insertBefore(t, y);
-      })(window, document, 'clarity', 'script', CLARITY_ID);
+        // Expus pentru CookieBanner.
+        window.__saLoadTrackers = loadTrackers;
+
+        var stored = null;
+        try {
+          stored = localStorage.getItem(KEY);
+        } catch (e) {
+          /* localStorage indisponibil */
+        }
+        if (stored === 'accepted') loadTrackers();
+      })();
     </script>
   )
 }

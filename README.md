@@ -71,9 +71,9 @@ Toate sunt **opționale** în dev. Lipsa unei chei dezactivează elegant funcți
 | Variabilă            | Rol                                                            |
 | -------------------- | ------------------------------------------------------------- |
 | `SITE_URL`           | URL canonic (sitemap, OG, JSON-LD)                            |
-| `GA4_ID`             | Google Analytics 4 — gol = scriptul nu se injectează          |
-| `GTM_ID`             | Google Tag Manager — gol = nu se injectează                   |
-| `CLARITY_ID`         | Microsoft Clarity — gol = nu se injectează                    |
+| `GA4_ID`             | Google Analytics 4 — gol = scriptul nu se injectează; pornește doar după acceptul din bannerul de cookies |
+| `GTM_ID`             | Google Tag Manager — idem                                     |
+| `CLARITY_ID`         | Microsoft Clarity — idem                                      |
 | `CONTACT_TO_EMAIL`   | Adresa care primește mesajele din formular                    |
 | `CONTACT_FROM_EMAIL` | Adresa „from" verificată în Postmark                          |
 | `CALCOM_LINK`        | Link Cal.com pentru programări — gol = butonul e dezactivat   |
@@ -140,6 +140,8 @@ adaptorul `@astrojs/node` standalone. Deploy self-hosted cu Docker:
 pnpm gen:key --password "parola-ta-de-admin"
 
 # 2a. Pe NAS (ai deja reverse proxy): aplicația ascultă pe :4321
+# Notă: SITE_URL + ID-urile de analytics din .env intră în build (paginile
+# statice le inline-uiesc); după schimbarea lor e nevoie de rebuild (--build).
 docker compose -f docker-compose.prod.yml up -d --build
 
 # 2b. Pe Hetzner (fără proxy propriu): Caddy face HTTPS automat pentru $DOMAIN

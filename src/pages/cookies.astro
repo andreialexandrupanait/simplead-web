@@ -1,0 +1,60 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHeader from '@components/sections/PageHeader.astro';
+import { site } from '@data/site';
+
+const updated = '9 iunie 2026';
+---
+
+<BaseLayout
+  title="Politica de cookies"
+  description="Ce cookie-uri folosește simplead.ro, în ce scop și cum îți poți gestiona acordul."
+  transparentNav={true}
+  navOverDark={true}
+>
+  <PageHeader
+    crumb={[{ label: 'Acasă', href: '/' }, { label: 'Cookies' }]}
+    title="Politica de cookies"
+    subtitle={`Ultima actualizare: ${updated}`}
+  />
+  <section class="section section--light">
+    <div class="container" style="max-width:820px">
+      <div class="prose-simplead">
+        <h2>1. Ce sunt cookie-urile</h2>
+        <p>
+          Cookie-urile sunt fișiere mici stocate de browser. Le folosim cumpătat: site-ul
+          funcționează complet și fără cookie-uri de analiză.
+        </p>
+
+        <h2>2. Strict necesare (fără consimțământ)</h2>
+        <p>
+          Alegerea ta din bannerul de cookies se salvează local în browser (localStorage, cheia
+          <code>sa_cookie_consent</code>), ca să nu te întrebăm la fiecare vizită. Zona de
+          administrare folosește un cookie de sesiune (<code>sa_admin</code>) doar pentru
+          utilizatorii autentificați. La plata online, Stripe poate seta cookie-uri proprii pe
+          paginile sale de checkout, conform politicii Stripe.
+        </p>
+
+        <h2>3. De analiză (doar cu acordul tău)</h2>
+        <p>
+          Cu acordul tău din banner activăm: Google Analytics 4 (statistici de trafic), Google Tag
+          Manager (gestionarea etichetelor) și Microsoft Clarity (hărți de utilizare anonimizate).
+          Acestea setează cookie-uri proprii (de ex. <code>_ga</code>) cu durate stabilite de
+          fiecare furnizor. Fără accept, niciun script de analiză nu se încarcă.
+        </p>
+
+        <h2>4. Cum îți schimbi alegerea</h2>
+        <p>
+          Șterge datele site-ului din browser (sau doar cheia <code>sa_cookie_consent</code> din localStorage)
+          și bannerul reapare la următoarea vizită. Poți bloca oricând cookie-urile și din setările browserului.
+        </p>
+
+        <h2>5. Întrebări</h2>
+        <p>
+          Scrie-ne la {site.contact.email}. Vezi și
+          <a href="/confidentialitate">politica de confidențialitate</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

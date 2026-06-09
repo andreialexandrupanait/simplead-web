@@ -242,8 +242,8 @@ asistate de blog în GA4, raport lunar în admin.
 - [ ] `site.ts` complet cu datele reale din `brand-voice.md` §3 (contact/CIF/RegCom există; lipsesc adresa completă, programul confirmat, social links)
 - [ ] Statistici reale sau eliminarea lor (`brand-voice.md` §7), logo-uri clienți, foto Andrei
 - [ ] Copy-ul `[COPY]` la serviciul AI confirmat (corectura „doctor în marketing" e deja în `site.ts`)
-- [ ] Banner cookies + politica de cookies
-- [ ] Pagini legale finalizate
+- [x] Banner cookies cu consimțământ GDPR (analytics-ul pornește doar după accept) + pagina /cookies
+- [x] Pagini legale: drafturi complete pentru Termeni (inclusiv vânzare online, retragere, ANPC/SOL) și Confidențialitate (GDPR); de trecut printr-un jurist, marcajele [confirmă] de completat
 - [x] Fix mic: an dinamic în footer
 - [ ] OG real
 

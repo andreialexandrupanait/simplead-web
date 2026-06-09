@@ -11,7 +11,15 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 COPY . .
-# Build-ul rulează FĂRĂ secrete: cheile vin la runtime (env container / DB).
+# Build-ul rulează FĂRĂ secrete (cheile vin la runtime, din env/DB), dar
+# valorile PUBLICE de build (URL canonic, ID-uri analytics, inlined de Vite
+# în paginile statice) se dau ca build args din docker-compose.prod.yml.
+ARG SITE_URL=https://simplead.ro
+ARG GA4_ID=
+ARG GTM_ID=
+ARG CLARITY_ID=
+ARG CALCOM_LINK=
+ENV SITE_URL=$SITE_URL GA4_ID=$GA4_ID GTM_ID=$GTM_ID CLARITY_ID=$CLARITY_ID CALCOM_LINK=$CALCOM_LINK
 RUN pnpm build
 # Păstrăm doar dependențele de producție pentru runtime.
 RUN pnpm prune --prod

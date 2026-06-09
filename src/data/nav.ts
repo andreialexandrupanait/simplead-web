@@ -61,4 +61,5 @@ export const footerServices: NavItem[] = servicesNav.map(({ label, href }) => ({
 export const footerLegal: NavItem[] = [
   { label: 'Termeni și condiții', href: '/termeni' },
   { label: 'Politica de confidențialitate', href: '/confidentialitate' },
+  { label: 'Politica de cookies', href: '/cookies' },
 ];
