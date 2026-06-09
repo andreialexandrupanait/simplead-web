@@ -1,0 +1,119 @@
+---
+/**
+ * Modul „Mentenanță" (teaser homepage): punte către pagina /mentenanta
+ * (calculator). Diferențiatorul real: aplicația internă de monitorizare.
+ * AI = doar în tracking. `[confirmă: lista de parametri]` rămâne placeholder.
+ */
+import Button from '@components/ui/Button.astro';
+---
+
+<section class="mnt">
+  <div class="site-container mnt__inner" data-reveal>
+    <div class="mnt__copy">
+      <p class="kicker kicker--cyan">Mentenanță web</p>
+      <h2 class="mnt__title">Site-ul tău, monitorizat continuu, nu doar cârpit când se strică.</h2>
+      <p class="mnt__sub">
+        Îți urmărim site-ul în permanență cu aplicația noastră internă, care monitorizează o mulțime
+        de parametri <span class="mnt__todo">[confirmă: lista de parametri]</span>. Așa prindem
+        problemele înainte să le simți tu. Și înainte să te coste.
+      </p>
+      <div class="mnt__cta">
+        <Button href="/mentenanta" size="lg" withArrow>Calculează-ți pachetul</Button>
+        <Button href="/mentenanta#faq" size="lg" variant="outline" onDark>Vezi ce include</Button>
+      </div>
+    </div>
+
+    <ul class="mnt__list" aria-hidden="true">
+      <li><span class="mnt__dot"></span> Backup &amp; actualizări automate</li>
+      <li><span class="mnt__dot"></span> Securitate &amp; monitorizare uptime</li>
+      <li><span class="mnt__dot"></span> Intervenție rapidă la probleme</li>
+      <li><span class="mnt__dot"></span> Rapoarte clare, lunar</li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .mnt {
+    position: relative;
+    background: var(--ink);
+    color: #fff;
+    padding-block: clamp(64px, 9vw, 116px);
+    overflow: hidden;
+  }
+  .mnt::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-size: 72px 72px;
+    -webkit-mask-image: radial-gradient(100% 90% at 85% 0%, #000, transparent 70%);
+    mask-image: radial-gradient(100% 90% at 85% 0%, #000, transparent 70%);
+    pointer-events: none;
+  }
+  .mnt__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .mnt__title {
+    margin-top: 16px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.85rem, 3.4vw, 2.9rem);
+    line-height: 1.07;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .mnt__sub {
+    margin-top: 20px;
+    max-width: 52ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--muted-dark);
+  }
+  .mnt__todo {
+    color: var(--signal);
+    font-size: 0.92em;
+  }
+  .mnt__cta {
+    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .mnt__list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 28px;
+    background: var(--ink-soft);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--r-md);
+  }
+  .mnt__list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.98rem;
+    color: #fff;
+  }
+  .mnt__dot {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 0 4px rgba(0, 224, 198, 0.18);
+  }
+  @media (max-width: 900px) {
+    .mnt__inner {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+  }
+</style>

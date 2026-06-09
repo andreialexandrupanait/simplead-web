@@ -4,12 +4,14 @@ import SectionHeading from '@components/ui/SectionHeading.astro';
 /** Testimoniale reale (preluate din proiectele existente). */
 const items = [
   {
-    quote: 'Profesionalism, fairplay, pricepere, asumare. Suntem la al doilea proiect împreună.',
+    quote:
+      'Profesionalism, fairplay, pricepere, asumare: cuvinte ce definesc relația noastră cu Simplead. Suntem la al doilea proiect împreună, datorită implicării active și relaționării impecabile.',
     name: 'Ștefan Chelmu',
     role: 'Blitzstudio',
   },
   {
-    quote: 'Originalitate și claritate în soluțiile propuse. Rezultatul a fost foarte apreciat de compania noastră.',
+    quote:
+      'Le-am studiat portofoliul și am remarcat originalitatea și claritatea soluțiilor propuse. Proiectul a decurs conform așteptărilor, iar rezultatul a fost foarte apreciat de compania noastră. I-am recomandat cu mare încredere și altor colegi.',
     name: 'Silviu Costiniuc',
     role: 'Echipamente-medicale.ro',
   },
@@ -25,8 +27,8 @@ const items = [
   <div class="site-container">
     <SectionHeading
       eyebrow="Ce spun clienții"
-      title="Colaborări care continuă."
-      accent="continuă"
+      title="Oameni care au lucrat direct cu noi."
+      accent="direct cu noi"
       align="center"
     />
     <div class="tst__grid" data-reveal-stagger>
@@ -67,6 +69,23 @@ const items = [
     border: 1px solid var(--line);
     border-radius: var(--r-md);
     padding: 30px;
+    transition:
+      transform 0.22s var(--ease-snap),
+      border-color 0.2s var(--ease-snap),
+      box-shadow 0.25s var(--ease-snap);
+  }
+  .tst__card:hover {
+    transform: translateY(-4px);
+    border-color: var(--cyan);
+    box-shadow: var(--sh-md);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tst__card {
+      transition: none;
+    }
+    .tst__card:hover {
+      transform: none;
+    }
   }
   .tst__card blockquote {
     font-family: var(--font-display);

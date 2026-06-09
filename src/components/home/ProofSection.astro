@@ -14,6 +14,7 @@ const items = (await getCollection('portfolio', ({ data }) => !data.draft))
         eyebrow="Dovada"
         title="Rezultate, nu doar imagini frumoase."
         accent="nu doar imagini frumoase"
+        subtitle="Proiecte reale, pentru afaceri reale. Vezi ce-am construit și ce-au schimbat."
       />
       <a class="proof__all" href="/portofoliu">
         Vezi tot portofoliul
@@ -92,8 +93,21 @@ const items = (await getCollection('portfolio', ({ data }) => !data.draft))
       box-shadow 0.25s var(--ease-snap);
   }
   .proof__card:hover {
+    transform: translateY(-4px);
     border-color: var(--cyan);
-    box-shadow: var(--sh-sm);
+    box-shadow: var(--sh-md);
+  }
+  .proof__card:focus-visible {
+    outline: 2px solid var(--electric);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .proof__card {
+      transition: none;
+    }
+    .proof__card:hover {
+      transform: none;
+    }
   }
   .proof__media {
     position: relative;

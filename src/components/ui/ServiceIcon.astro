@@ -18,9 +18,9 @@ const { icon, class: className = '' } = Astro.props;
   class:list={['h-6 w-6', className]}
   aria-hidden="true"
 >
-  {/* Marketing — grafic ascendent */}
+  {/* Marketing: grafic ascendent */}
   {icon === 'marketing' && <path d="M3 3v18h18M7 15l3-3 3 3 5-6" />}
-  {/* Grafică — paletă / peniță */}
+  {/* Grafică: paletă / peniță */}
   {
     icon === 'grafica' && (
       <>
@@ -31,7 +31,7 @@ const { icon, class: className = '' } = Astro.props;
       </>
     )
   }
-  {/* Web Design — fereastră browser */}
+  {/* Web Design: fereastră browser */}
   {
     icon === 'web' && (
       <>
@@ -40,7 +40,7 @@ const { icon, class: className = '' } = Astro.props;
       </>
     )
   }
-  {/* Mentenanță — cheie / setări */}
+  {/* Mentenanță: cheie / setări */}
   {
     icon === 'mentenanta' && (
       <>
@@ -48,7 +48,7 @@ const { icon, class: className = '' } = Astro.props;
       </>
     )
   }
-  {/* Social media — megafon */}
+  {/* Social media: megafon */}
   {
     icon === 'social' && (
       <>
@@ -57,6 +57,6 @@ const { icon, class: className = '' } = Astro.props;
       </>
     )
   }
-  {/* AI — fulger / scânteie */}
+  {/* AI: fulger / scânteie */}
   {icon === 'ai' && <path d="M13 2L4.5 13H11l-1 9 8.5-11H12z" />}
 </svg>

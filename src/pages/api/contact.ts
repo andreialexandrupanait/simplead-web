@@ -32,19 +32,19 @@ export const POST: APIRoute = async ({ request }) => {
 
   const { name, email, phone, service, message, company } = parsed.data;
 
-  // Honeypot: dacă e completat, e bot — răspundem „ok" fără a trimite nimic.
+  // Honeypot: dacă e completat, e bot - răspundem „ok" fără a trimite nimic.
   if (company) return json({ ok: true });
 
   const apiKey = import.meta.env.RESEND_API_KEY;
   const to = import.meta.env.CONTACT_TO_EMAIL || site.contact.email;
   const from = import.meta.env.CONTACT_FROM_EMAIL || 'site@simplead.ro';
 
-  const subject = `[Simplead] Cerere nouă${service ? ` — ${service}` : ''} — ${name}`;
+  const subject = `[Simplead] Cerere nouă${service ? `: ${service}` : ''} - ${name}`;
   const text = [
     `Nume: ${name}`,
     `Email: ${email}`,
-    `Telefon: ${phone || '—'}`,
-    `Serviciu: ${service || '—'}`,
+    `Telefon: ${phone || '-'}`,
+    `Serviciu: ${service || '-'}`,
     '',
     'Mesaj:',
     message,
@@ -52,7 +52,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   // Fallback elegant: fără cheie Resend, simulăm trimiterea + logăm.
   if (!apiKey) {
-    console.info('[contact] RESEND_API_KEY lipsește — mesaj simulat (nu s-a trimis email):');
+    console.info('[contact] RESEND_API_KEY lipsește: mesaj simulat (nu s-a trimis email):');
     console.info(text);
     return json({ ok: true, simulated: true });
   }

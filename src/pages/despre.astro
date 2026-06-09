@@ -2,10 +2,11 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import PageHeader from '@components/sections/PageHeader.astro';
 import ValuesSection from '@components/sections/ValuesSection.astro';
+import ToolsSection from '@components/home/ToolsSection.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
 
 const metaDescription =
-  'Simplead — marketing și design care nu se bazează pe noroc. Condus de Andrei Panait, doctor în marketing la Universitatea „Dunărea de Jos" Galați.';
+  'Simplead: marketing și design care nu se bazează pe noroc. Condus de Andrei Panait, doctor în marketing la Universitatea „Dunărea de Jos" Galați.';
 const brain =
   '<path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2z"/><path d="M9 22h6"/>';
 const cap = '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.7 3 6 3s6-2 6-3v-5"/>';
@@ -17,7 +18,7 @@ const cap = '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.7 3 6
     eyebrow="Despre noi"
     title="Marketing și design care nu se bazează pe noroc"
     accent="nu se bazează pe noroc"
-    subtitle="Simplead s-a născut dintr-o frustrare: prea multe afaceri bune rămân nevăzute din cauza unui design slab sau a unui marketing făcut „după ureche”. Noi facem lucrurile altfel — simplu, dar fundamentat."
+    subtitle="Simplead s-a născut dintr-o frustrare: prea multe afaceri bune rămân nevăzute din cauza unui design slab sau a unui marketing făcut „după ureche”. Noi facem lucrurile altfel: simplu, dar fundamentat."
   />
 
   <section class="section section--light">
@@ -60,6 +61,8 @@ const cap = '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.7 3 6
   </section>
 
   <ValuesSection />
+
+  <ToolsSection />
 
   <CtaSection href="/contact" />
 </BaseLayout>

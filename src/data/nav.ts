@@ -19,14 +19,14 @@ export const mainNav: NavItem[] = [
 ];
 
 /**
- * Cele 6 servicii (piloni) — sursă unică pentru mega-dropdown și footer.
+ * Cele 6 servicii (piloni): sursă unică pentru mega-dropdown și footer.
  * Slug-urile corespund intrărilor din `src/data/services.ts`.
  */
 export const servicesNav: NavServiceItem[] = [
   {
     label: 'Mentenanță website',
-    href: '/servicii/mentenanta-website',
-    desc: 'Actualizări, securitate și suport cu AI — site mereu rapid și sigur.',
+    href: '/mentenanta',
+    desc: 'Actualizări, securitate, backup și monitorizare continuă: site mereu rapid și sigur.',
   },
   {
     label: 'UX/UI & web design',
@@ -46,12 +46,12 @@ export const servicesNav: NavServiceItem[] = [
   {
     label: 'Consultanță de marketing',
     href: '/servicii/consultanta-marketing',
-    desc: 'Decizii pe date și neuromarketing — nu pe presupuneri. Doctorat în marketing.',
+    desc: 'Decizii pe date și neuromarketing, nu pe presupuneri. Doctorat în marketing.',
   },
   {
     label: 'AI pentru business',
     href: '/servicii/ai-pentru-business',
-    desc: 'Automatizări și mentenanță cu AI care îți economisesc timp și bani.',
+    desc: 'Automatizări și monitorizare care îți economisesc timp și prind problemele din timp.',
   },
 ];
 

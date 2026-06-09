@@ -1,15 +1,15 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 
-// Pagină internă de referință — nu în meniu, nu indexată.
+// Pagină internă de referință: nu în meniu, nu indexată.
 ---
 
-<BaseLayout title="Design System" description="Sistemul de design Simplead — tokenuri, tipografie și componente." noindex={true}>
+<BaseLayout title="Design System" description="Sistemul de design Simplead: tokenuri, tipografie și componente." noindex={true}>
   <div class="ds-page">
     <section class="ds-section" style="padding-top:var(--sp-8)">
       <div class="ds-h">Design System</div>
       <h2 style="font-size:clamp(32px,4vw,52px);">Sistemul de design Simplead</h2>
-      <p class="ds-lead">Sursa unică de adevăr pentru tot site-ul: culori, tipografie, spațiere, raze, umbre și componente. Toate paginile folosesc aceleași tokenuri — așa obținem consistență 1:1 și un site care nu arată „lipit din bucăți".</p>
+      <p class="ds-lead">Sursa unică de adevăr pentru tot site-ul: culori, tipografie, spațiere, raze, umbre și componente. Toate paginile folosesc aceleași tokenuri. Așa obținem consistență 1:1 și un site care nu arată „lipit din bucăți".</p>
       <div class="ds-note"><b>Cum funcționează:</b> tokenurile sunt definite o singură dată în <code>src/styles/global.css</code> (ex. <code>--r-md: 16px</code>, <code>--sp-5: 24px</code>). Schimbi valoarea într-un loc → se actualizează automat peste tot.</div>
     </section>
 
@@ -61,7 +61,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
     <section class="ds-section">
       <div class="ds-h">04 · Spațiere</div>
       <h2>Scara de spațiere (bază 4px)</h2>
-      <p class="ds-lead">Toate marginile și paddingurile folosesc aceste trepte — de aici ritmul vizual consistent.</p>
+      <p class="ds-lead">Toate marginile și paddingurile folosesc aceste trepte: de aici ritmul vizual consistent.</p>
       <div style="margin-top:var(--sp-5)">
         {
           [
@@ -98,7 +98,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
     <section class="ds-section">
       <div class="ds-h">06 · Componente</div>
       <h2>Butoane & elemente</h2>
-      <p class="ds-lead">Construite din aceleași tokenuri — radius, umbre și gradient comune.</p>
+      <p class="ds-lead">Construite din aceleași tokenuri: radius, umbre și gradient comune.</p>
       <div style="display:flex;flex-wrap:wrap;gap:var(--sp-4);align-items:center;margin-top:var(--sp-5)">
         <div class="btn-cta"><a href="/contact">Buton accent <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a></div>
         <a class="pill pill--grad" href="/servicii">Pill gradient <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>

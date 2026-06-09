@@ -1,12 +1,12 @@
 ---
 title: '5 greșeli de marketing pe care le fac afacerile mici'
-description: 'De la „postăm și noi ceva" până la bugete aruncate pe reclame neoptimizate — și cum le eviți.'
+description: 'De la „postăm și noi ceva" până la bugete aruncate pe reclame neoptimizate, și cum le eviți.'
 pubDate: 2026-04-28
 tags: ['marketing', 'afaceri mici', 'strategie']
 draft: false
 ---
 
-Afacerile mici au resurse limitate — cu atât mai mult contează să nu le risipești.
+Afacerile mici au resurse limitate: cu atât mai mult contează să nu le risipești.
 Iată cele mai frecvente greșeli pe care le vedem.
 
 ## 1. Marketing fără obiectiv

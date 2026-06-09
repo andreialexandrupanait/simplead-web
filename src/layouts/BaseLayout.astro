@@ -36,7 +36,7 @@ const {
 
 const locale = resolveLocale(Astro.currentLocale);
 const GTM_ID = import.meta.env.GTM_ID;
-const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — Grafică & marketing digital`;
+const fullTitle = title ? `${title} · ${site.name}` : `${site.name} · Grafică & marketing digital`;
 const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
 const ogImageUrl = new URL(ogImage, Astro.site ?? Astro.url.origin).href;
@@ -156,7 +156,7 @@ const jsonLd = {
     <Footer />
 
     <script>
-      // Scroll reveal — subtil, accesibil ([data-reveal] / [data-reveal-stagger]).
+      // Scroll reveal: subtil, accesibil ([data-reveal] / [data-reveal-stagger]).
       const els = Array.from(
         document.querySelectorAll<HTMLElement>('[data-reveal],[data-reveal-stagger]'),
       );

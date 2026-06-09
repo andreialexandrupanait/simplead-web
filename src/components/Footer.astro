@@ -27,10 +27,10 @@ const social = site.social;
 
   <div class="footer-top">
     <div class="footer-brand">
-      <a class="brand" href="/" aria-label="Simplead — Acasă"><Logo height={30} color="#fff" /></a>
+      <a class="brand" href="/" aria-label="Simplead, Acasă"><Logo height={30} color="#fff" /></a>
       <p class="footer-about">
         Grafică și marketing digital, conduse de {site.founder}, {site.founderTitle}. Te ajutăm să
-        atragi atenția potrivită — cu decizii bazate pe date, nu pe presupuneri.
+        atragi atenția potrivită, cu decizii bazate pe date, nu pe presupuneri.
       </p>
       <a class="footer-founder" href={site.founderSite} target="_blank" rel="noopener">
         <span>Cercetare & neuromarketing</span>
@@ -66,9 +66,35 @@ const social = site.social;
   </div>
 
   <div class="footer-bottom">
-    <span>© {year} {site.legalName}. Toate drepturile rezervate.</span>
+    <span>
+      © {year} {site.legalName}. Toate drepturile rezervate.
+      {
+        (site.legal.cif || site.legal.regCom) && (
+          <span class="footer-legal">
+            {site.legal.cif && <>CIF: {site.legal.cif}</>}
+            {site.legal.cif && site.legal.regCom && ' · '}
+            {site.legal.regCom && <>Reg. Com.: {site.legal.regCom}</>}
+          </span>
+        )
+      }
+    </span>
     <div class="links">
       {footerLegal.map((i) => <a href={i.href}>{i.label}</a>)}
     </div>
   </div>
 </footer>
+
+<style>
+  .footer-legal {
+    display: inline-block;
+    margin-left: 10px;
+    opacity: 0.72;
+  }
+  @media (max-width: 560px) {
+    .footer-legal {
+      display: block;
+      margin-left: 0;
+      margin-top: 6px;
+    }
+  }
+</style>

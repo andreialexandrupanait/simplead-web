@@ -11,7 +11,11 @@ import { services, relatedServices, type ServiceProcessStep } from '@data/servic
 import { processSteps } from '@data/content';
 
 export function getStaticPaths() {
-  return services.map((s) => ({ params: { slug: s.slug }, props: { service: s } }));
+  // „mentenanta-website" are pagină dedicată unică la /mentenanta (cu calculator);
+  // aici nu o mai generăm: vezi redirect-ul din astro.config.mjs.
+  return services
+    .filter((s) => s.slug !== 'mentenanta-website')
+    .map((s) => ({ params: { slug: s.slug }, props: { service: s } }));
 }
 const { service } = Astro.props;
 const others = relatedServices(service.slug);
@@ -33,7 +37,7 @@ const serviceSchema = {
 };
 ---
 
-<BaseLayout title={`${service.title} — Servicii`} description={service.summary} transparentNav={true} navOverDark={true} schema={serviceSchema}>
+<BaseLayout title={`${service.title} · Servicii`} description={service.summary} transparentNav={true} navOverDark={true} schema={serviceSchema}>
   <ServiceHero
     title={service.heroTitle}
     titleAccent={service.heroTitleAccent}

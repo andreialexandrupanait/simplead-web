@@ -1,7 +1,7 @@
 import type { UiStrings } from './ro';
 
 /**
- * English UI strings — SCHELET pregătit pentru lansarea EN.
+ * English UI strings: SCHELET pregătit pentru lansarea EN.
  * Conținutul rămâne RO la lansare; aceste valori sunt traduceri inițiale,
  * de revizuit înainte de activarea locale-ului `en`.
  */

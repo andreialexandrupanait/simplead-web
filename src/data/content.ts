@@ -3,7 +3,7 @@
  * Cifrele/valorile marcate TODO trebuie confirmate de client.
  */
 
-/** Bara de statistici din hero (4 cifre — valori din design, de confirmat). */
+/** Bara de statistici din hero (4 cifre - valori din design, de confirmat). */
 export interface Stat {
   value: string;
   suffix?: string;
@@ -19,7 +19,7 @@ export const stats: Stat[] = [
 /** Pilonii din hero (3 puncte cu bifă). */
 export const heroPillars: string[] = [
   'Marketing bazat pe date și neuromarketing',
-  'Grafică, web & branding — un singur partener',
+  'Grafică, web & branding, un singur partener',
   'Decizii măsurate, nu presupuneri',
 ];
 
@@ -39,7 +39,7 @@ export const orbitNodes: OrbitNode[] = [
   { label: 'eCommerce', icon: 'cart' },
 ];
 
-/** Diferențiator „Nu ghicim. Măsurăm." — cele 3 puncte. */
+/** Diferențiator „Nu ghicim. Măsurăm." - cele 3 puncte. */
 export interface Differentiator {
   title: string;
   text: string;
@@ -59,7 +59,7 @@ export const differentiators: Differentiator[] = [
   },
 ];
 
-/** Procesul în 5 pași — cu detalii pentru tab-urile interactive (din design). */
+/** Procesul în 5 pași - cu detalii pentru tab-urile interactive (din design). */
 export interface ProcessStep {
   n: number;
   title: string;
@@ -70,13 +70,13 @@ export const processSteps: ProcessStep[] = [
   {
     n: 1,
     title: 'Întâlnire',
-    text: 'Pornim de la tine. Ne așezăm la masă — fizic sau online — și ascultăm. Vrem să înțelegem afacerea, obiectivele și ce te frământă, înainte să propunem orice.',
+    text: 'Pornim de la tine. Ne așezăm la masă, fizic sau online, și ascultăm. Vrem să înțelegem afacerea, obiectivele și ce te frământă, înainte să propunem orice.',
     bullets: ['Discuție fără obligații', 'Înțelegem obiectivele tale', 'Stabilim bugetul și termenele'],
   },
   {
     n: 2,
     title: 'Analiză',
-    text: 'Studiem terenul. Cercetăm publicul, concurența și ce ai deja. Aici intră partea de date și neuromarketing — ca deciziile să nu fie pe ghicite.',
+    text: 'Studiem terenul. Cercetăm publicul, concurența și ce ai deja. Aici intră partea de date și neuromarketing, ca deciziile să nu fie pe ghicite.',
     bullets: ['Audit al prezenței actuale', 'Analiza publicului și concurenței', 'Heatmaps și date de comportament'],
   },
   {
@@ -94,7 +94,7 @@ export const processSteps: ProcessStep[] = [
   {
     n: 5,
     title: 'Rezultate',
-    text: 'Măsurăm și optimizăm. Urmărim rezultatele, raportăm transparent și ajustăm continuu — pentru că treaba nu se termină la lansare.',
+    text: 'Măsurăm și optimizăm. Urmărim rezultatele, raportăm transparent și ajustăm continuu, pentru că treaba nu se termină la lansare.',
     bullets: ['Rapoarte clare, pe înțelesul tău', 'Optimizare continuă', 'Recomandări pentru pasul următor'],
   },
 ];
@@ -165,7 +165,7 @@ export const faqs: Faq[] = [
   {
     q: 'Ce servicii oferiți, mai exact?',
     body: [
-      'Suntem un singur partener pentru tot ce ține de imaginea și promovarea afacerii tale — de la identitate vizuală, până la campanii și site. Iată ce acoperim:',
+      'Suntem un singur partener pentru tot ce ține de imaginea și promovarea afacerii tale: de la identitate vizuală, până la campanii și site. Iată ce acoperim:',
     ],
     list: [
       'Marketing & social media',
@@ -181,7 +181,7 @@ export const faqs: Faq[] = [
   {
     q: 'Ce înseamnă „bazat pe date și neuromarketing"?',
     body: [
-      'Înseamnă că nu ne bazăm pe „mie îmi place". Testăm deciziile de design cu instrumente de neuromarketing (analiza atenției vizuale, hărți termice) și le validăm cu date reale din Analytics și tracking de conversii — înainte și după lansare. Așa cheltui bugetul acolo unde chiar contează.',
+      'Înseamnă că nu ne bazăm pe „mie îmi place". Testăm deciziile de design cu instrumente de neuromarketing (analiza atenției vizuale, hărți termice) și le validăm cu date reale din Analytics și tracking de conversii, înainte și după lansare. Așa cheltui bugetul acolo unde chiar contează.',
     ],
   },
   {
@@ -193,13 +193,82 @@ export const faqs: Faq[] = [
   {
     q: 'Cât costă un proiect?',
     body: [
-      'Depinde de obiective și de amploarea proiectului — de aceea pornim mereu de la o discuție și o ofertă personalizată, nu de la un preț de raft. Spune-ne ce ai nevoie și îți facem o propunere clară, cu buget pe obiective.',
+      'Depinde de obiective și de amploarea proiectului: de aceea pornim mereu de la o discuție și o ofertă personalizată, nu de la un preț de raft. Spune-ne ce ai nevoie și îți facem o propunere clară, cu buget pe obiective.',
     ],
   },
   {
     q: 'Lucrați și cu afaceri mici sau la început de drum?',
     body: [
-      'Da — exact pentru ele există Simplead. Îți dăm instrumentele cu care concurezi de la egal la egal cu jucătorii mari, fără bătăi de cap și fără limbaj corporatist.',
+      'Da, exact pentru ele există Simplead. Îți dăm instrumentele cu care concurezi de la egal la egal cu jucătorii mari, fără bătăi de cap și fără limbaj corporatist.',
+    ],
+  },
+];
+
+/**
+ * FAQ general aprobat (Andrei) - 11 întrebări. Folosit pe pagina Mentenanță
+ * și candidat pentru schema FAQPage (GEO). Text aprobat, nemodificat.
+ */
+export const generalFaqs: Faq[] = [
+  {
+    q: 'Oferiți mentenanță web lunară?',
+    body: [
+      'Da: pachete cu actualizări de platformă & module, backup-uri regulate, monitorizare securitate, timp de intervenție garantat. Tu pe afacere, noi pe partea tehnică.',
+    ],
+  },
+  {
+    q: 'Cât durează un website de prezentare?',
+    body: [
+      'Depinde de complexitate; în general 2-4 săptămâni (design, dezvoltare, testare, lansare).',
+    ],
+  },
+  {
+    q: 'Ce include un pachet de branding/creație grafică?',
+    body: [
+      'Personalizat; poate include logo, manual de identitate, cărți de vizită, semnături email, grafică social media, materiale publicitare.',
+    ],
+  },
+  {
+    q: 'Pot să-mi actualizez singur site-ul după lansare?',
+    body: ['Da; construite pe CMS ușor de folosit + scurt training.'],
+  },
+  {
+    q: 'Site-urile sunt optimizate pentru mobil?',
+    body: ['Da, 100%; design responsiv pe orice dispozitiv.'],
+  },
+  {
+    q: 'Oferiți găzduire & înregistrare domeniu?',
+    body: [
+      'Ne concentrăm pe design/dezvoltare, dar te ajutăm să alegi hosting și să înregistrezi domeniul; le putem gestiona noi.',
+    ],
+  },
+  {
+    q: 'Care sunt pașii pentru a începe?',
+    body: [
+      'Mesaj/apel → întâlnire (fizic/online) → propunere personalizată → contract + avans → treabă.',
+    ],
+  },
+  {
+    q: 'Realizați magazine online?',
+    body: [
+      'Da; magazine rapide, sigure, integrate cu sisteme de plată cu cardul și curierat din România.',
+    ],
+  },
+  {
+    q: 'Cum se face plata?',
+    body: [
+      'Dezvoltare web & branding: avans 40-50% la semnare, rest la finalizare. Mentenanța: lunar.',
+    ],
+  },
+  {
+    q: 'Oferiți suport tehnic la probleme?',
+    body: [
+      'Da; prioritar pentru clienții cu pachet de mentenanță; altfel, la tarif orar.',
+    ],
+  },
+  {
+    q: 'Puteți reface un site existent?',
+    body: [
+      'Da; audit + redesign, optimizare viteză și UX, păstrând ce funcționează.',
     ],
   },
 ];
@@ -213,7 +282,7 @@ export interface Testimonial {
 export const testimonials: Testimonial[] = [
   {
     quote:
-      'Profesionalism, fairplay, pricepere, asumare — cuvinte ce definesc relația noastră cu Simplead. Suntem la al doilea proiect împreună, datorită implicării active și relaționării impecabile.',
+      'Profesionalism, fairplay, pricepere, asumare: cuvinte ce definesc relația noastră cu Simplead. Suntem la al doilea proiect împreună, datorită implicării active și relaționării impecabile.',
     author: 'Ștefan Chelmu',
     company: 'Blitzstudio',
   },
@@ -295,19 +364,19 @@ export const servicesFaqs: Faq[] = [
   {
     q: 'Pot lua un singur serviciu sau trebuie tot pachetul?',
     body: [
-      'Cum vrei tu. Poți începe cu un singur serviciu — de exemplu doar site-ul sau doar social media — și adăugăm restul când ai nevoie. Avantajul e că, fiind un singur partener, totul rămâne coerent.',
+      'Cum vrei tu. Poți începe cu un singur serviciu, de exemplu doar site-ul sau doar social media, și adăugăm restul când ai nevoie. Avantajul e că, fiind un singur partener, totul rămâne coerent.',
     ],
   },
   {
     q: 'Ce înseamnă „bazat pe date și neuromarketing"?',
     body: [
-      'Înseamnă că nu ne bazăm pe „mie îmi place". Testăm deciziile de design cu instrumente de neuromarketing (atenție vizuală, hărți termice) și le validăm cu date reale din Analytics și tracking de conversii — înainte și după lansare.',
+      'Înseamnă că nu ne bazăm pe „mie îmi place". Testăm deciziile de design cu instrumente de neuromarketing (atenție vizuală, hărți termice) și le validăm cu date reale din Analytics și tracking de conversii, înainte și după lansare.',
     ],
   },
   {
     q: 'Cât costă o colaborare cu Simplead?',
     body: [
-      'Depinde de obiective și de amploarea proiectului — de aceea pornim mereu de la o discuție și o ofertă personalizată, nu de la un preț de raft. Spune-ne ce ai nevoie și îți facem o propunere clară, cu buget pe obiective.',
+      'Depinde de obiective și de amploarea proiectului: de aceea pornim mereu de la o discuție și o ofertă personalizată, nu de la un preț de raft. Spune-ne ce ai nevoie și îți facem o propunere clară, cu buget pe obiective.',
     ],
   },
   {
@@ -319,7 +388,7 @@ export const servicesFaqs: Faq[] = [
   {
     q: 'Lucrați și cu afaceri mici sau la început de drum?',
     body: [
-      'Da — exact pentru ele există Simplead. Îți dăm instrumentele cu care concurezi de la egal la egal cu jucătorii mari, fără bătăi de cap și fără limbaj corporatist.',
+      'Da, exact pentru ele există Simplead. Îți dăm instrumentele cu care concurezi de la egal la egal cu jucătorii mari, fără bătăi de cap și fără limbaj corporatist.',
     ],
   },
 ];

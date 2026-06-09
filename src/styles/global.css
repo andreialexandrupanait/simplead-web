@@ -2,7 +2,7 @@
 @import './sections.css';
 
 /* ============================================================
-   SIMPLEAD — DESIGN TOKENS  ·  „Deep Tech, simplu"
+   SIMPLEAD · DESIGN TOKENS  ·  „Deep Tech, simplu"
    Sistem vizual: culoare flat, zero gradienți decorativi, spațiu
    alb generos, accente electrice punctuale + glow subtil.
    ============================================================ */
@@ -13,13 +13,13 @@
   /* ===== Bază ===== */
   --color-canvas: #ffffff; /* fundal principal light */
   --color-canvas-soft: #f5f7fa; /* fundal secțiuni light, gri rece */
-  --color-ink: #030d4a; /* navy profund — text & secțiuni dark */
+  --color-ink: #030d4a; /* navy profund: text & secțiuni dark */
   --color-ink-soft: #0a1b47; /* carduri pe fundal dark */
 
   /* ===== Accente ===== */
   --color-electric: #0077fc; /* CTA principal, linkuri, accent #1 */
-  --color-cyan: #00e0c6; /* hover, glow, semnale AI, linii — rar */
-  --color-signal: #f5d93f; /* galben — pop foarte rar (energie/AI) */
+  --color-cyan: #00e0c6; /* hover, glow, semnale AI, linii, rar */
+  --color-signal: #f5d93f; /* galben: pop foarte rar (energie/AI) */
 
   /* ===== Neutre ===== */
   --color-line: #e1e6e8; /* borduri & divizori 1px */
@@ -84,7 +84,7 @@
   --grad-text: var(--electric);
 
   /* ===== Scale de design ===== */
-  /* Radius — geometrie curată (8–12px) */
+  /* Radius: geometrie curată (8–12px) */
   --r-xs: 8px;
   --r-sm: 10px;
   --r-md: 12px;
@@ -105,17 +105,17 @@
   /* Borduri */
   --border: 1px solid var(--line);
   --border-strong: 1px solid #d7dde6;
-  /* Umbre — discrete, nuanță navy rece */
+  /* Umbre: discrete, nuanță navy rece */
   --sh-sm: 0 4px 12px -4px rgba(3, 13, 74, 0.08);
   --sh-md: 0 18px 40px -22px rgba(3, 13, 74, 0.18);
   --sh-lg: 0 28px 56px -26px rgba(3, 13, 74, 0.22);
-  /* Glow — futurismul: box-shadow soft electric/cyan la 8–15% */
+  /* Glow, futurismul: box-shadow soft electric/cyan la 8–15% */
   --glow-electric: 0 14px 34px -14px rgba(0, 119, 252, 0.45);
   --glow-cyan: 0 14px 38px -12px rgba(0, 224, 198, 0.4);
   --sh-brand: var(--glow-electric);
   /* Inel focus accesibil */
   --focus-ring: 0 0 0 2px #ffffff, 0 0 0 4px var(--cyan);
-  /* Easing — reveal la scroll (brief) */
+  /* Easing: reveal la scroll (brief) */
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-snap: cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -180,7 +180,7 @@
   }
 }
 
-/* Micro-etichetă „tech" (kicker) — monospace, uppercase, accent */
+/* Micro-etichetă „tech" (kicker): monospace, uppercase, accent */
 .kicker {
   font-family: var(--font-display);
   font-size: 0.78rem;
@@ -215,7 +215,7 @@
 }
 
 /* ============================================================
-   PROSE — conținut Markdown (blog + portofoliu)
+   PROSE: conținut Markdown (blog + portofoliu)
    ============================================================ */
 .prose-simplead {
   font-size: 1.0625rem;

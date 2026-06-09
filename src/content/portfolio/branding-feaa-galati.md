@@ -1,6 +1,6 @@
 ---
 title: 'Campanie admitere FEAA Galați'
-client: 'FEAA — Universitatea „Dunărea de Jos" Galați'
+client: 'FEAA, Universitatea „Dunărea de Jos" Galați'
 service: 'Marketing'
 summary: 'Campanie integrată de admitere: strategie, creație și media, pentru creșterea numărului de candidați.'
 challenge: 'Atragerea unui număr mai mare de candidați calificați într-o piață educațională competitivă, cu un buget limitat.'

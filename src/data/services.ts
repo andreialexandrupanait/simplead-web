@@ -4,7 +4,7 @@
  * src/data/nav.ts (servicesNav).
  *
  * Conținut real, derivat din Copy_site_Simplead.md, pentru: mentenanță,
- * ux/ui, grafică, social media, consultanță. AI pentru business e nou —
+ * ux/ui, grafică, social media, consultanță. AI pentru business e nou,
  * marcat [COPY] acolo unde Andrei trebuie să confirme.
  */
 import type { Faq } from './content';
@@ -48,11 +48,11 @@ export interface Service {
   claim: string;
   /** Descriere lungă (pagina dedicată). */
   description: string;
-  /** Ce include — listă de bullet-uri. */
+  /** Ce include - listă de bullet-uri. */
   includes: string[];
   /** Etichete scurte (cardurile hub din /servicii). */
   tags: string[];
-  /** Imagine hero / card hub (placeholder Unsplash — de înlocuit cu real). */
+  /** Imagine hero / card hub (placeholder Unsplash - de înlocuit cu real). */
   image: string;
   /** Titlul H1 pe pagina de detaliu (partea simplă + partea cu accent). */
   heroTitle: string;
@@ -91,24 +91,24 @@ export const services: Service[] = [
     icon: 'mentenanta',
     title: 'Mentenanță website',
     summary:
-      'Tu te ocupi de afacere, noi de partea tehnică — actualizări, securitate și suport cu AI.',
-    claim: 'Tu te ocupi de afacere, noi de partea tehnică.',
+      'Tu te ocupi de afacere, eu de partea tehnică: actualizări, securitate, backup și monitorizare continuă.',
+    claim: 'Tu te ocupi de afacere, eu de partea tehnică.',
     description:
-      'Site-ul tău rămâne rapid, sigur și actualizat, fără bătăi de cap. Monitorizăm, actualizăm și optimizăm — tot mai mult cu ajutorul AI — ca tu să te concentrezi pe ce contează.',
+      'Site-ul tău rămâne rapid, sigur și actualizat, fără bătăi de cap. Îl monitorizez continuu, îl actualizez și îl optimizez, ca tu să te concentrezi pe ce contează.',
     includes: [
       'Actualizări și backup-uri regulate',
       'Securitate și monitorizare uptime',
       'Mici modificări și suport prioritar',
-      'Optimizare și mentenanță asistată de AI',
+      'Monitorizare continuă a site-ului',
       'Rapoarte de performanță',
     ],
-    tags: ['Actualizări', 'Securitate', 'Backup', 'Suport cu AI'],
+    tags: ['Actualizări', 'Securitate', 'Backup', 'Monitorizare'],
     image:
       'https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&q=78&auto=format&fit=crop',
     heroTitle: 'Tu te ocupi de afacere, ',
-    heroTitleAccent: 'noi de partea tehnică',
+    heroTitleAccent: 'eu de partea tehnică',
     heroSub:
-      'Site-ul tău rămâne rapid, sigur și actualizat, fără bătăi de cap. Ne ocupăm de actualizări, securitate, backup-uri și suport — tot mai mult cu ajutorul AI.',
+      'Site-ul tău rămâne rapid, sigur și actualizat, fără bătăi de cap. Mă ocup de actualizări, securitate, backup-uri, suport și de monitorizarea continuă a site-ului.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'Liniște tehnică, ',
@@ -119,7 +119,7 @@ export const services: Service[] = [
       {
         title: 'Actualizări & Backup',
         icon: ICON.refresh,
-        desc: 'Site-ul tău rămâne mereu la zi, cu copii de siguranță regulate — fără surprize.',
+        desc: 'Site-ul tău rămâne mereu la zi, cu copii de siguranță regulate, fără surprize.',
         items: [
           'Actualizări platformă & pluginuri',
           'Backup-uri regulate',
@@ -139,13 +139,13 @@ export const services: Service[] = [
         ],
       },
       {
-        title: 'Suport & Mentenanță cu AI',
+        title: 'Suport & Monitorizare',
         icon: ICON.support,
-        desc: 'Mici modificări, suport prioritar și optimizări asistate de AI, plus rapoarte clare.',
+        desc: 'Mici modificări, suport prioritar și monitorizare continuă a site-ului, plus rapoarte clare.',
         items: [
           'Mici modificări de conținut',
           'Suport prioritar',
-          'Optimizări asistate de AI',
+          'Monitorizare continuă a site-ului',
           'Rapoarte de performanță',
         ],
       },
@@ -170,7 +170,7 @@ export const services: Service[] = [
       {
         q: 'Cum folosiți AI în mentenanță?',
         body: [
-          'Folosim AI pentru monitorizare, detectarea timpurie a problemelor și optimizări repetitive — ca să intervenim mai repede și să prevenim, nu doar să reparăm. Deciziile importante rămân la oameni.',
+          'Folosim AI pentru monitorizare, detectarea timpurie a problemelor și optimizări repetitive, ca să intervenim mai repede și să prevenim, nu doar să reparăm. Deciziile importante rămân la oameni.',
         ],
       },
       {
@@ -197,7 +197,7 @@ export const services: Service[] = [
       'Site-uri și magazine online rapide, clare și gândite să transforme vizitatorii în clienți.',
     claim: 'Site-uri care transformă vizitatori în clienți.',
     description:
-      'Realizăm site-uri de prezentare și magazine online rapide, clare și ușor de administrat. Frumoase pentru oameni, prietenoase cu Google — și validate cu principii de neuromarketing.',
+      'Realizăm site-uri de prezentare și magazine online rapide, clare și ușor de administrat. Frumoase pentru oameni, prietenoase cu Google și validate cu principii de neuromarketing.',
     includes: [
       'UX/UI design validat pe atenția vizuală',
       'Site-uri de prezentare (WordPress)',
@@ -211,7 +211,7 @@ export const services: Service[] = [
     heroTitle: 'Site-uri și magazine online care ',
     heroTitleAccent: 'transformă vizitatori în clienți',
     heroSub:
-      'De la site-uri de prezentare la magazine online — construim platforme rapide, clare și ușor de administrat. Frumoase pentru oameni, prietenoase cu Google și gândite pe conversii, nu pe presupuneri.',
+      'De la site-uri de prezentare la magazine online: construim platforme rapide, clare și ușor de administrat. Frumoase pentru oameni, prietenoase cu Google și gândite pe conversii, nu pe presupuneri.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'De la idee la ',
@@ -222,7 +222,7 @@ export const services: Service[] = [
       {
         title: 'UX/UI Design',
         icon: ICON.layout,
-        desc: 'Structură clară și un design care ghidează vizitatorul exact unde vrei tu — validat cu principii de neuromarketing.',
+        desc: 'Structură clară și un design care ghidează vizitatorul exact unde vrei tu, validat cu principii de neuromarketing.',
         items: [
           'Arhitectură de conținut',
           'Wireframe & prototip',
@@ -265,7 +265,7 @@ export const services: Service[] = [
       {
         n: '02',
         title: 'Design UI/UX',
-        body: 'Construim wireframe-uri și apoi designul vizual — clar, pe brandul tău și gândit pe conversii, nu doar „să arate bine".',
+        body: 'Construim wireframe-uri și apoi designul vizual: clar, pe brandul tău și gândit pe conversii, nu doar „să arate bine".',
       },
       {
         n: '03',
@@ -275,7 +275,7 @@ export const services: Service[] = [
       {
         n: '04',
         title: 'Testare & QA',
-        body: 'Verificăm totul pe dispozitive și browsere diferite — viteză, formulare, linkuri — ca lansarea să fie fără surprize.',
+        body: 'Verificăm totul pe dispozitive și browsere diferite, viteză, formulare, linkuri, ca lansarea să fie fără surprize.',
       },
       {
         n: '05',
@@ -297,7 +297,7 @@ export const services: Service[] = [
       {
         q: 'Ce tehnologii folosiți pentru site-uri?',
         body: [
-          'Lucrăm în principal cu WordPress și WooCommerce — ușor de administrat de către tine. Pentru proiecte speciale folosim și soluții la comandă. Alegem tehnologia în funcție de nevoile tale, nu invers.',
+          'Lucrăm în principal cu WordPress și WooCommerce, ușor de administrat de către tine. Pentru proiecte speciale folosim și soluții la comandă. Alegem tehnologia în funcție de nevoile tale, nu invers.',
         ],
       },
       {
@@ -315,7 +315,7 @@ export const services: Service[] = [
       {
         q: 'Puteți moderniza un site existent?',
         body: [
-          'Sigur. Analizăm site-ul actual și îți propunem fie o îmbunătățire, fie o reconstrucție — în funcție de ce e mai eficient pentru tine.',
+          'Sigur. Analizăm site-ul actual și îți propunem fie o îmbunătățire, fie o reconstrucție, în funcție de ce e mai eficient pentru tine.',
         ],
       },
     ],
@@ -330,7 +330,7 @@ export const services: Service[] = [
       'Identitate vizuală, materiale de promovare și foto-video care te fac memorabil și coerent.',
     claim: 'Imagine coerentă, care te face memorabil.',
     description:
-      'De la logo și identitate vizuală completă, până la materiale de promovare și conținut foto-video. Totul gândit simplu, dar cu impact — și optimizat vizual cu neuromarketing.',
+      'De la logo și identitate vizuală completă, până la materiale de promovare și conținut foto-video. Totul gândit simplu, dar cu impact și optimizat vizual cu neuromarketing.',
     includes: [
       'Identitate vizuală & branding (logo, brand guide)',
       'Grafică publicitară (print, outdoor, social media)',
@@ -344,7 +344,7 @@ export const services: Service[] = [
     heroTitle: 'Imagine coerentă, ',
     heroTitleAccent: 'care te face memorabil',
     heroSub:
-      'De la logo și identitate vizuală completă, până la materiale de promovare și conținut foto-video. Totul gândit simplu, dar cu impact — și validat vizual cu neuromarketing.',
+      'De la logo și identitate vizuală completă, până la materiale de promovare și conținut foto-video. Totul gândit simplu, dar cu impact și validat vizual cu neuromarketing.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'De la identitate la ',
@@ -355,7 +355,7 @@ export const services: Service[] = [
       {
         title: 'Identitate vizuală & Branding',
         icon: ICON.shapes,
-        desc: 'Un brand coerent, de la logo la regulile de folosire — recognoscibil peste tot.',
+        desc: 'Un brand coerent, de la logo la regulile de folosire, recognoscibil peste tot.',
         items: [
           'Logo & sistem vizual',
           'Brand guide complet',
@@ -400,7 +400,7 @@ export const services: Service[] = [
       {
         q: 'Realizați doar logo sau și identitate completă?',
         body: [
-          'Amândouă. Putem livra doar un logo, dar recomandăm un sistem vizual complet (brand guide) — cu paletă, tipografie și reguli de folosire — ca brandul tău să arate coerent peste tot.',
+          'Amândouă. Putem livra doar un logo, dar recomandăm un sistem vizual complet (brand guide), cu paletă, tipografie și reguli de folosire, ca brandul tău să arate coerent peste tot.',
         ],
       },
       {
@@ -412,7 +412,7 @@ export const services: Service[] = [
       {
         q: 'Ce înseamnă „design validat cu neuromarketing"?',
         body: [
-          'Verificăm ierarhia vizuală și atenția cu heatmaps și principii de neuromarketing, ca materialele să comunice clar mesajul important — nu doar „să arate bine".',
+          'Verificăm ierarhia vizuală și atenția cu heatmaps și principii de neuromarketing, ca materialele să comunice clar mesajul important, nu doar „să arate bine".',
         ],
       },
       {
@@ -432,7 +432,7 @@ export const services: Service[] = [
     summary: 'Conținut și prezență care aduc clienți, nu doar aprecieri. Construite pe date.',
     claim: 'Prezență în social media care aduce clienți, nu doar aprecieri.',
     description:
-      'Administrăm prezența ta în social media cu o strategie clară, conținut coerent și campanii plătite gândite pe conversii — nu pe afișări.',
+      'Administrăm prezența ta în social media cu o strategie clară, conținut coerent și campanii plătite gândite pe conversii, nu pe afișări.',
     includes: [
       'Strategie & calendar editorial',
       'Administrare conturi (Facebook, Instagram, TikTok, YouTube)',
@@ -479,7 +479,7 @@ export const services: Service[] = [
       {
         title: 'Analiză & Optimizare',
         icon: ICON.chart,
-        desc: 'Măsurăm ce funcționează și ajustăm — decizii pe date, nu pe presupuneri.',
+        desc: 'Măsurăm ce funcționează și ajustăm: decizii pe date, nu pe presupuneri.',
         items: [
           'Tracking conversii & evenimente',
           'Rapoarte clare, pe înțelesul tău',
@@ -508,7 +508,7 @@ export const services: Service[] = [
       {
         q: 'Creați și conținutul, sau doar îl postați?',
         body: [
-          'Creăm conținutul — vizual și text — și îl publicăm pe un calendar editorial clar. Putem integra și materiale pe care le ai deja.',
+          'Creăm conținutul, vizual și text, și îl publicăm pe un calendar editorial clar. Putem integra și materiale pe care le ai deja.',
         ],
       },
       {
@@ -526,7 +526,7 @@ export const services: Service[] = [
     icon: 'marketing',
     title: 'Consultanță de marketing',
     summary:
-      'Decizii pe date și neuromarketing — nu pe presupuneri. Studio condus de un doctor în marketing.',
+      'Decizii pe date și neuromarketing, nu pe presupuneri. Studio condus de un doctor în marketing.',
     claim: 'Marketing fundamentat pe cercetare, nu pe noroc.',
     description:
       'Te ajutăm să iei deciziile de marketing potrivite, validate cu date și neuromarketing. Strategie, analiză a atenției vizuale (eye-tracking & heatmaps) și un plan clar de creștere.',
@@ -543,7 +543,7 @@ export const services: Service[] = [
     heroTitle: 'Marketing fundamentat pe ',
     heroTitleAccent: 'cercetare, nu pe noroc',
     heroSub:
-      'Validăm fiecare decizie cu date și neuromarketing — inclusiv eye-tracking și heatmaps prin expoze.app. Studio condus de Andrei Panait, doctor în marketing.',
+      'Validăm fiecare decizie cu date și neuromarketing, inclusiv eye-tracking și heatmaps prin expoze.app. Studio condus de Andrei Panait, doctor în marketing.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'De la presupuneri la ',
@@ -554,7 +554,7 @@ export const services: Service[] = [
       {
         title: 'Strategie & Poziționare',
         icon: ICON.target,
-        desc: 'Un plan clar de marketing și o poziționare care te diferențiază — pe obiective măsurabile.',
+        desc: 'Un plan clar de marketing și o poziționare care te diferențiază, pe obiective măsurabile.',
         items: [
           'Strategie de marketing & brand',
           'Poziționare și mesaje',
@@ -565,7 +565,7 @@ export const services: Service[] = [
       {
         title: 'Neuromarketing & Atenție vizuală',
         icon: ICON.brain,
-        desc: 'Testăm atenția cu eye-tracking și heatmaps prin expoze.app — vedem ce funcționează înainte de lansare.',
+        desc: 'Testăm atenția cu eye-tracking și heatmaps prin expoze.app: vedem ce funcționează înainte de lansare.',
         items: [
           'Eye-tracking & heatmaps (expoze.app)',
           'Analiză a ierarhiei vizuale',
@@ -599,19 +599,19 @@ export const services: Service[] = [
       {
         q: 'Ce înseamnă „marketing bazat pe neuromarketing"?',
         body: [
-          'Validăm deciziile cu instrumente de analiză a atenției vizuale (eye-tracking, heatmaps prin expoze.app) și cu date reale din Analytics — înainte și după lansare. Așa investești acolo unde chiar aduce rezultate.',
+          'Validăm deciziile cu instrumente de analiză a atenției vizuale (eye-tracking, heatmaps prin expoze.app) și cu date reale din Analytics, înainte și după lansare. Așa investești acolo unde chiar aduce rezultate.',
         ],
       },
       {
         q: 'Lucrați doar consultanță sau și execuție?',
         body: [
-          'Amândouă. Putem livra doar strategia și recomandările, sau să ne ocupăm și de execuție (web, grafică, social media) — în funcție de ce ai nevoie.',
+          'Amândouă. Putem livra doar strategia și recomandările, sau să ne ocupăm și de execuție (web, grafică, social media), în funcție de ce ai nevoie.',
         ],
       },
       {
         q: 'Pentru ce tip de afaceri e potrivită consultanța?',
         body: [
-          'Pentru afaceri care vor să crească cu decizii informate — de la firme mici la organizații mai mari. Pornim de la obiectivele tale, nu de la un șablon.',
+          'Pentru afaceri care vor să crească cu decizii informate, de la firme mici la organizații mai mari. Pornim de la obiectivele tale, nu de la un șablon.',
         ],
       },
     ],
@@ -623,8 +623,8 @@ export const services: Service[] = [
     icon: 'ai',
     title: 'AI pentru business',
     summary:
-      'Automatizări, mentenanță și conținut asistate de AI — acolo unde îți aduc valoare reală.',
-    claim: 'AI folosit cu cap — economisești timp și bani.',
+      'Automatizări, mentenanță și conținut asistate de AI, acolo unde îți aduc valoare reală.',
+    claim: 'AI folosit cu cap: economisești timp și bani.',
     description:
       'Nu vindem „AI" ca slogan. Identificăm unde îți aduce valoare reală și îl integrăm în fluxurile tale: automatizări, mentenanță inteligentă și producție de conținut asistată. [COPY: confirmă scope-ul exact al serviciului]',
     includes: [
@@ -640,7 +640,7 @@ export const services: Service[] = [
     heroTitle: 'AI pentru business, ',
     heroTitleAccent: 'folosit cu cap',
     heroSub:
-      'Îl folosim acolo unde îți aduce valoare reală — automatizări, mentenanță inteligentă și conținut asistat. Restul rămâne la oameni. [COPY: rafinează propunerea]',
+      'Îl folosim acolo unde îți aduce valoare reală: automatizări, mentenanță inteligentă și conținut asistat. Restul rămâne la oameni. [COPY: rafinează propunerea]',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'AI integrat în ',
@@ -692,7 +692,7 @@ export const services: Service[] = [
       {
         q: 'De unde știu dacă afacerea mea are nevoie de AI?',
         body: [
-          'Pornim de la o discuție: ne uităm la procesele tale și identificăm unde AI-ul aduce valoare reală — și unde nu merită. [COPY]',
+          'Pornim de la o discuție: ne uităm la procesele tale și identificăm unde AI-ul aduce valoare reală și unde nu merită. [COPY]',
         ],
       },
       {

@@ -2,10 +2,11 @@
 import SectionHeading from '@components/ui/SectionHeading.astro';
 
 const steps = [
-  { n: '01', title: 'Descoperire', body: 'Înțelegem afacerea, publicul și obiectivele măsurabile.' },
-  { n: '02', title: 'Cercetare & strategie', body: 'Analiză, neuromarketing și un plan clar de execuție.' },
-  { n: '03', title: 'Execuție', body: 'Design și implementare validate pe atenția vizuală.' },
-  { n: '04', title: 'Rezultate & mentenanță', body: 'Măsurăm, optimizăm și ținem totul la zi cu AI.' },
+  { n: '01', title: 'Întâlnire & descoperire', body: 'Ne cunoaștem, înțelegem viziunea ta și vedem dacă suntem partenerii potriviți.' },
+  { n: '02', title: 'Analiză & cercetare', body: 'Audităm situația actuală, studiem competiția și identificăm oportunitățile.' },
+  { n: '03', title: 'Strategie & structură', body: 'Construim planul de acțiune, structura informației și direcția.' },
+  { n: '04', title: 'Design & execuție', body: 'Strategia devine realitate: design pixel-perfect și dezvoltare la standarde înalte.' },
+  { n: '05', title: 'Lansare & mentenanță', body: 'Testare riguroasă, lansare, apoi rămânem alături pentru optimizare și suport.' },
 ];
 ---
 
@@ -13,15 +14,16 @@ const steps = [
   <div class="site-container">
     <SectionHeading
       eyebrow="Cum lucrăm"
-      title="Un proces simplu, de la idee la rezultate."
-      accent="de la idee la rezultate"
+      title="Cum funcționează procesul de dezvoltare web?"
+      accent="dezvoltare web"
+      subtitle="Un proces fluid și transparent, de la idee la lansare."
       align="center"
     />
     <ol class="proc__steps" data-reveal-stagger>
       {
         steps.map((s) => (
           <li class="proc__step">
-            <span class="proc__n">{s.n}</span>
+            <span class="proc__node">{s.n}</span>
             <h3>{s.title}</h3>
             <p>{s.body}</p>
           </li>
@@ -57,46 +59,98 @@ const steps = [
   }
   .proc__steps {
     list-style: none;
+    margin: 0;
+    padding: 0;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1px;
-    background: var(--line);
-    border: 1px solid var(--line);
-    border-radius: var(--r-md);
-    overflow: hidden;
+    grid-template-columns: repeat(5, 1fr);
   }
   .proc__step {
-    background: var(--canvas);
-    padding: 32px 26px 36px;
     position: relative;
+    text-align: center;
+    padding: 0 16px;
   }
-  .proc__n {
+  /* linia care leagă nodurile (orizontal) */
+  .proc__step::before {
+    content: '';
+    position: absolute;
+    top: 23px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--line);
+    z-index: 0;
+  }
+  .proc__step:first-child::before {
+    left: 50%;
+  }
+  .proc__step:last-child::before {
+    right: 50%;
+  }
+  .proc__node {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--electric);
+    color: #fff;
     font-family: var(--font-display);
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
-    color: var(--electric);
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: 0 0 0 6px var(--canvas-soft);
   }
   .proc__step h3 {
-    margin-top: 14px;
+    margin-top: 22px;
     font-family: var(--font-body);
     font-weight: 700;
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     color: var(--ink);
   }
   .proc__step p {
     margin-top: 8px;
-    font-size: 0.94rem;
+    font-size: 0.92rem;
     line-height: 1.55;
     color: var(--muted);
   }
-  @media (max-width: 900px) {
-    .proc__steps {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-  @media (max-width: 520px) {
+
+  /* mobil: timeline vertical */
+  @media (max-width: 760px) {
     .proc__steps {
       grid-template-columns: 1fr;
+    }
+    .proc__step {
+      text-align: left;
+      padding: 0 0 30px 64px;
+    }
+    .proc__step:last-child {
+      padding-bottom: 0;
+    }
+    .proc__step::before {
+      top: 0;
+      bottom: 0;
+      left: 23px;
+      right: auto;
+      width: 2px;
+      height: auto;
+    }
+    .proc__step:first-child::before {
+      top: 24px;
+      left: 23px;
+    }
+    .proc__step:last-child::before {
+      bottom: auto;
+      height: 24px;
+    }
+    .proc__node {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    .proc__step h3 {
+      margin-top: 10px;
     }
   }
 </style>

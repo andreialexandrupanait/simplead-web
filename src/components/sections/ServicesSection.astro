@@ -1,58 +1,319 @@
 ---
 /**
- * Servicii (Acasă) — layout editorial cu plăcuțe-imagine (svc2), ca în noul
- * export: titlu pe două coloane + grilă de tile-uri cu titlul suprapus și
- * buton-săgeată în colț (decupaj ogee). Linkuri către paginile de detaliu.
+ * Servicii (Acasă), slider full-width: head în container, track-ul iese
+ * full-bleed cu fade la margini (cardurile din afara containerului se
+ * estompează). Carduri pătrate (mai joase). Scroll nativ cu snap.
  */
 import { services } from '@data/services';
 const arrow = '<path d="M7 17L17 7M7 7h10v10"/>';
 const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
 
-// Pe homepage afișăm cele 4 servicii principale (ca în vechiul design).
-// Hub-ul /servicii listează toate cele 6 (ServiceHubCards).
+// Pe homepage afișăm toate cele 6 servicii (carduri).
 const FEATURED = [
-  'consultanta-marketing',
-  'grafica-publicitara',
-  'ux-ui-web-design',
   'mentenanta-website',
+  'ux-ui-web-design',
+  'grafica-publicitara',
+  'consultanta-marketing',
+  'social-media',
+  'ai-pentru-business',
 ];
 const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).filter(
   (s): s is (typeof services)[number] => Boolean(s),
 );
 ---
 
-<section class="section section--light" id="servicii">
-  <div class="container">
-    <div class="svc2-head" data-reveal>
-      <div class="svc2-head-l">
-        <span class="svc2-kick">/ Servicii</span>
-        <h2 class="svc2-title">Tot, sub un<br /><span class="g">singur acoperiș</span></h2>
+<section class="section section--tint svcx" id="servicii">
+  <div class="container svcx__head" data-reveal>
+    <div class="svcx__top">
+      <div class="svcx__intro">
+        <span class="svcx__kick">Ce facem</span>
+        <h2 class="svcx__title">Servicii gândite să <span class="g">lucreze împreună</span></h2>
       </div>
-      <div class="svc2-head-r">
-        <p>De la branding și grafică, până la web și campanii — un singur partener, zero presupuneri.</p>
-        <div class="svc2-links">
-          <a class="link-more" href="/servicii">Vezi toate serviciile
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={arrowR} />
-          </a>
-          <a class="link-more" href="/contact">Cere o ofertă
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={arrowR} />
-          </a>
-        </div>
+      <div class="svcx__nav">
+        <button class="svcx__btn" type="button" data-dir="prev" aria-label="Serviciul anterior" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
+        </button>
+        <button class="svcx__btn" type="button" data-dir="next" aria-label="Serviciul următor">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+        </button>
       </div>
     </div>
-
-    <div class="svc2-tiles" data-reveal-stagger>
-      {
-        featured.map((s, i) => (
-          <a class:list={['svc2-tile', i === 0 && 'hot']} href={`/servicii/${s.slug}`}>
-            <span class="svc2-media"><img src={s.image} alt={s.title} loading="lazy" /></span>
-            <span class="svc2-lbl">{s.title}</span>
-            <span class="svc2-ab">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" set:html={arrow} />
-            </span>
-          </a>
-        ))
-      }
+    <div class="svcx__meta">
+      <p class="svcx__lead">De la identitate la site și campanii: o singură direcție, fără să cobori la cinci furnizori.</p>
+      <div class="svcx__links">
+        <a class="link-more" href="/servicii">Vezi toate serviciile
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={arrowR} />
+        </a>
+      </div>
     </div>
   </div>
+
+  <div class="svcx__viewport" data-reveal>
+    <ul class="svcx__track">
+      {
+        featured.map((s, i) => (
+          <li class="svcx__item">
+            <a
+              class:list={['svcx__card', 'svc2-tile', i === 0 && 'hot']}
+              href={s.slug === 'mentenanta-website' ? '/mentenanta' : `/servicii/${s.slug}`}
+            >
+              <span class="svc2-media"><img src={s.image} alt={s.title} loading="lazy" /></span>
+              <span class="svc2-lbl">{s.title}</span>
+              <span class="svc2-ab">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" set:html={arrow} />
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
 </section>
+
+<style>
+  .svcx {
+    --svcx-side: max(40px, calc((100vw - var(--maxw)) / 2 + 40px));
+    padding-bottom: clamp(56px, 8vw, 100px);
+    overflow: hidden;
+  }
+  /* head */
+  .svcx__head {
+    padding-bottom: 40px;
+  }
+  .svcx__top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .svcx__kick {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--electric);
+    margin-bottom: 14px;
+  }
+  .svcx__title {
+    margin: 0;
+    max-width: 18ch;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 3.8vw, 3rem);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+  }
+  .svcx__title .g {
+    color: var(--electric);
+  }
+  .svcx__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px 40px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+  }
+  .svcx__lead {
+    margin: 0;
+    max-width: 52ch;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .svcx__links {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  /* viewport full-bleed cu fade la marginile containerului */
+  .svcx__viewport {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 calc(var(--svcx-side) - 28px),
+      #000 calc(100% - var(--svcx-side) + 28px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 calc(var(--svcx-side) - 28px),
+      #000 calc(100% - var(--svcx-side) + 28px),
+      transparent 100%
+    );
+  }
+
+  .svcx__track {
+    list-style: none;
+    margin: 0;
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    padding-inline: var(--svcx-side);
+    scroll-padding-inline: var(--svcx-side);
+    padding-block: 6px 14px;
+    scrollbar-width: none;
+    cursor: grab;
+  }
+  .svcx__track.is-drag {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+  }
+  .svcx__track.is-drag .svcx__card {
+    pointer-events: none;
+  }
+  .svcx__nav {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .svcx__btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--canvas, #fff);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition:
+      border-color 0.18s var(--ease, ease),
+      color 0.18s var(--ease, ease),
+      opacity 0.18s var(--ease, ease);
+  }
+  .svcx__btn:hover:not(:disabled) {
+    border-color: var(--electric);
+    color: var(--electric);
+  }
+  .svcx__btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .svcx__btn svg {
+    width: 19px;
+    height: 19px;
+  }
+  .svcx__btn:focus-visible,
+  .svcx__card:focus-visible {
+    outline: 2px solid var(--electric);
+    outline-offset: 3px;
+  }
+  .svcx__card:focus-visible {
+    border-radius: 20px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .svcx__track {
+      scroll-behavior: auto;
+    }
+  }
+  .svcx__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .svcx__item {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+  /* card pătrat în slider; vizualul (notch + buton ogee) rămâne cel original (svc2-*) */
+  .svcx__card {
+    width: clamp(232px, 25vw, 308px);
+    aspect-ratio: 1 / 1;
+  }
+  .svcx__card .svc2-lbl {
+    font-size: 1.14rem;
+    letter-spacing: -0.01em;
+  }
+
+  @media (max-width: 600px) {
+    .svcx__card {
+      width: clamp(200px, 72vw, 280px);
+    }
+  }
+</style>
+
+<script>
+  const track = document.querySelector<HTMLElement>('.svcx__track');
+  const prev = document.querySelector<HTMLButtonElement>('.svcx__btn[data-dir="prev"]');
+  const next = document.querySelector<HTMLButtonElement>('.svcx__btn[data-dir="next"]');
+
+  if (track) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const behavior: ScrollBehavior = reduce ? 'auto' : 'smooth';
+
+    const stepBy = () => {
+      const item = track.querySelector<HTMLElement>('.svcx__item');
+      const w = item ? item.getBoundingClientRect().width : 300;
+      return (w + 18) * 1.5;
+    };
+
+    const sync = () => {
+      const max = track.scrollWidth - track.clientWidth - 2;
+      if (prev) prev.disabled = track.scrollLeft <= 2;
+      if (next) next.disabled = track.scrollLeft >= max;
+    };
+
+    prev?.addEventListener('click', () => track.scrollBy({ left: -stepBy(), behavior }));
+    next?.addEventListener('click', () => track.scrollBy({ left: stepBy(), behavior }));
+    track.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+
+    // drag-to-scroll (pointer)
+    let down = false;
+    let startX = 0;
+    let startLeft = 0;
+    let moved = false;
+
+    track.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      down = true;
+      moved = false;
+      startX = e.clientX;
+      startLeft = track.scrollLeft;
+      track.setPointerCapture(e.pointerId);
+    });
+    track.addEventListener('pointermove', (e) => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (!moved && Math.abs(dx) > 5) {
+        moved = true;
+        track.classList.add('is-drag');
+      }
+      if (moved) track.scrollLeft = startLeft - dx;
+    });
+    const release = (e: PointerEvent) => {
+      if (!down) return;
+      down = false;
+      track.classList.remove('is-drag');
+      try {
+        track.releasePointerCapture(e.pointerId);
+      } catch {}
+    };
+    track.addEventListener('pointerup', release);
+    track.addEventListener('pointercancel', release);
+    // împiedică navigarea linkului dacă a fost drag
+    track.addEventListener(
+      'click',
+      (e) => {
+        if (moved) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      },
+      true,
+    );
+  }
+</script>

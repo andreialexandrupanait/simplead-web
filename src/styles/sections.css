@@ -1,10 +1,10 @@
 /* ============================================================
-   SECȚIUNI (sub hero) — port fidel din noul export (assets/styles.css)
+   SECȚIUNI (sub hero): port fidel din noul export (assets/styles.css)
    Sistem light/tint/navy + toate modulele de secțiune, paginile
    interioare, detaliul de serviciu, hub-ul Servicii, Design System,
    stepper-ul de proces și stack-ul tehnologic (tk).
    Token-urile (--r-*, --sp-*, --sh-*, --ease, --ink*) sunt în global.css.
-   NU include nav/hero/orbit/stats — acelea stau în <style> inline în
+   NU include nav/hero/orbit/stats: acelea stau în <style> inline în
    componente (Navbar/Hero/OrbitGraphic).
    ============================================================ */
 /* ============================================================
@@ -60,7 +60,7 @@
   }
   .section--navy .sec-sub { color: rgba(225,230,245,0.72); }
 
-  /* image placeholders — tilă soft brandată (titlul ca fallback) */
+  /* image placeholders: tilă soft brandată (titlul ca fallback) */
   .ph {
     position: relative; overflow: hidden;
     background:
@@ -136,7 +136,7 @@
   .svc2-head-r p { font-size: 16px; line-height: 1.6; color: var(--ink-soft); margin: 0; max-width: 42ch; }
   .svc2-links { display: flex; gap: 26px; margin-top: 18px; flex-wrap: wrap; }
 
-  .svc2-tiles { margin-top: 52px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .svc2-tiles { margin-top: 52px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
   .svc2-tile { position: relative; display: block; aspect-ratio: 3 / 3.7; text-decoration: none; }
   .svc2-media {
     position: absolute; inset: 0; border-radius: 20px; overflow: hidden;

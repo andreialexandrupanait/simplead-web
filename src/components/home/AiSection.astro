@@ -2,20 +2,20 @@
 import Button from '@components/ui/Button.astro';
 
 const features = [
-  { title: 'Mentenanță cu AI', body: 'Monitorizare, actualizări și optimizări asistate de AI — site mereu rapid și sigur.' },
-  { title: 'Automatizări', body: 'Fluxuri repetitive automatizate, ca să câștigi timp și să reduci erorile.' },
-  { title: 'Conținut asistat', body: 'Idei, drafturi și variante generate cu AI, rafinate de oameni.' },
+  { title: 'Monitorizare inteligentă', body: 'Aplicația internă urmărește continuu starea site-ului tău și semnalează din timp ce nu e în regulă.' },
+  { title: 'Automatizări', body: 'Sarcini repetitive (rapoarte, alerte, fluxuri) trec pe pilot automat, ca să rămână timp de afacere.' },
+  { title: 'Conținut asistat', body: 'AI-ul accelerează ciornele și ideile, dar deciziile și forma finală rămân la om.' },
 ];
 ---
 
 <section class="ai">
   <div class="site-container ai__inner">
     <div class="ai__copy" data-reveal>
-      <p class="kicker">Strat transversal</p>
-      <h2 class="ai__title">AI pentru business, <span>integrat în tot ce facem.</span></h2>
+      <p class="kicker">AI pentru business</p>
+      <h2 class="ai__title">AI, acolo unde <span>chiar îți face treaba.</span></h2>
       <p class="ai__sub">
-        Nu vindem „AI" ca slogan. Îl folosim acolo unde îți aduce valoare reală — în mentenanță,
-        automatizări și producția de conținut.
+        Folosim AI-ul unde aduce rezultat concret: monitorizarea site-ului, automatizări și producția
+        de conținut. Și spunem clar unde nu ajută.
       </p>
       <div class="ai__cta">
         <Button href="/servicii/ai-pentru-business" withArrow>Descoperă AI pentru business</Button>
@@ -87,11 +87,22 @@ const features = [
     border: 1px solid var(--line);
     border-radius: var(--r-md);
     transition:
+      transform 0.22s var(--ease-snap),
       border-color 0.2s var(--ease-snap),
       box-shadow 0.2s var(--ease-snap);
   }
   .ai__feature:hover {
     border-color: var(--cyan);
+    transform: translateY(-3px);
+    box-shadow: var(--sh-sm);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ai__feature {
+      transition: none;
+    }
+    .ai__feature:hover {
+      transform: none;
+    }
   }
   .ai__spark {
     flex-shrink: 0;

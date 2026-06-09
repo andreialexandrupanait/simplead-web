@@ -1,0 +1,116 @@
+---
+/**
+ * Modul „Omul din spate": singurul loc de pe homepage unde doctoratul în
+ * neuromarketing apare complet. Voce „eu" (Andrei), argument „direct cu mine".
+ */
+import Button from '@components/ui/Button.astro';
+import { site } from '@data/site';
+---
+
+<section class="founder">
+  <div class="site-container founder__inner">
+    <div class="founder__media" data-reveal aria-hidden="true">
+      {/* TODO: înlocuiește cu fotografia reală a lui Andrei Panait */}
+      <img
+        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=700&q=80&auto=format&fit=crop"
+        alt={site.founder}
+        loading="lazy"
+      />
+      <span class="founder__sign">{site.founder}<small>doctor în marketing</small></span>
+    </div>
+
+    <div class="founder__copy" data-reveal>
+      <h2 class="founder__title">Omul (și oamenii) din spate</h2>
+      <p class="founder__p">
+        Înainte să fac ceva, mă uit la cum decid oamenii: e obișnuința rămasă din cercetare (un
+        doctorat în marketing, cu accent pe neuromarketing). Nu folosesc partea asta ca să sune bine,
+        ci ca să iau decizii mai bune pentru proiectul tău.
+      </p>
+      <p class="founder__p">
+        Și nu lucrez singur: în majoritatea cazurilor lucrez cu colegi care îmi sunt și colaboratori
+        (foto-video, dezvoltare, ads).
+      </p>
+      <div class="founder__cta">
+        <Button href="/despre" variant="outline" withArrow>Hai să ne cunoaștem</Button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .founder {
+    background: var(--canvas);
+    padding-block: clamp(64px, 9vw, 120px);
+  }
+  .founder__inner {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .founder__media {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: var(--sh-lg);
+  }
+  .founder__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .founder__sign {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px;
+    background: var(--ink);
+    color: #fff;
+    border-radius: var(--r-sm);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.98rem;
+    line-height: 1.2;
+    box-shadow: var(--sh-md);
+  }
+  .founder__sign small {
+    margin-top: 3px;
+    font-weight: 400;
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    color: var(--cyan);
+  }
+  .founder__title {
+    margin-top: 16px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.85rem, 3.2vw, 2.85rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  .founder__p {
+    margin-top: 18px;
+    max-width: 54ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .founder__cta {
+    margin-top: 28px;
+  }
+  @media (max-width: 900px) {
+    .founder__inner {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+    .founder__media {
+      max-width: 360px;
+    }
+  }
+</style>

@@ -1,25 +1,30 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import HomeHero from '@components/home/HomeHero.astro';
+import ClientsStrip from '@components/home/ClientsStrip.astro';
 import ServicesSection from '@components/sections/ServicesSection.astro';
 import Differentiator from '@components/home/Differentiator.astro';
-import ProofSection from '@components/home/ProofSection.astro';
-import ClientsStrip from '@components/home/ClientsStrip.astro';
+import FounderSection from '@components/home/FounderSection.astro';
 import ProcessTimeline from '@components/home/ProcessTimeline.astro';
-import ToolsSection from '@components/home/ToolsSection.astro';
+import ProofSection from '@components/home/ProofSection.astro';
+import MaintenanceTeaser from '@components/home/MaintenanceTeaser.astro';
 import AiSection from '@components/home/AiSection.astro';
 import Testimonials from '@components/home/Testimonials.astro';
 import CtaFinal from '@components/home/CtaFinal.astro';
 ---
 
 <BaseLayout transparentNav={true}>
+  {/* 1 Hero → 1b Trust strip → 2 Servicii → 3 Diferențiator → 4 Omul din spate →
+      5 Proces → 6 Dovadă → 7 Mentenanță → 8 AI → 9 Testimoniale → 10 CTA final.
+      (Tools NU pe homepage: pe /despre.) */}
   <HomeHero />
+  <ClientsStrip />
   <ServicesSection />
   <Differentiator />
-  <ProofSection />
-  <ClientsStrip />
+  <FounderSection />
   <ProcessTimeline />
-  <ToolsSection />
+  <ProofSection />
+  <MaintenanceTeaser />
   <AiSection />
   <Testimonials />
   <CtaFinal />
