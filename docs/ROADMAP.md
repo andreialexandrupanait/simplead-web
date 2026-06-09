@@ -10,6 +10,7 @@
 | Subiect | Decizie |
 |---|---|
 | Plăți | Stripe (one-time + abonamente) |
+| Facturare | **SmartBill (cont existent)**; e-Factura e gestionată tot de SmartBill, nu avem nevoie de integrare separată cu ANAF |
 | Email | Postmark pentru tot (înlocuiește Resend); newsletter prin Postmark Broadcast Streams |
 | Dashboard | Admin pentru Andrei (comenzi, lead-uri, conținut). NU portal de clienți |
 | Monetizare | Toate cele 4 fluxuri: abonamente mentenanță, pachete one-time, produse digitale, lead-uri pentru proiecte mari |
@@ -81,7 +82,7 @@ Principiu: rămânem pe Astro și adăugăm strict ce e necesar. Nu construim ba
 |---|---|---|
 | **Stripe** | Plăți, abonamente, cupoane, customer portal, webhooks | Critică |
 | **Postmark** | Tranzacțional (formular, confirmări, livrare produse) + newsletter (Broadcast) | Critică |
-| **SmartBill sau Oblio** | Facturare automată la plată + **e-Factura** (obligatorie în RO pentru B2B). Fără asta nu vindem legal online | Critică |
+| **SmartBill** (cont existent) | Facturare automată la fiecare plată Stripe, prin SmartBill Cloud API (REST, autentificare email + token API, documentație la api.smartbill.ro). **e-Factura e acoperită de SmartBill**, zero integrare suplimentară cu ANAF | Critică |
 | **Neon / Supabase** | Postgres gestionat | Critică |
 | **Slack** | Webhook-uri de notificare: lead nou, comandă nouă, abonament anulat, plată eșuată (canale #vanzari, #site) | Mare |
 | **Keystatic** | Editare blog/portofoliu din browser | Mare |
@@ -233,7 +234,8 @@ asistate de blog în GA4, raport lunar în admin.
 - [ ] Cont Stripe: produse, prețuri, taxe; definirea pachetelor, a OTO-urilor și a produselor digitale (lucru de business, pornit din ziua 1; blochează Faza 2)
 - [ ] Provisioning Postgres (Neon/Supabase) + schema inițială
 - [ ] Migrare Resend → Postmark în `/api/contact`
-- [ ] Kickoff juridic: termeni comerciali, retur, GDPR, ANPC, setup SmartBill/Oblio + e-Factura
+- [ ] Kickoff juridic: termeni comerciali, retur, GDPR, ANPC
+- [ ] SmartBill: generare token API + alegerea seriei de facturi pentru vânzările online (e-Factura merge prin SmartBill, nu necesită nimic în plus)
 
 ### Faza 1 (săpt. 1-2): conținut & blocante de site
 - [ ] `site.ts` complet cu datele reale din `brand-voice.md` §3
@@ -248,7 +250,7 @@ asistate de blog în GA4, raport lunar în admin.
 - [ ] Stripe Checkout (one-time) + Billing (abonamente mentenanță, legat de calculatorul existent)
 - [ ] Webhook-uri + tabele comenzi/clienți în DB
 - [ ] Pagina de mulțumire cu OTO + pagina de anulare
-- [ ] Facturare automată + e-Factura la plată
+- [ ] Facturare automată prin SmartBill API la fiecare plată (factura pleacă pe emailul clientului)
 - [ ] Emailuri tranzacționale Postmark + notificări Slack
 
 ### Faza 3 (săpt. 3-5): admin + blog
@@ -284,7 +286,47 @@ asistate de blog în GA4, raport lunar în admin.
 ## 10. Riscuri & dependențe
 
 - **Scope mare „totul la lansare"** → 6-10 săptămâni. Opțiune de rezervă: soft-launch cu site-ul de prezentare finalizat (Fazele 0-1) și comerțul activat când Fazele 2-3 sunt gata. Decizia îi aparține lui Andrei.
-- **Blocante legale pentru vânzare**: e-Factura, termeni comerciali, drept de retragere. Pornite din săptămâna 1, cu input juridic.
+- **Blocante legale pentru vânzare**: termeni comerciali, drept de retragere, GDPR. Pornite din săptămâna 1, cu input juridic. (e-Factura nu mai e risc: o gestionează SmartBill.)
 - **Definirea pachetelor, prețurilor și OTO-urilor**: primul livrabil cerut de la Andrei; blochează Faza 2.
 - **Conținut de furnizat de Andrei** (listat și în `brand-voice.md` §7): foto, logo-uri clienți, cifre reale, confirmări de copy, traduceri EN de revizuit.
 - **Cadența de blog**: fără cele 4-6 articole/lună în primele luni, rankarea întârzie; procesul AI-asistat există tocmai ca să o susțină.
+
+---
+
+## 11. Ce avem nevoie de la Andrei (checklist)
+
+Lista completă de decizii, accese și materiale, organizată pe momentul în care blochează lucrul.
+Se completează aici, ca registrul din `brand-voice.md` §7.
+
+### Decizii de business (blochează Faza 2, cele mai urgente)
+- [ ] **Lista pachetelor vândabile + prețuri**: ce pachete punem pe `/pachete`, per serviciu și bundle-uri (nume, ce include, preț, termen de livrare)
+- [ ] **Planurile de mentenanță + prețuri**: lunar și anual (cu ce discount la anual), ce include fiecare plan; legăm de calculatorul existent de pe `/mentenanta`
+- [ ] **Ofertele OTO**: ce ofertă apare după fiecare tip de achiziție, la ce discount, cât timp e valabilă
+- [ ] **Primele produse digitale + prețuri**: recomandare de început: auditul neuromarketing + un ghid gratuit ca lead magnet
+
+### Conturi & accese (Faza 0)
+- [ ] **Stripe**: cont creat (sau acces la cel existent) + activare plăți live pe entitatea Simplead
+- [ ] **SmartBill**: token API (din cont: Contul meu → Integrări/API) + seria de facturi pe care o folosim pentru vânzările online
+- [ ] **Postmark**: cont creat + **acces DNS pe simplead.ro** pentru verificarea domeniului de trimitere (SPF, DKIM, return-path)
+- [ ] **Slack**: workspace-ul + canalul în care vrei notificările (propunere: #vanzari și #site); webhook-ul îl generez eu cu acces
+- [ ] **Hosting**: confirmare Vercel (cont creat, gratuit la început) + acces DNS pentru mutarea domeniului pe producție
+- [ ] **Bază de date**: acord să creez cont Neon/Supabase pe emailul firmei
+
+### Conținut (Faza 1, se suprapune cu `brand-voice.md` §7)
+- [ ] Foto reală Andrei (pentru „Omul din spate", `/despre`, contact)
+- [ ] Logo-uri clienți pentru trust strip (SVG/PNG)
+- [ ] Cifre reale (ani, proiecte, clienți) sau decizia de a renunța la cifre
+- [ ] Confirmarea copy-ului `[COPY]` la serviciul AI (`services.ts`)
+- [ ] Titlul de afișaj preferat pentru doctorat (vezi `brand-voice.md` §6)
+- [ ] Adresă completă + program de lucru pentru `site.ts` și schema LocalBusiness
+- [ ] Linkurile social media reale (Facebook, Instagram, LinkedIn, YouTube)
+
+### Juridic (Faza 0-1)
+- [ ] Termeni comerciali + politică de retragere/retur: eu pregătesc draftul, tu îl treci printr-un jurist
+- [ ] Confirmarea entității de pe care vindem online (datele din `brand-voice.md` §3: CIF 41501661)
+
+### Marketing (Faza 3+)
+- [ ] Acces GA4, Google Search Console, Google Business Profile (sau le creăm împreună)
+- [ ] Link Cal.com pentru booking (`CALCOM_LINK`)
+- [ ] 2-3 referințe de ton pentru blog (site-uri/texte care îți plac)
+- [ ] Validarea calendarului editorial pe cele 3 clustere (îl propun eu, tu îl aprobi)
