@@ -1,5 +1,5 @@
 ---
-import { eq } from 'drizzle-orm';
+import { and, asc, eq, ne } from 'drizzle-orm';
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import PackageForm from '../../../components/admin/PackageForm.astro';
 import { getDb } from '../../../lib/server/db';
@@ -31,6 +31,8 @@ type FormValues = {
   features: string;
   sort: number | string;
   active: boolean;
+  otoPackageId: string;
+  otoDiscountPercent: number | string;
 };
 
 let errors: Record<string, string[]> = {};
@@ -81,6 +83,12 @@ if (Astro.request.method === 'POST') {
             features: featuresToList(parsed.data.features),
             sort: parsed.data.sort,
             active: parsed.data.active,
+            // Un pachet nu poate fi propriul OTO.
+            otoPackageId:
+              parsed.data.otoPackageId && parsed.data.otoPackageId !== id
+                ? parsed.data.otoPackageId
+                : null,
+            otoDiscountPercent: parsed.data.otoDiscountPercent,
             updatedAt: new Date(),
           })
           .where(eq(packages.id, id));
@@ -117,7 +125,21 @@ const values: FormValues = formOverride ?? {
   features: row.features.join('\n'),
   sort: row.sort,
   active: row.active,
+  otoPackageId: row.otoPackageId ?? '',
+  otoDiscountPercent: row.otoDiscountPercent,
 };
+
+// Candidați OTO: pachete one-time, fără pachetul curent.
+let otoCandidates: { id: string; name: string }[] = [];
+try {
+  otoCandidates = await db
+    .select({ id: packages.id, name: packages.name })
+    .from(packages)
+    .where(and(eq(packages.interval, 'one_time'), ne(packages.id, id)))
+    .orderBy(asc(packages.name));
+} catch {
+  /* fără candidați */
+}
 ---
 
 <AdminLayout title={`Editare: ${row.name}`}>
@@ -126,7 +148,12 @@ const values: FormValues = formOverride ?? {
 
   <div class="admin-card">
     {saveError && <div class="admin-banner admin-banner--error">{saveError}</div>}
-    <PackageForm values={values} errors={errors} submitLabel="Salvează modificările" />
+    <PackageForm
+      values={values}
+      errors={errors}
+      submitLabel="Salvează modificările"
+      otoCandidates={otoCandidates}
+    />
   </div>
 
   <div class="admin-card">

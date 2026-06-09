@@ -248,12 +248,13 @@ asistate de blog în GA4, raport lunar în admin.
 - [ ] OG real
 
 ### Faza 2 (săpt. 2-4): ecommerce
-- [x] Pagina `/pachete` cu prețuri (din DB, editabile din admin; CTA „Cere o ofertă" până la activarea checkout-ului)
-- [ ] Stripe Checkout (one-time) + Billing (abonamente mentenanță, legat de calculatorul existent)
-- [ ] Webhook-uri Stripe (tabelele comenzi/clienți există deja în DB)
-- [ ] Pagina de mulțumire cu OTO + pagina de anulare
-- [ ] Facturare automată prin SmartBill API la fiecare plată (factura pleacă pe emailul clientului)
-- [x] Emailuri tranzacționale Postmark + notificări Slack (formular contact; comenzile urmează cu Stripe)
+- [x] Pagina `/pachete` cu prețuri (din DB, editabile din admin; butoanele „Cumpără/Abonează-te" apar automat când Stripe e configurat)
+- [x] Stripe Checkout: plăți one-time + abonamente lunar/anual (prețuri inline, fără produse pre-create în Stripe)
+- [x] Webhook Stripe (`/api/stripe/webhook`, semnătură verificată): comanda devine plătită, clientul e salvat, email de confirmare + notificare Slack
+- [x] Pagina de mulțumire `/multumim` cu ofertă OTO (configurabilă per pachet din admin: pachet țintă + discount, valabilă 30 min) + banner de anulare pe /pachete
+- [x] Facturare automată prin SmartBill API la fiecare plată (TVA configurabilă din admin; factura pleacă pe emailul clientului prin SmartBill)
+- [x] Emailuri tranzacționale Postmark + notificări Slack (formular contact + comenzi)
+- [ ] De făcut de Andrei la activare: chei Stripe (secret + webhook secret) și SmartBill în /admin/integrari, endpoint webhook adăugat în Stripe Dashboard
 
 ### Faza 3 (săpt. 3-5): admin + blog
 - [x] `/admin` cu autentificare: panou, pachete (CRUD), lead-uri, integrări (chei criptate + buton de test per integrare)

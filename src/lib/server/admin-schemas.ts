@@ -22,6 +22,13 @@ export const packageFormSchema = z.object({
   features: z.string().default(''),
   sort: z.coerce.number().int().min(0).max(9999).default(0),
   active: z.coerce.boolean().default(false),
+  // OTO: pachetul oferit cu discount după cumpărare ('' = fără ofertă).
+  otoPackageId: z
+    .string()
+    .trim()
+    .regex(/^$|^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, 'OTO invalid.')
+    .default(''),
+  otoDiscountPercent: z.coerce.number().int().min(0).max(90).default(0),
 });
 
 export type PackageFormData = z.infer<typeof packageFormSchema>;
@@ -52,6 +59,8 @@ export type RawPackageForm = {
   features: string;
   sort: string;
   active: string;
+  otoPackageId: string;
+  otoDiscountPercent: string;
 };
 
 /** Parsează FormData în obiectul așteptat de schema (cu erori per câmp). */
@@ -71,6 +80,8 @@ export function parsePackageForm(
     features: String(form.get('features') ?? ''),
     sort: String(form.get('sort') ?? '0'),
     active: form.get('active') ? 'true' : '',
+    otoPackageId: String(form.get('otoPackageId') ?? ''),
+    otoDiscountPercent: String(form.get('otoDiscountPercent') ?? '0'),
   };
   const parsed = packageFormSchema.safeParse(raw);
   if (!parsed.success) {

@@ -15,11 +15,15 @@ interface Props {
     features: string;
     sort: number | string;
     active: boolean;
+    otoPackageId: string;
+    otoDiscountPercent: number | string;
   };
   errors?: Record<string, string[]>;
   submitLabel: string;
+  /** Pachetele one-time care pot fi oferite ca OTO (fără pachetul curent). */
+  otoCandidates?: { id: string; name: string }[];
 }
-const { values, errors = {}, submitLabel } = Astro.props;
+const { values, errors = {}, submitLabel, otoCandidates = [] } = Astro.props;
 
 const kinds = [
   { value: 'service', label: 'Pachet de servicii (one-time)' },
@@ -104,6 +108,42 @@ const intervals = [
     <span>Beneficii (unul pe linie)</span>
     <textarea class="admin-textarea" name="features">{values.features}</textarea>
   </label>
+
+  <div class="form-grid">
+    <label class="admin-field">
+      <span>Ofertă OTO după cumpărare</span>
+      <select class="admin-select" name="otoPackageId">
+        <option value="" selected={!values.otoPackageId}>fără ofertă</option>
+        {
+          otoCandidates.map((c) => (
+            <option value={c.id} selected={values.otoPackageId === c.id}>
+              {c.name}
+            </option>
+          ))
+        }
+      </select>
+      <small>
+        Pachetul (cu plată unică) oferit cu discount pe pagina de mulțumire, valabil 30 de minute.
+      </small>
+      {errors.otoPackageId && <small class="field-error">{errors.otoPackageId[0]}</small>}
+    </label>
+    <label class="admin-field">
+      <span>Discount OTO (%)</span>
+      <input
+        class="admin-input"
+        type="number"
+        name="otoDiscountPercent"
+        value={String(values.otoDiscountPercent)}
+        min="0"
+        max="90"
+      />
+      {
+        errors.otoDiscountPercent && (
+          <small class="field-error">{errors.otoDiscountPercent[0]}</small>
+        )
+      }
+    </label>
+  </div>
 
   <div class="admin-actions">
     <button type="submit" class="admin-btn">{submitLabel}</button>

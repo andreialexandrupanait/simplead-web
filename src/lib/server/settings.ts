@@ -14,6 +14,11 @@ export const INTEGRATIONS = {
     label: 'Stripe',
     fields: {
       secretKey: { key: 'integration.stripe.secret_key', env: 'STRIPE_SECRET_KEY', secret: true },
+      webhookSecret: {
+        key: 'integration.stripe.webhook_secret',
+        env: 'STRIPE_WEBHOOK_SECRET',
+        secret: true,
+      },
     },
   },
   smartbill: {
@@ -23,6 +28,12 @@ export const INTEGRATIONS = {
       token: { key: 'integration.smartbill.token', env: 'SMARTBILL_TOKEN', secret: true },
       series: { key: 'integration.smartbill.series', env: 'SMARTBILL_SERIES', secret: false },
       cif: { key: 'integration.smartbill.cif', env: 'SMARTBILL_CIF', secret: false },
+      taxName: { key: 'integration.smartbill.tax_name', env: 'SMARTBILL_TAX_NAME', secret: false },
+      taxPercent: {
+        key: 'integration.smartbill.tax_percent',
+        env: 'SMARTBILL_TAX_PERCENT',
+        secret: false,
+      },
     },
   },
   postmark: {

@@ -47,12 +47,24 @@ const FIELD_META: Record<string, Record<string, { label: string; hint?: string }
       label: 'Secret key',
       hint: 'Cheia secretă din Stripe Dashboard (sk_live_... sau sk_test_...).',
     },
+    webhookSecret: {
+      label: 'Webhook secret',
+      hint: 'Din Stripe Dashboard, Developers, Webhooks (whsec_...). Endpoint: https://domeniul-tau/api/stripe/webhook, eveniment checkout.session.completed.',
+    },
   },
   smartbill: {
     email: { label: 'Email cont', hint: 'Emailul contului SmartBill.' },
     token: { label: 'Token API', hint: 'Din SmartBill Cloud: Contul meu, Integrări, API.' },
     series: { label: 'Serie facturi', hint: 'Seria folosită pentru facturile emise automat.' },
     cif: { label: 'CIF firmă', hint: 'CIF-ul firmei din SmartBill (ex. 41501661).' },
+    taxName: {
+      label: 'Denumire cotă TVA',
+      hint: 'Cum apare în SmartBill (implicit „Normala"). Pentru neplătitor de TVA, denumirea cotei de 0%.',
+    },
+    taxPercent: {
+      label: 'Procent TVA',
+      hint: 'Implicit 21. Pune 0 dacă firma nu e plătitoare de TVA.',
+    },
   },
   postmark: {
     serverToken: { label: 'Server token', hint: 'Din Postmark: Servers, API Tokens.' },

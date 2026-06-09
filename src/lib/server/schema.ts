@@ -51,8 +51,10 @@ export const packages = pgTable('packages', {
   features: jsonb('features').$type<string[]>().notNull().default([]),
   sort: integer('sort').notNull().default(0),
   active: boolean('active').notNull().default(true),
-  // Pregătit pentru Milestone 2 (Stripe Checkout).
   stripePriceId: text('stripe_price_id'),
+  // OTO (one-time offer): pachetul oferit cu discount imediat după achiziție.
+  otoPackageId: uuid('oto_package_id'),
+  otoDiscountPercent: integer('oto_discount_percent').notNull().default(0),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
@@ -79,7 +81,7 @@ export const customers = pgTable('customers', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
-/** Stub pentru Milestone 2 (Stripe). */
+/** Comenzi: create la inițierea checkout-ului, finalizate de webhook-ul Stripe. */
 export const orders = pgTable('orders', {
   id: uuid('id').primaryKey().defaultRandom(),
   customerId: uuid('customer_id').references(() => customers.id),
@@ -87,8 +89,14 @@ export const orders = pgTable('orders', {
   status: orderStatus('status').notNull().default('pending'),
   amountCents: integer('amount_cents').notNull(),
   currency: char('currency', { length: 3 }).notNull().default('EUR'),
+  customerEmail: text('customer_email'),
   stripeCheckoutSessionId: text('stripe_checkout_session_id').unique(),
   stripePaymentIntentId: text('stripe_payment_intent_id'),
+  // Setat când comanda e o ofertă OTO acceptată după comanda-părinte.
+  otoForOrderId: uuid('oto_for_order_id'),
+  // Factura emisă prin SmartBill (best-effort).
+  invoiceSeries: text('invoice_series'),
+  invoiceNumber: text('invoice_number'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });

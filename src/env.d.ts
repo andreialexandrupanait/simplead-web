@@ -21,10 +21,13 @@ interface ImportMetaEnv {
   readonly POSTMARK_SERVER_TOKEN?: string;
   readonly POSTMARK_FROM_EMAIL?: string;
   readonly STRIPE_SECRET_KEY?: string;
+  readonly STRIPE_WEBHOOK_SECRET?: string;
   readonly SMARTBILL_EMAIL?: string;
   readonly SMARTBILL_TOKEN?: string;
   readonly SMARTBILL_SERIES?: string;
   readonly SMARTBILL_CIF?: string;
+  readonly SMARTBILL_TAX_NAME?: string;
+  readonly SMARTBILL_TAX_PERCENT?: string;
   readonly SLACK_WEBHOOK_URL?: string;
 }
 

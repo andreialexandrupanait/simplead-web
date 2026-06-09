@@ -154,6 +154,20 @@ După pornire: intră pe `/admin` (credențialele din `.env`) și introdu cheile
 fiecare are buton de test. Pachetele și prețurile se editează din **Pachete** (apar pe `/pachete`
 fără rebuild).
 
+### Activarea plăților (Stripe + SmartBill)
+
+1. În `/admin/integrari` completează cheia secretă Stripe; butoanele „Cumpără/Abonează-te"
+   apar automat pe `/pachete` pentru pachetele cu preț setat.
+2. În Stripe Dashboard (Developers, Webhooks) adaugă endpoint-ul
+   `https://domeniul-tau/api/stripe/webhook` cu evenimentul `checkout.session.completed`,
+   apoi salvează secretul `whsec_...` în câmpul „Webhook secret" din admin.
+3. Completează SmartBill (email, token, CIF, serie, TVA): factura se emite automat la fiecare
+   plată și pleacă pe emailul clientului.
+4. Opțional, per pachet: setează oferta OTO (pachet țintă + discount) din **Pachete**; apare pe
+   pagina de mulțumire timp de 30 de minute după cumpărare.
+5. Comenzile apar în **Comenzi** (admin); pentru rambursări și detalii de plată folosește
+   Stripe Dashboard.
+
 ---
 
 ## ✅ De completat (TODO)

@@ -1,0 +1,145 @@
+---
+import { desc, eq } from 'drizzle-orm';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getDb } from '../../lib/server/db';
+import { orders, packages } from '../../lib/server/schema';
+import { formatAmount } from '../../lib/server/packages';
+
+export const prerender = false;
+
+const db = getDb();
+
+type Row = {
+  order: typeof orders.$inferSelect;
+  packageName: string | null;
+};
+
+let rows: Row[] = [];
+let dbError = false;
+const filter = Astro.url.searchParams.get('status');
+const STATUSES = ['pending', 'paid', 'failed', 'refunded', 'canceled'] as const;
+
+if (db) {
+  try {
+    const query = db
+      .select({ order: orders, packageName: packages.name })
+      .from(orders)
+      .leftJoin(packages, eq(orders.packageId, packages.id))
+      .orderBy(desc(orders.createdAt))
+      .limit(200);
+    rows =
+      filter && (STATUSES as readonly string[]).includes(filter)
+        ? await query.where(eq(orders.status, filter as (typeof STATUSES)[number]))
+        : await query;
+  } catch (err) {
+    console.warn('[admin] Listarea comenzilor a eșuat:', err);
+    dbError = true;
+  }
+}
+
+const dateFmt = new Intl.DateTimeFormat('ro-RO', { dateStyle: 'medium', timeStyle: 'short' });
+const fmtAmount = formatAmount;
+const STATUS_LABEL: Record<string, string> = {
+  pending: 'în așteptare',
+  paid: 'plătită',
+  failed: 'eșuată',
+  refunded: 'rambursată',
+  canceled: 'anulată',
+};
+---
+
+<AdminLayout title="Comenzi">
+  <h1>Comenzi</h1>
+  <p class="admin-sub">
+    Comenzile din Stripe Checkout. Pentru detalii de plată și rambursări, folosește Stripe
+    Dashboard; aici e evidența legată de pachete și facturi.
+  </p>
+
+  {
+    !db && (
+      <div class="admin-banner admin-banner--warn">
+        <strong>Fără bază de date.</strong> Comenzile nu pot fi afișate.
+      </div>
+    )
+  }
+  {
+    dbError && (
+      <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>
+    )
+  }
+
+  {
+    db && !dbError && (
+      <div class="admin-card">
+        <div class="admin-actions" style="margin-bottom:16px">
+          <a href="/admin/comenzi" class:list={['admin-tag', !filter && 'admin-tag--on']}>
+            toate
+          </a>
+          {STATUSES.map((s) => (
+            <a
+              href={`/admin/comenzi?status=${s}`}
+              class:list={['admin-tag', filter === s && 'admin-tag--on']}
+            >
+              {STATUS_LABEL[s]}
+            </a>
+          ))}
+        </div>
+
+        {rows.length === 0 ? (
+          <p class="admin-hint" style="margin:0">
+            Nicio comandă{filter ? ` cu statusul „${STATUS_LABEL[filter] ?? filter}"` : ''}
+            deocamdată. Comenzile apar după activarea cheilor Stripe din
+            <a href="/admin/integrari"> Integrări</a>.
+          </p>
+        ) : (
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Client</th>
+                <th>Pachet</th>
+                <th>Sumă</th>
+                <th>Status</th>
+                <th>Factură</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(({ order, packageName }) => (
+                <tr>
+                  <td>{dateFmt.format(order.createdAt)}</td>
+                  <td>
+                    {order.customerEmail ? (
+                      <a href={`mailto:${order.customerEmail}`}>{order.customerEmail}</a>
+                    ) : (
+                      '-'
+                    )}
+                  </td>
+                  <td>
+                    {packageName ?? '-'}
+                    {order.otoForOrderId && (
+                      <>
+                        {' '}
+                        <span class="admin-tag">OTO</span>
+                      </>
+                    )}
+                  </td>
+                  <td>{fmtAmount(order.amountCents, order.currency)}</td>
+                  <td>
+                    <span class:list={['admin-tag', order.status === 'paid' && 'admin-tag--on']}>
+                      {STATUS_LABEL[order.status]}
+                    </span>
+                  </td>
+                  <td>
+                    {order.invoiceNumber
+                      ? `${order.invoiceSeries ?? ''} ${order.invoiceNumber}`
+                      : '-'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    )
+  }
+</AdminLayout>

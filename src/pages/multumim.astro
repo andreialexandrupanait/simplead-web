@@ -1,0 +1,293 @@
+---
+import { and, eq } from 'drizzle-orm';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHeader from '@components/sections/PageHeader.astro';
+import Button from '@components/ui/Button.astro';
+import { getDb } from '@/lib/server/db';
+import { orders, packages } from '@/lib/server/schema';
+import { formatAmount, formatPrice, OTO_WINDOW_MS } from '@/lib/server/packages';
+
+export const prerender = false;
+
+const sessionId = Astro.url.searchParams.get('session_id');
+const db = getDb();
+
+type Pkg = typeof packages.$inferSelect;
+let order: typeof orders.$inferSelect | undefined;
+let pkg: Pkg | undefined;
+let oto: { pkg: Pkg; discount: number; priceCents: number; expiresAt: number } | null = null;
+
+if (db && sessionId) {
+  try {
+    [order] = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.stripeCheckoutSessionId, sessionId))
+      .limit(1);
+    if (order?.packageId) {
+      [pkg] = await db.select().from(packages).where(eq(packages.id, order.packageId)).limit(1);
+    }
+
+    // Oferta OTO: doar pe comenzi directe (nu pe un OTO deja acceptat),
+    // în fereastra de valabilitate și neconsumată.
+    if (order && pkg?.otoPackageId && !order.otoForOrderId) {
+      const expiresAt = order.createdAt.getTime() + OTO_WINDOW_MS;
+      // Consumată = comandă OTO plătită; sesiunile abandonate nu blochează oferta.
+      const [consumed] = await db
+        .select({ id: orders.id })
+        .from(orders)
+        .where(and(eq(orders.otoForOrderId, order.id), eq(orders.status, 'paid')))
+        .limit(1);
+      if (!consumed && Date.now() < expiresAt) {
+        const [otoPkg] = await db
+          .select()
+          .from(packages)
+          .where(eq(packages.id, pkg.otoPackageId))
+          .limit(1);
+        if (otoPkg?.active && otoPkg.interval === 'one_time' && otoPkg.priceCents > 0) {
+          const discount = Math.min(Math.max(pkg.otoDiscountPercent, 0), 90);
+          oto = {
+            pkg: otoPkg,
+            discount,
+            priceCents: Math.round((otoPkg.priceCents * (100 - discount)) / 100),
+            expiresAt,
+          };
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('[multumim] Citirea comenzii a eșuat:', err);
+  }
+}
+
+Astro.response.headers.set('Cache-Control', 'no-store');
+
+const fmtAmount = formatAmount;
+---
+
+<BaseLayout
+  title="Mulțumim pentru comandă"
+  description="Comanda ta a fost înregistrată."
+  transparentNav={true}
+  navOverDark={true}
+  noindex={true}
+>
+  <PageHeader
+    eyebrow="Comandă confirmată"
+    title="Mulțumim! Ne apucăm de treabă"
+    accent="Ne apucăm de treabă"
+    subtitle="Am primit comanda ta. Primești confirmarea și factura pe email, iar noi te contactăm în cel mult o zi lucrătoare cu pașii următori."
+  />
+
+  <section class="section section--light">
+    <div class="ty-wrap container">
+      {
+        order && pkg && (
+          <div class="ty-order">
+            <h2>Rezumatul comenzii</h2>
+            <dl>
+              <div>
+                <dt>Pachet</dt>
+                <dd>{pkg.name}</dd>
+              </div>
+              <div>
+                <dt>Valoare</dt>
+                <dd>{fmtAmount(order.amountCents, order.currency)}</dd>
+              </div>
+              <div>
+                <dt>Status</dt>
+                <dd>{order.status === 'paid' ? 'plătită' : 'în procesare'}</dd>
+              </div>
+            </dl>
+          </div>
+        )
+      }
+
+      {
+        oto && (
+          <div class="ty-oto" data-oto-expires={oto.expiresAt}>
+            <p class="ty-oto__badge">Ofertă unică, doar acum</p>
+            <h2>
+              {oto.pkg.name} cu {oto.discount}% reducere
+            </h2>
+            <p class="ty-oto__desc">{oto.pkg.description}</p>
+            <p class="ty-oto__price">
+              <s>{formatPrice(oto.pkg)}</s>
+              <strong>{fmtAmount(oto.priceCents, oto.pkg.currency)}</strong>
+            </p>
+            <p class="ty-oto__timer">
+              Oferta expiră în <span data-oto-countdown>30:00</span>. După aceea, prețul revine la
+              cel întreg.
+            </p>
+            <form method="post" action="/api/checkout">
+              <input type="hidden" name="slug" value={oto.pkg.slug} />
+              <input type="hidden" name="oto_for" value={order!.id} />
+              <button type="submit" class="ty-oto__btn">
+                Adaugă la comandă
+              </button>
+            </form>
+          </div>
+        )
+      }
+
+      {
+        !order && (
+          <p class="ty-fallback">
+            Plata a fost procesată. Dacă nu primești confirmarea pe email în câteva minute, scrie-ne
+            și rezolvăm imediat.
+          </p>
+        )
+      }
+
+      <div class="ty-actions">
+        <Button href="/" variant="outline">Înapoi la prima pagină</Button>
+        <Button href="/contact" withArrow>Ai o întrebare? Scrie-ne</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .ty-wrap {
+    max-width: 720px;
+  }
+  .ty-order {
+    background: var(--canvas);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 28px;
+    box-shadow: var(--sh-sm);
+    margin-bottom: 28px;
+  }
+  .ty-order h2 {
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+  }
+  .ty-order dl {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+  }
+  .ty-order dl > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 10px;
+  }
+  .ty-order dl > div:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .ty-order dt {
+    color: var(--muted);
+  }
+  .ty-order dd {
+    font-weight: 600;
+  }
+
+  .ty-oto {
+    background: var(--ink);
+    color: #fff;
+    border-radius: var(--r-lg);
+    padding: 32px;
+    margin-bottom: 28px;
+    border-top: 3px solid var(--cyan);
+  }
+  .ty-oto__badge {
+    display: inline-block;
+    background: var(--signal);
+    color: var(--ink);
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 12px;
+    border-radius: var(--r-pill);
+    margin-bottom: 14px;
+  }
+  .ty-oto h2 {
+    color: #fff;
+    font-size: 1.45rem;
+    margin-bottom: 10px;
+  }
+  .ty-oto__desc {
+    color: var(--muted-dark);
+    margin-bottom: 16px;
+  }
+  .ty-oto__price {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+  .ty-oto__price s {
+    color: var(--muted-dark);
+    font-size: 1.05rem;
+  }
+  .ty-oto__price strong {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: var(--cyan);
+  }
+  .ty-oto__timer {
+    color: var(--muted-dark);
+    font-size: 0.92rem;
+    margin-bottom: 20px;
+  }
+  .ty-oto__timer span {
+    color: var(--signal);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .ty-oto__btn {
+    display: inline-block;
+    padding: 14px 28px;
+    border: none;
+    border-radius: var(--r-xs);
+    background: var(--electric);
+    color: #fff;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    box-shadow: var(--glow-electric);
+    transition: transform 0.18s var(--ease-snap);
+  }
+  .ty-oto__btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .ty-fallback {
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+  .ty-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+</style>
+
+<script>
+  // Countdown OTO: la expirare ascundem oferta (serverul o re-validează oricum).
+  const box = document.querySelector<HTMLElement>('[data-oto-expires]');
+  const label = document.querySelector<HTMLElement>('[data-oto-countdown]');
+  if (box && label) {
+    const expiresAt = Number(box.dataset.otoExpires);
+    const tick = () => {
+      const left = expiresAt - Date.now();
+      if (left <= 0) {
+        box.remove();
+        return;
+      }
+      const m = Math.floor(left / 60000);
+      const s = Math.floor((left % 60000) / 1000);
+      label.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      setTimeout(tick, 1000);
+    };
+    tick();
+  }
+</script>

@@ -4,6 +4,7 @@ import PageHeader from '@components/sections/PageHeader.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
 import Button from '@components/ui/Button.astro';
 import { getPublicPackages, formatPrice } from '@/lib/server/packages';
+import { getIntegration } from '@/lib/server/settings';
 
 // On-demand: pachetele vin din DB (editabile din admin, fără rebuild).
 export const prerender = false;
@@ -12,6 +13,11 @@ const { items, fromDb } = await getPublicPackages();
 if (!fromDb) {
   Astro.response.headers.set('Cache-Control', 'no-store');
 }
+
+// Cumpărarea directă apare doar cu Stripe configurat (din /admin/integrari).
+const stripeReady = fromDb && Boolean((await getIntegration('stripe')).secretKey.value);
+const canBuy = (priceCents: number) => stripeReady && priceCents > 0;
+const canceled = Astro.url.searchParams.get('canceled') === '1';
 
 const services = items.filter((p) => p.kind === 'service');
 const maintenance = items.filter((p) => p.kind === 'maintenance');
@@ -36,6 +42,19 @@ const metaDescription =
   />
 
   {
+    canceled && (
+      <section class="section section--light" style="padding-bottom:0">
+        <div class="container">
+          <p class="pk-canceled">
+            Plata a fost anulată. Nicio problemă: pachetele te așteaptă mai jos, iar dacă ai
+            întrebări <a href="/contact">scrie-ne</a>.
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  {
     services.length > 0 && (
       <section class="section section--light">
         <div class="container">
@@ -54,9 +73,23 @@ const metaDescription =
                     ))}
                   </ul>
                 )}
-                <Button href={`/contact?service=${encodeURIComponent(pkg.slug)}`} withArrow>
-                  Cere o ofertă
-                </Button>
+                <div class="pk-cta">
+                  {canBuy(pkg.priceCents) && (
+                    <form method="post" action="/api/checkout">
+                      <input type="hidden" name="slug" value={pkg.slug} />
+                      <button type="submit" class="pk-buy">
+                        <span>Cumpără</span>
+                      </button>
+                    </form>
+                  )}
+                  <Button
+                    href={`/contact?service=${encodeURIComponent(pkg.slug)}`}
+                    variant={canBuy(pkg.priceCents) ? 'outline' : 'primary'}
+                    withArrow={!canBuy(pkg.priceCents)}
+                  >
+                    Cere o ofertă
+                  </Button>
+                </div>
               </article>
             ))}
           </div>
@@ -87,9 +120,23 @@ const metaDescription =
                     ))}
                   </ul>
                 )}
-                <Button href={`/contact?service=${encodeURIComponent(pkg.slug)}`} withArrow>
-                  Cere o ofertă
-                </Button>
+                <div class="pk-cta">
+                  {canBuy(pkg.priceCents) && (
+                    <form method="post" action="/api/checkout">
+                      <input type="hidden" name="slug" value={pkg.slug} />
+                      <button type="submit" class="pk-buy">
+                        <span>Abonează-te</span>
+                      </button>
+                    </form>
+                  )}
+                  <Button
+                    href={`/contact?service=${encodeURIComponent(pkg.slug)}`}
+                    variant={canBuy(pkg.priceCents) ? 'outline' : 'primary'}
+                    withArrow={!canBuy(pkg.priceCents)}
+                  >
+                    Cere o ofertă
+                  </Button>
+                </div>
               </article>
             ))}
           </div>
@@ -229,5 +276,45 @@ const metaDescription =
     font-weight: 700;
     color: var(--electric);
     white-space: nowrap;
+  }
+  .pk-canceled {
+    background: color-mix(in srgb, var(--signal) 14%, var(--canvas));
+    border: 1px solid color-mix(in srgb, var(--signal) 50%, var(--line));
+    border-radius: var(--r-sm);
+    padding: 14px 18px;
+  }
+  .pk-canceled a {
+    color: var(--electric);
+    font-weight: 600;
+  }
+  .pk-cta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  /* Buton de cumpărare: aceeași semnătură oblică ca ui/Button.astro. */
+  .pk-buy {
+    transform: skew(-10deg);
+    border: 1px solid transparent;
+    border-radius: var(--r-xs);
+    background: var(--electric);
+    color: #fff;
+    padding: 13px 24px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.86rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    box-shadow: var(--glow-electric);
+    transition: transform 0.18s var(--ease-snap);
+  }
+  .pk-buy:hover {
+    transform: skew(-10deg) translateY(-2px);
+  }
+  .pk-buy span {
+    display: inline-block;
+    transform: skew(10deg);
   }
 </style>

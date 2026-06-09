@@ -5,6 +5,9 @@ import { fallbackPackages, type DisplayPackage } from '../../data/packages-fallb
 
 export type PublicPackages = { items: DisplayPackage[]; fromDb: boolean };
 
+/** Fereastra în care oferta OTO rămâne valabilă după comanda-părinte. */
+export const OTO_WINDOW_MS = 30 * 60 * 1000;
+
 /** Pachetele active pentru pagina publică; fallback pe array-ul din cod. */
 export async function getPublicPackages(): Promise<PublicPackages> {
   const db = getDb();
@@ -34,6 +37,13 @@ export async function getPublicPackages(): Promise<PublicPackages> {
     }
   }
   return { items: fallbackPackages, fromDb: false };
+}
+
+/** „480€" / „50 lei". Trăiește aici (nu în frontmatter .astro): compilatorul
+ *  Astro parsează greșit regex-urile din template literals în frontmatter. */
+export function formatAmount(cents: number, currency: string): string {
+  const amount = (cents / 100).toFixed(2).replace(/\.00$/, '');
+  return `${amount}${currency.trim() === 'EUR' ? '€' : ' lei'}`;
 }
 
 /** Format de afișare a prețului: „480 €" / „50 €/lună" / „[confirmă: preț]". */
