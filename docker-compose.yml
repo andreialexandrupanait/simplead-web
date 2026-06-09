@@ -8,11 +8,17 @@ services:
     # La schimbarea dependențelor: `docker compose down -v && docker compose up --build`.
     command: pnpm dev --host 0.0.0.0
     ports:
-      - "4321:4321"
+      - '4321:4321'
     environment:
       - NODE_ENV=development
+      # DB-ul din compose; poate fi suprascris din .env.
+      - DATABASE_URL=postgres://simplead:simplead@db:5432/simplead
     env_file:
-      - .env
+      - path: .env
+        required: false
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
       # Bind-mount the project for live editing...
       - .:/app
@@ -25,6 +31,25 @@ services:
       - simplead_astro_cache:/app/.astro
     restart: unless-stopped
 
+  db:
+    image: postgres:16
+    container_name: simplead-db
+    environment:
+      - POSTGRES_USER=simplead
+      - POSTGRES_PASSWORD=simplead
+      - POSTGRES_DB=simplead
+    ports:
+      - '5432:5432'
+    volumes:
+      - simplead_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U simplead -d simplead']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
 volumes:
   simplead_node_modules:
   simplead_astro_cache:
+  simplead_pg_data:

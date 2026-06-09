@@ -12,6 +12,7 @@ export interface NavServiceItem extends NavItem {
 export const mainNav: NavItem[] = [
   { label: 'Acasă', href: '/' },
   { label: 'Servicii', href: '/servicii' },
+  { label: 'Pachete', href: '/pachete' },
   { label: 'Portofoliu', href: '/portofoliu' },
   { label: 'Despre', href: '/despre' },
   { label: 'Blog', href: '/blog' },

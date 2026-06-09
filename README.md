@@ -74,10 +74,15 @@ Toate sunt **opționale** în dev. Lipsa unei chei dezactivează elegant funcți
 | `GA4_ID`             | Google Analytics 4 — gol = scriptul nu se injectează          |
 | `GTM_ID`             | Google Tag Manager — gol = nu se injectează                   |
 | `CLARITY_ID`         | Microsoft Clarity — gol = nu se injectează                    |
-| `RESEND_API_KEY`     | Trimitere email formular. **Gol = formularul simulează + logează** |
 | `CONTACT_TO_EMAIL`   | Adresa care primește mesajele din formular                    |
-| `CONTACT_FROM_EMAIL` | Adresa „from" verificată în Resend                            |
+| `CONTACT_FROM_EMAIL` | Adresa „from" verificată în Postmark                          |
 | `CALCOM_LINK`        | Link Cal.com pentru programări — gol = butonul e dezactivat   |
+| `DATABASE_URL`       | Postgres. **Gol = site-ul rulează fără DB** (pachete fallback, lead-urile rămân doar pe email) |
+| `SESSION_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH` | Autentificare `/admin` (generate cu `pnpm gen:key --password "..."`) |
+| `APP_ENCRYPTION_KEY` | Criptarea cheilor API salvate din `/admin/integrari` (64 hex, din `pnpm gen:key`) |
+| `POSTMARK_SERVER_TOKEN`, `STRIPE_SECRET_KEY`, `SMARTBILL_*`, `SLACK_WEBHOOK_URL` | Fallback-uri env pentru integrări; valorile principale se introduc din **/admin/integrari** (criptate în DB) |
+
+Fără token Postmark, formularul de contact **simulează + loghează** (comportamentul istoric).
 
 ---
 
@@ -125,12 +130,29 @@ Modulele de secțiune: stiluri scoped în componente (`src/components/home/*`, `
 
 ---
 
-## 🌐 Producție (mai târziu)
+## 🌐 Producție (Docker, NAS sau Hetzner)
 
-Site predominant static. Acum folosește adaptorul `@astrojs/node` (pentru ruta on-demand
-`/api/contact`). Pentru deploy pe Vercel / Netlify / Cloudflare Pages, înlocuiește adaptorul în
-`astro.config.mjs` cu cel al platformei și mută `/api/contact` în funcția serverless echivalentă
-(sau păstrează node standalone pe un VPS).
+Site predominant static + rute on-demand (`/api/contact`, `/pachete`, `/admin/*`) servite de
+adaptorul `@astrojs/node` standalone. Deploy self-hosted cu Docker:
+
+```bash
+# 1. Generează secretele și completează .env (pornind de la .env.example)
+pnpm gen:key --password "parola-ta-de-admin"
+
+# 2a. Pe NAS (ai deja reverse proxy): aplicația ascultă pe :4321
+docker compose -f docker-compose.prod.yml up -d --build
+
+# 2b. Pe Hetzner (fără proxy propriu): Caddy face HTTPS automat pentru $DOMAIN
+docker compose -f docker-compose.prod.yml --profile caddy up -d --build
+
+# 3. Migrațiile rulează automat la pornirea containerului. Seed inițial (pachete draft):
+docker compose -f docker-compose.prod.yml exec app node scripts/seed.mjs
+```
+
+După pornire: intră pe `/admin` (credențialele din `.env`) și introdu cheile de integrare
+(Stripe, SmartBill, Postmark, Slack) din pagina **Integrări**: se salvează criptat în DB și
+fiecare are buton de test. Pachetele și prețurile se editează din **Pachete** (apar pe `/pachete`
+fără rebuild).
 
 ---
 

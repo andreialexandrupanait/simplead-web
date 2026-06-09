@@ -1,0 +1,148 @@
+---
+import { desc, eq } from 'drizzle-orm';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getDb } from '../../lib/server/db';
+import { leads, leadStatus } from '../../lib/server/schema';
+
+export const prerender = false;
+
+const db = getDb();
+const STATUSES = leadStatus.enumValues;
+
+// Schimbare status dintr-un mini-formular per rând.
+if (Astro.request.method === 'POST' && db) {
+  const form = await Astro.request.formData();
+  const id = String(form.get('id') ?? '');
+  const status = String(form.get('status') ?? '') as (typeof STATUSES)[number];
+  if (id && STATUSES.includes(status)) {
+    try {
+      await db.update(leads).set({ status }).where(eq(leads.id, id));
+    } catch (err) {
+      console.warn('[admin] Schimbarea statusului lead-ului a eșuat:', err);
+    }
+  }
+  const back = Astro.url.searchParams.get('status');
+  return Astro.redirect(`/admin/leads${back ? `?status=${back}` : ''}`, 303);
+}
+
+const filter = Astro.url.searchParams.get('status');
+let rows: (typeof leads.$inferSelect)[] = [];
+let dbError = false;
+
+if (db) {
+  try {
+    const query = db.select().from(leads).orderBy(desc(leads.createdAt)).limit(200);
+    rows =
+      filter && STATUSES.includes(filter as (typeof STATUSES)[number])
+        ? await query.where(eq(leads.status, filter as (typeof STATUSES)[number]))
+        : await query;
+  } catch (err) {
+    console.warn('[admin] Listarea lead-urilor a eșuat:', err);
+    dbError = true;
+  }
+}
+
+const dateFmt = new Intl.DateTimeFormat('ro-RO', { dateStyle: 'medium', timeStyle: 'short' });
+---
+
+<AdminLayout title="Lead-uri">
+  <h1>Lead-uri</h1>
+  <p class="admin-sub">Mesajele primite prin formularul de contact.</p>
+
+  {
+    !db && (
+      <div class="admin-banner admin-banner--warn">
+        <strong>Fără bază de date.</strong> Lead-urile noi nu se salvează (rămân doar pe email).
+      </div>
+    )
+  }
+  {
+    dbError && (
+      <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>
+    )
+  }
+
+  {
+    db && !dbError && (
+      <div class="admin-card">
+        <div class="admin-actions" style="margin-bottom:16px">
+          <a href="/admin/leads" class:list={['admin-tag', !filter && 'admin-tag--on']}>
+            toate
+          </a>
+          {STATUSES.map((s) => (
+            <a
+              href={`/admin/leads?status=${s}`}
+              class:list={['admin-tag', filter === s && 'admin-tag--on']}
+            >
+              {s}
+            </a>
+          ))}
+        </div>
+
+        {rows.length === 0 ? (
+          <p class="admin-hint" style="margin:0">
+            Niciun lead{filter ? ` cu statusul „${filter}"` : ''} deocamdată.
+          </p>
+        ) : (
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Contact</th>
+                <th>Serviciu</th>
+                <th>Mesaj</th>
+                <th>Primit</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((lead) => (
+                <tr>
+                  <td>
+                    <strong>{lead.name}</strong>
+                    <br />
+                    <a href={`mailto:${lead.email}`}>{lead.email}</a>
+                    {lead.phone && (
+                      <>
+                        <br />
+                        <a href={`tel:${lead.phone}`}>{lead.phone}</a>
+                      </>
+                    )}
+                  </td>
+                  <td>{lead.service || '-'}</td>
+                  <td style="max-width:320px">
+                    <details>
+                      <summary>
+                        {lead.message.length > 80
+                          ? `${lead.message.slice(0, 80)}...`
+                          : lead.message}
+                      </summary>
+                      <p style="white-space:pre-wrap;margin-top:8px">{lead.message}</p>
+                    </details>
+                  </td>
+                  <td>{dateFmt.format(lead.createdAt)}</td>
+                  <td>
+                    <form method="post">
+                      <input type="hidden" name="id" value={lead.id} />
+                      <select
+                        class="admin-select"
+                        name="status"
+                        onchange="this.form.requestSubmit()"
+                        style="width:auto;padding:6px 8px;font-size:0.85rem"
+                      >
+                        {STATUSES.map((s) => (
+                          <option value={s} selected={lead.status === s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    )
+  }
+</AdminLayout>

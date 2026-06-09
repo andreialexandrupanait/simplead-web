@@ -17,7 +17,8 @@
 | Blog | AI-asistat + review și semnătură Andrei; obiectiv: rankare organică națională |
 | Achiziție | SEO + organic întâi; ads abia după validarea funnel-ului |
 | Lansare | Totul împreună (site complet RO+EN + comerț + admin), orizont realist 6-10 săptămâni |
-| Hosting | Nedecis; recomandare mai jos (secțiunea 3) |
+| Hosting | **Self-hosted Docker pe NAS sau Hetzner** (decis); păstrăm adapterul `@astrojs/node`, deploy cu `docker-compose.prod.yml` |
+| Chei integrări | Se introduc din **/admin/integrari** (criptate AES-256-GCM în DB, mascate în UI); env vars rămân fallback |
 
 ---
 
@@ -64,8 +65,8 @@ Site-ul servește 4 fluxuri de venit, în ordinea priorității:
 
 Principiu: rămânem pe Astro și adăugăm strict ce e necesar. Nu construim backend mare de la zero.
 
-- **Hosting: Vercel (recomandat).** Adapterul `@astrojs/vercel` înlocuiește `@astrojs/node` în `astro.config.mjs`; rutele API și webhook-urile Stripe devin serverless automat, deploy la fiecare push, preview pe PR-uri. Alternative: Netlify (echivalent funcțional) sau VPS cu Docker (configurația actuală merge direct, dar adaugă întreținere de server, SSL, deploy: nerecomandat acum).
-- **Bază de date: Postgres gestionat (Neon sau Supabase) + Drizzle ORM.** Tabele minime: comenzi, clienți, lead-uri, OTO consumate, abonați newsletter. Stripe rămâne sursa de adevăr pentru plăți.
+- **Hosting: self-hosted Docker pe NAS sau Hetzner (DECIS, implementat).** Păstrăm adapterul `@astrojs/node` standalone. `Dockerfile.prod` (multi-stage) + `docker-compose.prod.yml` (app + Postgres + Caddy opțional cu HTTPS automat pentru Hetzner; pe NAS rulezi fără profilul caddy, în spatele reverse proxy-ului propriu). Detalii în README, secțiunea Producție.
+- **Bază de date: Postgres self-hosted în docker-compose + Drizzle ORM (IMPLEMENTAT).** Tabele: pachete, lead-uri, setări (chei criptate), comenzi + clienți (pregătite pentru Stripe), abonați newsletter. Stripe rămâne sursa de adevăr pentru plăți.
 - **Plăți: Stripe Checkout (sesiuni găzduite) + Stripe Billing** pentru abonamentele de mentenanță, plus customer portal Stripe (self-service upgrade/anulare). Webhook-uri pentru sincronizarea comenzilor în DB.
 - **OTO (one-time offer):** pagina de mulțumire de după checkout prezintă o ofertă unică, limitată în timp (add-on cu discount relevant pentru ce tocmai a cumpărat). Implementare inițială: o nouă sesiune Checkout cu prețul OTO; ulterior one-click cu payment method salvat.
 - **Admin `/admin` (protejat, Auth.js sau echivalent):** două zone:
@@ -83,7 +84,7 @@ Principiu: rămânem pe Astro și adăugăm strict ce e necesar. Nu construim ba
 | **Stripe** | Plăți, abonamente, cupoane, customer portal, webhooks | Critică |
 | **Postmark** | Tranzacțional (formular, confirmări, livrare produse) + newsletter (Broadcast) | Critică |
 | **SmartBill** (cont existent) | Facturare automată la fiecare plată Stripe, prin SmartBill Cloud API (REST, autentificare email + token API, documentație la api.smartbill.ro). **e-Factura e acoperită de SmartBill**, zero integrare suplimentară cu ANAF | Critică |
-| **Neon / Supabase** | Postgres gestionat | Critică |
+| **Postgres self-hosted** | În docker-compose, lângă aplicație (decizia NAS/Hetzner a eliminat Neon/Supabase) | Critică |
 | **Slack** | Webhook-uri de notificare: lead nou, comandă nouă, abonament anulat, plată eșuată (canale #vanzari, #site) | Mare |
 | **Keystatic** | Editare blog/portofoliu din browser | Mare |
 | **GA4 + GTM + Clarity** | Deja pregătite în `Analytics.astro`; de adăugat evenimente ecommerce (view_item, begin_checkout, purchase) și goals pe lead-uri | Mare |
@@ -230,31 +231,32 @@ asistate de blog în GA4, raport lunar în admin.
 ## 9. Etapizare (6-10 săptămâni, workstream-uri parțial paralele)
 
 ### Faza 0 (săpt. 1): fundație
-- [ ] Decizie finală hosting + migrare adapter (`@astrojs/vercel`)
+- [x] Decizie finală hosting: self-hosted Docker (NAS/Hetzner), adapterul `@astrojs/node` rămâne; `Dockerfile.prod` + `docker-compose.prod.yml` create
 - [ ] Cont Stripe: produse, prețuri, taxe; definirea pachetelor, a OTO-urilor și a produselor digitale (lucru de business, pornit din ziua 1; blochează Faza 2)
-- [ ] Provisioning Postgres (Neon/Supabase) + schema inițială
-- [ ] Migrare Resend → Postmark în `/api/contact`
+- [x] Postgres + schema inițială (Drizzle, migrații în `drizzle/`, seed cu pachete draft `[confirmă]`)
+- [x] Migrare Resend → Postmark în `/api/contact` (cu fallback pe consolă fără token)
 - [ ] Kickoff juridic: termeni comerciali, retur, GDPR, ANPC
-- [ ] SmartBill: generare token API + alegerea seriei de facturi pentru vânzările online (e-Factura merge prin SmartBill, nu necesită nimic în plus)
+- [ ] SmartBill: generare token API + alegerea seriei de facturi pentru vânzările online (e-Factura merge prin SmartBill, nu necesită nimic în plus); se introduc în /admin/integrari
 
 ### Faza 1 (săpt. 1-2): conținut & blocante de site
-- [ ] `site.ts` complet cu datele reale din `brand-voice.md` §3
+- [ ] `site.ts` complet cu datele reale din `brand-voice.md` §3 (contact/CIF/RegCom există; lipsesc adresa completă, programul confirmat, social links)
 - [ ] Statistici reale sau eliminarea lor (`brand-voice.md` §7), logo-uri clienți, foto Andrei
-- [ ] Copy-ul `[COPY]` la serviciul AI confirmat; corectura „doctor în marketing"
+- [ ] Copy-ul `[COPY]` la serviciul AI confirmat (corectura „doctor în marketing" e deja în `site.ts`)
 - [ ] Banner cookies + politica de cookies
 - [ ] Pagini legale finalizate
-- [ ] Fix-uri mici: an dinamic în footer, OG real
+- [x] Fix mic: an dinamic în footer
+- [ ] OG real
 
 ### Faza 2 (săpt. 2-4): ecommerce
-- [ ] Pagina `/pachete` cu prețuri și CTA de cumpărare
+- [x] Pagina `/pachete` cu prețuri (din DB, editabile din admin; CTA „Cere o ofertă" până la activarea checkout-ului)
 - [ ] Stripe Checkout (one-time) + Billing (abonamente mentenanță, legat de calculatorul existent)
-- [ ] Webhook-uri + tabele comenzi/clienți în DB
+- [ ] Webhook-uri Stripe (tabelele comenzi/clienți există deja în DB)
 - [ ] Pagina de mulțumire cu OTO + pagina de anulare
 - [ ] Facturare automată prin SmartBill API la fiecare plată (factura pleacă pe emailul clientului)
-- [ ] Emailuri tranzacționale Postmark + notificări Slack
+- [x] Emailuri tranzacționale Postmark + notificări Slack (formular contact; comenzile urmează cu Stripe)
 
 ### Faza 3 (săpt. 3-5): admin + blog
-- [ ] `/admin` cu autentificare: comenzi, lead-uri
+- [x] `/admin` cu autentificare: panou, pachete (CRUD), lead-uri, integrări (chei criptate + buton de test per integrare)
 - [ ] Keystatic peste colecțiile blog/portofoliu
 - [ ] Cercetare cuvinte cheie + calendar editorial pe cele 3 clustere
 - [ ] Rescrierea celor 4 articole existente + primele 4-6 articole noi
@@ -305,12 +307,15 @@ Se completează aici, ca registrul din `brand-voice.md` §7.
 - [ ] **Primele produse digitale + prețuri**: recomandare de început: auditul neuromarketing + un ghid gratuit ca lead magnet
 
 ### Conturi & accese (Faza 0)
+
+> Cheile API (Stripe, SmartBill, Postmark, Slack) le introduci singur în **/admin/integrari**:
+> se salvează criptat în baza de date și au buton de test. Mai jos rămâne ce trebuie să obții.
 - [ ] **Stripe**: cont creat (sau acces la cel existent) + activare plăți live pe entitatea Simplead
 - [ ] **SmartBill**: token API (din cont: Contul meu → Integrări/API) + seria de facturi pe care o folosim pentru vânzările online
 - [ ] **Postmark**: cont creat + **acces DNS pe simplead.ro** pentru verificarea domeniului de trimitere (SPF, DKIM, return-path)
 - [ ] **Slack**: workspace-ul + canalul în care vrei notificările (propunere: #vanzari și #site); webhook-ul îl generez eu cu acces
-- [ ] **Hosting**: confirmare Vercel (cont creat, gratuit la început) + acces DNS pentru mutarea domeniului pe producție
-- [ ] **Bază de date**: acord să creez cont Neon/Supabase pe emailul firmei
+- [x] **Hosting**: decis self-hosted Docker (NAS sau Hetzner); rămâne de făcut doar DNS-ul spre server la lansare
+- [x] **Bază de date**: Postgres self-hosted în docker-compose (nu mai e nevoie de cont extern)
 
 ### Conținut (Faza 1, se suprapune cu `brand-voice.md` §7)
 - [ ] Foto reală Andrei (pentru „Omul din spate", `/despre`, contact)

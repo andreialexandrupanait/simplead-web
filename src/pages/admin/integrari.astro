@@ -1,0 +1,220 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getDb } from '../../lib/server/db';
+import { getEncryptionKey } from '../../lib/server/crypto';
+import {
+  INTEGRATIONS,
+  getMaskedIntegration,
+  saveIntegration,
+  type IntegrationName,
+  type MaskedField,
+} from '../../lib/server/settings';
+
+export const prerender = false;
+
+const db = getDb();
+const hasEncryptionKey = getEncryptionKey() !== null;
+
+let saveError: string | null = null;
+let savedIntegration: string | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const integration = String(form.get('integration') ?? '') as IntegrationName;
+
+  if (integration in INTEGRATIONS) {
+    const fields = Object.keys(INTEGRATIONS[integration].fields);
+    const values: Record<string, string> = {};
+    const clear: string[] = [];
+    for (const field of fields) {
+      values[field] = String(form.get(field) ?? '');
+      if (form.get(`clear_${field}`)) clear.push(field);
+    }
+    const result = await saveIntegration(integration, values as never, clear as never[]);
+    if (result.ok) {
+      return Astro.redirect(`/admin/integrari?saved=${integration}`, 303);
+    }
+    saveError = result.error;
+  }
+}
+
+savedIntegration = Astro.url.searchParams.get('saved');
+
+// Descrieri + etichete per câmp pentru formulare.
+const FIELD_META: Record<string, Record<string, { label: string; hint?: string }>> = {
+  stripe: {
+    secretKey: {
+      label: 'Secret key',
+      hint: 'Cheia secretă din Stripe Dashboard (sk_live_... sau sk_test_...).',
+    },
+  },
+  smartbill: {
+    email: { label: 'Email cont', hint: 'Emailul contului SmartBill.' },
+    token: { label: 'Token API', hint: 'Din SmartBill Cloud: Contul meu, Integrări, API.' },
+    series: { label: 'Serie facturi', hint: 'Seria folosită pentru facturile emise automat.' },
+    cif: { label: 'CIF firmă', hint: 'CIF-ul firmei din SmartBill (ex. 41501661).' },
+  },
+  postmark: {
+    serverToken: { label: 'Server token', hint: 'Din Postmark: Servers, API Tokens.' },
+    fromEmail: {
+      label: 'Adresă expeditor',
+      hint: 'Adresă verificată în Postmark (ex. site@simplead.ro).',
+    },
+  },
+  slack: {
+    webhookUrl: { label: 'Webhook URL', hint: 'Incoming webhook pentru canalul de notificări.' },
+  },
+};
+
+const INTEGRATION_DESC: Record<IntegrationName, string> = {
+  stripe: 'Plăți online: pachete și abonamente. Necesar pentru checkout.',
+  smartbill: 'Facturare automată la fiecare plată. e-Factura e gestionată de SmartBill.',
+  postmark: 'Trimiterea emailurilor: formular de contact, confirmări de comandă.',
+  slack: 'Notificări instant: lead nou, comandă nouă.',
+};
+
+const integrationNames = Object.keys(INTEGRATIONS) as IntegrationName[];
+const masked = Object.fromEntries(
+  await Promise.all(integrationNames.map(async (name) => [name, await getMaskedIntegration(name)])),
+) as Record<IntegrationName, Record<string, MaskedField>>;
+---
+
+<AdminLayout title="Integrări">
+  <h1>Integrări</h1>
+  <p class="admin-sub">
+    Cheile se salvează criptat în baza de date și nu se afișează niciodată întregi. Câmp gol =
+    valoarea existentă rămâne neschimbată.
+  </p>
+
+  {
+    !db && (
+      <div class="admin-banner admin-banner--warn">
+        <strong>Fără bază de date.</strong> Salvarea cheilor necesită <code>DATABASE_URL</code>.
+        Până atunci, integrările pot funcționa doar din variabile de mediu.
+      </div>
+    )
+  }
+  {
+    !hasEncryptionKey && (
+      <div class="admin-banner admin-banner--warn">
+        <strong>Cheie de criptare lipsă.</strong> Setează <code>APP_ENCRYPTION_KEY</code> (vezi
+        <code>pnpm gen:key</code>) ca să poți salva chei secrete.
+      </div>
+    )
+  }
+  {saveError && <div class="admin-banner admin-banner--error">{saveError}</div>}
+  {
+    savedIntegration && (
+      <div class="admin-banner admin-banner--ok">
+        Setările pentru <strong>{INTEGRATIONS[savedIntegration as IntegrationName]?.label}</strong>
+        au fost salvate.
+      </div>
+    )
+  }
+
+  {
+    integrationNames.map((name) => {
+      const integration = INTEGRATIONS[name];
+      const fields = Object.entries(integration.fields) as [
+        string,
+        { key: string; env: string; secret: boolean },
+      ][];
+      return (
+        <div class="admin-card" id={name}>
+          <h2>{integration.label}</h2>
+          <p class="admin-hint">{INTEGRATION_DESC[name]}</p>
+          <form method="post">
+            <input type="hidden" name="integration" value={name} />
+            {fields.map(([fieldName, field]) => {
+              const m = masked[name][fieldName]!;
+              const meta = FIELD_META[name]?.[fieldName];
+              return (
+                <label class="admin-field">
+                  <span>
+                    {meta?.label ?? fieldName}
+                    {m.source && (
+                      <span class="admin-tag admin-tag--on" style="margin-left:8px">
+                        {m.source === 'db' ? 'salvat în DB' : 'din .env'}
+                      </span>
+                    )}
+                  </span>
+                  <input
+                    class="admin-input"
+                    type={field.secret ? 'password' : 'text'}
+                    name={fieldName}
+                    placeholder={m.masked ?? 'nesetat'}
+                    autocomplete="off"
+                  />
+                  {meta?.hint && <small>{meta.hint}</small>}
+                  {m.source === 'db' && (
+                    <small>
+                      <label class="admin-check">
+                        <input type="checkbox" name={`clear_${fieldName}`} value="1" />
+                        șterge valoarea salvată
+                      </label>
+                    </small>
+                  )}
+                </label>
+              );
+            })}
+            <div class="admin-actions">
+              <button type="submit" class="admin-btn">
+                Salvează
+              </button>
+              <button
+                type="button"
+                class="admin-btn admin-btn--outline"
+                data-test-integration={name}
+              >
+                Testează
+              </button>
+              <span class="test-result" data-test-result={name} aria-live="polite" />
+            </div>
+          </form>
+        </div>
+      );
+    })
+  }
+</AdminLayout>
+
+<style>
+  .test-result {
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .test-result.is-ok {
+    color: #0b6e63;
+    font-weight: 600;
+  }
+  .test-result.is-error {
+    color: #8a2424;
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-test-integration]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const name = btn.dataset.testIntegration!;
+      const result = document.querySelector<HTMLElement>(`[data-test-result="${name}"]`)!;
+      result.className = 'test-result';
+      result.textContent = 'Se testează...';
+      btn.disabled = true;
+      try {
+        const res = await fetch('/api/admin/integrations/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ integration: name }),
+        });
+        const body = (await res.json()) as { ok: boolean; detail?: string };
+        result.textContent = body.detail ?? (body.ok ? 'Funcționează.' : 'A eșuat.');
+        result.classList.add(body.ok ? 'is-ok' : 'is-error');
+      } catch {
+        result.textContent = 'Testul a eșuat (eroare de rețea).';
+        result.classList.add('is-error');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+</script>

@@ -1,10 +1,14 @@
 import type { APIRoute } from 'astro';
 import { contactSchema } from '../../lib/contact-schema';
 import { site } from '../../data/site';
+import { getDb } from '../../lib/server/db';
+import { leads } from '../../lib/server/schema';
+import { sendEmail } from '../../lib/server/email';
+import { notifySlack } from '../../lib/server/slack';
+import { serverEnv } from '../../lib/server/env';
 
-// Rută on-demand (POST → trimitere email la runtime). În dev e servită live
-// de dev server (cu un warning inofensiv „no adapter"); la build, adaptorul
-// node o împachetează ca funcție on-demand.
+// Rută on-demand (POST la runtime). În dev e servită live de dev server;
+// la build, adaptorul node o împachetează ca funcție on-demand.
 export const prerender = false;
 
 function json(data: unknown, status = 200): Response {
@@ -32,13 +36,23 @@ export const POST: APIRoute = async ({ request }) => {
 
   const { name, email, phone, service, message, company } = parsed.data;
 
-  // Honeypot: dacă e completat, e bot - răspundem „ok" fără a trimite nimic.
+  // Honeypot: dacă e completat, e bot - răspundem „ok" fără a face nimic.
   if (company) return json({ ok: true });
 
-  const apiKey = import.meta.env.RESEND_API_KEY;
-  const to = import.meta.env.CONTACT_TO_EMAIL || site.contact.email;
-  const from = import.meta.env.CONTACT_FROM_EMAIL || 'site@simplead.ro';
+  // 1) Persistăm lead-ul (best-effort: fără DB sau cu DB căzut, mergem mai departe).
+  let leadStored = false;
+  const db = getDb();
+  if (db) {
+    try {
+      await db.insert(leads).values({ name, email, phone, service, message });
+      leadStored = true;
+    } catch (err) {
+      console.warn('[contact] Salvarea lead-ului a eșuat:', err);
+    }
+  }
 
+  // 2) Email către noi (Postmark sau simulare pe consolă, fără token).
+  const to = serverEnv('CONTACT_TO_EMAIL') || site.contact.email;
   const subject = `[Simplead] Cerere nouă${service ? `: ${service}` : ''} - ${name}`;
   const text = [
     `Nume: ${name}`,
@@ -50,30 +64,19 @@ export const POST: APIRoute = async ({ request }) => {
     message,
   ].join('\n');
 
-  // Fallback elegant: fără cheie Resend, simulăm trimiterea + logăm.
-  if (!apiKey) {
-    console.info('[contact] RESEND_API_KEY lipsește: mesaj simulat (nu s-a trimis email):');
-    console.info(text);
-    return json({ ok: true, simulated: true });
-  }
+  const emailResult = await sendEmail({ to, replyTo: email, subject, text });
 
-  try {
-    const { Resend } = await import('resend');
-    const resend = new Resend(apiKey);
-    const { error } = await resend.emails.send({
-      from: `Simplead Website <${from}>`,
-      to,
-      replyTo: email,
-      subject,
-      text,
-    });
-    if (error) {
-      console.error('[contact] Resend error:', error);
-      return json({ ok: false, error: 'Trimiterea a eșuat. Încearcă din nou.' }, 502);
-    }
-    return json({ ok: true });
-  } catch (err) {
-    console.error('[contact] Eroare neașteptată:', err);
-    return json({ ok: false, error: 'Eroare de server.' }, 500);
+  // 3) Notificare Slack, fire-and-forget (nu blocăm răspunsul).
+  void notifySlack(
+    `:incoming_envelope: Lead nou pe simplead.ro\n*${name}* <${email}>${phone ? ` · ${phone}` : ''}${service ? `\nServiciu: ${service}` : ''}\n${message.length > 300 ? `${message.slice(0, 300)}...` : message}`,
+  );
+
+  // Utilizatorul primește „ok" dacă mesajul a ajuns măcar pe un canal
+  // (DB sau email). Eșecul total e singurul caz de eroare.
+  if (emailResult.sent || leadStored) {
+    return json(
+      emailResult.simulated && !leadStored ? { ok: true, simulated: true } : { ok: true },
+    );
   }
+  return json({ ok: false, error: 'Trimiterea a eșuat. Încearcă din nou.' }, 502);
 };

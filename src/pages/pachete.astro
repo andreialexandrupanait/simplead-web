@@ -1,0 +1,233 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHeader from '@components/sections/PageHeader.astro';
+import CtaSection from '@components/sections/CtaSection.astro';
+import Button from '@components/ui/Button.astro';
+import { getPublicPackages, formatPrice } from '@/lib/server/packages';
+
+// On-demand: pachetele vin din DB (editabile din admin, fără rebuild).
+export const prerender = false;
+
+const { items, fromDb } = await getPublicPackages();
+if (!fromDb) {
+  Astro.response.headers.set('Cache-Control', 'no-store');
+}
+
+const services = items.filter((p) => p.kind === 'service');
+const maintenance = items.filter((p) => p.kind === 'maintenance');
+const addons = items.filter((p) => p.kind === 'addon');
+
+const metaDescription =
+  'Pachete cu preț fix pentru site-uri, identitate vizuală și grafică, plus abonamente lunare de mentenanță. Alegi pachetul, noi ne apucăm de treabă.';
+---
+
+<BaseLayout
+  title="Pachete și prețuri"
+  description={metaDescription}
+  transparentNav={true}
+  navOverDark={true}
+>
+  <PageHeader
+    crumb={[{ label: 'Acasă', href: '/' }, { label: 'Pachete' }]}
+    eyebrow="Pachete și prețuri"
+    title="Pachete clare, fără surprize"
+    accent="fără surprize"
+    subtitle="Servicii cu preț fix și abonamente de mentenanță. Știi de la început ce primești și cât costă."
+  />
+
+  {
+    services.length > 0 && (
+      <section class="section section--light">
+        <div class="container">
+          <h2 class="pk-section-title">Pachete de servicii</h2>
+          <p class="pk-section-sub">Plată unică, livrare pe termen clar.</p>
+          <div class="pk-grid" data-reveal-stagger>
+            {services.map((pkg) => (
+              <article class="pk-card">
+                <h3>{pkg.name}</h3>
+                <p class="pk-price">{formatPrice(pkg)}</p>
+                <p class="pk-desc">{pkg.description}</p>
+                {pkg.features.length > 0 && (
+                  <ul class="pk-features">
+                    {pkg.features.map((f) => (
+                      <li>{f}</li>
+                    ))}
+                  </ul>
+                )}
+                <Button href={`/contact?service=${encodeURIComponent(pkg.slug)}`} withArrow>
+                  Cere o ofertă
+                </Button>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    maintenance.length > 0 && (
+      <section class="section section--light pk-section-alt">
+        <div class="container">
+          <h2 class="pk-section-title">Abonamente de mentenanță</h2>
+          <p class="pk-section-sub">
+            Site-ul tău actualizat, salvat și sub supraveghere, lună de lună.
+            <a href="/mentenanta"> Calculează-ți abonamentul pe pagina de mentenanță</a>.
+          </p>
+          <div class="pk-grid" data-reveal-stagger>
+            {maintenance.map((pkg) => (
+              <article class="pk-card pk-card--accent">
+                <h3>{pkg.name}</h3>
+                <p class="pk-price">{formatPrice(pkg)}</p>
+                <p class="pk-desc">{pkg.description}</p>
+                {pkg.features.length > 0 && (
+                  <ul class="pk-features">
+                    {pkg.features.map((f) => (
+                      <li>{f}</li>
+                    ))}
+                  </ul>
+                )}
+                <Button href={`/contact?service=${encodeURIComponent(pkg.slug)}`} withArrow>
+                  Cere o ofertă
+                </Button>
+              </article>
+            ))}
+          </div>
+
+          {addons.length > 0 && (
+            <div class="pk-addons">
+              <h3>Opțiuni suplimentare</h3>
+              <ul>
+                {addons.map((pkg) => (
+                  <li>
+                    <span>{pkg.name}</span>
+                    <span class="pk-addon-price">+{formatPrice(pkg)}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  <CtaSection href="/contact" />
+</BaseLayout>
+
+<style>
+  .pk-section-title {
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    margin-bottom: 6px;
+  }
+  .pk-section-sub {
+    color: var(--muted);
+    margin-bottom: 32px;
+    max-width: 60ch;
+  }
+  .pk-section-sub a {
+    color: var(--electric);
+    font-weight: 600;
+  }
+  .pk-section-alt {
+    background: var(--canvas-soft);
+  }
+  .pk-grid {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+  .pk-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--canvas);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 28px;
+    box-shadow: var(--sh-sm);
+    transition:
+      transform 0.25s var(--ease-snap),
+      border-color 0.25s var(--ease-snap),
+      box-shadow 0.25s var(--ease-snap);
+  }
+  .pk-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--electric);
+    box-shadow: var(--glow-electric);
+  }
+  .pk-card--accent {
+    border-top: 3px solid var(--cyan);
+  }
+  .pk-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
+  .pk-price {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--electric);
+    margin-bottom: 12px;
+  }
+  .pk-desc {
+    color: var(--muted);
+    font-size: 0.97rem;
+    margin-bottom: 16px;
+  }
+  .pk-features {
+    margin: 0 0 24px;
+    padding: 0;
+    list-style: none;
+    flex: 1;
+  }
+  .pk-features li {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+  }
+  .pk-features li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 12px;
+    height: 7px;
+    border-left: 2px solid var(--cyan);
+    border-bottom: 2px solid var(--cyan);
+    transform: rotate(-45deg);
+  }
+  .pk-addons {
+    margin-top: 40px;
+    background: var(--canvas);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 24px 28px;
+  }
+  .pk-addons h3 {
+    font-size: 1.05rem;
+    margin-bottom: 14px;
+  }
+  .pk-addons ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+  .pk-addons li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-xs);
+    font-size: 0.95rem;
+  }
+  .pk-addon-price {
+    font-weight: 700;
+    color: var(--electric);
+    white-space: nowrap;
+  }
+</style>

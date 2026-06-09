@@ -1,0 +1,124 @@
+---
+/**
+ * Formular partajat pentru creare/editare pachet (admin).
+ * Valorile vin fie din DB (editare), fie din raw-ul formularului (la eroare).
+ */
+interface Props {
+  values: {
+    name: string;
+    slug: string;
+    kind: string;
+    description: string;
+    price: string;
+    currency: string;
+    interval: string;
+    features: string;
+    sort: number | string;
+    active: boolean;
+  };
+  errors?: Record<string, string[]>;
+  submitLabel: string;
+}
+const { values, errors = {}, submitLabel } = Astro.props;
+
+const kinds = [
+  { value: 'service', label: 'Pachet de servicii (one-time)' },
+  { value: 'maintenance', label: 'Plan de mentenanță (abonament)' },
+  { value: 'addon', label: 'Add-on mentenanță' },
+];
+const intervals = [
+  { value: 'one_time', label: 'Plată unică' },
+  { value: 'monthly', label: 'Lunar' },
+  { value: 'yearly', label: 'Anual' },
+];
+---
+
+<form method="post">
+  <div class="form-grid">
+    <label class="admin-field">
+      <span>Nume</span>
+      <input class="admin-input" type="text" name="name" value={values.name} required />
+      {errors.name && <small class="field-error">{errors.name[0]}</small>}
+    </label>
+    <label class="admin-field">
+      <span>Slug</span>
+      <input class="admin-input" type="text" name="slug" value={values.slug} required />
+      <small>Identificator URL, ex. <code>site-prezentare</code>.</small>
+      {errors.slug && <small class="field-error">{errors.slug[0]}</small>}
+    </label>
+    <label class="admin-field">
+      <span>Tip</span>
+      <select class="admin-select" name="kind">
+        {
+          kinds.map((k) => (
+            <option value={k.value} selected={values.kind === k.value}>
+              {k.label}
+            </option>
+          ))
+        }
+      </select>
+    </label>
+    <label class="admin-field">
+      <span>Interval de plată</span>
+      <select class="admin-select" name="interval">
+        {
+          intervals.map((i) => (
+            <option value={i.value} selected={values.interval === i.value}>
+              {i.label}
+            </option>
+          ))
+        }
+      </select>
+    </label>
+    <label class="admin-field">
+      <span>Preț</span>
+      <input class="admin-input" type="text" name="price" value={values.price} required />
+      <small>În moneda aleasă, ex. <code>480</code> sau <code>480.50</code>.</small>
+      {errors.price && <small class="field-error">{errors.price[0]}</small>}
+    </label>
+    <label class="admin-field">
+      <span>Monedă</span>
+      <select class="admin-select" name="currency">
+        <option value="EUR" selected={values.currency === 'EUR'}>EUR</option>
+        <option value="RON" selected={values.currency === 'RON'}>RON</option>
+      </select>
+    </label>
+    <label class="admin-field">
+      <span>Ordine afișare</span>
+      <input class="admin-input" type="number" name="sort" value={String(values.sort)} min="0" />
+      <small>Număr mic = mai sus în listă.</small>
+    </label>
+    <label class="admin-field admin-check" style="align-self:center">
+      <input type="checkbox" name="active" value="1" checked={values.active} />
+      <span style="margin:0">Activ (vizibil pe site)</span>
+    </label>
+  </div>
+
+  <label class="admin-field">
+    <span>Descriere</span>
+    <textarea class="admin-textarea" name="description">{values.description}</textarea>
+    {errors.description && <small class="field-error">{errors.description[0]}</small>}
+  </label>
+
+  <label class="admin-field">
+    <span>Beneficii (unul pe linie)</span>
+    <textarea class="admin-textarea" name="features">{values.features}</textarea>
+  </label>
+
+  <div class="admin-actions">
+    <button type="submit" class="admin-btn">{submitLabel}</button>
+    <a href="/admin/pachete" class="admin-btn admin-btn--ghost">Renunță</a>
+  </div>
+</form>
+
+<style>
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    column-gap: 20px;
+  }
+  .field-error {
+    color: #8a2424;
+    font-weight: 600;
+  }
+</style>

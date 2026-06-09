@@ -3,7 +3,7 @@ import Logo from '@components/ui/Logo.astro';
 import { mainNav, footerServices, footerLegal } from '@data/nav';
 import { site } from '@data/site';
 
-const year = 2026; // TODO: actualizează / generează la build
+const year = new Date().getFullYear();
 const social = site.social;
 ---
 
@@ -11,15 +11,45 @@ const social = site.social;
   <!-- contact band -->
   <div class="footer-contact">
     <a class="fc-item" href={`mailto:${site.contact.email}`}>
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></svg></span>
+      <span class="ic"
+        ><svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          ><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"
+          ></path></svg
+        ></span
+      >
       <span><small>Scrie-ne</small><b>{site.contact.email}</b></span>
     </a>
     <a class="fc-item" href={site.contact.phoneHref}>
-      <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z" /></svg></span>
+      <span class="ic"
+        ><svg viewBox="0 0 24 24" fill="currentColor"
+          ><path
+            d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z"
+          ></path></svg
+        ></span
+      >
       <span><small>Sună-ne</small><b>{site.contact.phone}</b></span>
     </a>
     <span class="fc-item">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11z" /><circle cx="12" cy="10" r="2.5" /></svg></span>
+      <span class="ic"
+        ><svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          ><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11z"></path><circle
+            cx="12"
+            cy="10"
+            r="2.5"></circle></svg
+        ></span
+      >
       <span><small>Birou</small><b>{site.contact.address}</b></span>
     </span>
   </div>
@@ -35,23 +65,67 @@ const social = site.social;
       <a class="footer-founder" href={site.founderSite} target="_blank" rel="noopener">
         <span>Cercetare & neuromarketing</span>
         <b>panaitandrei.ro</b>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8" /></svg>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"></path></svg
+        >
       </a>
       <div class="footer-socials">
-        <a class="soc" href={social.facebook || '#'} aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7h2.3l.4-2.9h-2.7V9.2c0-.8.3-1.4 1.5-1.4h1.3V5.2c-.6-.1-1.4-.2-2.3-.2-2.3 0-3.8 1.4-3.8 3.9v2.2H7.7V14h2.2v7h3.6z" /></svg></a>
-        <a class="soc" href={social.instagram || '#'} aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none" /></svg></a>
-        <a class="soc" href={social.linkedin || '#'} aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.9 8.8H3.9V20h3V8.8zM5.4 4a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4zM20.1 20v-6.1c0-3-1.6-4.4-3.7-4.4-1.7 0-2.5.9-2.9 1.6V8.8h-3V20h3v-5.8c0-1.3.6-2 1.6-2 .9 0 1.6.5 1.6 2V20h3.4z" /></svg></a>
+        <a class="soc" href={social.facebook || '#'} aria-label="Facebook"
+          ><svg viewBox="0 0 24 24" fill="currentColor"
+            ><path
+              d="M13.5 21v-7h2.3l.4-2.9h-2.7V9.2c0-.8.3-1.4 1.5-1.4h1.3V5.2c-.6-.1-1.4-.2-2.3-.2-2.3 0-3.8 1.4-3.8 3.9v2.2H7.7V14h2.2v7h3.6z"
+            ></path></svg
+          ></a
+        >
+        <a class="soc" href={social.instagram || '#'} aria-label="Instagram"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            ><rect x="3.5" y="3.5" width="17" height="17" rx="5"></rect><circle
+              cx="12"
+              cy="12"
+              r="4"></circle><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"
+            ></circle></svg
+          ></a
+        >
+        <a class="soc" href={social.linkedin || '#'} aria-label="LinkedIn"
+          ><svg viewBox="0 0 24 24" fill="currentColor"
+            ><path
+              d="M6.9 8.8H3.9V20h3V8.8zM5.4 4a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4zM20.1 20v-6.1c0-3-1.6-4.4-3.7-4.4-1.7 0-2.5.9-2.9 1.6V8.8h-3V20h3v-5.8c0-1.3.6-2 1.6-2 .9 0 1.6.5 1.6 2V20h3.4z"
+            ></path></svg
+          ></a
+        >
       </div>
     </div>
 
     <div class="footer-col">
       <h5>Navigare</h5>
-      <ul>{mainNav.map((i) => <li><a href={i.href}>{i.label}</a></li>)}</ul>
+      <ul>
+        {
+          mainNav.map((i) => (
+            <li>
+              <a href={i.href}>{i.label}</a>
+            </li>
+          ))
+        }
+      </ul>
     </div>
 
     <div class="footer-col">
       <h5>Servicii</h5>
-      <ul>{footerServices.map((i) => <li><a href={i.href}>{i.label}</a></li>)}</ul>
+      <ul>
+        {
+          footerServices.map((i) => (
+            <li>
+              <a href={i.href}>{i.label}</a>
+            </li>
+          ))
+        }
+      </ul>
     </div>
 
     <div class="footer-col footer-news">
@@ -59,7 +133,12 @@ const social = site.social;
       <p>Primește idei utile de marketing, o dată pe lună. Fără spam.</p>
       <!-- TODO: conectează la furnizorul de newsletter -->
       <form class="footer-form" data-newsletter>
-        <input type="email" required placeholder="Adresa ta de email" aria-label="Adresa ta de email" />
+        <input
+          type="email"
+          required
+          placeholder="Adresa ta de email"
+          aria-label="Adresa ta de email"
+        />
         <button type="submit">Mă abonez</button>
       </form>
     </div>
@@ -67,7 +146,8 @@ const social = site.social;
 
   <div class="footer-bottom">
     <span>
-      © {year} {site.legalName}. Toate drepturile rezervate.
+      © {year}
+      {site.legalName}. Toate drepturile rezervate.
       {
         (site.legal.cif || site.legal.regCom) && (
           <span class="footer-legal">

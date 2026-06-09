@@ -1,0 +1,10 @@
+# Reverse proxy cu HTTPS automat (Let's Encrypt) pentru deploy pe Hetzner.
+# DOMAIN vine din environment (docker-compose.prod.yml), default simplead.ro.
+{$DOMAIN:simplead.ro} {
+	reverse_proxy app:4321
+	encode gzip zstd
+}
+
+www.{$DOMAIN:simplead.ro} {
+	redir https://{$DOMAIN:simplead.ro}{uri} permanent
+}

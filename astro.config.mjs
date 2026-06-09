@@ -38,7 +38,9 @@ export default defineConfig({
     '/servicii/mentenanta': '/mentenanta',
     '/servicii/mentenanta-website': '/mentenanta',
   },
-  integrations: [react(), mdx(), sitemap()],
+  // /pachete e on-demand (citește pachetele din DB), deci nu intră automat în
+  // sitemap-ul generat la build: îl adăugăm explicit.
+  integrations: [react(), mdx(), sitemap({ customPages: [`${SITE_URL}/pachete`] })],
   vite: {
     plugins: [tailwindcss()],
     server: {

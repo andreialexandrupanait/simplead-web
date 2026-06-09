@@ -1,0 +1,33 @@
+# Imagine de PRODUCȚIE pentru site-ul Simplead (NAS / Hetzner).
+# Multi-stage: build cu toate dependențele, runtime doar cu ce e necesar.
+# node:22-slim (Debian, nu alpine): evită problemele sharp/native; merge pe arm64 (NAS).
+
+# ---------- Stage 1: build ----------
+FROM node:22-slim AS build
+RUN corepack enable
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+# Build-ul rulează FĂRĂ secrete: cheile vin la runtime (env container / DB).
+RUN pnpm build
+# Păstrăm doar dependențele de producție pentru runtime.
+RUN pnpm prune --prod
+
+# ---------- Stage 2: runtime ----------
+FROM node:22-slim AS runtime
+ENV NODE_ENV=production HOST=0.0.0.0 PORT=4321
+WORKDIR /app
+
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/drizzle ./drizzle
+COPY --from=build /app/scripts/migrate.mjs ./scripts/migrate.mjs
+
+EXPOSE 4321
+
+# Migrațiile rulează la pornire (skip grațios fără DATABASE_URL), apoi serverul.
+CMD ["sh", "-c", "node scripts/migrate.mjs && node dist/server/entry.mjs"]

@@ -1,0 +1,60 @@
+# Producție (NAS sau Hetzner):
+#   1. Copiază .env.example în .env și completează (vezi README, secțiunea Producție).
+#   2. NAS (ai deja reverse proxy):  docker compose -f docker-compose.prod.yml up -d --build
+#      → aplicația ascultă pe portul 4321; pune reverse proxy-ul tău în față.
+#   3. Hetzner (fără proxy propriu):  docker compose -f docker-compose.prod.yml --profile caddy up -d --build
+#      → Caddy face HTTPS automat pentru ${DOMAIN} (default simplead.ro).
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: simplead-app
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - DATABASE_URL=postgres://simplead:${POSTGRES_PASSWORD:-simplead}@db:5432/simplead
+    ports:
+      - '4321:4321'
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16
+    container_name: simplead-db-prod
+    environment:
+      - POSTGRES_USER=simplead
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-simplead}
+      - POSTGRES_DB=simplead
+    volumes:
+      - simplead_pg_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U simplead -d simplead']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    # Fără port publicat: DB-ul e accesibil doar din rețeaua compose.
+
+  caddy:
+    image: caddy:2
+    container_name: simplead-caddy
+    profiles: [caddy]
+    ports:
+      - '80:80'
+      - '443:443'
+    environment:
+      - DOMAIN=${DOMAIN:-simplead.ro}
+    volumes:
+      - ./infra/Caddyfile:/etc/caddy/Caddyfile:ro
+      - simplead_caddy_data:/data
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  simplead_pg_prod:
+  simplead_caddy_data:

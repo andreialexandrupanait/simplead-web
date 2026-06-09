@@ -11,7 +11,11 @@
     "preview": "astro preview",
     "astro": "astro",
     "lint": "eslint . && prettier --check .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "node scripts/migrate.mjs",
+    "db:seed": "node scripts/seed.mjs",
+    "gen:key": "node scripts/gen-secrets.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^6.0.1",
@@ -21,10 +25,11 @@
     "@hookform/resolvers": "^3.10.0",
     "@tailwindcss/vite": "^4.1.3",
     "astro": "^6.4.2",
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.9",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.55.0",
-    "resend": "^4.2.0",
     "tailwindcss": "^4.1.3",
     "zod": "^3.24.2"
   },
@@ -32,6 +37,7 @@
     "@astrojs/check": "^0.9.4",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9.24.0",
     "eslint-plugin-astro": "^1.3.1",
     "prettier": "^3.5.3",

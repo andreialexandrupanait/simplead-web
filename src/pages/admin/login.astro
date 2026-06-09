@@ -1,0 +1,104 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import {
+  checkLoginRateLimit,
+  clearFailedLogins,
+  createSessionToken,
+  isAdminConfigured,
+  recordFailedLogin,
+  setSessionCookie,
+  verifyAdminCredentials,
+} from '../../lib/server/auth';
+
+export const prerender = false;
+
+const configured = isAdminConfigured();
+let error: string | null = null;
+
+if (Astro.request.method === 'POST' && configured) {
+  let ip = 'unknown';
+  try {
+    ip = Astro.clientAddress;
+  } catch {
+    /* clientAddress indisponibil în unele contexte */
+  }
+
+  if (!checkLoginRateLimit(ip)) {
+    error = 'Prea multe încercări. Așteaptă 15 minute și încearcă din nou.';
+  } else {
+    const form = await Astro.request.formData();
+    const email = String(form.get('email') ?? '');
+    const password = String(form.get('password') ?? '');
+
+    if (verifyAdminCredentials(email, password)) {
+      clearFailedLogins(ip);
+      const token = createSessionToken();
+      if (token) {
+        setSessionCookie(Astro.cookies, token);
+        const next = Astro.url.searchParams.get('next');
+        return Astro.redirect(next && next.startsWith('/admin') ? next : '/admin', 303);
+      }
+      error = 'Sesiunea nu a putut fi creată. Verifică SESSION_SECRET.';
+    } else {
+      recordFailedLogin(ip);
+      error = 'Email sau parolă greșite.';
+    }
+  }
+}
+---
+
+<AdminLayout title="Autentificare" bare>
+  <div class="login-wrap">
+    <div class="admin-card">
+      <h1>Autentificare</h1>
+      <p class="admin-sub">Zona de administrare Simplead.</p>
+
+      {
+        !configured ? (
+          <div class="admin-banner admin-banner--warn">
+            <strong>Admin neconfigurat.</strong> Setează variabilele de mediu
+            <code>SESSION_SECRET</code>, <code>ADMIN_EMAIL</code> și
+            <code>ADMIN_PASSWORD_HASH</code> (generate cu <code>pnpm gen:key --password "..."</code>
+            ), apoi repornește aplicația.
+          </div>
+        ) : (
+          <>
+            {error && <div class="admin-banner admin-banner--error">{error}</div>}
+            <form method="post">
+              <label class="admin-field">
+                <span>Email</span>
+                <input
+                  class="admin-input"
+                  type="email"
+                  name="email"
+                  required
+                  autocomplete="username"
+                />
+              </label>
+              <label class="admin-field">
+                <span>Parolă</span>
+                <input
+                  class="admin-input"
+                  type="password"
+                  name="password"
+                  required
+                  autocomplete="current-password"
+                />
+              </label>
+              <button type="submit" class="admin-btn">
+                Intră
+              </button>
+            </form>
+          </>
+        )
+      }
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .login-wrap {
+    max-width: 420px;
+    margin: 8vh auto 0;
+  }
+</style>

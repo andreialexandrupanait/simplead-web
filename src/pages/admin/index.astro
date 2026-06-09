@@ -1,0 +1,108 @@
+---
+import { count, eq } from 'drizzle-orm';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getDb } from '../../lib/server/db';
+import { leads, orders, packages } from '../../lib/server/schema';
+import { getEncryptionKey } from '../../lib/server/crypto';
+
+export const prerender = false;
+
+const db = getDb();
+const hasEncryptionKey = getEncryptionKey() !== null;
+
+let stats: { leadsNew: number; leadsTotal: number; packagesActive: number; orders: number } | null =
+  null;
+let dbError = false;
+
+if (db) {
+  try {
+    const [[leadsNew], [leadsTotal], [packagesActive], [ordersTotal]] = await Promise.all([
+      db.select({ n: count() }).from(leads).where(eq(leads.status, 'nou')),
+      db.select({ n: count() }).from(leads),
+      db.select({ n: count() }).from(packages).where(eq(packages.active, true)),
+      db.select({ n: count() }).from(orders),
+    ]);
+    stats = {
+      leadsNew: leadsNew.n,
+      leadsTotal: leadsTotal.n,
+      packagesActive: packagesActive.n,
+      orders: ordersTotal.n,
+    };
+  } catch (err) {
+    console.warn('[admin] Interogarea statisticilor a eșuat:', err);
+    dbError = true;
+  }
+}
+---
+
+<AdminLayout title="Panou">
+  <h1>Panou</h1>
+  <p class="admin-sub">Privire de ansamblu peste site.</p>
+
+  {
+    !db && (
+      <div class="admin-banner admin-banner--warn">
+        <strong>Fără bază de date.</strong> <code>DATABASE_URL</code> nu e setat: lead-urile nu se
+        salvează, iar pachetele afișate public vin din fallback-ul din cod.
+      </div>
+    )
+  }
+  {
+    db && dbError && (
+      <div class="admin-banner admin-banner--error">
+        Conexiunea la baza de date a eșuat. Verifică <code>DATABASE_URL</code> și serviciul
+        Postgres.
+      </div>
+    )
+  }
+  {
+    !hasEncryptionKey && (
+      <div class="admin-banner admin-banner--warn">
+        <strong>Cheie de criptare lipsă.</strong> Fără <code>APP_ENCRYPTION_KEY</code> nu poți salva
+        chei API din pagina Integrări. Generează una cu <code>pnpm gen:key</code>.
+      </div>
+    )
+  }
+
+  {
+    stats && (
+      <div class="admin-grid">
+        <div class="admin-card">
+          <h2>Lead-uri noi</h2>
+          <p class="stat">{stats.leadsNew}</p>
+          <a href="/admin/leads?status=nou">Vezi lead-urile noi</a>
+        </div>
+        <div class="admin-card">
+          <h2>Lead-uri total</h2>
+          <p class="stat">{stats.leadsTotal}</p>
+          <a href="/admin/leads">Vezi toate</a>
+        </div>
+        <div class="admin-card">
+          <h2>Pachete active</h2>
+          <p class="stat">{stats.packagesActive}</p>
+          <a href="/admin/pachete">Gestionează pachetele</a>
+        </div>
+        <div class="admin-card">
+          <h2>Comenzi</h2>
+          <p class="stat">{stats.orders}</p>
+          <span class="admin-tag">disponibil după activarea plăților</span>
+        </div>
+      </div>
+    )
+  }
+</AdminLayout>
+
+<style>
+  .stat {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--electric);
+    margin: 8px 0;
+  }
+  .admin-card a {
+    color: var(--electric);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+</style>

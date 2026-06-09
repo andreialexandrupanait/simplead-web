@@ -1,0 +1,92 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import PackageForm from '../../../components/admin/PackageForm.astro';
+import { getDb } from '../../../lib/server/db';
+import { packages } from '../../../lib/server/schema';
+import { featuresToList, parsePackageForm, priceToCents } from '../../../lib/server/admin-schemas';
+
+export const prerender = false;
+
+const db = getDb();
+
+type FormValues = {
+  name: string;
+  slug: string;
+  kind: string;
+  description: string;
+  price: string;
+  currency: string;
+  interval: string;
+  features: string;
+  sort: number | string;
+  active: boolean;
+};
+
+let errors: Record<string, string[]> = {};
+let saveError: string | null = null;
+let values: FormValues = {
+  name: '',
+  slug: '',
+  kind: 'service',
+  description: '',
+  price: '',
+  currency: 'EUR',
+  interval: 'one_time',
+  features: '',
+  sort: 0,
+  active: false,
+};
+
+if (Astro.request.method === 'POST' && db) {
+  const parsed = parsePackageForm(await Astro.request.formData());
+  if (!parsed.ok) {
+    errors = parsed.errors;
+    values = { ...parsed.raw, sort: parsed.raw.sort, active: parsed.raw.active === 'true' };
+  } else {
+    try {
+      await db.insert(packages).values({
+        name: parsed.data.name,
+        slug: parsed.data.slug,
+        kind: parsed.data.kind,
+        description: parsed.data.description,
+        priceCents: priceToCents(parsed.data.price),
+        currency: parsed.data.currency,
+        interval: parsed.data.interval,
+        features: featuresToList(parsed.data.features),
+        sort: parsed.data.sort,
+        active: parsed.data.active,
+      });
+      return Astro.redirect('/admin/pachete', 303);
+    } catch (err) {
+      console.warn('[admin] Crearea pachetului a eșuat:', err);
+      saveError =
+        'Salvarea a eșuat. Cel mai probabil slug-ul există deja; alege altul și încearcă din nou.';
+      values = {
+        ...parsed.data,
+        features: parsed.data.features,
+        sort: parsed.data.sort,
+        active: parsed.data.active,
+      };
+    }
+  }
+}
+---
+
+<AdminLayout title="Pachet nou">
+  <h1>Pachet nou</h1>
+  <p class="admin-sub">Completează detaliile; pachetul apare pe /pachete doar dacă e activ.</p>
+
+  {
+    !db ? (
+      <div class="admin-banner admin-banner--warn">
+        <strong>Fără bază de date.</strong> Pachetele nu pot fi create fără{' '}
+        <code>DATABASE_URL</code>.
+      </div>
+    ) : (
+      <div class="admin-card">
+        {saveError && <div class="admin-banner admin-banner--error">{saveError}</div>}
+        <PackageForm values={values} errors={errors} submitLabel="Creează pachetul" />
+      </div>
+    )
+  }
+</AdminLayout>
