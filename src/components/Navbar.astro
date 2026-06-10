@@ -2,7 +2,9 @@
 import Logo from '@components/ui/Logo.astro';
 import Button from '@components/ui/Button.astro';
 import MobileMenu from '@components/react/MobileMenu';
-import { mainNav, servicesNav } from '@data/nav';
+import ServiceIcon from '@components/ui/ServiceIcon.astro';
+import { mainNav, servicesNav, megaQuickLinks, megaPromo } from '@data/nav';
+import { site } from '@data/site';
 import { useTranslations, resolveLocale } from '@i18n/index';
 
 interface Props {
@@ -43,18 +45,66 @@ const isActive = (href: string) =>
                 <svg class="nav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
               </a>
               <div class="mega" role="menu">
-                <div class="mega__grid">
-                  {servicesNav.map((s) => (
-                    <a class="mega__card" href={s.href} role="menuitem">
-                      <span class="mega__title">{s.label}</span>
-                      <span class="mega__desc">{s.desc}</span>
-                    </a>
-                  ))}
+                <div class="site-container mega__inner">
+                  <div class="mega__zone mega__zone--services">
+                    <span class="mega__label">Servicii</span>
+                    <div class="mega__grid">
+                      {servicesNav.map((s) => (
+                        <a class="mega__card" href={s.href} role="menuitem">
+                          <span class="mega__icon"><ServiceIcon icon={s.icon} /></span>
+                          <span class="mega__card-text">
+                            <span class="mega__title">{s.label}</span>
+                            <span class="mega__desc">{s.desc}</span>
+                          </span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div class="mega__zone mega__zone--links">
+                    <span class="mega__label">Utile</span>
+                    <ul class="mega__quick">
+                      {megaQuickLinks.map((l) => (
+                        <li>
+                          <a href={l.href} role="menuitem">{l.label}</a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <a class="mega__promo" href={megaPromo.ctaHref} role="menuitem">
+                    <span class="mega__promo-eyebrow">{megaPromo.eyebrow}</span>
+                    <span class="mega__promo-title">{megaPromo.title}</span>
+                    <ul class="mega__promo-bullets">
+                      {megaPromo.bullets.map((b) => (
+                        <li>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                    <span class="mega__promo-cta">
+                      {megaPromo.ctaLabel}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                    </span>
+                  </a>
                 </div>
-                <a class="mega__all" href="/servicii">
-                  Vezi toate serviciile
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-                </a>
+
+                <div class="mega__footwrap">
+                  <div class="site-container mega__foot">
+                    <span class="mega__foot-left">
+                      Scrie-ne direct:
+                      <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+                      {site.social.facebook && <a href={site.social.facebook} target="_blank" rel="noopener" aria-label="Facebook">Facebook</a>}
+                      {site.social.instagram && <a href={site.social.instagram} target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>}
+                      {site.social.linkedin && <a href={site.social.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>}
+                    </span>
+                    <a class="mega__foot-right" href="/contact" role="menuitem">
+                      Ai un proiect? <b>Hai să vorbim</b>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           ) : (
@@ -190,20 +240,24 @@ const isActive = (href: string) =>
     transform: rotate(180deg);
   }
 
-  /* ===== Mega-dropdown Servicii ===== */
+  /* ===== Mega-meniu Servicii (full-width, stil thecon) =====
+     Ancorat de header (.nav e sticky/fixed = containing block), nu de item:
+     .nav__item--has-mega rămâne static, deci absolute se rezolvă față de nav. */
+  .nav__item--has-mega {
+    position: static;
+  }
   .mega {
     position: absolute;
-    top: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%) translateY(8px);
-    width: min(680px, 90vw);
+    top: 100%;
+    left: 0;
+    right: 0;
     background: var(--canvas);
-    border: 1px solid var(--line);
-    border-radius: var(--r-lg);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
     box-shadow: var(--sh-lg);
-    padding: 14px;
     opacity: 0;
     visibility: hidden;
+    transform: translateY(8px);
     transition:
       opacity 0.2s var(--ease-snap),
       transform 0.2s var(--ease-snap);
@@ -212,18 +266,39 @@ const isActive = (href: string) =>
   .nav__item--has-mega:focus-within .mega {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
   }
+
+  .mega__inner {
+    display: grid;
+    grid-template-columns: 1.5fr 0.55fr 0.8fr;
+    gap: 36px;
+    padding-top: 30px;
+    padding-bottom: 26px;
+    align-items: start;
+  }
+  .mega__label {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  /* Zona stângă: grila de servicii cu iconițe. */
   .mega__grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 4px;
+    gap: 6px 10px;
   }
   .mega__card {
     display: flex;
-    flex-direction: column;
-    gap: 3px;
-    padding: 12px 14px;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
     border-radius: var(--r-sm);
     border: 1px solid transparent;
     transition:
@@ -234,32 +309,209 @@ const isActive = (href: string) =>
     background: var(--canvas-soft);
     border-color: var(--line);
   }
+  .mega__icon {
+    flex: none;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-sm);
+    background: color-mix(in srgb, var(--electric) 9%, transparent);
+    color: var(--electric);
+  }
+  .mega__icon :global(svg) {
+    width: 19px;
+    height: 19px;
+  }
+  .mega__card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
   .mega__title {
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 0.94rem;
     color: var(--ink);
+    transition: color 0.16s var(--ease-snap);
+  }
+  .mega__card:hover .mega__title {
+    color: var(--electric);
   }
   .mega__desc {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     line-height: 1.45;
     color: var(--muted);
   }
-  .mega__all {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 8px;
-    padding: 10px 14px;
-    font-size: 0.86rem;
-    font-weight: 700;
+
+  /* Coloana din mijloc: linkuri utile, cu divider. */
+  .mega__zone--links {
+    border-left: 1px solid var(--line);
+    padding-left: 32px;
+    align-self: stretch;
+  }
+  .mega__quick {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .mega__quick a {
+    display: block;
+    padding: 8px 0;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--ink);
+    transition: color 0.16s var(--ease-snap);
+  }
+  .mega__quick a:hover {
     color: var(--electric);
   }
-  .mega__all svg {
-    width: 16px;
-    height: 16px;
+
+  /* Panoul promo (navy + puncte, ca CtaSection). */
+  .mega__promo {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 24px;
+    border-radius: var(--r-lg);
+    background: var(--ink);
+    color: #fff;
+    overflow: hidden;
+    isolation: isolate;
     transition: transform 0.2s var(--ease-snap);
   }
-  .mega__all:hover svg {
+  .mega__promo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+    background-size: 18px 18px;
+    mask-image: radial-gradient(ellipse at 70% 20%, #000 0%, transparent 70%);
+  }
+  .mega__promo::after {
+    content: '';
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 160px;
+    height: 160px;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 224, 198, 0.25), transparent 70%);
+  }
+  .mega__promo:hover {
+    transform: translateY(-2px);
+  }
+  .mega__promo-eyebrow {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cyan);
+  }
+  .mega__promo-title {
+    font-family: var(--font-display);
+    font-size: 1.18rem;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+  .mega__promo-bullets {
+    list-style: none;
+    margin: 2px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--muted-dark);
+  }
+  .mega__promo-bullets li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mega__promo-bullets svg {
+    width: 14px;
+    height: 14px;
+    flex: none;
+    color: var(--cyan);
+  }
+  .mega__promo-cta {
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+    padding: 9px 16px;
+    border-radius: var(--r-pill);
+    background: #fff;
+    color: var(--ink);
+    font-weight: 700;
+    font-size: 0.84rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .mega__promo-cta svg {
+    width: 15px;
+    height: 15px;
+    transition: transform 0.2s var(--ease-snap);
+  }
+  .mega__promo:hover .mega__promo-cta svg {
+    transform: translateX(3px);
+  }
+
+  /* Bara de subsol a panoului. */
+  .mega__footwrap {
+    border-top: 1px solid var(--line);
+    background: var(--canvas-soft);
+  }
+  .mega__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+  .mega__foot-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .mega__foot-left a {
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .mega__foot-left a:hover {
+    color: var(--electric);
+  }
+  .mega__foot-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+  }
+  .mega__foot-right b {
+    color: var(--electric);
+  }
+  .mega__foot-right svg {
+    width: 15px;
+    height: 15px;
+    color: var(--electric);
+    transition: transform 0.2s var(--ease-snap);
+  }
+  .mega__foot-right:hover svg {
     transform: translateX(3px);
   }
 
