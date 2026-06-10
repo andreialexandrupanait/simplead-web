@@ -29,6 +29,18 @@ export default defineConfig({
   // on-demand /api/contact. Se poate înlocui ulterior cu adaptorul platformei
   // de producție (Vercel/Netlify/Cloudflare).
   adapter: isDev ? undefined : node({ mode: 'standalone' }),
+  // În producție stăm în spatele nginx-proxy: fără domeniile de aici în
+  // allowedDomains, Astro ignoră X-Forwarded-Proto/Host, vede cererea ca
+  // http://localhost și protecția CSRF respinge POST-urile (login /admin,
+  // formular contact). Tot de aici depinde și Astro.clientAddress
+  // (X-Forwarded-For) — altfel rate-limit-ul de login ar vedea un singur IP.
+  security: {
+    checkOrigin: true,
+    allowedDomains: [
+      { protocol: 'https', hostname: 'simplead.ro' },
+      { protocol: 'https', hostname: 'www.simplead.ro' },
+    ],
+  },
   // Redirect-uri 301 de la slug-urile vechi de servicii la noua structură.
   // Mentenanța are pagină unică la /mentenanta (cu calculator).
   redirects: {
