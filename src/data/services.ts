@@ -623,16 +623,16 @@ export const services: Service[] = [
     icon: 'ai',
     title: 'AI pentru business',
     summary:
-      'Automatizări, mentenanță și conținut asistate de AI, acolo unde îți aduc valoare reală.',
+      'Automatizări, monitorizare și conținut asistate de AI: acolo unde îți cumpără timp, nu unde dă bine pe hârtie.',
     claim: 'AI folosit cu cap: economisești timp și bani.',
     description:
-      'Nu vindem „AI" ca slogan. Identificăm unde îți aduce valoare reală și îl integrăm în fluxurile tale: automatizări, mentenanță inteligentă și producție de conținut asistată. [COPY: confirmă scope-ul exact al serviciului]',
+      'Nu vindem „AI" ca slogan. Ne uităm la procesele tale, găsim munca repetitivă care îți mănâncă timpul și o automatizăm: lead-uri, rapoarte, monitorizare, prime versiuni de conținut. Deciziile și relația cu clienții rămân la oameni.',
     includes: [
       'Automatizarea proceselor repetitive',
-      'Mentenanță și monitorizare asistate de AI',
-      'Producție de conținut asistată (text, vizual)',
+      'Monitorizare continuă, cu alerte înainte să observe clienții',
+      'Conținut asistat: draft-uri rapide, rafinate de oameni',
       'Integrări cu uneltele pe care le folosești deja',
-      'Consultanță: unde merită (și unde nu) să folosești AI',
+      'Consultanță onestă: unde merită AI-ul și unde nu',
     ],
     tags: ['Automatizări', 'Mentenanță AI', 'Conținut', 'Integrări'],
     image:
@@ -640,45 +640,45 @@ export const services: Service[] = [
     heroTitle: 'AI pentru business, ',
     heroTitleAccent: 'folosit cu cap',
     heroSub:
-      'Îl folosim acolo unde îți aduce valoare reală: automatizări, mentenanță inteligentă și conținut asistat. Restul rămâne la oameni. [COPY: rafinează propunerea]',
+      'Îl folosim acolo unde e categoric mai bun decât omul: muncă repetitivă, supraveghere non-stop și prime versiuni de conținut. Restul rămâne la oameni.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'AI integrat în ',
       titleAccent: 'fluxurile tale',
-      sub: '[COPY] Trei direcții în care AI-ul îți economisește timp și reduce erorile.',
+      sub: 'Trei direcții în care AI-ul îți economisește ore în fiecare săptămână și prinde problemele înainte să le simtă clienții.',
     },
     capabilities: [
       {
         title: 'Automatizări',
         icon: ICON.cog,
-        desc: 'Fluxuri repetitive automatizate, ca să câștigi timp și să reduci erorile. [COPY]',
+        desc: 'Munca pe care o faci la fel în fiecare săptămână, făcută de sistem: fără uitări, fără „n-am apucat".',
         items: [
-          'Automatizarea sarcinilor repetitive',
-          'Integrări între unelte',
-          'Notificări & raportare automată',
-          '[COPY: exemple concrete]',
+          'Lead-uri din formulare: evidență + notificare + confirmare automată către client',
+          'Rapoarte periodice generate și trimise singure',
+          'Programări cu confirmare și reamintire automată',
+          'Integrări între uneltele pe care le folosești deja',
         ],
       },
       {
-        title: 'Mentenanță cu AI',
+        title: 'Monitorizare cu AI',
         icon: ICON.spark,
-        desc: 'Monitorizare și optimizări asistate de AI pentru site-ul și sistemele tale. [COPY]',
+        desc: 'Un ochi care nu obosește pe site-ul și sistemele tale: tu afli primul, nu clienții.',
         items: [
-          'Monitorizare inteligentă',
-          'Detectare timpurie a problemelor',
-          'Optimizări asistate',
-          '[COPY: detalii]',
+          'Site-ul urmărit non-stop: disponibilitate, viteză, certificat SSL',
+          'Alerte imediate când ceva iese din parametri',
+          'Probleme prinse devreme, înainte să devină urgențe',
+          'Rapoarte clare despre ce s-a întâmplat și ce s-a făcut',
         ],
       },
       {
         title: 'Conținut asistat',
         icon: ICON.bolt,
-        desc: 'Idei, drafturi și variante generate cu AI, rafinate de oameni. [COPY]',
+        desc: 'AI-ul propune, omul rafinează și semnează: drumul de la pagina goală la publicat, scurtat serios.',
         items: [
-          'Drafturi & idei de conținut',
-          'Variante pentru testare',
-          'Adaptare pe canale',
-          '[COPY: detalii]',
+          'Prime versiuni pentru postări, descrieri și articole',
+          'Variante de mesaj pentru testare',
+          'Adaptarea aceluiași conținut pe canale diferite',
+          'Verificare și voce umană înainte de publicare, de fiecare dată',
         ],
       },
     ],
@@ -686,13 +686,13 @@ export const services: Service[] = [
       {
         q: 'Înlocuiește AI-ul oamenii din echipă?',
         body: [
-          'Nu. Folosim AI ca să accelerăm munca repetitivă și să eliberăm timp pentru deciziile care contează. Calitatea și deciziile importante rămân la oameni. [COPY: confirmă mesajul]',
+          'Nu, și nici nu îl folosim așa. AI-ul preia munca repetitivă: sortat, copiat, supravegheat, prime versiuni. Deciziile, relația cu clienții și verificarea finală rămân la oameni, pentru că acolo contează contextul pe care doar oamenii îl au.',
         ],
       },
       {
         q: 'De unde știu dacă afacerea mea are nevoie de AI?',
         body: [
-          'Pornim de la o discuție: ne uităm la procesele tale și identificăm unde AI-ul aduce valoare reală și unde nu merită. [COPY]',
+          'Regula simplă: dacă există sarcini pe care le faci la fel, cel puțin săptămânal, există loc de automatizare. Pornim de la o discuție despre procesele tale și îți spunem onest unde ajută și unde nu merită: uneori răspunsul corect e „aici nu ai nevoie de AI", și îl spunem ca atare.',
         ],
       },
       {
