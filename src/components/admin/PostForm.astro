@@ -1,0 +1,182 @@
+---
+/**
+ * Formular partajat pentru articole (nou + editare). Server-ul validează cu
+ * postFormSchema; aici doar afișăm valorile + erorile per câmp.
+ */
+import MarkdownEditor from '../react/admin/MarkdownEditor';
+import CoverField from '../react/admin/CoverField';
+
+interface Props {
+  values: Record<string, string>;
+  errors?: Record<string, string[]>;
+  submitLabel: string;
+  /** Slug-ul publicat curent (avertisment la schimbare). */
+  publishedSlug?: string;
+  /** Link de previzualizare (doar la editare). */
+  previewHref?: string;
+  /** Acțiune de ștergere (doar la editare). */
+  deleteAction?: boolean;
+}
+const { values, errors = {}, submitLabel, publishedSlug, previewHref, deleteAction } = Astro.props;
+const err = (field: string) => errors[field]?.[0];
+---
+
+<form method="post" id="postForm">
+  <div class="post-form-cols">
+    <div>
+      <div class="admin-card">
+        <label class="admin-field">
+          <span>Titlu</span>
+          <input class="admin-input" type="text" name="title" value={values.title} required id="pfTitle" />
+          {err('title') && <small class="field-error">{err('title')}</small>}
+        </label>
+        <label class="admin-field">
+          <span>Slug (URL-ul articolului: /blog/<em>slug</em>)</span>
+          <input
+            class="admin-input"
+            type="text"
+            name="slug"
+            value={values.slug}
+            required
+            id="pfSlug"
+            data-published-slug={publishedSlug ?? ''}
+          />
+          {err('slug') && <small class="field-error">{err('slug')}</small>}
+          <small id="pfSlugWarn" style="display:none;color:#7a6505">
+            Atenție: schimbarea slug-ului unui articol publicat rupe linkurile existente (Google,
+            social media).
+          </small>
+        </label>
+        <label class="admin-field">
+          <span>Descriere scurtă (apare în listă și în Google)</span>
+          <textarea class="admin-textarea" name="description" style="min-height:70px">{values.description}</textarea>
+          {err('description') && <small class="field-error">{err('description')}</small>}
+        </label>
+      </div>
+
+      <div class="admin-card" style="margin-top:20px">
+        <h2>Conținut</h2>
+        <p class="admin-hint">Scrii în stânga, vezi rezultatul final în dreapta.</p>
+        <MarkdownEditor client:load name="body" initial={values.body} />
+      </div>
+    </div>
+
+    <div>
+      <div class="admin-card">
+        <h2>Publicare</h2>
+        <label class="admin-field">
+          <span>Status</span>
+          <select class="admin-select" name="status">
+            <option value="draft" selected={values.status !== 'published'}>Draft (nepublicat)</option>
+            <option value="published" selected={values.status === 'published'}>Publicat</option>
+          </select>
+        </label>
+        <label class="admin-field">
+          <span>Data publicării</span>
+          <input class="admin-input" type="datetime-local" name="publishedAt" value={values.publishedAt} />
+          <small>Gol = data curentă la prima publicare.</small>
+        </label>
+        <div class="admin-actions">
+          <button type="submit" class="admin-btn">{submitLabel}</button>
+          {
+            previewHref && (
+              <a class="admin-btn admin-btn--ghost admin-btn--sm" href={previewHref} target="_blank" rel="noopener">
+                Previzualizează ↗
+              </a>
+            )
+          }
+        </div>
+      </div>
+
+      <div class="admin-card" style="margin-top:20px">
+        <h2>Detalii</h2>
+        <label class="admin-field">
+          <span>Autor</span>
+          <input class="admin-input" type="text" name="author" value={values.author} />
+        </label>
+        <label class="admin-field">
+          <span>Taguri (separate prin virgulă)</span>
+          <input class="admin-input" type="text" name="tags" value={values.tags} placeholder="Neuromarketing, SEO" />
+        </label>
+        <label class="admin-field">
+          <span>Imagine de copertă</span>
+          <CoverField client:load name="cover" initial={values.cover} />
+        </label>
+      </div>
+
+      <details class="admin-card" style="margin-top:20px">
+        <summary style="cursor:pointer;font-weight:600">SEO (opțional)</summary>
+        <label class="admin-field" style="margin-top:14px">
+          <span>Titlu SEO</span>
+          <input class="admin-input" type="text" name="seoTitle" value={values.seoTitle} />
+          <small>Gol = se folosește titlul articolului.</small>
+        </label>
+        <label class="admin-field">
+          <span>Descriere SEO</span>
+          <textarea class="admin-textarea" name="seoDescription" style="min-height:60px">{values.seoDescription}</textarea>
+        </label>
+      </details>
+
+      {
+        deleteAction && (
+          <div class="admin-card" style="margin-top:20px">
+            <h2>Zonă periculoasă</h2>
+            <p class="admin-hint">Ștergerea e definitivă; articolul dispare imediat de pe site.</p>
+            <button
+              type="submit"
+              name="action"
+              value="delete"
+              class="admin-btn admin-btn--danger admin-btn--sm"
+              onclick="return confirm('Sigur ștergi articolul? Acțiunea e definitivă.')"
+            >
+              Șterge articolul
+            </button>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</form>
+
+<style>
+  .post-form-cols {
+    display: grid;
+    grid-template-columns: 1fr 330px;
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 1100px) {
+    .post-form-cols {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Sugerează slug-ul din titlu (doar cât timp slug-ul nu a fost editat manual
+  // și articolul nu e deja publicat) + avertisment la schimbarea unui slug publicat.
+  const title = document.getElementById('pfTitle') as HTMLInputElement | null;
+  const slug = document.getElementById('pfSlug') as HTMLInputElement | null;
+  const warn = document.getElementById('pfSlugWarn');
+  if (title && slug) {
+    const published = slug.dataset.publishedSlug || '';
+    let touched = slug.value !== '';
+    const slugify = (s: string) =>
+      s
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 120);
+    title.addEventListener('input', () => {
+      if (!touched && !published) slug.value = slugify(title.value);
+    });
+    slug.addEventListener('input', () => {
+      touched = true;
+      if (warn && published) {
+        warn.style.display = slug.value !== published ? 'block' : 'none';
+      }
+    });
+  }
+</script>

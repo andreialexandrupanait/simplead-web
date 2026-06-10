@@ -1,0 +1,22 @@
+---
+/** Stare goală pentru liste, cu titlu, explicație și acțiune opțională. */
+interface Props {
+  title: string;
+  hint?: string;
+  actionLabel?: string;
+  actionHref?: string;
+}
+const { title, hint, actionLabel, actionHref } = Astro.props;
+---
+
+<div class="admin-empty">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="11" cy="11" r="8" />
+    <path d="m21 21-4.3-4.3" />
+  </svg>
+  <h3>{title}</h3>
+  {hint && <p>{hint}</p>}
+  {actionLabel && actionHref && (
+    <a class="admin-btn admin-btn--sm" href={actionHref}>{actionLabel}</a>
+  )}
+</div>

@@ -1,0 +1,131 @@
+---
+import { and, eq, ne } from 'drizzle-orm';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ProjectForm from '../../../components/admin/ProjectForm.astro';
+import { getDb } from '../../../lib/server/db';
+import { projects } from '../../../lib/server/schema';
+import { parseProjectForm } from '../../../lib/server/admin-schemas';
+import { bustContentCache } from '../../../lib/server/content';
+import { setFlash } from '../../../lib/server/flash';
+
+export const prerender = false;
+
+const db = getDb();
+const id = Astro.params.id!;
+if (!db) {
+  return Astro.redirect('/admin/portofoliu', 302);
+}
+
+let errors: Record<string, string[]> = {};
+let formValues: Record<string, string> | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+
+  if (String(form.get('action') ?? '') === 'delete') {
+    try {
+      await db.delete(projects).where(eq(projects.id, id));
+      bustContentCache();
+      setFlash(Astro.cookies, { kind: 'ok', msg: 'Proiect șters.' });
+      return Astro.redirect('/admin/portofoliu', 303);
+    } catch (err) {
+      console.warn('[admin] Ștergerea proiectului a eșuat:', err);
+      setFlash(Astro.cookies, { kind: 'error', msg: 'Ștergerea a eșuat.' });
+      return Astro.redirect(`/admin/portofoliu/${id}`, 303);
+    }
+  }
+
+  const parsed = parseProjectForm(form);
+  if (!parsed.ok) {
+    errors = parsed.errors;
+    formValues = parsed.raw;
+  } else {
+    const d = parsed.data;
+    try {
+      const clash = await db
+        .select({ id: projects.id })
+        .from(projects)
+        .where(and(eq(projects.slug, d.slug), ne(projects.id, id)))
+        .limit(1);
+      if (clash.length > 0) {
+        errors = { slug: ['Există deja un alt proiect cu acest slug.'] };
+        formValues = { ...d, sort: String(d.sort) } as unknown as Record<string, string>;
+      } else {
+        await db
+          .update(projects)
+          .set({
+            slug: d.slug,
+            title: d.title,
+            client: d.client,
+            service: d.service,
+            summary: d.summary,
+            challenge: d.challenge || null,
+            solution: d.solution || null,
+            result: d.result || null,
+            body: d.body,
+            cover: d.cover || null,
+            sort: d.sort,
+            status: d.status,
+            seoTitle: d.seoTitle || null,
+            seoDescription: d.seoDescription || null,
+            updatedAt: new Date(),
+          })
+          .where(eq(projects.id, id));
+        bustContentCache();
+        setFlash(Astro.cookies, {
+          kind: 'ok',
+          msg: d.status === 'published' ? 'Proiect salvat și publicat.' : 'Draft salvat.',
+        });
+        return Astro.redirect(`/admin/portofoliu/${id}`, 303);
+      }
+    } catch (err) {
+      console.warn('[admin] Salvarea proiectului a eșuat:', err);
+      errors = { title: ['Salvarea a eșuat. Încearcă din nou.'] };
+    }
+  }
+}
+
+const [project] = await db.select().from(projects).where(eq(projects.id, id)).limit(1);
+if (!project) {
+  return Astro.redirect('/admin/portofoliu', 302);
+}
+
+const values: Record<string, string> = formValues ?? {
+  title: project.title,
+  slug: project.slug,
+  client: project.client,
+  service: project.service,
+  summary: project.summary,
+  challenge: project.challenge ?? '',
+  solution: project.solution ?? '',
+  result: project.result ?? '',
+  body: project.body,
+  cover: project.cover ?? '',
+  sort: String(project.sort),
+  status: project.status,
+  seoTitle: project.seoTitle ?? '',
+  seoDescription: project.seoDescription ?? '',
+};
+
+const previewHref =
+  project.status === 'published'
+    ? `/portofoliu/${project.slug}`
+    : `/portofoliu/${project.slug}?preview=1`;
+---
+
+<AdminLayout title={`Editează: ${project.title}`}>
+  <div class="admin-page-head">
+    <div>
+      <a href="/admin/portofoliu" style="font-size:0.88rem;color:var(--muted)">← Înapoi la portofoliu</a>
+      <h1 style="margin-top:6px">{project.title}</h1>
+    </div>
+  </div>
+  <ProjectForm
+    values={values}
+    errors={errors}
+    submitLabel="Salvează modificările"
+    publishedSlug={project.status === 'published' ? project.slug : undefined}
+    previewHref={previewHref}
+    deleteAction={true}
+  />
+</AdminLayout>

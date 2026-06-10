@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://simplead.ro/sitemap-index.xml
+Sitemap: https://simplead.ro/sitemap.xml

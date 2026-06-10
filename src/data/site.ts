@@ -11,6 +11,10 @@ export const site = {
   founder: 'Andrei Panait',
   founderTitle: 'doctor în marketing',
   founderSite: 'https://panaitandrei.ro', // identitatea academică (neuromarketing, cercetare)
+  // Credențiale academice (E-E-A-T: intră în schema Person din BaseLayout).
+  founderOrcid: 'https://orcid.org/0000-0002-0563-8391',
+  founderCredential:
+    'Doctorat în Marketing (cercetare în neuromarketing), FEAA, Universitatea „Dunărea de Jos" din Galați, 2024',
   locale: 'ro_RO',
 
   contact: {

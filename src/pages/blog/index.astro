@@ -1,16 +1,18 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import PageHeader from '@components/sections/PageHeader.astro';
 import BlogFeature from '@components/sections/BlogFeature.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
+import { getPublishedPosts } from '@lib/server/content';
 
-const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
-);
+// Articolele vin din DB (editate în /admin) — pagina e on-demand ca publicarea
+// să fie instant, fără rebuild.
+export const prerender = false;
+
+const posts = await getPublishedPosts();
 const [featured, ...rest] = posts;
-const fmt = (d: Date) =>
-  d.toLocaleDateString('ro-RO', { year: 'numeric', month: 'long', day: 'numeric' });
+const fmt = (d: Date | null) =>
+  (d ?? new Date()).toLocaleDateString('ro-RO', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 
 <BaseLayout
@@ -31,19 +33,27 @@ const fmt = (d: Date) =>
     <div class="container">
       {featured && <BlogFeature post={featured} />}
 
+      {
+        posts.length === 0 && (
+          <p style="text-align:center;color:var(--ink-soft);padding:48px 0">
+            Lucrăm la primele articole — revino curând.
+          </p>
+        )
+      }
+
       <div class="blog-page-grid" data-reveal-stagger>
         {
-          rest.map((entry) => (
-            <a class="blog-card" href={`/blog/${entry.id}`}>
+          rest.map((post) => (
+            <a class="blog-card" href={`/blog/${post.slug}`}>
               <div class="ph blog-thumb">
-                {entry.data.cover ? <img src={entry.data.cover} alt={entry.data.title} loading="lazy" /> : entry.data.title}
+                {post.cover ? <img src={post.cover} alt={post.title} loading="lazy" /> : post.title}
               </div>
               <div class="blog-meta">
-                <span class="cat">{entry.data.tags[0] ?? 'Blog'}</span>
-                <span>{fmt(entry.data.pubDate)}</span>
+                <span class="cat">{post.tags[0] ?? 'Blog'}</span>
+                <span>{fmt(post.publishedAt)}</span>
               </div>
-              <h3>{entry.data.title}</h3>
-              <p>{entry.data.description}</p>
+              <h3>{post.title}</h3>
+              <p>{post.description}</p>
             </a>
           ))
         }

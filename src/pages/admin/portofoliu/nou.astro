@@ -1,0 +1,96 @@
+---
+import { eq } from 'drizzle-orm';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ProjectForm from '../../../components/admin/ProjectForm.astro';
+import { getDb } from '../../../lib/server/db';
+import { projects } from '../../../lib/server/schema';
+import { parseProjectForm } from '../../../lib/server/admin-schemas';
+import { bustContentCache } from '../../../lib/server/content';
+import { setFlash } from '../../../lib/server/flash';
+
+export const prerender = false;
+
+const db = getDb();
+if (!db) {
+  return Astro.redirect('/admin/portofoliu', 302);
+}
+
+let errors: Record<string, string[]> = {};
+let values: Record<string, string> = {
+  title: '',
+  slug: '',
+  client: '',
+  service: 'Marketing',
+  summary: '',
+  challenge: '',
+  solution: '',
+  result: '',
+  body: '',
+  cover: '',
+  sort: '99',
+  status: 'draft',
+  seoTitle: '',
+  seoDescription: '',
+};
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const parsed = parseProjectForm(form);
+  if (!parsed.ok) {
+    errors = parsed.errors;
+    values = parsed.raw;
+  } else {
+    const d = parsed.data;
+    try {
+      const clash = await db
+        .select({ id: projects.id })
+        .from(projects)
+        .where(eq(projects.slug, d.slug))
+        .limit(1);
+      if (clash.length > 0) {
+        errors = { slug: ['Există deja un proiect cu acest slug.'] };
+        values = { ...d, sort: String(d.sort) } as unknown as Record<string, string>;
+      } else {
+        const [created] = await db
+          .insert(projects)
+          .values({
+            slug: d.slug,
+            title: d.title,
+            client: d.client,
+            service: d.service,
+            summary: d.summary,
+            challenge: d.challenge || null,
+            solution: d.solution || null,
+            result: d.result || null,
+            body: d.body,
+            cover: d.cover || null,
+            sort: d.sort,
+            status: d.status,
+            seoTitle: d.seoTitle || null,
+            seoDescription: d.seoDescription || null,
+          })
+          .returning({ id: projects.id });
+        bustContentCache();
+        setFlash(Astro.cookies, {
+          kind: 'ok',
+          msg: d.status === 'published' ? 'Proiect publicat.' : 'Draft salvat.',
+        });
+        return Astro.redirect(`/admin/portofoliu/${created.id}`, 303);
+      }
+    } catch (err) {
+      console.warn('[admin] Crearea proiectului a eșuat:', err);
+      errors = { title: ['Salvarea a eșuat. Încearcă din nou.'] };
+    }
+  }
+}
+---
+
+<AdminLayout title="Proiect nou">
+  <div class="admin-page-head">
+    <div>
+      <a href="/admin/portofoliu" style="font-size:0.88rem;color:var(--muted)">← Înapoi la portofoliu</a>
+      <h1 style="margin-top:6px">Proiect nou</h1>
+    </div>
+  </div>
+  <ProjectForm values={values} errors={errors} submitLabel="Salvează proiectul" />
+</AdminLayout>

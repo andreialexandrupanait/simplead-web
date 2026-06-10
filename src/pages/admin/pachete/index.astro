@@ -1,28 +1,65 @@
 ---
 import { asc, eq } from 'drizzle-orm';
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import EmptyState from '../../../components/admin/EmptyState.astro';
 import { getDb } from '../../../lib/server/db';
 import { packages } from '../../../lib/server/schema';
 import { centsToPrice } from '../../../lib/server/admin-schemas';
+import { setFlash } from '../../../lib/server/flash';
 
 export const prerender = false;
 
 const db = getDb();
 
-// Acțiune rapidă: activează/dezactivează un pachet din listă.
+// Acțiuni rapide din listă: activare/dezactivare și duplicare.
 if (Astro.request.method === 'POST' && db) {
   const form = await Astro.request.formData();
   const id = String(form.get('id') ?? '');
   const action = String(form.get('action') ?? '');
-  if (id && (action === 'activate' || action === 'deactivate')) {
-    try {
+  try {
+    if (id && (action === 'activate' || action === 'deactivate')) {
       await db
         .update(packages)
         .set({ active: action === 'activate', updatedAt: new Date() })
         .where(eq(packages.id, id));
-    } catch (err) {
-      console.warn('[admin] Schimbarea stării pachetului a eșuat:', err);
+      setFlash(Astro.cookies, {
+        kind: 'ok',
+        msg: action === 'activate' ? 'Pachet activat.' : 'Pachet dezactivat.',
+      });
+    } else if (id && action === 'duplicate') {
+      const [src] = await db.select().from(packages).where(eq(packages.id, id)).limit(1);
+      if (src) {
+        // Slug unic: -copie, -copie-2, ... (max 20 încercări, apoi sufix de timp).
+        let slug = `${src.slug}-copie`;
+        for (let i = 2; i <= 20; i++) {
+          const clash = await db
+            .select({ id: packages.id })
+            .from(packages)
+            .where(eq(packages.slug, slug))
+            .limit(1);
+          if (clash.length === 0) break;
+          slug = `${src.slug}-copie-${i}`;
+        }
+        await db.insert(packages).values({
+          kind: src.kind,
+          slug,
+          name: `${src.name} (copie)`,
+          description: src.description,
+          priceCents: src.priceCents,
+          currency: src.currency,
+          interval: src.interval,
+          features: src.features,
+          sort: src.sort + 1,
+          active: false,
+          otoPackageId: src.otoPackageId,
+          otoDiscountPercent: src.otoDiscountPercent,
+        });
+        setFlash(Astro.cookies, { kind: 'ok', msg: 'Pachet duplicat (inactiv, ca draft).' });
+      }
     }
+  } catch (err) {
+    console.warn('[admin] Acțiunea pe pachet a eșuat:', err);
+    setFlash(Astro.cookies, { kind: 'error', msg: 'Acțiunea a eșuat. Încearcă din nou.' });
   }
   return Astro.redirect('/admin/pachete', 303);
 }
@@ -51,11 +88,16 @@ const INTERVAL_LABEL: Record<string, string> = {
 ---
 
 <AdminLayout title="Pachete">
-  <h1>Pachete</h1>
-  <p class="admin-sub">
-    Pachetele afișate pe pagina publică <a href="/pachete" target="_blank">/pachete</a>. Prețurile
-    marcate cu <code>[confirmă]</code> sunt drafturi de completat.
-  </p>
+  <div class="admin-page-head">
+    <div>
+      <h1>Pachete</h1>
+      <p class="admin-sub">
+        Pachetele afișate pe <a href="/pachete" target="_blank" style="color:var(--electric)">/pachete</a>.
+        Prețurile marcate <code>[confirmă]</code> sunt drafturi de completat.
+      </p>
+    </div>
+    <a href="/admin/pachete/nou" class="admin-btn">+ Pachet nou</a>
+  </div>
 
   {
     !db && (
@@ -65,75 +107,75 @@ const INTERVAL_LABEL: Record<string, string> = {
       </div>
     )
   }
-  {
-    dbError && (
-      <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>
-    )
-  }
+  {dbError && <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>}
 
   {
     db && !dbError && (
-      <div class="admin-card">
-        <div class="admin-actions" style="margin-bottom:16px">
-          <a href="/admin/pachete/nou" class="admin-btn">
-            Pachet nou
-          </a>
-          {rows.length === 0 && (
-            <span class="admin-hint" style="margin:0">
-              Niciun pachet încă. Rulează <code>pnpm db:seed</code> pentru drafturile inițiale.
-            </span>
-          )}
-        </div>
-        {rows.length > 0 && (
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Nume</th>
-                <th>Tip</th>
-                <th>Preț</th>
-                <th>Stare</th>
-                <th>Acțiuni</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((p) => (
+      <div class="admin-card admin-card--flush">
+        {rows.length === 0 ? (
+          <EmptyState
+            title="Niciun pachet încă"
+            hint="Creează primul pachet sau rulează seed-ul inițial pentru drafturi."
+            actionLabel="Pachet nou"
+            actionHref="/admin/pachete/nou"
+          />
+        ) : (
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
                 <tr>
-                  <td>
-                    <a href={`/admin/pachete/${p.id}`} style="font-weight:600">
-                      {p.name}
-                    </a>
-                    <br />
-                    <small style="color:var(--muted)">{p.slug}</small>
-                  </td>
-                  <td>{KIND_LABEL[p.kind]}</td>
-                  <td>
-                    {p.priceCents === 0
-                      ? '[confirmă]'
-                      : `${centsToPrice(p.priceCents)} ${p.currency.trim()}`}
-                    <small style="color:var(--muted)"> {INTERVAL_LABEL[p.interval]}</small>
-                  </td>
-                  <td>
-                    <span class:list={['admin-tag', p.active && 'admin-tag--on']}>
-                      {p.active ? 'activ' : 'inactiv'}
-                    </span>
-                  </td>
-                  <td>
-                    <form method="post" style="display:inline">
-                      <input type="hidden" name="id" value={p.id} />
-                      <input
-                        type="hidden"
-                        name="action"
-                        value={p.active ? 'deactivate' : 'activate'}
-                      />
-                      <button type="submit" class="admin-btn admin-btn--ghost admin-btn--sm">
-                        {p.active ? 'Dezactivează' : 'Activează'}
-                      </button>
-                    </form>
-                  </td>
+                  <th>Nume</th>
+                  <th>Tip</th>
+                  <th class="num">Preț</th>
+                  <th>Stare</th>
+                  <th style="width:230px">Acțiuni</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rows.map((p) => (
+                  <tr>
+                    <td>
+                      <a class="admin-row-link" href={`/admin/pachete/${p.id}`}>
+                        {p.name}
+                      </a>
+                      <br />
+                      <small style="color:var(--muted)">{p.slug}</small>
+                    </td>
+                    <td>{KIND_LABEL[p.kind]}</td>
+                    <td class="num">
+                      {p.priceCents === 0
+                        ? '[confirmă]'
+                        : `${centsToPrice(p.priceCents)} ${p.currency.trim()}`}
+                      <small style="color:var(--muted)"> {INTERVAL_LABEL[p.interval]}</small>
+                    </td>
+                    <td>
+                      <span class:list={['admin-tag', p.active ? 'admin-tag--ok' : 'admin-tag--warn']}>
+                        {p.active ? 'Activ' : 'Inactiv'}
+                      </span>
+                    </td>
+                    <td>
+                      <div style="display:flex;gap:6px;flex-wrap:wrap">
+                        <form method="post" style="display:inline">
+                          <input type="hidden" name="id" value={p.id} />
+                          <input type="hidden" name="action" value={p.active ? 'deactivate' : 'activate'} />
+                          <button type="submit" class="admin-btn admin-btn--ghost admin-btn--sm">
+                            {p.active ? 'Dezactivează' : 'Activează'}
+                          </button>
+                        </form>
+                        <form method="post" style="display:inline">
+                          <input type="hidden" name="id" value={p.id} />
+                          <input type="hidden" name="action" value="duplicate" />
+                          <button type="submit" class="admin-btn admin-btn--ghost admin-btn--sm">
+                            Duplică
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     )

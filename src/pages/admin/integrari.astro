@@ -2,6 +2,7 @@
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import { getDb } from '../../lib/server/db';
 import { getEncryptionKey } from '../../lib/server/crypto';
+import { setFlash } from '../../lib/server/flash';
 import {
   INTEGRATIONS,
   getMaskedIntegration,
@@ -16,7 +17,6 @@ const db = getDb();
 const hasEncryptionKey = getEncryptionKey() !== null;
 
 let saveError: string | null = null;
-let savedIntegration: string | null = null;
 
 if (Astro.request.method === 'POST') {
   const form = await Astro.request.formData();
@@ -32,13 +32,16 @@ if (Astro.request.method === 'POST') {
     }
     const result = await saveIntegration(integration, values as never, clear as never[]);
     if (result.ok) {
-      return Astro.redirect(`/admin/integrari?saved=${integration}`, 303);
+      setFlash(Astro.cookies, {
+        kind: 'ok',
+        msg: `Setările ${INTEGRATIONS[integration].label} au fost salvate.`,
+      });
+      return Astro.redirect('/admin/integrari', 303);
     }
     saveError = result.error;
   }
 }
 
-savedIntegration = Astro.url.searchParams.get('saved');
 
 // Descrieri + etichete per câmp pentru formulare.
 const FIELD_META: Record<string, Record<string, { label: string; hint?: string }>> = {
@@ -115,14 +118,6 @@ const masked = Object.fromEntries(
     )
   }
   {saveError && <div class="admin-banner admin-banner--error">{saveError}</div>}
-  {
-    savedIntegration && (
-      <div class="admin-banner admin-banner--ok">
-        Setările pentru <strong>{INTEGRATIONS[savedIntegration as IntegrationName]?.label}</strong>
-        au fost salvate.
-      </div>
-    )
-  }
 
   {
     integrationNames.map((name) => {
@@ -131,10 +126,16 @@ const masked = Object.fromEntries(
         string,
         { key: string; env: string; secret: boolean },
       ][];
+      const configured = Object.values(masked[name]).some((f) => f.source);
       return (
         <div class="admin-card" id={name}>
-          <h2>{integration.label}</h2>
-          <p class="admin-hint">{INTEGRATION_DESC[name]}</p>
+          <div style="display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap">
+            <h2 style="margin:0">{integration.label}</h2>
+            <span class:list={['admin-tag', configured ? 'admin-tag--ok' : 'admin-tag--warn']}>
+              {configured ? 'Configurată' : 'Neconfigurată'}
+            </span>
+          </div>
+          <p class="admin-hint" style="margin-top:6px">{INTEGRATION_DESC[name]}</p>
           <form method="post">
             <input type="hidden" name="integration" value={name} />
             {fields.map(([fieldName, field]) => {
@@ -221,6 +222,9 @@ const masked = Object.fromEntries(
         const body = (await res.json()) as { ok: boolean; detail?: string };
         result.textContent = body.detail ?? (body.ok ? 'Funcționează.' : 'A eșuat.');
         result.classList.add(body.ok ? 'is-ok' : 'is-error');
+        const toast = (window as unknown as { adminToast?: (m: string, k?: string) => void })
+          .adminToast;
+        toast?.(body.ok ? `Testul ${name} a reușit.` : `Testul ${name} a eșuat.`, body.ok ? 'ok' : 'error');
       } catch {
         result.textContent = 'Testul a eșuat (eroare de rețea).';
         result.classList.add('is-error');

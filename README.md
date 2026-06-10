@@ -181,3 +181,21 @@ fără rebuild).
 - Imagine OG dedicată 1200×630 (acum: `public/og-default.png`, placeholder din screenshot)
 - Activarea EN: completează `src/i18n/en.ts` și paginile pentru locale-ul `en`
 ```
+
+---
+
+## Operare pe serverul de producție (Hetzner)
+
+Stack-ul live stă în `/var/www/simplead` (repo-ul e clonat în `./app`):
+
+- **Deploy**: `./deploy.sh` — git pull, rebuild, restart, health check. Migrațiile DB și
+  importul inițial de conținut rulează automat la pornirea containerului.
+- **Mod „în lucru"**: `./maintenance.sh on|off|status` — vizitatorii văd pagina de
+  mentenanță (503); `/admin` și `/api` rămân funcționale.
+- **Conținut**: blogul și portofoliul trăiesc în Postgres și se editează din `/admin`
+  (publicare instant, fără rebuild). Fișierele din `content-seed/` sunt doar seed-ul
+  inițial (import idempotent la pornire).
+- **Imagini**: upload din `/admin/media`; fișierele stau în volumul `./uploads`
+  (persistă peste rebuild-uri) și se servesc la `/uploads/...`.
+- **Sitemap/RSS**: generate dinamic la `/sitemap.xml` și `/rss.xml` (includ articolele
+  din DB). Lista rutelor statice: `src/data/static-routes.ts`.

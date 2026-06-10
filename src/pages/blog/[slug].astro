@@ -1,51 +1,83 @@
 ---
-import { getCollection, render } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import PageHeader from '@components/sections/PageHeader.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
+import { getPostBySlug } from '@lib/server/content';
+import { readingMinutes, renderMarkdown } from '@lib/server/markdown';
 import { site } from '@data/site';
 
-export async function getStaticPaths() {
-  const entries = await getCollection('blog', ({ data }) => !data.draft);
-  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+// Articolul vine din DB; on-demand ca publicarea din /admin să fie instant.
+// Adminul logat poate vedea draft-uri cu `?preview=1`.
+export const prerender = false;
+
+const slug = Astro.params.slug!;
+const includeDrafts = Astro.locals.isAdmin && Astro.url.searchParams.has('preview');
+const post = await getPostBySlug(slug, { includeDrafts });
+if (!post) {
+  return Astro.rewrite('/404');
 }
 
-const { entry } = Astro.props;
-const { Content } = await render(entry);
-const { title, description, pubDate, updatedDate, author, tags, cover } = entry.data;
-const dateStr = pubDate.toLocaleDateString('ro-RO', {
+const title = post.seoTitle || post.title;
+const description = post.seoDescription || post.description;
+const publishedAt = post.publishedAt ?? post.createdAt;
+const dateStr = publishedAt.toLocaleDateString('ro-RO', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
 });
+const bodyHtml = renderMarkdown(post.body);
+const minutes = readingMinutes(post.body);
 
 const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
 const blogSchema = {
   '@type': 'BlogPosting',
-  headline: title,
-  description,
-  datePublished: pubDate.toISOString(),
-  dateModified: (updatedDate ?? pubDate).toISOString(),
-  author: { '@type': 'Person', name: author },
+  headline: post.title,
+  description: post.description,
+  datePublished: publishedAt.toISOString(),
+  dateModified: post.updatedAt.toISOString(),
+  author: { '@type': 'Person', name: post.author },
   publisher: { '@id': `${origin}#organization` },
-  mainEntityOfPage: `${origin}/blog/${entry.id}`,
-  ...(cover ? { image: new URL(cover, origin).href } : {}),
+  mainEntityOfPage: `${origin}/blog/${post.slug}`,
+  ...(post.cover ? { image: new URL(post.cover, origin).href } : {}),
 };
+
+if (post.status === 'draft') {
+  Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  Astro.response.headers.set('Cache-Control', 'no-store');
+}
 ---
 
-<BaseLayout title={title} description={description} transparentNav={true} navOverDark={true} schema={blogSchema}>
-  <PageHeader eyebrow="Blog" title={title} />
+<BaseLayout
+  title={title}
+  description={description}
+  transparentNav={true}
+  navOverDark={true}
+  schema={blogSchema}
+  ogImage={post.cover ?? undefined}
+>
+  <PageHeader eyebrow="Blog" title={post.title} />
 
   <section class="section section--light">
     <div class="container" style="max-width:820px">
+      {
+        post.status === 'draft' && (
+          <p style="background:#fff7e0;border:1px solid #f5d93f;border-radius:10px;padding:10px 14px;font-size:14px">
+            <strong>Draft</strong> — articolul nu e public; doar tu îl vezi, prin previzualizare.
+          </p>
+        )
+      }
       <a href="/blog" style="font-size:14px;color:var(--ink-soft)">← Înapoi la blog</a>
-      <div style="margin-top:18px;display:flex;flex-wrap:wrap;gap:12px;font-size:14px;color:var(--ink-soft)">
-        <time datetime={pubDate.toISOString()}>{dateStr}</time>
+      <div
+        style="margin-top:18px;display:flex;flex-wrap:wrap;gap:12px;font-size:14px;color:var(--ink-soft)"
+      >
+        <time datetime={publishedAt.toISOString()}>{dateStr}</time>
         <span>·</span>
-        <span>{author}</span>
-        {tags.length > 0 && <span style="color:var(--blue);font-weight:600">#{tags[0]}</span>}
+        <span>{post.author}</span>
+        <span>·</span>
+        <span>{minutes} min de citit</span>
+        {post.tags.length > 0 && <span style="color:var(--blue);font-weight:600">#{post.tags[0]}</span>}
       </div>
-      <article class="prose-simplead" style="margin-top:28px"><Content /></article>
+      <article class="prose-simplead" style="margin-top:28px" set:html={bodyHtml} />
     </div>
   </section>
 

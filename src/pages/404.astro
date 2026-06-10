@@ -1,5 +1,9 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+
+// On-demand: rutele din DB (blog/portofoliu) fac `Astro.rewrite('/404')` la
+// slug-uri inexistente, iar rewrite-ul are nevoie de pagina 404 ca modul SSR.
+export const prerender = false;
 ---
 
 <BaseLayout title="Pagina nu a fost găsită" noindex={true}>
@@ -15,6 +19,39 @@ import BaseLayout from '@layouts/BaseLayout.astro';
       <div style="margin-top:32px;display:flex;justify-content:center">
         <a class="pill pill--grad" href="/">Înapoi acasă <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
       </div>
+      <div class="nf-links">
+        <a href="/servicii">Servicii</a>
+        <a href="/pachete">Pachete & prețuri</a>
+        <a href="/portofoliu">Portofoliu</a>
+        <a href="/blog">Blog</a>
+        <a href="/intrebari-frecvente">Întrebări frecvente</a>
+        <a href="/contact">Contact</a>
+      </div>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .nf-links {
+    margin-top: 36px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  .nf-links a {
+    padding: 8px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    transition:
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .nf-links a:hover {
+    border-color: var(--electric);
+    color: var(--electric);
+  }
+</style>

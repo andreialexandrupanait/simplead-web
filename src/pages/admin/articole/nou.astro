@@ -1,0 +1,97 @@
+---
+import { eq } from 'drizzle-orm';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import PostForm from '../../../components/admin/PostForm.astro';
+import { getDb } from '../../../lib/server/db';
+import { posts } from '../../../lib/server/schema';
+import { parsePostForm } from '../../../lib/server/admin-schemas';
+import { bustContentCache } from '../../../lib/server/content';
+import { setFlash } from '../../../lib/server/flash';
+
+export const prerender = false;
+
+const db = getDb();
+if (!db) {
+  return Astro.redirect('/admin/articole', 302);
+}
+
+let errors: Record<string, string[]> = {};
+let values: Record<string, string> = {
+  title: '',
+  slug: '',
+  description: '',
+  body: '',
+  author: 'Andrei Panait',
+  tags: '',
+  cover: '',
+  status: 'draft',
+  publishedAt: '',
+  seoTitle: '',
+  seoDescription: '',
+};
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const parsed = parsePostForm(form);
+  if (!parsed.ok) {
+    errors = parsed.errors;
+    values = parsed.raw;
+  } else {
+    const d = parsed.data;
+    try {
+      const clash = await db
+        .select({ id: posts.id })
+        .from(posts)
+        .where(eq(posts.slug, d.slug))
+        .limit(1);
+      if (clash.length > 0) {
+        errors = { slug: ['Există deja un articol cu acest slug.'] };
+        values = parsed.data as unknown as Record<string, string>;
+        values.tags = d.tags.join(', ');
+      } else {
+        const publishedAt =
+          d.status === 'published'
+            ? d.publishedAt && !Number.isNaN(Date.parse(d.publishedAt))
+              ? new Date(d.publishedAt)
+              : new Date()
+            : null;
+        const [created] = await db
+          .insert(posts)
+          .values({
+            slug: d.slug,
+            title: d.title,
+            description: d.description,
+            body: d.body,
+            author: d.author,
+            tags: d.tags,
+            cover: d.cover || null,
+            status: d.status,
+            publishedAt,
+            seoTitle: d.seoTitle || null,
+            seoDescription: d.seoDescription || null,
+          })
+          .returning({ id: posts.id });
+        bustContentCache();
+        setFlash(Astro.cookies, {
+          kind: 'ok',
+          msg: d.status === 'published' ? 'Articol publicat.' : 'Draft salvat.',
+        });
+        return Astro.redirect(`/admin/articole/${created.id}`, 303);
+      }
+    } catch (err) {
+      console.warn('[admin] Crearea articolului a eșuat:', err);
+      errors = { title: ['Salvarea a eșuat. Încearcă din nou.'] };
+    }
+  }
+}
+---
+
+<AdminLayout title="Articol nou">
+  <div class="admin-page-head">
+    <div>
+      <a href="/admin/articole" style="font-size:0.88rem;color:var(--muted)">← Înapoi la articole</a>
+      <h1 style="margin-top:6px">Articol nou</h1>
+    </div>
+  </div>
+  <PostForm values={values} errors={errors} submitLabel="Salvează articolul" />
+</AdminLayout>

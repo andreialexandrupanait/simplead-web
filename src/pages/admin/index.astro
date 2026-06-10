@@ -1,43 +1,155 @@
 ---
-import { count, eq } from 'drizzle-orm';
+import { count, desc, eq, gte, sum } from 'drizzle-orm';
 import AdminLayout from '../../layouts/AdminLayout.astro';
+import StatCard from '../../components/admin/StatCard.astro';
 import { getDb } from '../../lib/server/db';
-import { leads, orders, packages } from '../../lib/server/schema';
+import { leads, orders, packages, posts, subscribers } from '../../lib/server/schema';
 import { getEncryptionKey } from '../../lib/server/crypto';
+import { getIntegration, INTEGRATIONS } from '../../lib/server/settings';
+import { uploadsWritable } from '../../lib/server/uploads';
+import { site } from '../../data/site';
 
 export const prerender = false;
 
 const db = getDb();
 const hasEncryptionKey = getEncryptionKey() !== null;
 
-let stats: { leadsNew: number; leadsTotal: number; packagesActive: number; orders: number } | null =
-  null;
+const now = Date.now();
+const d7 = new Date(now - 7 * 86_400_000);
+const d30 = new Date(now - 30 * 86_400_000);
+
+type Activity = { at: Date; kind: string; label: string; href: string };
+
+let stats: {
+  leadsNew: number;
+  leads7d: number;
+  orders30d: number;
+  revenue30dCents: number;
+  subscribersTotal: number;
+  postsPublished: number;
+  packagesActive: number;
+} | null = null;
+let activity: Activity[] = [];
 let dbError = false;
 
 if (db) {
   try {
-    const [[leadsNew], [leadsTotal], [packagesActive], [ordersTotal]] = await Promise.all([
+    const [
+      [leadsNew],
+      [leads7d],
+      [orders30d],
+      [revenue30d],
+      [subsTotal],
+      [postsPub],
+      [pkgActive],
+      recentLeads,
+      recentOrders,
+      recentPosts,
+    ] = await Promise.all([
       db.select({ n: count() }).from(leads).where(eq(leads.status, 'nou')),
-      db.select({ n: count() }).from(leads),
+      db.select({ n: count() }).from(leads).where(gte(leads.createdAt, d7)),
+      db
+        .select({ n: count() })
+        .from(orders)
+        .where(gte(orders.createdAt, d30)),
+      db
+        .select({ s: sum(orders.amountCents) })
+        .from(orders)
+        .where(eq(orders.status, 'paid')),
+      db.select({ n: count() }).from(subscribers),
+      db.select({ n: count() }).from(posts).where(eq(posts.status, 'published')),
       db.select({ n: count() }).from(packages).where(eq(packages.active, true)),
-      db.select({ n: count() }).from(orders),
+      db.select().from(leads).orderBy(desc(leads.createdAt)).limit(5),
+      db.select().from(orders).orderBy(desc(orders.createdAt)).limit(5),
+      db.select().from(posts).orderBy(desc(posts.updatedAt)).limit(5),
     ]);
     stats = {
       leadsNew: leadsNew.n,
-      leadsTotal: leadsTotal.n,
-      packagesActive: packagesActive.n,
-      orders: ordersTotal.n,
+      leads7d: leads7d.n,
+      orders30d: orders30d.n,
+      revenue30dCents: Number(revenue30d.s ?? 0),
+      subscribersTotal: subsTotal.n,
+      postsPublished: postsPub.n,
+      packagesActive: pkgActive.n,
     };
+    activity = [
+      ...recentLeads.map((l) => ({
+        at: l.createdAt,
+        kind: 'Lead',
+        label: `${l.name} (${l.email})`,
+        href: `/admin/leads/${l.id}`,
+      })),
+      ...recentOrders.map((o) => ({
+        at: o.createdAt,
+        kind: 'Comandă',
+        label: `${o.customerEmail ?? 'client'} · ${(o.amountCents / 100).toFixed(0)} ${o.currency}`,
+        href: `/admin/comenzi/${o.id}`,
+      })),
+      ...recentPosts.map((p) => ({
+        at: p.updatedAt,
+        kind: p.status === 'published' ? 'Articol' : 'Draft',
+        label: p.title,
+        href: `/admin/articole/${p.id}`,
+      })),
+    ]
+      .sort((a, b) => b.at.getTime() - a.at.getTime())
+      .slice(0, 8);
   } catch (err) {
     console.warn('[admin] Interogarea statisticilor a eșuat:', err);
     dbError = true;
   }
 }
+
+// Checklist de configurare: ce mai e de făcut până la vânzare.
+const canUpload = await uploadsWritable();
+const integrationState: { name: string; label: string; configured: boolean }[] = [];
+if (db && hasEncryptionKey) {
+  for (const name of Object.keys(INTEGRATIONS) as (keyof typeof INTEGRATIONS)[]) {
+    const fields = Object.values(await getIntegration(name)) as {
+      value: string | null;
+      source: 'db' | 'env' | null;
+    }[];
+    const configured = fields.some((f) => f.value && f.source);
+    integrationState.push({ name, label: INTEGRATIONS[name].label, configured });
+  }
+}
+
+const checklist: { label: string; done: boolean; href?: string; action?: string }[] = [
+  { label: 'Bază de date conectată', done: Boolean(db) && !dbError },
+  { label: 'Cheie de criptare configurată', done: hasEncryptionKey },
+  { label: 'Bibliotecă media funcțională (volum uploads)', done: canUpload },
+  ...integrationState.map((i) => ({
+    label: `Integrare ${i.label}`,
+    done: i.configured,
+    href: '/admin/integrari',
+    action: i.configured ? undefined : 'Configurează',
+  })),
+  {
+    label: 'Cel puțin un articol publicat',
+    done: (stats?.postsPublished ?? 0) > 0,
+    href: '/admin/articole',
+    action: (stats?.postsPublished ?? 0) > 0 ? undefined : 'Scrie primul articol',
+  },
+];
+
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' }) +
+  ' ' +
+  d.toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
+const fmtMoney = (cents: number) => `${(cents / 100).toLocaleString('ro-RO')} €`;
 ---
 
 <AdminLayout title="Panou">
-  <h1>Panou</h1>
-  <p class="admin-sub">Privire de ansamblu peste site.</p>
+  <div class="admin-page-head">
+    <div>
+      <h1>Bună, {site.founder.split(' ')[0]} 👋</h1>
+      <p class="admin-sub">Privire de ansamblu peste site și vânzări.</p>
+    </div>
+    <div class="admin-actions" style="margin:0">
+      <a class="admin-btn admin-btn--sm" href="/admin/articole/nou">+ Articol nou</a>
+      <a class="admin-btn admin-btn--ghost admin-btn--sm" href="/admin/pachete/nou">+ Pachet</a>
+    </div>
+  </div>
 
   {
     !db && (
@@ -55,54 +167,111 @@ if (db) {
       </div>
     )
   }
-  {
-    !hasEncryptionKey && (
-      <div class="admin-banner admin-banner--warn">
-        <strong>Cheie de criptare lipsă.</strong> Fără <code>APP_ENCRYPTION_KEY</code> nu poți salva
-        chei API din pagina Integrări. Generează una cu <code>pnpm gen:key</code>.
-      </div>
-    )
-  }
 
   {
     stats && (
-      <div class="admin-grid">
-        <div class="admin-card">
-          <h2>Lead-uri noi</h2>
-          <p class="stat">{stats.leadsNew}</p>
-          <a href="/admin/leads?status=nou">Vezi lead-urile noi</a>
-        </div>
-        <div class="admin-card">
-          <h2>Lead-uri total</h2>
-          <p class="stat">{stats.leadsTotal}</p>
-          <a href="/admin/leads">Vezi toate</a>
-        </div>
-        <div class="admin-card">
-          <h2>Pachete active</h2>
-          <p class="stat">{stats.packagesActive}</p>
-          <a href="/admin/pachete">Gestionează pachetele</a>
-        </div>
-        <div class="admin-card">
-          <h2>Comenzi</h2>
-          <p class="stat">{stats.orders}</p>
-          <span class="admin-tag">disponibil după activarea plăților</span>
-        </div>
+      <div class="admin-stats">
+        <StatCard
+          label="Lead-uri noi"
+          value={stats.leadsNew}
+          hint={`${stats.leads7d} primite în ultimele 7 zile`}
+          href="/admin/leads?status=nou"
+        />
+        <StatCard
+          label="Comenzi (30 zile)"
+          value={stats.orders30d}
+          hint={`Încasări totale: ${fmtMoney(stats.revenue30dCents)}`}
+          href="/admin/comenzi"
+        />
+        <StatCard
+          label="Abonați newsletter"
+          value={stats.subscribersTotal}
+          hint="din footer și /resurse"
+          href="/admin/abonati"
+        />
+        <StatCard
+          label="Articole publicate"
+          value={stats.postsPublished}
+          hint={`${stats.packagesActive} pachete active la vânzare`}
+          href="/admin/articole"
+        />
       </div>
     )
   }
+
+  <div class="dash-cols">
+    <div class="admin-card">
+      <h2>Activitate recentă</h2>
+      <p class="admin-hint">Ultimele lead-uri, comenzi și editări de conținut.</p>
+      {
+        activity.length === 0 ? (
+          <p style="color:var(--muted);font-size:0.92rem">
+            Nimic încă — activitatea apare aici pe măsură ce site-ul lucrează.
+          </p>
+        ) : (
+          <ul class="admin-activity">
+            {activity.map((a) => (
+              <li>
+                <time>{fmtDate(a.at)}</time>
+                <span class="admin-tag admin-tag--plain">{a.kind}</span>
+                <a href={a.href} class="admin-row-link">
+                  {a.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+
+    <div class="admin-card">
+      <h2>Pune site-ul la treabă</h2>
+      <p class="admin-hint">Pașii rămași până când site-ul vinde singur.</p>
+      <ul class="admin-checklist">
+        {
+          checklist.map((item) => (
+            <li>
+              <span class:list={['check-dot', item.done && 'is-done']}>{item.done ? '✓' : '·'}</span>
+              {item.label}
+              {item.action && item.href && (
+                <a class="check-action" href={item.href}>
+                  {item.action} →
+                </a>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="admin-card" style="margin-top:20px">
+    <h2>Date site</h2>
+    <p class="admin-hint">
+      Identitatea afișată public vine din cod (<code>src/data/site.ts</code>) și se aplică la
+      următorul deploy — nu se editează de aici.
+    </p>
+    <dl class="admin-kv">
+      <dt>Nume</dt>
+      <dd>{site.name}</dd>
+      <dt>Contact</dt>
+      <dd>{site.contact.email} · {site.contact.phone}</dd>
+      <dt>CIF / Reg. Com.</dt>
+      <dd>{site.legal.cif} · {site.legal.regCom}</dd>
+    </dl>
+  </div>
 </AdminLayout>
 
 <style>
-  .stat {
-    font-family: var(--font-display);
-    font-size: 2.4rem;
-    font-weight: 700;
-    color: var(--electric);
-    margin: 8px 0;
+  .dash-cols {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 20px;
+    align-items: start;
   }
-  .admin-card a {
-    color: var(--electric);
-    font-weight: 600;
-    font-size: 0.9rem;
+  @media (max-width: 1000px) {
+    .dash-cols {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

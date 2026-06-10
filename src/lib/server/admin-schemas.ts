@@ -1,5 +1,12 @@
 import { z } from 'zod';
 
+const slugSchema = z
+  .string()
+  .trim()
+  .min(2, 'Slug-ul e obligatoriu.')
+  .max(120)
+  .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug-ul poate conține doar litere mici, cifre și cratime.');
+
 /** Validare server-side pentru formularul de pachete din admin. */
 export const packageFormSchema = z.object({
   name: z.string().trim().min(2, 'Numele e obligatoriu (minim 2 caractere).').max(120),
@@ -88,4 +95,131 @@ export function parsePackageForm(
     return { ok: false, errors: parsed.error.flatten().fieldErrors, raw };
   }
   return { ok: true, data: parsed.data };
+}
+
+/** Categoriile de servicii pentru proiectele de portofoliu (text liber în DB,
+ * validat aici: o categorie nouă = o linie aici, nu o migrație). */
+export const projectServices = [
+  'Marketing',
+  'Grafică',
+  'Web Design',
+  'Mentenanță',
+  'Branding',
+  'Foto-Video',
+  'Social Media',
+] as const;
+
+const tagsField = z
+  .string()
+  .default('')
+  .transform((s) =>
+    s
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean),
+  );
+
+/** Validare pentru formularul de articole de blog din admin. */
+export const postFormSchema = z.object({
+  title: z.string().trim().min(2, 'Titlul e obligatoriu (minim 2 caractere).').max(180),
+  slug: slugSchema,
+  description: z.string().trim().max(300, 'Descrierea poate avea maxim 300 de caractere.').default(''),
+  body: z.string().default(''),
+  author: z.string().trim().max(80).default('Andrei Panait'),
+  tags: tagsField,
+  cover: z.string().trim().max(500).default(''),
+  status: z.enum(['draft', 'published']),
+  publishedAt: z.string().trim().default(''),
+  seoTitle: z.string().trim().max(180).default(''),
+  seoDescription: z.string().trim().max(300).default(''),
+});
+
+export type PostFormData = z.infer<typeof postFormSchema>;
+
+export type RawPostForm = Record<keyof PostFormData, string>;
+
+export function parsePostForm(
+  form: FormData,
+):
+  | { ok: true; data: PostFormData }
+  | { ok: false; errors: Record<string, string[]>; raw: RawPostForm } {
+  const raw: RawPostForm = {
+    title: String(form.get('title') ?? ''),
+    slug: String(form.get('slug') ?? ''),
+    description: String(form.get('description') ?? ''),
+    body: String(form.get('body') ?? ''),
+    author: String(form.get('author') ?? 'Andrei Panait'),
+    tags: String(form.get('tags') ?? ''),
+    cover: String(form.get('cover') ?? ''),
+    status: String(form.get('status') ?? 'draft'),
+    publishedAt: String(form.get('publishedAt') ?? ''),
+    seoTitle: String(form.get('seoTitle') ?? ''),
+    seoDescription: String(form.get('seoDescription') ?? ''),
+  };
+  const parsed = postFormSchema.safeParse(raw);
+  if (!parsed.success) {
+    return { ok: false, errors: parsed.error.flatten().fieldErrors, raw };
+  }
+  return { ok: true, data: parsed.data };
+}
+
+/** Validare pentru formularul de proiecte de portofoliu din admin. */
+export const projectFormSchema = z.object({
+  title: z.string().trim().min(2, 'Titlul e obligatoriu (minim 2 caractere).').max(180),
+  slug: slugSchema,
+  client: z.string().trim().max(120).default(''),
+  service: z.enum(projectServices),
+  summary: z.string().trim().max(300, 'Rezumatul poate avea maxim 300 de caractere.').default(''),
+  challenge: z.string().trim().max(2000).default(''),
+  solution: z.string().trim().max(2000).default(''),
+  result: z.string().trim().max(2000).default(''),
+  body: z.string().default(''),
+  cover: z.string().trim().max(500).default(''),
+  sort: z.coerce.number().int().min(0).max(9999).default(99),
+  status: z.enum(['draft', 'published']),
+  seoTitle: z.string().trim().max(180).default(''),
+  seoDescription: z.string().trim().max(300).default(''),
+});
+
+export type ProjectFormData = z.infer<typeof projectFormSchema>;
+
+export type RawProjectForm = Record<keyof ProjectFormData, string>;
+
+export function parseProjectForm(
+  form: FormData,
+):
+  | { ok: true; data: ProjectFormData }
+  | { ok: false; errors: Record<string, string[]>; raw: RawProjectForm } {
+  const raw: RawProjectForm = {
+    title: String(form.get('title') ?? ''),
+    slug: String(form.get('slug') ?? ''),
+    client: String(form.get('client') ?? ''),
+    service: String(form.get('service') ?? 'Marketing'),
+    summary: String(form.get('summary') ?? ''),
+    challenge: String(form.get('challenge') ?? ''),
+    solution: String(form.get('solution') ?? ''),
+    result: String(form.get('result') ?? ''),
+    body: String(form.get('body') ?? ''),
+    cover: String(form.get('cover') ?? ''),
+    sort: String(form.get('sort') ?? '99'),
+    status: String(form.get('status') ?? 'draft'),
+    seoTitle: String(form.get('seoTitle') ?? ''),
+    seoDescription: String(form.get('seoDescription') ?? ''),
+  };
+  const parsed = projectFormSchema.safeParse(raw);
+  if (!parsed.success) {
+    return { ok: false, errors: parsed.error.flatten().fieldErrors, raw };
+  }
+  return { ok: true, data: parsed.data };
+}
+
+/** Slug dintr-un titlu (sugestie în UI; serverul re-validează oricum). */
+export function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 120);
 }

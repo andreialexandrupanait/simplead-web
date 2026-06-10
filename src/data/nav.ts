@@ -16,6 +16,7 @@ export const mainNav: NavItem[] = [
   { label: 'Portofoliu', href: '/portofoliu' },
   { label: 'Despre', href: '/despre' },
   { label: 'Blog', href: '/blog' },
+  { label: 'Resurse', href: '/resurse' },
   { label: 'Contact', href: '/contact' },
 ];
 
@@ -59,6 +60,7 @@ export const servicesNav: NavServiceItem[] = [
 export const footerServices: NavItem[] = servicesNav.map(({ label, href }) => ({ label, href }));
 
 export const footerLegal: NavItem[] = [
+  { label: 'Întrebări frecvente', href: '/intrebari-frecvente' },
   { label: 'Termeni și condiții', href: '/termeni' },
   { label: 'Politica de confidențialitate', href: '/confidentialitate' },
   { label: 'Politica de cookies', href: '/cookies' },

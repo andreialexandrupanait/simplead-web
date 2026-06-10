@@ -1,0 +1,51 @@
+---
+/**
+ * Paginare pentru listele din admin. Construiește linkurile peste URL-ul
+ * curent, păstrând restul parametrilor (căutare, filtre).
+ */
+interface Props {
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  url: URL;
+}
+const { page, totalPages, totalItems, url } = Astro.props;
+
+const pageUrl = (p: number) => {
+  const next = new URL(url);
+  if (p <= 1) next.searchParams.delete('page');
+  else next.searchParams.set('page', String(p));
+  return next.pathname + next.search;
+};
+
+// Fereastră de maxim 5 pagini în jurul celei curente.
+const start = Math.max(1, Math.min(page - 2, totalPages - 4));
+const end = Math.min(totalPages, start + 4);
+const windowPages = Array.from({ length: end - start + 1 }, (_, i) => start + i);
+---
+
+{
+  totalPages > 1 && (
+    <nav class="admin-pagination" aria-label="Paginare">
+      <span>
+        {totalItems} {totalItems === 1 ? 'rezultat' : 'rezultate'}
+      </span>
+      <div class="admin-pagination__pages">
+        <a href={pageUrl(page - 1)} class:list={[page <= 1 && 'is-disabled']} aria-label="Pagina anterioară">
+          ←
+        </a>
+        {windowPages.map((p) =>
+          p === page ? <span class="is-current">{p}</span> : <a href={pageUrl(p)}>{p}</a>,
+        )}
+        <a
+          href={pageUrl(page + 1)}
+          class:list={[page >= totalPages && 'is-disabled']}
+          aria-label="Pagina următoare"
+        >
+          →
+        </a>
+      </div>
+    </nav>
+  )
+}
+{totalPages <= 1 && totalItems > 0 && <div class="admin-pagination"><span>{totalItems} {totalItems === 1 ? 'rezultat' : 'rezultate'}</span></div>}

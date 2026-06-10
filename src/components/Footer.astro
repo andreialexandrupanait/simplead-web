@@ -131,16 +131,18 @@ const social = site.social;
     <div class="footer-col footer-news">
       <h5>Newsletter</h5>
       <p>Primește idei utile de marketing, o dată pe lună. Fără spam.</p>
-      <!-- TODO: conectează la furnizorul de newsletter -->
       <form class="footer-form" data-newsletter>
         <input
           type="email"
+          name="email"
           required
           placeholder="Adresa ta de email"
           aria-label="Adresa ta de email"
         />
+        <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px" />
         <button type="submit">Mă abonez</button>
       </form>
+      <p class="footer-news-msg" data-newsletter-msg aria-live="polite"></p>
     </div>
   </div>
 
@@ -178,3 +180,50 @@ const social = site.social;
     }
   }
 </style>
+
+<style>
+  .footer-news-msg {
+    margin-top: 8px;
+    font-size: 0.84rem;
+    min-height: 1.2em;
+  }
+  .footer-news-msg.is-ok {
+    color: var(--cyan);
+  }
+  .footer-news-msg.is-error {
+    color: #ff9d8f;
+  }
+</style>
+
+<script>
+  // Abonarea la newsletter: POST către /api/newsletter, mesaj inline.
+  const form = document.querySelector<HTMLFormElement>('[data-newsletter]');
+  const msg = document.querySelector<HTMLElement>('[data-newsletter-msg]');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!msg) return;
+    const email = (form.querySelector('input[name="email"]') as HTMLInputElement).value;
+    const company = (form.querySelector('input[name="company"]') as HTMLInputElement).value;
+    msg.className = 'footer-news-msg';
+    msg.textContent = 'Se trimite…';
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, company, source: 'footer' }),
+      });
+      const body = (await res.json()) as { ok: boolean; error?: string };
+      if (body.ok) {
+        msg.classList.add('is-ok');
+        msg.textContent = 'Gata, ești pe listă! Ne auzim o dată pe lună.';
+        form.reset();
+      } else {
+        msg.classList.add('is-error');
+        msg.textContent = body.error ?? 'Ceva n-a mers. Încearcă din nou.';
+      }
+    } catch {
+      msg.classList.add('is-error');
+      msg.textContent = 'Eroare de rețea. Încearcă din nou.';
+    }
+  });
+</script>

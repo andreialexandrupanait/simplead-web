@@ -1,22 +1,30 @@
 ---
 /** Grilă portofoliu cu filtre (pf-filters + pf-page-grid). Filtrare client-side. */
-import type { CollectionEntry } from 'astro:content';
+import type { Project } from '@lib/server/content';
+import { excerpt } from '@lib/server/markdown';
 
 interface Props {
-  projects: CollectionEntry<'portfolio'>[];
+  projects: Project[];
   variant?: 'light' | 'tint';
 }
 const { projects, variant = 'light' } = Astro.props;
 
 // Categoriile, în ordinea preferată din export, intersectate cu ce există.
 const preferred = ['Branding', 'Web Design', 'Marketing', 'Grafică', 'Foto-Video', 'Social Media', 'Mentenanță'];
-const present = new Set<string>(projects.map((p) => p.data.service));
+const present = new Set<string>(projects.map((p) => p.service));
 const cats = ['Toate', ...preferred.filter((c) => present.has(c))];
 const trend = '<path d="M3 17l6-6 4 4 7-7"/><path d="M14 7h7v7"/>';
 ---
 
 <section class:list={['section', `section--${variant}`]}>
   <div class="container">
+    {
+      projects.length === 0 && (
+        <p style="text-align:center;color:var(--ink-soft);padding:48px 0">
+          Pregătim studiile de caz — revino curând.
+        </p>
+      )
+    }
     <div class="pf-filters" id="pfFilters" role="tablist" data-reveal>
       {
         cats.map((c, i) => (
@@ -28,19 +36,19 @@ const trend = '<path d="M3 17l6-6 4 4 7-7"/><path d="M14 7h7v7"/>';
     </div>
     <div class="pf-page-grid" id="pfGrid" data-reveal-stagger>
       {
-        projects.map((entry) => (
-          <a class="pf-page-card" href={`/portofoliu/${entry.id}`} data-cat={entry.data.service}>
+        projects.map((project) => (
+          <a class="pf-page-card" href={`/portofoliu/${project.slug}`} data-cat={project.service}>
             <div class="ph thumb">
-              {entry.data.cover ? <img src={entry.data.cover} alt={entry.data.title} loading="lazy" /> : entry.data.title}
+              {project.cover ? <img src={project.cover} alt={project.title} loading="lazy" /> : project.title}
             </div>
             <div class="body">
-              <span class="tag">{entry.data.service}</span>
-              <h3>{entry.data.title}</h3>
-              <p>{entry.data.summary}</p>
-              {entry.data.result && (
+              <span class="tag">{project.service}</span>
+              <h3>{project.title}</h3>
+              <p>{project.summary}</p>
+              {project.result && (
                 <span class="pf-result">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={trend} />
-                  {entry.data.result}
+                  {excerpt(project.result, 90)}
                 </span>
               )}
             </div>

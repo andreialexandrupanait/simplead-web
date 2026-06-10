@@ -1,0 +1,35 @@
+---
+/**
+ * Badge de stare cu mapare semantică pe culorile admin: acoperă statusurile de
+ * lead, comandă și conținut. Statusuri necunoscute cad pe stilul neutru.
+ */
+interface Props {
+  status: string;
+}
+const { status } = Astro.props;
+
+const MAP: Record<string, { label: string; tone: string }> = {
+  // Lead-uri
+  nou: { label: 'Nou', tone: 'info' },
+  contactat: { label: 'Contactat', tone: 'warn' },
+  calificat: { label: 'Calificat', tone: 'info' },
+  castigat: { label: 'Câștigat', tone: 'ok' },
+  pierdut: { label: 'Pierdut', tone: 'danger' },
+  // Comenzi
+  pending: { label: 'În așteptare', tone: 'warn' },
+  paid: { label: 'Plătită', tone: 'ok' },
+  failed: { label: 'Eșuată', tone: 'danger' },
+  refunded: { label: 'Rambursată', tone: 'neutral' },
+  canceled: { label: 'Anulată', tone: 'neutral' },
+  // Conținut
+  draft: { label: 'Draft', tone: 'warn' },
+  published: { label: 'Publicat', tone: 'ok' },
+  // Abonați
+  confirmed: { label: 'Confirmat', tone: 'ok' },
+};
+
+const entry = MAP[status] ?? { label: status, tone: 'neutral' };
+const toneClass = entry.tone === 'neutral' ? '' : `admin-tag--${entry.tone}`;
+---
+
+<span class:list={['admin-tag', toneClass]}>{entry.label}</span>

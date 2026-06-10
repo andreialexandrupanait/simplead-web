@@ -1,0 +1,82 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHeader from '@components/sections/PageHeader.astro';
+import FaqSection from '@components/sections/FaqSection.astro';
+import CtaSection from '@components/sections/CtaSection.astro';
+import { faqs, generalFaqs, servicesFaqs, type Faq } from '@data/content';
+
+// Hub-ul FAQ: agregă întrebările generale + cele despre colaborare/mentenanță
+// + cele despre servicii, cu o singură schemă FAQPage (SEO/GEO).
+const groups: { id: string; title: string; items: Faq[] }[] = [
+  { id: 'generale', title: 'Despre Simplead', items: faqs },
+  { id: 'colaborare', title: 'Colaborare & mentenanță', items: generalFaqs },
+  { id: 'servicii', title: 'Despre servicii', items: servicesFaqs },
+];
+
+const toAnswer = (f: Faq) => [...f.body, ...(f.list ?? [])].join(' ');
+const origin = 'https://simplead.ro';
+const schema = {
+  '@type': 'FAQPage',
+  mainEntity: groups.flatMap((g) =>
+    g.items.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: toAnswer(f) },
+    })),
+  ),
+  url: `${origin}/intrebari-frecvente`,
+};
+---
+
+<BaseLayout
+  title="Întrebări frecvente"
+  description="Răspunsuri directe la întrebările despre serviciile Simplead: colaborare, prețuri, mentenanță, termene și procesul de lucru."
+  transparentNav={true}
+  navOverDark={true}
+  schema={schema}
+>
+  <PageHeader
+    crumb={[{ label: 'Acasă', href: '/' }, { label: 'Întrebări frecvente' }]}
+    eyebrow="FAQ"
+    title="Întrebări frecvente"
+    accent="frecvente"
+    subtitle="Răspunsuri directe, fără jargon. Dacă nu găsești ce cauți, scrie-ne — răspundem în 24 de ore lucrătoare."
+  />
+
+  <section class="section section--light" style="padding-bottom:0">
+    <div class="container">
+      <nav class="faq-toc" aria-label="Categorii de întrebări">
+        {groups.map((g) => <a class="pill" href={`#${g.id}`}>{g.title}</a>)}
+      </nav>
+    </div>
+  </section>
+
+  {
+    groups.map((g, i) => (
+      <div id={g.id}>
+        <FaqSection
+          title={g.title}
+          titleAccent=""
+          eyebrow="FAQ"
+          items={g.items}
+          variant={i % 2 === 0 ? 'light' : 'tint'}
+        />
+      </div>
+    ))
+  }
+
+  <CtaSection
+    title="N-ai găsit răspunsul?"
+    subtitle="Scrie-ne întrebarea ta. Prima discuție e fără obligații."
+    href="/contact"
+  />
+</BaseLayout>
+
+<style>
+  .faq-toc {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+</style>

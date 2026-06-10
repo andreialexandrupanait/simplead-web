@@ -1,0 +1,17 @@
+---
+/** Card de statistică pentru dashboard și listele admin. */
+interface Props {
+  label: string;
+  value: string | number;
+  hint?: string;
+  href?: string;
+}
+const { label, value, hint, href } = Astro.props;
+const Tag = href ? 'a' : 'div';
+---
+
+<Tag class="admin-stat" href={href}>
+  <span class="admin-stat__label">{label}</span>
+  <span class="admin-stat__value">{value}</span>
+  {hint && <span class="admin-stat__hint">{hint}</span>}
+</Tag>

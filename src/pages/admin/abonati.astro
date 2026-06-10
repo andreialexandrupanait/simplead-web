@@ -1,0 +1,146 @@
+---
+import { count, desc, ilike, eq, type SQL } from 'drizzle-orm';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import Toolbar from '../../components/admin/Toolbar.astro';
+import StatusBadge from '../../components/admin/StatusBadge.astro';
+import EmptyState from '../../components/admin/EmptyState.astro';
+import Pagination from '../../components/admin/Pagination.astro';
+import { getDb } from '../../lib/server/db';
+import { subscribers } from '../../lib/server/schema';
+import { setFlash } from '../../lib/server/flash';
+
+export const prerender = false;
+
+const db = getDb();
+const PER_PAGE = 50;
+
+// Ștergere GDPR per abonat.
+if (Astro.request.method === 'POST' && db) {
+  const form = await Astro.request.formData();
+  const id = String(form.get('id') ?? '');
+  if (id && String(form.get('action')) === 'delete') {
+    try {
+      await db.delete(subscribers).where(eq(subscribers.id, id));
+      setFlash(Astro.cookies, { kind: 'ok', msg: 'Abonat șters definitiv.' });
+    } catch (err) {
+      console.warn('[admin] Ștergerea abonatului a eșuat:', err);
+      setFlash(Astro.cookies, { kind: 'error', msg: 'Ștergerea a eșuat.' });
+    }
+  }
+  return Astro.redirect(`/admin/abonati${Astro.url.search}`, 303);
+}
+
+const q = Astro.url.searchParams.get('q')?.trim() ?? '';
+const page = Math.max(1, Number(Astro.url.searchParams.get('page')) || 1);
+const where: SQL | undefined = q ? ilike(subscribers.email, `%${q}%`) : undefined;
+
+let rows: (typeof subscribers.$inferSelect)[] = [];
+let total = 0;
+let dbError = false;
+
+if (db) {
+  try {
+    const [data, [{ n }]] = await Promise.all([
+      db
+        .select()
+        .from(subscribers)
+        .where(where)
+        .orderBy(desc(subscribers.createdAt))
+        .limit(PER_PAGE)
+        .offset((page - 1) * PER_PAGE),
+      db.select({ n: count() }).from(subscribers).where(where),
+    ]);
+    rows = data;
+    total = n;
+  } catch (err) {
+    console.warn('[admin] Listarea abonaților a eșuat:', err);
+    dbError = true;
+  }
+}
+
+const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+const dateFmt = new Intl.DateTimeFormat('ro-RO', { dateStyle: 'medium' });
+const exportUrl = `/api/admin/export/subscribers.csv${Astro.url.search}`;
+---
+
+<AdminLayout title="Abonați">
+  <div class="admin-page-head">
+    <div>
+      <h1>Abonați newsletter</h1>
+      <p class="admin-sub">
+        Adunați din formularul din footer și de pe /resurse. Exportă lista pentru Postmark
+        Broadcast când trimiți newsletterul.
+      </p>
+    </div>
+  </div>
+
+  {
+    !db && (
+      <div class="admin-banner admin-banner--warn">
+        <strong>Fără bază de date.</strong> Abonările nu se salvează.
+      </div>
+    )
+  }
+  {dbError && <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>}
+
+  {
+    db && !dbError && (
+      <>
+        <Toolbar searchPlaceholder="Caută după email…" q={q}>
+          <a slot="actions" class="admin-btn admin-btn--ghost admin-btn--sm" href={exportUrl}>
+            Export CSV
+          </a>
+        </Toolbar>
+
+        <div class="admin-card admin-card--flush">
+          {rows.length === 0 ? (
+            <EmptyState
+              title="Niciun abonat încă"
+              hint="Abonații apar când cineva se înscrie la newsletter din footer sau descarcă o resursă."
+            />
+          ) : (
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Sursă</th>
+                    <th>Status</th>
+                    <th>Abonat la</th>
+                    <th style="width:90px" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((s) => (
+                    <tr>
+                      <td style="font-weight:600">{s.email}</td>
+                      <td style="color:var(--muted)">{s.source}</td>
+                      <td>
+                        <StatusBadge status={s.status} />
+                      </td>
+                      <td style="white-space:nowrap">{dateFmt.format(s.createdAt)}</td>
+                      <td>
+                        <form method="post">
+                          <input type="hidden" name="id" value={s.id} />
+                          <input type="hidden" name="action" value="delete" />
+                          <button
+                            type="submit"
+                            class="admin-btn admin-btn--danger admin-btn--sm"
+                            onclick={`return confirm('Ștergi definitiv ${s.email}? (cerință GDPR)')`}
+                          >
+                            Șterge
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+        <Pagination page={page} totalPages={totalPages} totalItems={total} url={Astro.url} />
+      </>
+    )
+  }
+</AdminLayout>

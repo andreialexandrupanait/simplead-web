@@ -11,6 +11,10 @@ import MaintenanceTeaser from '@components/home/MaintenanceTeaser.astro';
 import AiSection from '@components/home/AiSection.astro';
 import Testimonials from '@components/home/Testimonials.astro';
 import CtaFinal from '@components/home/CtaFinal.astro';
+
+// On-demand: ProofSection arată proiectele live din DB (editate în /admin).
+// Build-ul nu are acces la DB; cache-ul de 60s din content.ts ține costul mic.
+export const prerender = false;
 ---
 
 <BaseLayout transparentNav={true}>

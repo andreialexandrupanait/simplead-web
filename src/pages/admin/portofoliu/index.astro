@@ -1,0 +1,151 @@
+---
+import { and, asc, count, eq, ilike, or, type SQL } from 'drizzle-orm';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import Toolbar from '../../../components/admin/Toolbar.astro';
+import StatusBadge from '../../../components/admin/StatusBadge.astro';
+import EmptyState from '../../../components/admin/EmptyState.astro';
+import Pagination from '../../../components/admin/Pagination.astro';
+import { getDb } from '../../../lib/server/db';
+import { projects } from '../../../lib/server/schema';
+import { projectServices } from '../../../lib/server/admin-schemas';
+
+export const prerender = false;
+
+const db = getDb();
+const PER_PAGE = 20;
+
+const q = Astro.url.searchParams.get('q')?.trim() ?? '';
+const filter = Astro.url.searchParams.get('status') ?? '';
+const service = Astro.url.searchParams.get('service') ?? '';
+const page = Math.max(1, Number(Astro.url.searchParams.get('page')) || 1);
+
+const conditions: SQL[] = [];
+if (filter === 'draft' || filter === 'published') conditions.push(eq(projects.status, filter));
+if (service && (projectServices as readonly string[]).includes(service)) {
+  conditions.push(eq(projects.service, service));
+}
+if (q) {
+  const like = `%${q}%`;
+  conditions.push(or(ilike(projects.title, like), ilike(projects.client, like))!);
+}
+const where = conditions.length ? and(...conditions) : undefined;
+
+let rows: (typeof projects.$inferSelect)[] = [];
+let total = 0;
+let dbError = false;
+
+if (db) {
+  try {
+    const [data, [{ n }]] = await Promise.all([
+      db
+        .select()
+        .from(projects)
+        .where(where)
+        .orderBy(asc(projects.sort))
+        .limit(PER_PAGE)
+        .offset((page - 1) * PER_PAGE),
+      db.select({ n: count() }).from(projects).where(where),
+    ]);
+    rows = data;
+    total = n;
+  } catch (err) {
+    console.warn('[admin] Listarea proiectelor a eșuat:', err);
+    dbError = true;
+  }
+}
+
+const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+---
+
+<AdminLayout title="Portofoliu">
+  <div class="admin-page-head">
+    <div>
+      <h1>Portofoliu</h1>
+      <p class="admin-sub">
+        Studiile de caz de pe site.
+        <a href="/portofoliu" target="_blank" style="color:var(--electric)">Vezi portofoliul ↗</a>
+      </p>
+    </div>
+    <a href="/admin/portofoliu/nou" class="admin-btn">+ Proiect nou</a>
+  </div>
+
+  {
+    !db && (
+      <div class="admin-banner admin-banner--warn">
+        <strong>Fără bază de date.</strong> Proiectele nu pot fi editate.
+      </div>
+    )
+  }
+  {dbError && <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>}
+
+  {
+    db && !dbError && (
+      <>
+        <Toolbar searchPlaceholder="Caută după titlu sau client…" q={q}>
+          <select class="admin-select" name="status" data-autosubmit>
+            <option value="">Toate</option>
+            <option value="published" selected={filter === 'published'}>Publicate</option>
+            <option value="draft" selected={filter === 'draft'}>Drafturi</option>
+          </select>
+          <select class="admin-select" name="service" data-autosubmit>
+            <option value="">Toate serviciile</option>
+            {projectServices.map((s) => (
+              <option value={s} selected={service === s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </Toolbar>
+
+        <div class="admin-card admin-card--flush">
+          {rows.length === 0 ? (
+            <EmptyState
+              title="Niciun proiect găsit"
+              hint={
+                q || filter || service
+                  ? 'Încearcă altă căutare sau alte filtre.'
+                  : 'Adaugă primul studiu de caz — portofoliul vinde.'
+              }
+              actionLabel={q || filter || service ? undefined : 'Proiect nou'}
+              actionHref={q || filter || service ? undefined : '/admin/portofoliu/nou'}
+            />
+          ) : (
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Proiect</th>
+                    <th>Client</th>
+                    <th>Serviciu</th>
+                    <th class="num">Ordine</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((p) => (
+                    <tr>
+                      <td>
+                        <a class="admin-row-link" href={`/admin/portofoliu/${p.id}`}>
+                          {p.title}
+                        </a>
+                        <br />
+                        <small style="color:var(--muted)">/portofoliu/{p.slug}</small>
+                      </td>
+                      <td>{p.client || '–'}</td>
+                      <td>{p.service}</td>
+                      <td class="num">{p.sort}</td>
+                      <td>
+                        <StatusBadge status={p.status} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+        <Pagination page={page} totalPages={totalPages} totalItems={total} url={Astro.url} />
+      </>
+    )
+  }
+</AdminLayout>

@@ -1,8 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
-import sitemap from '@astrojs/sitemap';
-import mdx from '@astrojs/mdx';
 import node from '@astrojs/node';
 import tailwindcss from '@tailwindcss/vite';
 
@@ -50,9 +48,10 @@ export default defineConfig({
     '/servicii/mentenanta': '/mentenanta',
     '/servicii/mentenanta-website': '/mentenanta',
   },
-  // /pachete e on-demand (citește pachetele din DB), deci nu intră automat în
-  // sitemap-ul generat la build: îl adăugăm explicit.
-  integrations: [react(), mdx(), sitemap({ customPages: [`${SITE_URL}/pachete`] })],
+  // Sitemap-ul e un endpoint propriu (src/pages/sitemap.xml.ts): blogul și
+  // portofoliul trăiesc în DB (on-demand), deci sitemap-ul se compune la cerere
+  // din rutele statice (src/data/static-routes.ts) + slug-urile din DB.
+  integrations: [react()],
   vite: {
     plugins: [tailwindcss()],
     server: {

@@ -1,0 +1,180 @@
+---
+import { eq } from 'drizzle-orm';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import StatusBadge from '../../../components/admin/StatusBadge.astro';
+import { getDb } from '../../../lib/server/db';
+import { customers, orders, packages } from '../../../lib/server/schema';
+import { formatAmount } from '../../../lib/server/packages';
+import { getIntegration } from '../../../lib/server/settings';
+
+export const prerender = false;
+
+const db = getDb();
+const id = Astro.params.id!;
+if (!db) {
+  return Astro.redirect('/admin/comenzi', 302);
+}
+
+let row:
+  | {
+      order: typeof orders.$inferSelect;
+      packageName: string | null;
+      packageSlug: string | null;
+      customerName: string | null;
+      stripeCustomerId: string | null;
+    }
+  | null = null;
+try {
+  const rows = await db
+    .select({
+      order: orders,
+      packageName: packages.name,
+      packageSlug: packages.slug,
+      customerName: customers.name,
+      stripeCustomerId: customers.stripeCustomerId,
+    })
+    .from(orders)
+    .leftJoin(packages, eq(orders.packageId, packages.id))
+    .leftJoin(customers, eq(orders.customerId, customers.id))
+    .where(eq(orders.id, id))
+    .limit(1);
+  row = rows[0] ?? null;
+} catch (err) {
+  console.warn('[admin] Citirea comenzii a eșuat:', err);
+}
+if (!row) {
+  return Astro.redirect('/admin/comenzi', 302);
+}
+const { order, packageName, packageSlug, customerName, stripeCustomerId } = row;
+
+// Linkurile Stripe Dashboard: segmentul /test apare când cheia activă e de test.
+const stripeKey = (await getIntegration('stripe')).secretKey.value;
+const stripeBase = `https://dashboard.stripe.com${stripeKey?.startsWith('sk_test_') ? '/test' : ''}`;
+
+const dateFmt = new Intl.DateTimeFormat('ro-RO', { dateStyle: 'long', timeStyle: 'short' });
+---
+
+<AdminLayout title={`Comandă · ${packageName ?? order.id.slice(0, 8)}`}>
+  <div class="admin-page-head">
+    <div>
+      <a href="/admin/comenzi" style="font-size:0.88rem;color:var(--muted)">← Înapoi la comenzi</a>
+      <h1 style="margin-top:6px">{packageName ?? 'Comandă'}</h1>
+      <p class="admin-sub">Plasată pe {dateFmt.format(order.createdAt)}</p>
+    </div>
+    <StatusBadge status={order.status} />
+  </div>
+
+  <div class="order-cols">
+    <div class="admin-card">
+      <h2>Detalii comandă</h2>
+      <dl class="admin-kv" style="margin-top:14px">
+        <dt>Sumă</dt>
+        <dd>{formatAmount(order.amountCents, order.currency)}</dd>
+        <dt>Pachet</dt>
+        <dd>
+          {packageName ?? '–'}
+          {packageSlug && (
+            <a href={`/pachete`} style="color:var(--electric);margin-left:6px" target="_blank">vezi pe site ↗</a>
+          )}
+        </dd>
+        {
+          order.otoForOrderId && (
+            <>
+              <dt>Tip</dt>
+              <dd>
+                Ofertă OTO ·{' '}
+                <a href={`/admin/comenzi/${order.otoForOrderId}`} style="color:var(--electric)">
+                  comanda părinte
+                </a>
+              </dd>
+            </>
+          )
+        }
+        <dt>Factură SmartBill</dt>
+        <dd>
+          {order.invoiceNumber ? `${order.invoiceSeries ?? ''} ${order.invoiceNumber}` : 'neemisă'}
+        </dd>
+        <dt>ID comandă</dt>
+        <dd><code>{order.id}</code></dd>
+        <dt>Creată</dt>
+        <dd>{dateFmt.format(order.createdAt)}</dd>
+        <dt>Actualizată</dt>
+        <dd>{dateFmt.format(order.updatedAt)}</dd>
+      </dl>
+    </div>
+
+    <div>
+      <div class="admin-card">
+        <h2>Client</h2>
+        <dl class="admin-kv" style="margin-top:12px">
+          <dt>Nume</dt>
+          <dd>{customerName ?? '–'}</dd>
+          <dt>Email</dt>
+          <dd>
+            {
+              order.customerEmail ? (
+                <a href={`mailto:${order.customerEmail}`} style="color:var(--electric)">
+                  {order.customerEmail}
+                </a>
+              ) : (
+                '–'
+              )
+            }
+          </dd>
+        </dl>
+      </div>
+
+      <div class="admin-card" style="margin-top:20px">
+        <h2>Stripe</h2>
+        <p class="admin-hint">Pentru rambursări și detalii de plată, folosește Stripe Dashboard.</p>
+        <div class="admin-actions">
+          {
+            order.stripePaymentIntentId && (
+              <a
+                class="admin-btn admin-btn--ghost admin-btn--sm"
+                href={`${stripeBase}/payments/${order.stripePaymentIntentId}`}
+                target="_blank"
+                rel="noopener"
+              >
+                Plata în Stripe ↗
+              </a>
+            )
+          }
+          {
+            stripeCustomerId && (
+              <a
+                class="admin-btn admin-btn--ghost admin-btn--sm"
+                href={`${stripeBase}/customers/${stripeCustomerId}`}
+                target="_blank"
+                rel="noopener"
+              >
+                Clientul în Stripe ↗
+              </a>
+            )
+          }
+          {
+            !order.stripePaymentIntentId && !stripeCustomerId && (
+              <span style="color:var(--muted);font-size:0.9rem">
+                Fără referințe Stripe (comanda nu a ajuns la plată).
+              </span>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .order-cols {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 1000px) {
+    .order-cols {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

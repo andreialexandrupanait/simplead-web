@@ -1,0 +1,48 @@
+---
+/**
+ * Toolbar de listă: formular GET cu căutare + filtre (slot) + acțiuni (slot
+ * `actions`, în afara formularului). Filtrele selectate se aplică la submit;
+ * select-urile cu `data-autosubmit` se aplică la schimbare.
+ */
+interface Props {
+  /** Placeholder-ul câmpului de căutare. */
+  searchPlaceholder?: string;
+  /** Valoarea curentă a căutării (din ?q=). */
+  q?: string;
+  /** Ascunde câmpul de căutare. */
+  noSearch?: boolean;
+}
+const { searchPlaceholder = 'Caută…', q = '', noSearch = false } = Astro.props;
+---
+
+<div class="admin-toolbar">
+  <form method="get" class="admin-toolbar" style="margin:0;flex:1">
+    {
+      !noSearch && (
+        <div class="admin-toolbar__search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+          <input
+            class="admin-input"
+            type="search"
+            name="q"
+            value={q}
+            placeholder={searchPlaceholder}
+            autocomplete="off"
+          />
+        </div>
+      )
+    }
+    <slot />
+    <button type="submit" class="admin-btn admin-btn--ghost admin-btn--sm">Filtrează</button>
+  </form>
+  <slot name="actions" />
+</div>
+
+<script>
+  document.querySelectorAll<HTMLSelectElement>('.admin-toolbar select[data-autosubmit]').forEach((sel) => {
+    sel.addEventListener('change', () => sel.form?.submit());
+  });
+</script>

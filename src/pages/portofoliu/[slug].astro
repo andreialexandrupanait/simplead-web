@@ -1,36 +1,89 @@
 ---
-import { getCollection, render } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import PageHeader from '@components/sections/PageHeader.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
+import { getProjectBySlug } from '@lib/server/content';
+import { renderMarkdown } from '@lib/server/markdown';
 
-export async function getStaticPaths() {
-  const entries = await getCollection('portfolio', ({ data }) => !data.draft);
-  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+// Proiectul vine din DB; on-demand. Adminul vede draft-uri cu `?preview=1`.
+export const prerender = false;
+
+const slug = Astro.params.slug!;
+const includeDrafts = Astro.locals.isAdmin && Astro.url.searchParams.has('preview');
+const project = await getProjectBySlug(slug, { includeDrafts });
+if (!project) {
+  return Astro.rewrite('/404');
 }
 
-const { entry } = Astro.props;
-const { Content } = await render(entry);
-const { title, client, service, summary, result, challenge, solution } = entry.data;
+const title = project.seoTitle || project.title;
+const description = project.seoDescription || project.summary;
+const bodyHtml = renderMarkdown(project.body);
+// `result` poate conține Markdown ușor (bold etc.) — trece prin același
+// renderer sanitizat ca orice conținut din DB.
+const resultHtml = project.result ? renderMarkdown(project.result) : '';
+
+const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
+const projectSchema = {
+  '@type': 'CreativeWork',
+  name: project.title,
+  description: project.summary,
+  creator: { '@id': `${origin}#organization` },
+  mainEntityOfPage: `${origin}/portofoliu/${project.slug}`,
+  ...(project.cover ? { image: new URL(project.cover, origin).href } : {}),
+};
+
+if (project.status === 'draft') {
+  Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  Astro.response.headers.set('Cache-Control', 'no-store');
+}
 ---
 
-<BaseLayout title={title} description={summary} transparentNav={true} navOverDark={true}>
-  <PageHeader eyebrow={service} title={title} subtitle={summary} />
+<BaseLayout
+  title={title}
+  description={description}
+  transparentNav={true}
+  navOverDark={true}
+  schema={projectSchema}
+  ogImage={project.cover ?? undefined}
+>
+  <PageHeader eyebrow={project.service} title={project.title} subtitle={project.summary} />
 
   <section class="section section--light">
     <div class="container">
+      {
+        project.status === 'draft' && (
+          <p style="background:#fff7e0;border:1px solid #f5d93f;border-radius:10px;padding:10px 14px;font-size:14px">
+            <strong>Draft</strong> — proiectul nu e public; doar tu îl vezi, prin previzualizare.
+          </p>
+        )
+      }
       <a href="/portofoliu" style="font-size:14px;color:var(--ink-soft)">← Înapoi la portofoliu</a>
-      <div style="display:grid;grid-template-columns:1.3fr 0.7fr;gap:56px;margin-top:28px" class="pf-detail-grid">
-        <article class="prose-simplead"><Content /></article>
+      <div
+        style="display:grid;grid-template-columns:1.3fr 0.7fr;gap:56px;margin-top:28px"
+        class="pf-detail-grid"
+      >
+        <article class="prose-simplead" set:html={bodyHtml} />
         <aside>
           <div style="background:#f5f7fa;border:1px solid var(--line);border-radius:20px;padding:28px">
             <dl style="display:flex;flex-direction:column;gap:16px;margin:0;font-size:14px">
-              <div><dt style="color:var(--ink-soft)">Client</dt><dd style="margin:4px 0 0;font-weight:600;color:var(--ink)">{client}</dd></div>
-              <div><dt style="color:var(--ink-soft)">Serviciu</dt><dd style="margin:4px 0 0;font-weight:600;color:var(--ink)">{service}</dd></div>
-              {result && <div><dt style="color:var(--ink-soft)">Rezultat</dt><dd style="margin:4px 0 0;color:var(--ink)" set:html={result} /></div>}
+              <div>
+                <dt style="color:var(--ink-soft)">Client</dt>
+                <dd style="margin:4px 0 0;font-weight:600;color:var(--ink)">{project.client}</dd>
+              </div>
+              <div>
+                <dt style="color:var(--ink-soft)">Serviciu</dt>
+                <dd style="margin:4px 0 0;font-weight:600;color:var(--ink)">{project.service}</dd>
+              </div>
+              {
+                resultHtml && (
+                  <div>
+                    <dt style="color:var(--ink-soft)">Rezultat</dt>
+                    <dd style="margin:4px 0 0;color:var(--ink)" set:html={resultHtml} />
+                  </div>
+                )
+              }
             </dl>
           </div>
-          {challenge && <div style="display:none">{challenge}{solution}</div>}
         </aside>
       </div>
     </div>
@@ -40,5 +93,9 @@ const { title, client, service, summary, result, challenge, solution } = entry.d
 </BaseLayout>
 
 <style>
-  @media (max-width: 900px) { .pf-detail-grid { grid-template-columns: 1fr !important; } }
+  @media (max-width: 900px) {
+    .pf-detail-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
 </style>

@@ -1,0 +1,86 @@
+import type { APIRoute } from 'astro';
+import { z } from 'zod';
+import { getDb } from '@lib/server/db';
+import { subscribers } from '@lib/server/schema';
+
+export const prerender = false;
+
+/**
+ * Abonare la newsletter (formularul din footer + email-gate-urile de pe
+ * /resurse). Upsert idempotent; statusul rămâne `pending` până activăm dublul
+ * opt-in prin Postmark — funcționează complet și fără token de email.
+ */
+const schema = z.object({
+  email: z.string().trim().email('Adresa de email nu pare validă.').max(200),
+  source: z.string().trim().max(80).default('footer'),
+  company: z.string().optional(),
+});
+
+// Rate-limit simplu in-memory (același model ca login-ul din auth.ts).
+const WINDOW_MS = 10 * 60_000;
+const MAX_PER_WINDOW = 8;
+const hits = new Map<string, { count: number; resetAt: number }>();
+function allow(ip: string): boolean {
+  const now = Date.now();
+  const entry = hits.get(ip);
+  if (!entry || entry.resetAt < now) {
+    hits.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+    return true;
+  }
+  entry.count += 1;
+  return entry.count <= MAX_PER_WINDOW;
+}
+
+export const POST: APIRoute = async ({ request, clientAddress }) => {
+  const json = (status: number, body: object) =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+  let ip = 'unknown';
+  try {
+    ip = clientAddress;
+  } catch {
+    /* indisponibil în unele contexte */
+  }
+  if (!allow(ip)) {
+    return json(429, { ok: false, error: 'Prea multe încercări. Revino mai târziu.' });
+  }
+
+  let payload: unknown;
+  try {
+    payload = await request.json();
+  } catch {
+    return json(400, { ok: false, error: 'Cerere invalidă.' });
+  }
+  const parsed = schema.safeParse(payload);
+  if (!parsed.success) {
+    return json(422, {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? 'Date invalide.',
+    });
+  }
+
+  // Honeypot completat = bot: răspundem cu succes fals, fără să salvăm nimic.
+  if (parsed.data.company) {
+    return json(200, { ok: true });
+  }
+
+  const db = getDb();
+  if (!db) {
+    console.warn('[newsletter] Fără DATABASE_URL: abonarea nu se salvează.');
+    return json(503, { ok: false, error: 'Abonarea nu e disponibilă momentan.' });
+  }
+
+  try {
+    await db
+      .insert(subscribers)
+      .values({ email: parsed.data.email.toLowerCase(), source: parsed.data.source })
+      .onConflictDoNothing({ target: subscribers.email });
+    return json(200, { ok: true });
+  } catch (err) {
+    console.error('[newsletter] Salvarea abonatului a eșuat:', err);
+    return json(502, { ok: false, error: 'Ceva n-a mers. Încearcă din nou.' });
+  }
+};

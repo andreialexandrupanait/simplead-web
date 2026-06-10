@@ -1,0 +1,126 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { listUploads, uploadsWritable } from '../../lib/server/uploads';
+
+export const prerender = false;
+
+const writable = await uploadsWritable();
+const entries = await listUploads();
+const fmtSize = (b: number) => (b > 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1)} MB` : `${Math.round(b / 1024)} KB`);
+---
+
+<AdminLayout title="Media">
+  <div class="admin-page-head">
+    <div>
+      <h1>Bibliotecă media</h1>
+      <p class="admin-sub">
+        Imaginile pentru articole și portofoliu. Inserarea în conținut se face din editor
+        (butonul 🖼 Imagine).
+      </p>
+    </div>
+  </div>
+
+  {
+    !writable && (
+      <div class="admin-banner admin-banner--error">
+        Directorul de upload nu poate fi scris. Verifică volumul <code>uploads</code> din
+        docker-compose.
+      </div>
+    )
+  }
+
+  <div class="admin-card">
+    <div class="admin-dropzone" id="mediaDrop">
+      Trage imagini aici sau apasă ca să alegi (JPG/PNG/WebP/AVIF, max 5MB).
+      <input
+        type="file"
+        id="mediaFile"
+        accept="image/jpeg,image/png,image/webp,image/avif"
+        multiple
+        hidden
+      />
+    </div>
+
+    <div class="admin-media-grid" id="mediaGrid" style="margin-top:18px">
+      {
+        entries.map((e) => (
+          <figure class="admin-media-item" style="margin:0" data-name={e.name}>
+            <img src={e.url} alt={e.name} loading="lazy" />
+            <figcaption title={e.name}>
+              {e.name}
+              <br />
+              <span style="color:var(--muted-dark)">{fmtSize(e.size)}</span>
+            </figcaption>
+            <div style="display:flex;gap:6px;padding:0 8px 8px">
+              <button type="button" class="admin-btn admin-btn--ghost admin-btn--sm" style="flex:1" data-copy={e.url}>
+                Copiază URL
+              </button>
+              <button type="button" class="admin-btn admin-btn--danger admin-btn--sm" data-delete={e.name} aria-label={`Șterge ${e.name}`}>
+                ✕
+              </button>
+            </div>
+          </figure>
+        ))
+      }
+      {entries.length === 0 && <p style="color:var(--muted);grid-column:1/-1">Nicio imagine încă — încarcă prima.</p>}
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  declare global {
+    interface Window {
+      adminToast?: (msg: string, kind?: 'ok' | 'error') => void;
+    }
+  }
+  const drop = document.getElementById('mediaDrop')!;
+  const fileInput = document.getElementById('mediaFile') as HTMLInputElement;
+
+  async function upload(files: FileList) {
+    for (const file of Array.from(files)) {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetch('/api/admin/uploads', { method: 'POST', body: form });
+      const body = (await res.json()) as { error?: string };
+      if (res.ok) window.adminToast?.(`„${file.name}" încărcat.`);
+      else window.adminToast?.(body.error ?? 'Upload eșuat.', 'error');
+    }
+    location.reload();
+  }
+
+  drop.addEventListener('click', () => fileInput.click());
+  drop.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    drop.classList.add('is-over');
+  });
+  drop.addEventListener('dragleave', () => drop.classList.remove('is-over'));
+  drop.addEventListener('drop', (e) => {
+    e.preventDefault();
+    drop.classList.remove('is-over');
+    if (e.dataTransfer?.files.length) void upload(e.dataTransfer.files);
+  });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files?.length) void upload(fileInput.files);
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(new URL(btn.dataset.copy!, location.origin).href);
+      window.adminToast?.('URL copiat în clipboard.');
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-delete]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const name = btn.dataset.delete!;
+      if (!confirm(`Ștergi „${name}"? Paginile care o folosesc vor rămâne fără imagine.`)) return;
+      const res = await fetch(`/api/admin/uploads/${encodeURIComponent(name)}`, { method: 'DELETE' });
+      if (res.ok) {
+        document.querySelector(`[data-name="${CSS.escape(name)}"]`)?.remove();
+        window.adminToast?.('Imagine ștearsă.');
+      } else {
+        window.adminToast?.('Ștergerea a eșuat.', 'error');
+      }
+    });
+  });
+</script>

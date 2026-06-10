@@ -1,13 +1,14 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import PageHeader from '@components/sections/PageHeader.astro';
 import PortfolioPageGrid from '@components/sections/PortfolioPageGrid.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
+import { getPublishedProjects } from '@lib/server/content';
 
-const projects = (await getCollection('portfolio', ({ data }) => !data.draft)).sort(
-  (a, b) => a.data.order - b.data.order,
-);
+// Proiectele vin din DB (editate în /admin) — on-demand, publicare instant.
+export const prerender = false;
+
+const projects = await getPublishedProjects();
 ---
 
 <BaseLayout

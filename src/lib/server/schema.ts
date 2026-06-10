@@ -69,6 +69,8 @@ export const leads = pgTable('leads', {
   message: text('message').notNull(),
   source: text('source').notNull().default('contact-form'),
   status: leadStatus('status').notNull().default('nou'),
+  // Notițe interne (vizibile doar în admin).
+  notes: text('notes').notNull().default(''),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -101,11 +103,58 @@ export const orders = pgTable('orders', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
-/** Abonați newsletter (folosit într-o fază ulterioară). */
+/** Abonați newsletter (formularul din footer + email-gate-urile de pe /resurse). */
 export const subscribers = pgTable('subscribers', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: text('email').notNull().unique(),
   status: text('status').notNull().default('pending'),
+  // De unde a venit abonarea (ex. `footer`, `resurse:ghid-seo`).
+  source: text('source').notNull().default('footer'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   confirmedAt: timestamp('confirmed_at', { withTimezone: true }),
+});
+
+export const contentStatus = pgEnum('content_status', ['draft', 'published']);
+
+/** Articole de blog: editate din /admin, randate on-demand din DB (publicare instant). */
+export const posts = pgTable('posts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  slug: text('slug').notNull().unique(),
+  title: text('title').notNull(),
+  description: text('description').notNull().default(''),
+  // Corpul articolului, în Markdown; randat prin `renderMarkdown()` (sanitizat).
+  body: text('body').notNull().default(''),
+  author: text('author').notNull().default('Andrei Panait'),
+  tags: jsonb('tags').$type<string[]>().notNull().default([]),
+  cover: text('cover'),
+  status: contentStatus('status').notNull().default('draft'),
+  publishedAt: timestamp('published_at', { withTimezone: true }),
+  // Suprascrieri SEO opționale (gol = se folosesc title/description).
+  seoTitle: text('seo_title'),
+  seoDescription: text('seo_description'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Proiecte de portofoliu: editate din /admin, randate on-demand din DB. */
+export const projects = pgTable('projects', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  slug: text('slug').notNull().unique(),
+  title: text('title').notNull(),
+  client: text('client').notNull().default(''),
+  // Text liber validat de Zod (`projectServices`), nu pg enum: o categorie nouă
+  // înseamnă o editare în admin-schemas.ts, nu o migrație.
+  service: text('service').notNull().default('Marketing'),
+  summary: text('summary').notNull().default(''),
+  challenge: text('challenge'),
+  solution: text('solution'),
+  result: text('result'),
+  body: text('body').notNull().default(''),
+  cover: text('cover'),
+  sort: integer('sort').notNull().default(99),
+  status: contentStatus('status').notNull().default('draft'),
+  seoTitle: text('seo_title'),
+  seoDescription: text('seo_description'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });

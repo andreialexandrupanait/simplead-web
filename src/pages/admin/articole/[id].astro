@@ -1,0 +1,136 @@
+---
+import { and, eq, ne } from 'drizzle-orm';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import PostForm from '../../../components/admin/PostForm.astro';
+import { getDb } from '../../../lib/server/db';
+import { posts } from '../../../lib/server/schema';
+import { parsePostForm } from '../../../lib/server/admin-schemas';
+import { bustContentCache } from '../../../lib/server/content';
+import { setFlash } from '../../../lib/server/flash';
+
+export const prerender = false;
+
+const db = getDb();
+const id = Astro.params.id!;
+if (!db) {
+  return Astro.redirect('/admin/articole', 302);
+}
+
+let errors: Record<string, string[]> = {};
+let formValues: Record<string, string> | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+
+  if (String(form.get('action') ?? '') === 'delete') {
+    try {
+      await db.delete(posts).where(eq(posts.id, id));
+      bustContentCache();
+      setFlash(Astro.cookies, { kind: 'ok', msg: 'Articol șters.' });
+      return Astro.redirect('/admin/articole', 303);
+    } catch (err) {
+      console.warn('[admin] Ștergerea articolului a eșuat:', err);
+      setFlash(Astro.cookies, { kind: 'error', msg: 'Ștergerea a eșuat.' });
+      return Astro.redirect(`/admin/articole/${id}`, 303);
+    }
+  }
+
+  const parsed = parsePostForm(form);
+  if (!parsed.ok) {
+    errors = parsed.errors;
+    formValues = parsed.raw;
+  } else {
+    const d = parsed.data;
+    try {
+      const clash = await db
+        .select({ id: posts.id })
+        .from(posts)
+        .where(and(eq(posts.slug, d.slug), ne(posts.id, id)))
+        .limit(1);
+      if (clash.length > 0) {
+        errors = { slug: ['Există deja un alt articol cu acest slug.'] };
+        formValues = { ...d, tags: d.tags.join(', ') } as unknown as Record<string, string>;
+      } else {
+        const [existing] = await db.select().from(posts).where(eq(posts.id, id)).limit(1);
+        const publishedAt =
+          d.status === 'published'
+            ? d.publishedAt && !Number.isNaN(Date.parse(d.publishedAt))
+              ? new Date(d.publishedAt)
+              : (existing?.publishedAt ?? new Date())
+            : null;
+        await db
+          .update(posts)
+          .set({
+            slug: d.slug,
+            title: d.title,
+            description: d.description,
+            body: d.body,
+            author: d.author,
+            tags: d.tags,
+            cover: d.cover || null,
+            status: d.status,
+            publishedAt,
+            seoTitle: d.seoTitle || null,
+            seoDescription: d.seoDescription || null,
+            updatedAt: new Date(),
+          })
+          .where(eq(posts.id, id));
+        bustContentCache();
+        setFlash(Astro.cookies, {
+          kind: 'ok',
+          msg: d.status === 'published' ? 'Articol salvat și publicat.' : 'Draft salvat.',
+        });
+        return Astro.redirect(`/admin/articole/${id}`, 303);
+      }
+    } catch (err) {
+      console.warn('[admin] Salvarea articolului a eșuat:', err);
+      errors = { title: ['Salvarea a eșuat. Încearcă din nou.'] };
+    }
+  }
+}
+
+const [post] = await db.select().from(posts).where(eq(posts.id, id)).limit(1);
+if (!post) {
+  return Astro.redirect('/admin/articole', 302);
+}
+
+const toLocal = (d: Date | null) => {
+  if (!d) return '';
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
+const values: Record<string, string> = formValues ?? {
+  title: post.title,
+  slug: post.slug,
+  description: post.description,
+  body: post.body,
+  author: post.author,
+  tags: post.tags.join(', '),
+  cover: post.cover ?? '',
+  status: post.status,
+  publishedAt: toLocal(post.publishedAt),
+  seoTitle: post.seoTitle ?? '',
+  seoDescription: post.seoDescription ?? '',
+};
+
+const previewHref =
+  post.status === 'published' ? `/blog/${post.slug}` : `/blog/${post.slug}?preview=1`;
+---
+
+<AdminLayout title={`Editează: ${post.title}`}>
+  <div class="admin-page-head">
+    <div>
+      <a href="/admin/articole" style="font-size:0.88rem;color:var(--muted)">← Înapoi la articole</a>
+      <h1 style="margin-top:6px">{post.title}</h1>
+    </div>
+  </div>
+  <PostForm
+    values={values}
+    errors={errors}
+    submitLabel="Salvează modificările"
+    publishedSlug={post.status === 'published' ? post.slug : undefined}
+    previewHref={previewHref}
+    deleteAction={true}
+  />
+</AdminLayout>

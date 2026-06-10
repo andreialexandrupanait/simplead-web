@@ -1,0 +1,138 @@
+---
+import { eq } from 'drizzle-orm';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import StatusBadge from '../../../components/admin/StatusBadge.astro';
+import { getDb } from '../../../lib/server/db';
+import { leads, leadStatus } from '../../../lib/server/schema';
+import { setFlash } from '../../../lib/server/flash';
+
+export const prerender = false;
+
+const db = getDb();
+const STATUSES = leadStatus.enumValues;
+const id = Astro.params.id!;
+
+if (!db) {
+  return Astro.redirect('/admin/leads', 302);
+}
+
+// Salvare status + notițe.
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const status = String(form.get('status') ?? '') as (typeof STATUSES)[number];
+  const notes = String(form.get('notes') ?? '').slice(0, 5000);
+  if (STATUSES.includes(status)) {
+    try {
+      await db.update(leads).set({ status, notes }).where(eq(leads.id, id));
+      setFlash(Astro.cookies, { kind: 'ok', msg: 'Lead actualizat.' });
+    } catch (err) {
+      console.warn('[admin] Actualizarea lead-ului a eșuat:', err);
+      setFlash(Astro.cookies, { kind: 'error', msg: 'Salvarea a eșuat. Încearcă din nou.' });
+    }
+  }
+  return Astro.redirect(`/admin/leads/${id}`, 303);
+}
+
+let lead: typeof leads.$inferSelect | null = null;
+try {
+  const rows = await db.select().from(leads).where(eq(leads.id, id)).limit(1);
+  lead = rows[0] ?? null;
+} catch (err) {
+  console.warn('[admin] Citirea lead-ului a eșuat:', err);
+}
+if (!lead) {
+  return Astro.redirect('/admin/leads', 302);
+}
+
+const dateFmt = new Intl.DateTimeFormat('ro-RO', { dateStyle: 'long', timeStyle: 'short' });
+const STATUS_LABEL: Record<string, string> = {
+  nou: 'Nou',
+  contactat: 'Contactat',
+  calificat: 'Calificat',
+  castigat: 'Câștigat',
+  pierdut: 'Pierdut',
+};
+---
+
+<AdminLayout title={`Lead: ${lead.name}`}>
+  <div class="admin-page-head">
+    <div>
+      <a href="/admin/leads" style="font-size:0.88rem;color:var(--muted)">← Înapoi la lead-uri</a>
+      <h1 style="margin-top:6px">{lead.name}</h1>
+      <p class="admin-sub">
+        Primit pe {dateFmt.format(lead.createdAt)} · sursă: {lead.source}
+      </p>
+    </div>
+    <StatusBadge status={lead.status} />
+  </div>
+
+  <div class="lead-cols">
+    <div class="admin-card">
+      <h2>Mesaj</h2>
+      <p class="admin-hint">{lead.service ? `Serviciu vizat: ${lead.service}` : 'Fără serviciu selectat.'}</p>
+      <p style="white-space:pre-wrap;line-height:1.65;margin:0">{lead.message}</p>
+    </div>
+
+    <div>
+      <div class="admin-card">
+        <h2>Contact</h2>
+        <dl class="admin-kv" style="margin-top:12px">
+          <dt>Email</dt>
+          <dd><a href={`mailto:${lead.email}`} style="color:var(--electric)">{lead.email}</a></dd>
+          {
+            lead.phone && (
+              <>
+                <dt>Telefon</dt>
+                <dd>
+                  <a href={`tel:${lead.phone}`} style="color:var(--electric)">
+                    {lead.phone}
+                  </a>
+                </dd>
+              </>
+            )
+          }
+        </dl>
+        <div class="admin-actions" style="margin-top:16px">
+          <a class="admin-btn admin-btn--sm" href={`mailto:${lead.email}`}>Răspunde pe email</a>
+          {lead.phone && <a class="admin-btn admin-btn--ghost admin-btn--sm" href={`tel:${lead.phone}`}>Sună</a>}
+        </div>
+      </div>
+
+      <form method="post" class="admin-card" style="margin-top:20px">
+        <h2>Status & notițe</h2>
+        <p class="admin-hint">Notițele sunt interne — doar tu le vezi.</p>
+        <label class="admin-field">
+          <span>Status</span>
+          <select class="admin-select" name="status">
+            {
+              STATUSES.map((s) => (
+                <option value={s} selected={lead.status === s}>
+                  {STATUS_LABEL[s]}
+                </option>
+              ))
+            }
+          </select>
+        </label>
+        <label class="admin-field">
+          <span>Notițe</span>
+          <textarea class="admin-textarea" name="notes" placeholder="Ex: am sunat, revine joi cu buget…">{lead.notes}</textarea>
+        </label>
+        <button type="submit" class="admin-btn">Salvează</button>
+      </form>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .lead-cols {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 1000px) {
+    .lead-cols {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
