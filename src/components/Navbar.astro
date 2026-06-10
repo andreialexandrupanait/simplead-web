@@ -245,6 +245,12 @@ const isActive = (href: string) =>
      .nav__item--has-mega rămâne static, deci absolute se rezolvă față de nav. */
   .nav__item--has-mega {
     position: static;
+    /* Itemul ocupă toată înălțimea navbar-ului: mouse-ul coboară de pe link
+       până în panou fără să iasă din zona de hover (altfel meniul se închide). */
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    height: var(--nav-h);
   }
   .mega {
     position: absolute;
@@ -258,15 +264,23 @@ const isActive = (href: string) =>
     opacity: 0;
     visibility: hidden;
     transform: translateY(8px);
+    pointer-events: none;
+    /* Grație de ~120ms la închidere: o ieșire de un pixel nu mai închide meniul. */
     transition:
-      opacity 0.2s var(--ease-snap),
-      transform 0.2s var(--ease-snap);
+      opacity 0.18s var(--ease-snap) 0.12s,
+      transform 0.18s var(--ease-snap) 0.12s,
+      visibility 0s linear 0.3s;
   }
   .nav__item--has-mega:hover .mega,
   .nav__item--has-mega:focus-within .mega {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+    pointer-events: auto;
+    transition:
+      opacity 0.18s var(--ease-snap),
+      transform 0.18s var(--ease-snap),
+      visibility 0s;
   }
 
   .mega__inner {
