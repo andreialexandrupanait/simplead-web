@@ -18,6 +18,12 @@
   min-height: 100vh;
 }
 
+/* Scrim-ul există doar pentru meniul de mobil: pe desktop e ascuns, altfel ar
+   ocupa prima coloană a grid-ului. */
+.admin-scrim {
+  display: none;
+}
+
 /* ---------- Sidebar ---------- */
 .admin-sidebar {
   background: linear-gradient(180deg, var(--ink) 0%, var(--ink-soft) 100%);
@@ -772,6 +778,394 @@
   font-size: 0.8rem;
   white-space: nowrap;
   min-width: 86px;
+}
+
+/* ---------- Editor markdown v2 ---------- */
+.admin-editor2 {
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--canvas);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.admin-editor2.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  border-radius: 0;
+  border: none;
+}
+.admin-editor2__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  background: var(--canvas-soft);
+}
+.admin-editor2__tools {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+.admin-editor2__tools button {
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink-soft, var(--ink));
+  min-width: 32px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 7px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-editor2__tools button:hover {
+  background: var(--canvas);
+  color: var(--electric);
+  box-shadow: var(--sh-sm);
+}
+.admin-editor2__tools .sep {
+  width: 1px;
+  height: 18px;
+  background: var(--line);
+  margin: 0 6px;
+}
+.admin-editor2__modes {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  padding: 3px;
+}
+.admin-editor2__modes button {
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 5px 13px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+}
+.admin-editor2__modes button.is-active {
+  background: var(--ink);
+  color: #fff;
+}
+.admin-editor2__modes .admin-editor2__fs {
+  font-size: 0.95rem;
+  padding: 5px 9px;
+}
+.admin-editor2__restore {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 9px 14px;
+  font-size: 0.86rem;
+  background: color-mix(in srgb, var(--signal) 14%, var(--canvas));
+  border-bottom: 1px solid color-mix(in srgb, var(--signal) 50%, var(--line));
+}
+.admin-editor2__restore button {
+  border: 1px solid var(--line);
+  background: var(--canvas);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+}
+.admin-editor2__restore button:hover {
+  border-color: var(--electric);
+  color: var(--electric);
+}
+.admin-editor2__panes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  flex: 1;
+  min-height: 0;
+}
+.admin-editor2__panes.mode-write {
+  grid-template-columns: 1fr;
+}
+.admin-editor2__panes.mode-write .admin-editor2__view {
+  display: none;
+}
+.admin-editor2__panes.mode-preview {
+  grid-template-columns: 1fr;
+}
+.admin-editor2__panes.mode-preview .admin-editor2__write {
+  display: none;
+}
+.admin-editor2__write {
+  display: flex;
+  min-width: 0;
+}
+.admin-editor2__write textarea {
+  flex: 1;
+  width: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 26px 28px;
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--ink);
+  background: var(--canvas);
+  min-height: 560px;
+}
+.admin-editor2__panes.mode-write .admin-editor2__write textarea {
+  max-width: 860px;
+  margin: 0 auto;
+}
+.admin-editor2__view {
+  border-left: 1px solid var(--line);
+  background: #fbfcfe;
+  padding: 26px 30px;
+  overflow-y: auto;
+  min-height: 560px;
+  max-height: none;
+}
+.admin-editor2__panes.mode-preview .admin-editor2__view {
+  border-left: none;
+}
+.admin-editor2__panes.mode-preview .admin-editor2__view > div {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.admin-editor2.is-fullscreen .admin-editor2__write textarea,
+.admin-editor2.is-fullscreen .admin-editor2__view {
+  min-height: 0;
+  height: 100%;
+}
+.admin-editor2.is-fullscreen .admin-editor2__panes {
+  overflow: hidden;
+}
+.admin-editor2.is-fullscreen .admin-editor2__write {
+  overflow-y: auto;
+}
+.admin-editor2__status {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  background: var(--canvas-soft);
+}
+@media (max-width: 1100px) {
+  .admin-editor2__panes {
+    grid-template-columns: 1fr;
+  }
+  .admin-editor2__panes:not(.mode-preview) .admin-editor2__view {
+    display: none;
+  }
+  .admin-editor2__hint {
+    display: none;
+  }
+}
+
+/* ---------- Formular articol: titlu mare + savebar ---------- */
+.admin-title-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-weight: 700;
+  color: var(--ink);
+  padding: 4px 0;
+  letter-spacing: -0.02em;
+}
+.admin-title-input::placeholder {
+  color: var(--muted-dark);
+}
+.admin-slug-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+.admin-slug-line input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  color: var(--electric);
+  font-weight: 600;
+  min-width: 120px;
+  width: auto;
+  border-bottom: 1px dashed transparent;
+}
+.admin-slug-line input:hover,
+.admin-slug-line input:focus {
+  border-bottom-color: var(--electric);
+}
+.admin-savebar {
+  position: sticky;
+  bottom: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding: 12px 18px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: 0 -8px 28px -14px rgba(3, 13, 74, 0.35);
+}
+.admin-savebar .spacer {
+  flex: 1;
+}
+.admin-savebar .savebar-status {
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+
+/* ---------- Lista de articole (rânduri bogate) ---------- */
+.post-list {
+  display: flex;
+  flex-direction: column;
+}
+.post-row {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  transition: background-color 0.12s ease;
+}
+.post-row:last-child {
+  border-bottom: none;
+}
+.post-row:hover {
+  background: color-mix(in srgb, var(--electric) 3%, var(--canvas));
+}
+.post-row__thumb {
+  width: 64px;
+  height: 48px;
+  border-radius: var(--r-xs);
+  object-fit: cover;
+  background: var(--canvas-soft);
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  color: var(--muted-dark);
+  font-size: 0.7rem;
+  overflow: hidden;
+}
+.post-row__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.post-row__main {
+  min-width: 0;
+}
+.post-row__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.post-row__title a {
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: var(--ink);
+}
+.post-row__title a:hover {
+  color: var(--electric);
+}
+.post-row__desc {
+  margin-top: 3px;
+  font-size: 0.88rem;
+  color: var(--muted);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+.post-row__meta {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.post-row__meta .chip {
+  padding: 1px 9px;
+  border-radius: var(--r-pill);
+  background: var(--canvas-soft);
+  border: 1px solid var(--line);
+  font-weight: 600;
+}
+.post-row__actions {
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.post-row:hover .post-row__actions,
+.post-row:focus-within .post-row__actions {
+  opacity: 1;
+}
+@media (max-width: 760px) {
+  .post-row {
+    grid-template-columns: 48px 1fr;
+  }
+  .post-row__thumb {
+    width: 48px;
+    height: 40px;
+  }
+  .post-row__actions {
+    grid-column: 2;
+    opacity: 1;
+  }
+}
+.admin-count-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.admin-count-chips a {
+  padding: 5px 13px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.admin-count-chips a:hover {
+  border-color: var(--electric);
+  color: var(--electric);
+}
+.admin-count-chips a.is-active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
 }
 
 /* ---------- Editor markdown (două panouri) ---------- */

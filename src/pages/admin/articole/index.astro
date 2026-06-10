@@ -1,12 +1,12 @@
 ---
 import { and, count, desc, eq, ilike, or, type SQL } from 'drizzle-orm';
 import AdminLayout from '../../../layouts/AdminLayout.astro';
-import Toolbar from '../../../components/admin/Toolbar.astro';
 import StatusBadge from '../../../components/admin/StatusBadge.astro';
 import EmptyState from '../../../components/admin/EmptyState.astro';
 import Pagination from '../../../components/admin/Pagination.astro';
 import { getDb } from '../../../lib/server/db';
 import { posts } from '../../../lib/server/schema';
+import { readingMinutes } from '../../../lib/server/markdown';
 
 export const prerender = false;
 
@@ -27,11 +27,13 @@ const where = conditions.length ? and(...conditions) : undefined;
 
 let rows: (typeof posts.$inferSelect)[] = [];
 let total = 0;
+let publishedCount = 0;
+let draftCount = 0;
 let dbError = false;
 
 if (db) {
   try {
-    const [data, [{ n }]] = await Promise.all([
+    const [data, [{ n }], [pub], [dra]] = await Promise.all([
       db
         .select()
         .from(posts)
@@ -40,9 +42,13 @@ if (db) {
         .limit(PER_PAGE)
         .offset((page - 1) * PER_PAGE),
       db.select({ n: count() }).from(posts).where(where),
+      db.select({ n: count() }).from(posts).where(eq(posts.status, 'published')),
+      db.select({ n: count() }).from(posts).where(eq(posts.status, 'draft')),
     ]);
     rows = data;
     total = n;
+    publishedCount = pub.n;
+    draftCount = dra.n;
   } catch (err) {
     console.warn('[admin] Listarea articolelor a eșuat:', err);
     dbError = true;
@@ -50,7 +56,14 @@ if (db) {
 }
 
 const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
-const dateFmt = new Intl.DateTimeFormat('ro-RO', { dateStyle: 'medium' });
+const dateFmt = new Intl.DateTimeFormat('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' });
+const chipUrl = (status: string) => {
+  const u = new URL(Astro.url);
+  u.searchParams.delete('page');
+  if (status) u.searchParams.set('status', status);
+  else u.searchParams.delete('status');
+  return u.pathname + u.search;
+};
 ---
 
 <AdminLayout title="Articole">
@@ -77,13 +90,35 @@ const dateFmt = new Intl.DateTimeFormat('ro-RO', { dateStyle: 'medium' });
   {
     db && !dbError && (
       <>
-        <Toolbar searchPlaceholder="Caută în titluri și conținut…" q={q}>
-          <select class="admin-select" name="status" data-autosubmit>
-            <option value="">Toate</option>
-            <option value="published" selected={filter === 'published'}>Publicate</option>
-            <option value="draft" selected={filter === 'draft'}>Drafturi</option>
-          </select>
-        </Toolbar>
+        <div class="admin-toolbar">
+          <div class="admin-count-chips">
+            <a href={chipUrl('')} class:list={[!filter && 'is-active']}>
+              Toate ({publishedCount + draftCount})
+            </a>
+            <a href={chipUrl('published')} class:list={[filter === 'published' && 'is-active']}>
+              Publicate ({publishedCount})
+            </a>
+            <a href={chipUrl('draft')} class:list={[filter === 'draft' && 'is-active']}>
+              Drafturi ({draftCount})
+            </a>
+          </div>
+          <span class="admin-toolbar__spacer" />
+          <form method="get" class="admin-toolbar__search" style="max-width:320px">
+            {filter && <input type="hidden" name="status" value={filter} />}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <input
+              class="admin-input"
+              type="search"
+              name="q"
+              value={q}
+              placeholder="Caută în titluri și conținut…"
+              autocomplete="off"
+            />
+          </form>
+        </div>
 
         <div class="admin-card admin-card--flush">
           {rows.length === 0 ? (
@@ -98,39 +133,50 @@ const dateFmt = new Intl.DateTimeFormat('ro-RO', { dateStyle: 'medium' });
               actionHref={q || filter ? undefined : '/admin/articole/nou'}
             />
           ) : (
-            <div class="admin-table-wrap">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>Titlu</th>
-                    <th>Taguri</th>
-                    <th>Status</th>
-                    <th>Publicat</th>
-                    <th>Actualizat</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((post) => (
-                    <tr>
-                      <td>
-                        <a class="admin-row-link" href={`/admin/articole/${post.id}`}>
-                          {post.title}
-                        </a>
-                        <br />
-                        <small style="color:var(--muted)">/blog/{post.slug}</small>
-                      </td>
-                      <td style="color:var(--muted)">{post.tags.join(', ') || '–'}</td>
-                      <td>
-                        <StatusBadge status={post.status} />
-                      </td>
-                      <td style="white-space:nowrap">
-                        {post.publishedAt ? dateFmt.format(post.publishedAt) : '–'}
-                      </td>
-                      <td style="white-space:nowrap">{dateFmt.format(post.updatedAt)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div class="post-list">
+              {rows.map((post) => (
+                <div class="post-row">
+                  <a class="post-row__thumb" href={`/admin/articole/${post.id}`} aria-hidden="true" tabindex="-1">
+                    {post.cover ? <img src={post.cover} alt="" loading="lazy" /> : <span>fără copertă</span>}
+                  </a>
+                  <div class="post-row__main">
+                    <div class="post-row__title">
+                      <a href={`/admin/articole/${post.id}`}>{post.title}</a>
+                      <StatusBadge status={post.status} />
+                    </div>
+                    {post.description && <p class="post-row__desc">{post.description}</p>}
+                    <div class="post-row__meta">
+                      <span>
+                        {post.status === 'published' && post.publishedAt
+                          ? `Publicat ${dateFmt.format(post.publishedAt)}`
+                          : `Modificat ${dateFmt.format(post.updatedAt)}`}
+                      </span>
+                      <span>·</span>
+                      <span>~{readingMinutes(post.body)} min de citit</span>
+                      {post.tags.slice(0, 3).map((t) => (
+                        <span class="chip">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div class="post-row__actions">
+                    <a class="admin-btn admin-btn--ghost admin-btn--sm" href={`/admin/articole/${post.id}`}>
+                      Editează
+                    </a>
+                    <a
+                      class="admin-btn admin-btn--ghost admin-btn--sm"
+                      href={
+                        post.status === 'published'
+                          ? `/blog/${post.slug}`
+                          : `/blog/${post.slug}?preview=1`
+                      }
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      Vezi ↗
+                    </a>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

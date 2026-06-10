@@ -1,6 +1,8 @@
 ---
 /**
- * Formular partajat pentru articole (nou + editare). Server-ul validează cu
+ * Formular partajat pentru articole (nou + editare), layout în stil WordPress:
+ * titlu mare + slug inline sus, editorul pe toată lățimea, setările grupate
+ * dedesubt și un savebar lipicios mereu la îndemână. Server-ul validează cu
  * postFormSchema; aici doar afișăm valorile + erorile per câmp.
  */
 import MarkdownEditor from '../react/admin/MarkdownEditor';
@@ -19,145 +21,181 @@ interface Props {
 }
 const { values, errors = {}, submitLabel, publishedSlug, previewHref, deleteAction } = Astro.props;
 const err = (field: string) => errors[field]?.[0];
+const hasErrors = Object.keys(errors).length > 0;
 ---
 
 <form method="post" id="postForm">
-  <div class="post-form-cols">
-    <div>
-      <div class="admin-card">
-        <label class="admin-field">
-          <span>Titlu</span>
-          <input class="admin-input" type="text" name="title" value={values.title} required id="pfTitle" />
-          {err('title') && <small class="field-error">{err('title')}</small>}
-        </label>
-        <label class="admin-field">
-          <span>Slug (URL-ul articolului: /blog/<em>slug</em>)</span>
-          <input
-            class="admin-input"
-            type="text"
-            name="slug"
-            value={values.slug}
-            required
-            id="pfSlug"
-            data-published-slug={publishedSlug ?? ''}
-          />
-          {err('slug') && <small class="field-error">{err('slug')}</small>}
-          <small id="pfSlugWarn" style="display:none;color:#7a6505">
-            Atenție: schimbarea slug-ului unui articol publicat rupe linkurile existente (Google,
-            social media).
-          </small>
-        </label>
-        <label class="admin-field">
-          <span>Descriere scurtă (apare în listă și în Google)</span>
-          <textarea class="admin-textarea" name="description" style="min-height:70px">{values.description}</textarea>
-          {err('description') && <small class="field-error">{err('description')}</small>}
-        </label>
+  {
+    hasErrors && (
+      <div class="admin-banner admin-banner--error">
+        Formularul are erori — verifică câmpurile marcate cu roșu.
       </div>
+    )
+  }
 
-      <div class="admin-card" style="margin-top:20px">
-        <h2>Conținut</h2>
-        <p class="admin-hint">Scrii în stânga, vezi rezultatul final în dreapta.</p>
-        <MarkdownEditor client:load name="body" initial={values.body} />
+  <div class="pf-head">
+    <div class="admin-card pf-head__main">
+      <input
+        class="admin-title-input"
+        type="text"
+        name="title"
+        value={values.title}
+        required
+        id="pfTitle"
+        placeholder="Titlul articolului…"
+        autocomplete="off"
+      />
+      {err('title') && <small class="field-error" style="display:block">{err('title')}</small>}
+      <div class="admin-slug-line">
+        <span>simplead.ro/blog/</span>
+        <input
+          type="text"
+          name="slug"
+          value={values.slug}
+          required
+          id="pfSlug"
+          data-published-slug={publishedSlug ?? ''}
+          autocomplete="off"
+          spellcheck="false"
+        />
       </div>
+      {err('slug') && <small class="field-error" style="display:block;margin-top:4px">{err('slug')}</small>}
+      <small id="pfSlugWarn" style="display:none;color:#7a6505;margin-top:4px">
+        ⚠ Schimbarea slug-ului unui articol publicat rupe linkurile existente (Google, social media).
+      </small>
+      <label class="admin-field" style="margin:16px 0 0">
+        <span>Descriere scurtă <small style="display:inline;color:var(--muted)">(apare în listă și în Google — max 300 caractere)</small></span>
+        <textarea class="admin-textarea" name="description" style="min-height:58px">{values.description}</textarea>
+        {err('description') && <small class="field-error">{err('description')}</small>}
+      </label>
     </div>
 
-    <div>
-      <div class="admin-card">
-        <h2>Publicare</h2>
-        <label class="admin-field">
-          <span>Status</span>
-          <select class="admin-select" name="status">
-            <option value="draft" selected={values.status !== 'published'}>Draft (nepublicat)</option>
-            <option value="published" selected={values.status === 'published'}>Publicat</option>
-          </select>
-        </label>
-        <label class="admin-field">
-          <span>Data publicării</span>
-          <input class="admin-input" type="datetime-local" name="publishedAt" value={values.publishedAt} />
-          <small>Gol = data curentă la prima publicare.</small>
-        </label>
-        <div class="admin-actions">
-          <button type="submit" class="admin-btn">{submitLabel}</button>
-          {
-            previewHref && (
-              <a class="admin-btn admin-btn--ghost admin-btn--sm" href={previewHref} target="_blank" rel="noopener">
-                Previzualizează ↗
-              </a>
-            )
-          }
+    <div class="admin-card pf-head__side">
+      <h2>Publicare</h2>
+      <label class="admin-field">
+        <span>Status</span>
+        <select class="admin-select" name="status" id="pfStatus">
+          <option value="draft" selected={values.status !== 'published'}>Draft (nepublicat)</option>
+          <option value="published" selected={values.status === 'published'}>Publicat</option>
+        </select>
+      </label>
+      <label class="admin-field">
+        <span>Data publicării</span>
+        <input class="admin-input" type="datetime-local" name="publishedAt" value={values.publishedAt} />
+        <small>Gol = data curentă la prima publicare.</small>
+      </label>
+      <label class="admin-field" style="margin-bottom:0">
+        <span>Autor</span>
+        <input class="admin-input" type="text" name="author" value={values.author} />
+      </label>
+    </div>
+  </div>
+
+  <div class="admin-card" style="margin-top:20px;padding:0;border:none;box-shadow:none;background:transparent">
+    <MarkdownEditor client:load name="body" initial={values.body} />
+  </div>
+
+  <div class="pf-meta">
+    <div class="admin-card">
+      <h2>Copertă & taguri</h2>
+      <label class="admin-field">
+        <span>Imagine de copertă</span>
+        <CoverField client:load name="cover" initial={values.cover} />
+      </label>
+      <label class="admin-field" style="margin-bottom:0">
+        <span>Taguri (separate prin virgulă)</span>
+        <input class="admin-input" type="text" name="tags" value={values.tags} placeholder="Neuromarketing, SEO" />
+        <small>Primul tag apare pe cardul articolului.</small>
+      </label>
+    </div>
+
+    <div class="admin-card">
+      <h2>SEO <small style="display:inline;font-weight:400;color:var(--muted)">(opțional)</small></h2>
+      <label class="admin-field">
+        <span>Titlu SEO</span>
+        <input class="admin-input" type="text" name="seoTitle" value={values.seoTitle} />
+        <small>Gol = se folosește titlul articolului.</small>
+      </label>
+      <label class="admin-field" style="margin-bottom:0">
+        <span>Descriere SEO</span>
+        <textarea class="admin-textarea" name="seoDescription" style="min-height:58px">{values.seoDescription}</textarea>
+        <small>Gol = se folosește descrierea scurtă.</small>
+      </label>
+    </div>
+
+    {
+      deleteAction && (
+        <div class="admin-card">
+          <h2>Zonă periculoasă</h2>
+          <p class="admin-hint">Ștergerea e definitivă; articolul dispare imediat de pe site.</p>
+          <button
+            type="submit"
+            name="action"
+            value="delete"
+            class="admin-btn admin-btn--danger admin-btn--sm"
+            onclick="return confirm('Sigur ștergi articolul? Acțiunea e definitivă.')"
+          >
+            Șterge articolul
+          </button>
         </div>
-      </div>
+      )
+    }
+  </div>
 
-      <div class="admin-card" style="margin-top:20px">
-        <h2>Detalii</h2>
-        <label class="admin-field">
-          <span>Autor</span>
-          <input class="admin-input" type="text" name="author" value={values.author} />
-        </label>
-        <label class="admin-field">
-          <span>Taguri (separate prin virgulă)</span>
-          <input class="admin-input" type="text" name="tags" value={values.tags} placeholder="Neuromarketing, SEO" />
-        </label>
-        <label class="admin-field">
-          <span>Imagine de copertă</span>
-          <CoverField client:load name="cover" initial={values.cover} />
-        </label>
-      </div>
-
-      <details class="admin-card" style="margin-top:20px">
-        <summary style="cursor:pointer;font-weight:600">SEO (opțional)</summary>
-        <label class="admin-field" style="margin-top:14px">
-          <span>Titlu SEO</span>
-          <input class="admin-input" type="text" name="seoTitle" value={values.seoTitle} />
-          <small>Gol = se folosește titlul articolului.</small>
-        </label>
-        <label class="admin-field">
-          <span>Descriere SEO</span>
-          <textarea class="admin-textarea" name="seoDescription" style="min-height:60px">{values.seoDescription}</textarea>
-        </label>
-      </details>
-
-      {
-        deleteAction && (
-          <div class="admin-card" style="margin-top:20px">
-            <h2>Zonă periculoasă</h2>
-            <p class="admin-hint">Ștergerea e definitivă; articolul dispare imediat de pe site.</p>
-            <button
-              type="submit"
-              name="action"
-              value="delete"
-              class="admin-btn admin-btn--danger admin-btn--sm"
-              onclick="return confirm('Sigur ștergi articolul? Acțiunea e definitivă.')"
-            >
-              Șterge articolul
-            </button>
-          </div>
-        )
-      }
-    </div>
+  <div class="admin-savebar">
+    <button type="submit" class="admin-btn">{submitLabel}</button>
+    {
+      previewHref && (
+        <a class="admin-btn admin-btn--ghost admin-btn--sm" href={previewHref} target="_blank" rel="noopener">
+          Previzualizează ↗
+        </a>
+      )
+    }
+    <span class="spacer"></span>
+    <span class="savebar-status" id="pfSavebarStatus"></span>
   </div>
 </form>
 
 <style>
-  .post-form-cols {
+  .pf-head {
     display: grid;
-    grid-template-columns: 1fr 330px;
+    grid-template-columns: 1fr 320px;
     gap: 20px;
     align-items: start;
   }
-  @media (max-width: 1100px) {
-    .post-form-cols {
+  .pf-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+  @media (max-width: 1000px) {
+    .pf-head {
       grid-template-columns: 1fr;
     }
   }
 </style>
 
 <script>
-  // Sugerează slug-ul din titlu (doar cât timp slug-ul nu a fost editat manual
-  // și articolul nu e deja publicat) + avertisment la schimbarea unui slug publicat.
+  // Slug sugerat din titlu (cât timp nu e editat manual și articolul nu e
+  // publicat) + avertisment la schimbarea unui slug publicat + status în savebar.
   const title = document.getElementById('pfTitle') as HTMLInputElement | null;
   const slug = document.getElementById('pfSlug') as HTMLInputElement | null;
   const warn = document.getElementById('pfSlugWarn');
+  const statusSel = document.getElementById('pfStatus') as HTMLSelectElement | null;
+  const savebarStatus = document.getElementById('pfSavebarStatus');
+
+  const syncSavebar = () => {
+    if (savebarStatus && statusSel) {
+      savebarStatus.textContent =
+        statusSel.value === 'published'
+          ? 'La salvare: articolul va fi PUBLIC pe site.'
+          : 'La salvare: rămâne draft (doar tu îl vezi).';
+    }
+  };
+  syncSavebar();
+  statusSel?.addEventListener('change', syncSavebar);
+
   if (title && slug) {
     const published = slug.dataset.publishedSlug || '';
     let touched = slug.value !== '';
