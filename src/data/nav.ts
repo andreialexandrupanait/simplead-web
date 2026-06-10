@@ -37,7 +37,7 @@ export const servicesNav: NavServiceItem[] = [
   {
     label: 'Grafică publicitară',
     href: '/servicii/grafica-publicitara',
-    desc: 'Identitate vizuală și materiale care te fac memorabil și coerent.',
+    desc: 'Identitate vizuală și materiale de promovare, cu o imagine coerentă, ușor de recunoscut.',
   },
   {
     label: 'Social media',

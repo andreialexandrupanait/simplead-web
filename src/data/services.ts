@@ -68,20 +68,28 @@ export interface Service {
 // Iconițe SVG (inner markup) pentru capabilități.
 const ICON = {
   layout: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',
-  globe: '<circle cx="12" cy="12" r="9"/><path d="M4 9h16M4 15h16M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  globe:
+    '<circle cx="12" cy="12" r="9"/><path d="M4 9h16M4 15h16M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   bolt: '<path d="M13 2L4.5 13H11l-1 9 8.5-11H12z"/>',
   megaphone: '<path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 0 1-5.8-1.6"/>',
-  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/>',
+  target:
+    '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/>',
   chart: '<path d="M3 3v18h18"/><path d="M7 14l3-4 3 2 4-6"/>',
-  shapes: '<circle cx="13.5" cy="6.5" r="2.5"/><circle cx="6.5" cy="11.5" r="2.5"/><circle cx="17" cy="15" r="3"/>',
-  image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',
+  shapes:
+    '<circle cx="13.5" cy="6.5" r="2.5"/><circle cx="6.5" cy="11.5" r="2.5"/><circle cx="17" cy="15" r="3"/>',
+  image:
+    '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',
   camera: '<path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/>',
   refresh: '<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
-  shield: '<path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
-  support: '<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M18 19a2 2 0 0 0 2-2v-3h-3a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2zM6 19a2 2 0 0 1-2-2v-3h3a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2z"/>',
-  brain: '<path d="M9 3a3 3 0 0 0-3 3 3 3 0 0 0-1 5.8V15a3 3 0 0 0 4 2.8A3 3 0 0 0 12 19a3 3 0 0 0 3-1.2 3 3 0 0 0 4-2.8v-3.2A3 3 0 0 0 18 6a3 3 0 0 0-3-3 3 3 0 0 0-3 1.5A3 3 0 0 0 9 3z"/>',
+  shield:
+    '<path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
+  support:
+    '<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M18 19a2 2 0 0 0 2-2v-3h-3a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2zM6 19a2 2 0 0 1-2-2v-3h3a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2z"/>',
+  brain:
+    '<path d="M9 3a3 3 0 0 0-3 3 3 3 0 0 0-1 5.8V15a3 3 0 0 0 4 2.8A3 3 0 0 0 12 19a3 3 0 0 0 3-1.2 3 3 0 0 0 4-2.8v-3.2A3 3 0 0 0 18 6a3 3 0 0 0-3-3 3 3 0 0 0-3 1.5A3 3 0 0 0 9 3z"/>',
   cog: '<circle cx="12" cy="12" r="3.2"/><path d="M19.4 13a7.8 7.8 0 0 0 0-2l1.6-1.3-1.6-2.8-2 .6a7.6 7.6 0 0 0-1.7-1l-.3-2H10.6l-.3 2a7.6 7.6 0 0 0-1.7 1l-2-.6L5 9.7 6.6 11a7.8 7.8 0 0 0 0 2L5 14.3l1.6 2.8 2-.6a7.6 7.6 0 0 0 1.7 1l.3 2h2.8l.3-2a7.6 7.6 0 0 0 1.7-1l2 .6 1.6-2.8L19.4 13z"/>',
-  spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18"/>',
+  spark:
+    '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18"/>',
 } as const;
 
 export const services: Service[] = [
@@ -91,10 +99,10 @@ export const services: Service[] = [
     icon: 'mentenanta',
     title: 'Mentenanță website',
     summary:
-      'Tu te ocupi de afacere, eu de partea tehnică: actualizări, securitate, backup și monitorizare continuă.',
-    claim: 'Tu te ocupi de afacere, eu de partea tehnică.',
+      'Tu te ocupi de afacere, noi de partea tehnică: actualizări, securitate, backup și monitorizare continuă.',
+    claim: 'Tu te ocupi de afacere, noi de partea tehnică.',
     description:
-      'Site-ul tău rămâne rapid, sigur și actualizat, fără bătăi de cap. Îl monitorizez continuu, îl actualizez și îl optimizez, ca tu să te concentrezi pe ce contează.',
+      'Îți ținem site-ul actualizat, salvat și sub supraveghere. Când apare o problemă, o prindem noi, nu clientul tău.',
     includes: [
       'Actualizări și backup-uri regulate',
       'Securitate și monitorizare uptime',
@@ -106,14 +114,14 @@ export const services: Service[] = [
     image:
       'https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&q=78&auto=format&fit=crop',
     heroTitle: 'Tu te ocupi de afacere, ',
-    heroTitleAccent: 'eu de partea tehnică',
+    heroTitleAccent: 'noi de partea tehnică',
     heroSub:
-      'Site-ul tău rămâne rapid, sigur și actualizat, fără bătăi de cap. Mă ocup de actualizări, securitate, backup-uri, suport și de monitorizarea continuă a site-ului.',
+      'Îți ținem site-ul actualizat, salvat și sub supraveghere: actualizări, securitate, backup-uri și suport. Când apare o problemă, o prindem noi, nu clientul tău.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'Liniște tehnică, ',
-      titleAccent: 'fără bătăi de cap',
-      sub: 'Trei zone de lucru care, împreună, îți țin site-ul rapid, sigur și mereu la zi.',
+      titleAccent: 'lună de lună',
+      sub: 'Trei zone de lucru care îți țin site-ul la zi și sub supraveghere.',
     },
     capabilities: [
       {
@@ -327,8 +335,8 @@ export const services: Service[] = [
     icon: 'grafica',
     title: 'Grafică publicitară',
     summary:
-      'Identitate vizuală, materiale de promovare și foto-video care te fac memorabil și coerent.',
-    claim: 'Imagine coerentă, care te face memorabil.',
+      'Identitate vizuală, materiale de promovare și foto-video, cu o imagine coerentă, ușor de recunoscut.',
+    claim: 'Imagine coerentă, ușor de recunoscut.',
     description:
       'De la logo și identitate vizuală completă, până la materiale de promovare și conținut foto-video. Totul gândit simplu, dar cu impact și optimizat vizual cu neuromarketing.',
     includes: [
@@ -342,14 +350,14 @@ export const services: Service[] = [
     image:
       'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=900&q=78&auto=format&fit=crop',
     heroTitle: 'Imagine coerentă, ',
-    heroTitleAccent: 'care te face memorabil',
+    heroTitleAccent: 'ușor de recunoscut',
     heroSub:
       'De la logo și identitate vizuală completă, până la materiale de promovare și conținut foto-video. Totul gândit simplu, dar cu impact și validat vizual cu neuromarketing.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'De la identitate la ',
       titleAccent: 'materiale care vând',
-      sub: 'Trei zone de lucru care, împreună, îți construiesc o imagine coerentă și memorabilă.',
+      sub: 'Trei zone de lucru care, împreună, îți construiesc o imagine coerentă, ușor de recunoscut.',
     },
     capabilities: [
       {
@@ -623,10 +631,10 @@ export const services: Service[] = [
     icon: 'ai',
     title: 'AI pentru business',
     summary:
-      'Automatizări, mentenanță și conținut asistate de AI, acolo unde îți aduc valoare reală.',
+      'Automatizări, monitorizare inteligentă și conținut asistat de AI, acolo unde chiar îți economisesc timp.',
     claim: 'AI folosit cu cap: economisești timp și bani.',
     description:
-      'Nu vindem „AI" ca slogan. Identificăm unde îți aduce valoare reală și îl integrăm în fluxurile tale: automatizări, mentenanță inteligentă și producție de conținut asistată. [COPY: confirmă scope-ul exact al serviciului]',
+      'Nu vindem „AI" ca slogan. Identificăm unde te ajută concret și îl integrăm în fluxurile tale: automatizări, mentenanță inteligentă și producție de conținut asistată. [COPY: confirmă scope-ul exact al serviciului]',
     includes: [
       'Automatizarea proceselor repetitive',
       'Mentenanță și monitorizare asistate de AI',
@@ -640,7 +648,7 @@ export const services: Service[] = [
     heroTitle: 'AI pentru business, ',
     heroTitleAccent: 'folosit cu cap',
     heroSub:
-      'Îl folosim acolo unde îți aduce valoare reală: automatizări, mentenanță inteligentă și conținut asistat. Restul rămâne la oameni. [COPY: rafinează propunerea]',
+      'Îl folosim acolo unde te ajută concret: automatizări, monitorizare inteligentă și conținut asistat. Restul rămâne la oameni. [COPY: rafinează propunerea]',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'AI integrat în ',
@@ -692,7 +700,7 @@ export const services: Service[] = [
       {
         q: 'De unde știu dacă afacerea mea are nevoie de AI?',
         body: [
-          'Pornim de la o discuție: ne uităm la procesele tale și identificăm unde AI-ul aduce valoare reală și unde nu merită. [COPY]',
+          'Pornim de la o discuție: ne uităm la procesele tale și identificăm unde AI-ul te ajută concret și unde nu merită. [COPY]',
         ],
       },
       {

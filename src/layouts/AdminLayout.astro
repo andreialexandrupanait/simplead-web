@@ -320,4 +320,22 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
     flex-wrap: wrap;
     margin-top: 8px;
   }
+
+  /* Mobil: tabelele devin scrollabile orizontal, padding redus. */
+  @media (max-width: 720px) {
+    .admin-main {
+      padding: 24px 16px 60px;
+    }
+    .admin-topbar {
+      padding: 12px 16px;
+      gap: 14px;
+    }
+    .admin-card {
+      padding: 18px;
+      overflow-x: auto;
+    }
+    .admin-table {
+      min-width: 560px;
+    }
+  }
 </style>

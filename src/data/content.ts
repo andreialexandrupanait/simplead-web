@@ -71,19 +71,31 @@ export const processSteps: ProcessStep[] = [
     n: 1,
     title: 'Întâlnire',
     text: 'Pornim de la tine. Ne așezăm la masă, fizic sau online, și ascultăm. Vrem să înțelegem afacerea, obiectivele și ce te frământă, înainte să propunem orice.',
-    bullets: ['Discuție fără obligații', 'Înțelegem obiectivele tale', 'Stabilim bugetul și termenele'],
+    bullets: [
+      'Discuție fără obligații',
+      'Înțelegem obiectivele tale',
+      'Stabilim bugetul și termenele',
+    ],
   },
   {
     n: 2,
     title: 'Analiză',
     text: 'Studiem terenul. Cercetăm publicul, concurența și ce ai deja. Aici intră partea de date și neuromarketing, ca deciziile să nu fie pe ghicite.',
-    bullets: ['Audit al prezenței actuale', 'Analiza publicului și concurenței', 'Heatmaps și date de comportament'],
+    bullets: [
+      'Audit al prezenței actuale',
+      'Analiza publicului și concurenței',
+      'Heatmaps și date de comportament',
+    ],
   },
   {
     n: 3,
     title: 'Strategie',
     text: 'Transformăm concluziile într-un plan concret, pe obiective măsurabile. Știi exact ce facem, pe ce canale și cu ce rezultat țintim.',
-    bullets: ['Direcție creativă și mesaje', 'Canale și calendar de execuție', 'KPI și buget pe obiective'],
+    bullets: [
+      'Direcție creativă și mesaje',
+      'Canale și calendar de execuție',
+      'KPI și buget pe obiective',
+    ],
   },
   {
     n: 4,
@@ -95,7 +107,11 @@ export const processSteps: ProcessStep[] = [
     n: 5,
     title: 'Rezultate',
     text: 'Măsurăm și optimizăm. Urmărim rezultatele, raportăm transparent și ajustăm continuu, pentru că treaba nu se termină la lansare.',
-    bullets: ['Rapoarte clare, pe înțelesul tău', 'Optimizare continuă', 'Recomandări pentru pasul următor'],
+    bullets: [
+      'Rapoarte clare, pe înțelesul tău',
+      'Optimizare continuă',
+      'Recomandări pentru pasul următor',
+    ],
   },
 ];
 
@@ -199,7 +215,7 @@ export const faqs: Faq[] = [
   {
     q: 'Lucrați și cu afaceri mici sau la început de drum?',
     body: [
-      'Da, exact pentru ele există Simplead. Îți dăm instrumentele cu care concurezi de la egal la egal cu jucătorii mari, fără bătăi de cap și fără limbaj corporatist.',
+      'Da, exact pentru ele există Simplead. Îți dăm instrumentele cu care concurezi de la egal la egal cu jucătorii mari, explicate pe înțelesul tău, fără limbaj corporatist.',
     ],
   },
 ];
@@ -261,15 +277,11 @@ export const generalFaqs: Faq[] = [
   },
   {
     q: 'Oferiți suport tehnic la probleme?',
-    body: [
-      'Da; prioritar pentru clienții cu pachet de mentenanță; altfel, la tarif orar.',
-    ],
+    body: ['Da; prioritar pentru clienții cu pachet de mentenanță; altfel, la tarif orar.'],
   },
   {
     q: 'Puteți reface un site existent?',
-    body: [
-      'Da; audit + redesign, optimizare viteză și UX, păstrând ce funcționează.',
-    ],
+    body: ['Da; audit + redesign, optimizare viteză și UX, păstrând ce funcționează.'],
   },
 ];
 
@@ -333,10 +345,26 @@ export interface StartStep {
   text: string;
 }
 export const startSteps: StartStep[] = [
-  { n: '01', title: 'Ne scrii', text: 'Completezi formularul sau ne suni. Ne spui pe scurt unde vrei să ajungi.' },
-  { n: '02', title: 'Discutăm', text: 'Stabilim o întâlnire fără obligații și înțelegem nevoile, bugetul și termenele.' },
-  { n: '03', title: 'Primești oferta', text: 'Îți trimitem o propunere clară, cu plan pe obiective și buget transparent.' },
-  { n: '04', title: 'Începem', text: 'Punem totul în mișcare și te ținem la curent la fiecare pas.' },
+  {
+    n: '01',
+    title: 'Ne scrii',
+    text: 'Completezi formularul sau ne suni. Ne spui pe scurt unde vrei să ajungi.',
+  },
+  {
+    n: '02',
+    title: 'Discutăm',
+    text: 'Stabilim o întâlnire fără obligații și înțelegem nevoile, bugetul și termenele.',
+  },
+  {
+    n: '03',
+    title: 'Primești oferta',
+    text: 'Îți trimitem o propunere clară, cu plan pe obiective și buget transparent.',
+  },
+  {
+    n: '04',
+    title: 'Începem',
+    text: 'Punem totul în mișcare și te ținem la curent la fiecare pas.',
+  },
 ];
 
 /** Bullet-urile din panelul „De ce Simplead?" (hero hub /servicii). */
@@ -388,7 +416,7 @@ export const servicesFaqs: Faq[] = [
   {
     q: 'Lucrați și cu afaceri mici sau la început de drum?',
     body: [
-      'Da, exact pentru ele există Simplead. Îți dăm instrumentele cu care concurezi de la egal la egal cu jucătorii mari, fără bătăi de cap și fără limbaj corporatist.',
+      'Da, exact pentru ele există Simplead. Îți dăm instrumentele cu care concurezi de la egal la egal cu jucătorii mari, explicate pe înțelesul tău, fără limbaj corporatist.',
     ],
   },
 ];

@@ -13,21 +13,26 @@ import { servicesFaqs } from '@data/content';
 
 <BaseLayout
   title="Servicii"
-  description="Marketing, grafică, web și mentenanță: sub același acoperiș, cu un singur partener. Lucrăm pe obiective clare și validăm fiecare decizie cu date și neuromarketing."
+  description="Marketing, grafică, web și mentenanță, de la aceeași echipă: pornim de la cum decid oamenii și lucrăm pe obiective clare."
   transparentNav={true}
   navOverDark={true}
 >
   <ServiceHubHero
     eyebrow="Servicii"
-    title="Tot ce-ți trebuie ca să fii "
-    titleAccent="remarcat și să vinzi"
-    sub="Marketing, grafică, web și mentenanță: sub același acoperiș, cu un singur partener. Lucrăm pe obiective clare și validăm fiecare decizie cu date și neuromarketing, nu cu presupuneri. Tu te ocupi de afacere, noi de imaginea și promovarea ei."
+    title="Serviciile cu care afacerea ta "
+    titleAccent="se vede și vinde"
+    sub="Marketing, grafică, web și mentenanță, de la aceeași echipă. Pornim de la cum decid oamenii și lucrăm pe obiective clare. Tu te ocupi de afacere, noi de imaginea și promovarea ei."
   />
   <ServiceHubCards />
   <Differentiator />
   <ProcessTimeline />
   <ToolsSection />
   <Testimonials />
-  <FaqSection items={servicesFaqs} eyebrow="Întrebări frecvente" title="Ce vor să știe " titleAccent="clienții noștri" />
+  <FaqSection
+    items={servicesFaqs}
+    eyebrow="Întrebări frecvente"
+    title="Ce vor să știe "
+    titleAccent="clienții noștri"
+  />
   <CtaSection href="/contact" />
 </BaseLayout>
