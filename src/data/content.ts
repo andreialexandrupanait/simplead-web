@@ -273,6 +273,170 @@ export const generalFaqs: Faq[] = [
   },
 ];
 
+/**
+ * Aplicația proprie de monitorizare „SimpleAd Manager" - secțiunile pe teme de pe
+ * pagina Mentenanță (stil simplenet „Viteza ca o fundație"): coloana stângă =
+ * intro sticky (etichetă + titlu + paragraf + link-uri către celelalte teme),
+ * coloana dreaptă = carduri cu detalii + un FAQ propriu temei.
+ * Conținut derivat din funcționalitățile aplicației (FUNCTIONALITATI.md).
+ */
+export interface AppCard {
+  title: string;
+  body: string[];
+}
+export interface AppTopic {
+  /** ancoră pentru link-urile de navigare între teme. */
+  id: string;
+  /** inner-SVG (24×24, stroke) pentru iconița din etichetă. */
+  icon: string;
+  eyebrow: string;
+  title: string;
+  titleAccent: string;
+  intro: string;
+  cards: AppCard[];
+  faqs: Faq[];
+}
+export const appTopics: AppTopic[] = [
+  {
+    id: 'monitorizare',
+    icon: '<path d="M3 12h4l3 8 4-16 3 8h4"/>',
+    eyebrow: 'Monitorizare',
+    title: 'Site-ul tău, sub observație ',
+    titleAccent: 'non-stop',
+    intro:
+      'Aplicația noastră internă, SimpleAd Manager, urmărește continuu sănătatea site-ului tău. În clipa în care ceva nu mai e în regulă, suntem anunțați automat, de cele mai multe ori înainte să observi tu sau clienții tăi.',
+    cards: [
+      {
+        title: 'Uptime și disponibilitate',
+        body: [
+          'Verificăm site-ul automat, la intervale configurabile (HTTP/HTTPS), urmărim valabilitatea certificatului SSL și detectăm chiar și „ecranul alb".',
+          'Când ceva pică, primim alertă imediat (email, Slack, Discord, Telegram sau webhook) și intervenim.',
+        ],
+      },
+      {
+        title: 'Performanță și Core Web Vitals',
+        body: [
+          'Rulăm teste de viteză (PageSpeed/Lighthouse) pe mai multe pagini și urmărim Core Web Vitals (LCP, CLS) în timp, cu praguri și istoric.',
+          'Așa vedem din vreme dacă site-ul începe să încetinească și putem acționa înainte să te coste vizitatori.',
+        ],
+      },
+      {
+        title: 'DNS, domenii și email',
+        body: [
+          'Detectăm modificările de DNS, cu valori înainte/după, și verificăm protecția email-ului (SPF, DKIM, DMARC).',
+          'Astfel afli rapid dacă cineva îți schimbă configurația sau dacă mesajele tale riscă să ajungă în spam.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: 'Cât de repede aflu dacă pică site-ul?',
+        body: [
+          'Verificăm site-ul automat, la intervale scurte. Când ceva nu răspunde cum trebuie, primim alertă imediat și intervenim, de cele mai multe ori înainte să observi tu sau clienții tăi.',
+        ],
+      },
+      {
+        q: 'Ce monitorizează exact SimpleAd Manager?',
+        body: [
+          'Disponibilitatea (uptime) și certificatul SSL, starea de securitate, actualizările disponibile, backup-urile, viteza și Core Web Vitals, audit SEO periodic, plus DNS și protecția email. Practic, toată sănătatea tehnică a site-ului într-un singur loc.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'securitate',
+    icon: '<path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3z"/>',
+    eyebrow: 'Securitate',
+    title: 'Protecție și plasă de siguranță, ',
+    titleAccent: 'la fiecare nivel',
+    intro:
+      'Te apărăm proactiv de probleme și păstrăm mereu o cale de întoarcere. Scanăm vulnerabilitățile, întărim site-ul și facem backup-uri pe care le putem restaura într-un singur click.',
+    cards: [
+      {
+        title: 'Scanare și întărire',
+        body: [
+          'Scanăm constant punctele slabe: WordPress neactualizat, debug expus, user „admin" implicit, permisiuni greșite de fișiere, XML-RPC.',
+          'Acolo unde se poate, aplicăm măsuri de întărire (hardening), ca site-ul să fie mai greu de spart.',
+        ],
+      },
+      {
+        title: 'Backup și restaurare',
+        body: [
+          'Facem backup automat și programat (bază de date + fișiere), cu stocare incrementală și copii în mai multe locuri (S3, Dropbox, local).',
+          'Dacă e nevoie, restaurăm site-ul la o versiune funcțională cu un singur click.',
+        ],
+      },
+      {
+        title: 'Comunicare securizată',
+        body: [
+          'Legătura dintre aplicație și site-ul tău este semnată criptografic (HMAC-SHA256) și protejată împotriva interceptării și a reluării atacurilor.',
+          'Practic, doar aplicația noastră poate da comenzi site-ului tău, nimeni altcineva.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: 'Datele și backup-urile mele sunt în siguranță?',
+        body: [
+          'Da. Backup-urile sunt copiate în mai multe locuri (S3, Dropbox, local), iar comunicarea dintre aplicație și site este semnată și protejată. Datele rămân ale tale și le putem restaura oricând.',
+        ],
+      },
+      {
+        q: 'Ce se întâmplă dacă site-ul cade sau e infectat?',
+        body: [
+          'Monitorizăm disponibilitatea și intervenim. Cu backup-urile regulate putem restaura rapid site-ul la o versiune funcțională și curată, iar pentru infecții oferim suport dedicat de curățare.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'automatizare',
+    icon: '<path d="M13 2L4.5 13H11l-1 9 8.5-11H12z"/>',
+    eyebrow: 'Automatizare',
+    title: 'Probleme rezolvate din timp, ',
+    titleAccent: 'rapoarte clare',
+    intro:
+      'Multe lucruri se rezolvă automat, înainte să devină probleme. Iar tu primești lunar un raport clar, fără jargon tehnic, cu tot ce s-a întâmplat cu site-ul tău.',
+    cards: [
+      {
+        title: 'Actualizări sigure',
+        body: [
+          'Nu actualizăm „pe încredere": facem backup, o captură înainte, aplicăm update-ul, încă o captură după și comparăm vizual cele două.',
+          'Dacă apare o problemă, revenim automat la versiunea anterioară (rollback), fără întreruperi pentru tine.',
+        ],
+      },
+      {
+        title: 'Răspuns automat la incidente',
+        body: [
+          'Pentru situațiile clare avem scenarii predefinite plus un diagnostic asistat de AI care încearcă să rezolve singur problema: site căzut, bază de date critică, plugin vulnerabil.',
+          'Deciziile importante rămân la noi, iar tu primești un rezumat cu ce s-a întâmplat.',
+        ],
+      },
+      {
+        title: 'Rapoarte și notificări',
+        body: [
+          'Lunar primești un raport PDF personalizat (cu logo) care adună uptime, securitate, actualizări, backup, performanță și SEO.',
+          'Plus alerte în timp real pe canalul preferat, cu ore de liniște ca să nu te deranjăm noaptea degeaba.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: 'Cum vă asigurați că o actualizare nu strică site-ul?',
+        body: [
+          'Înainte de orice update facem backup și o captură a site-ului, aplicăm actualizarea, facem o nouă captură și le comparăm vizual. Dacă apare o diferență sau o eroare, revenim automat la versiunea anterioară, fără ca tu să simți întreruperi.',
+        ],
+      },
+      {
+        q: 'Primesc rapoarte? Ce conțin?',
+        body: [
+          'Da. Lunar primești un raport PDF personalizat (cu logo) care adună uptime, securitate, actualizările făcute, backup-urile, performanța și evoluția SEO. Vezi clar, fără jargon, ce s-a întâmplat cu site-ul tău.',
+        ],
+      },
+    ],
+  },
+];
+
 /** Testimoniale. */
 export interface Testimonial {
   quote: string;

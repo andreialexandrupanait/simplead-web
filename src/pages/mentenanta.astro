@@ -1,12 +1,13 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import ServiceHero from '@components/sections/ServiceHero.astro';
-import CapabilitiesGrid from '@components/sections/CapabilitiesGrid.astro';
+import AppShowcase from '@components/sections/AppShowcase.astro';
 import ClientCase from '@components/sections/ClientCase.astro';
 import CtaNotch from '@components/sections/CtaNotch.astro';
 import FaqSection from '@components/sections/FaqSection.astro';
-import { generalFaqs } from '@data/content';
+import { generalFaqs, appTopics } from '@data/content';
 import { getService } from '@data/services';
+import { maintenanceBase as basePackages, maintenanceAddons as addOns } from '@lib/maintenance-plans';
 
 // Conținutul serviciului „Mentenanță website" trăiește acum pe această pagină unică.
 const mnt = getService('mentenanta-website');
@@ -14,51 +15,11 @@ const mnt = getService('mentenanta-website');
 const metaDescription =
   'Calculator mentenanță web Simplead. Pachete de la 50€/lună, cu monitorizare continuă a site-ului, backup, securitate și suport. Prețul se calculează automat.';
 
-/** Pachetele de bază (alegi unul). Prețuri în EUR/lună. */
-const basePackages = [
-  {
-    id: 'standard',
-    name: 'Standard',
-    price: 50,
-    tag: 'siguranță esențială',
-    items: ['Backup săptămânal', 'Actualizări CMS', '1h modificări incluse'],
-  },
-  {
-    id: 'premium',
-    name: 'Premium',
-    price: 90,
-    tag: 'performanță maximă',
-    items: ['Backup zilnic', 'Securitate avansată', '3h modificări incluse'],
-  },
-];
-
-/** Opțiuni suplimentare (bifezi câte vrei). Prețuri în EUR/lună. */
-const addOns = [
-  { id: 'suport', name: '+2 ore suport tehnic', price: 40, desc: '' },
-  {
-    id: 'seo',
-    name: 'Optimizare SEO continuă',
-    price: 100,
-    desc: 'Monitorizare poziții Google, optimizare cuvinte cheie, ajustări on-page lunare.',
-  },
-  {
-    id: 'hosting',
-    name: 'Găzduire premium dedicată',
-    price: 30,
-    desc: 'Server NVMe rapid, securitate extra.',
-  },
-  {
-    id: 'analytics',
-    name: 'Raportare avansată Analytics',
-    price: 25,
-    desc: 'Rapoarte trafic & conversii + sugestii.',
-  },
-];
-
-// Schema FAQPage (GEO): din FAQ-ul aprobat.
+// Schema FAQPage (GEO): din FAQ-ul aprobat + întrebările despre aplicație.
+const appFaqs = appTopics.flatMap((t) => t.faqs);
 const faqSchema = {
   '@type': 'FAQPage',
-  mainEntity: generalFaqs.map((f) => ({
+  mainEntity: [...appFaqs, ...generalFaqs].map((f) => ({
     '@type': 'Question',
     name: f.q,
     acceptedAnswer: { '@type': 'Answer', text: f.body.join(' ') },
@@ -75,29 +36,18 @@ const faqSchema = {
 >
   <ServiceHero
     title="Tu te ocupi de afacere, "
-    titleAccent="eu de partea tehnică"
-    sub="Îți monitorizez site-ul continuu cu aplicația mea internă, care urmărește [confirmă: lista de parametri]. Așa prind problemele înainte să le simți tu. Alege-ți pachetul mai jos; prețul se actualizează automat."
+    titleAccent="noi de partea tehnică"
+    sub="Îți monitorizăm site-ul continuu cu aplicația noastră internă, SimpleAd Manager, care urmărește uptime, securitate, performanță și backup. Așa prindem problemele înainte să le simți tu. Alege-ți pachetul mai jos; prețul se actualizează automat."
     image={mnt?.image ?? ''}
     imageAlt="Mentenanță website Simplead"
     current="Mentenanță"
   />
 
-  {
-    mnt && (
-      <CapabilitiesGrid
-        items={mnt.capabilities}
-        eyebrow={mnt.capHead.eyebrow}
-        title={mnt.capHead.title}
-        titleAccent={mnt.capHead.titleAccent}
-        sub={mnt.capHead.sub}
-        variant="light"
-      />
-    )
-  }
+  <AppShowcase topics={appTopics} variant="light" />
 
   <section class="section section--tint">
     <div class="container">
-      <form class="calc" id="calc">
+      <form class="calc" id="calc" method="post" action="/api/mentenanta-checkout">
         <div class="calc__main">
           <!-- 1. Pachet de bază -->
           <fieldset class="calc__block">
@@ -108,8 +58,8 @@ const faqSchema = {
                   <label class="pkg">
                     <input
                       type="radio"
-                      name="pkg"
-                      value={p.id}
+                      name="base"
+                      value={p.slug}
                       data-price={p.price}
                       data-label={p.name}
                       checked={i === 0}
@@ -139,7 +89,7 @@ const faqSchema = {
               {
                 addOns.map((a) => (
                   <label class="addon">
-                    <input type="checkbox" name="addon" value={a.id} data-price={a.price} data-label={a.name} />
+                    <input type="checkbox" name="addons" value={a.slug} data-price={a.price} data-label={a.name} />
                     <span class="addon__box" aria-hidden="true">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7" /></svg>
                     </span>
@@ -166,31 +116,11 @@ const faqSchema = {
               <span>Total estimat</span>
               <strong id="summaryTotal">50 €/lună</strong>
             </div>
-            <a class="summary__cta" href="/contact">Solicită Pachetul</a>
-            <p class="summary__note">Prețurile sunt estimative. Nu se adaugă TVA.</p>
+            <button type="submit" class="summary__cta">Mergi la plată</button>
+            <p class="summary__note">Plată securizată prin Stripe, abonament lunar. Nu se adaugă TVA. Poți anula oricând.</p>
           </div>
         </aside>
       </form>
-    </div>
-  </section>
-
-  <!-- Proces de plată -->
-  <section class="section section--light">
-    <div class="container">
-      <div class="sec-head">
-        <span class="sec-eyebrow">Proces de plată</span>
-        <h2 class="sec-title">Transparent, fără surprize</h2>
-      </div>
-      <div class="pay">
-        <div class="pay__card">
-          <h3>Dezvoltare web &amp; branding</h3>
-          <p>Avans 40–50% la semnarea contractului, restul la predare.</p>
-        </div>
-        <div class="pay__card">
-          <h3>Mentenanță</h3>
-          <p>Lunar, pe pachetul ales mai sus.</p>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -204,7 +134,7 @@ const faqSchema = {
     titleAccent="întrebări?"
   />
 
-  {mnt && <CtaNotch title={mnt.claim} />}
+  {mnt && <CtaNotch title="Tu te ocupi de afacere, noi de partea tehnică." />}
 </BaseLayout>
 
 <style>
@@ -428,18 +358,35 @@ const faqSchema = {
     position: sticky;
     top: calc(var(--nav-h) + 20px);
   }
+  /* Sumar - versiune dark, identică cu cardul „Simply professional" (.cs-stat) */
   .summary {
-    border: 1px solid var(--line);
-    border-radius: var(--r-lg);
-    background: var(--canvas-soft);
-    padding: 26px;
-    box-shadow: var(--sh-sm);
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    background: var(--navy);
+    color: #fff;
+    padding: 32px;
+    box-shadow: var(--sh-lg);
+  }
+  .summary::after {
+    content: '';
+    position: absolute;
+    right: -50px;
+    bottom: -50px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(110, 91, 224, 0.4), transparent 70%);
+  }
+  .summary > * {
+    position: relative;
+    z-index: 1;
   }
   .summary__title {
     font-family: var(--font-display);
     font-weight: 700;
     font-size: 1.25rem;
-    color: var(--ink);
+    color: #fff;
     margin-bottom: 18px;
   }
   .summary__list {
@@ -448,21 +395,37 @@ const faqSchema = {
     flex-direction: column;
     gap: 10px;
     padding-bottom: 18px;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   }
   .summary__list li {
     display: flex;
     justify-content: space-between;
     gap: 12px;
     font-size: 0.92rem;
-    color: var(--ink);
+    color: rgba(225, 230, 245, 0.9);
+  }
+  .summary__list li span:first-child {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  /* Bullet pentru fiecare element din lista de opțiuni. */
+  .summary__list li span:first-child::before {
+    content: '';
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    transform: translateY(-2px);
   }
   .summary__list li span:last-child {
     flex-shrink: 0;
     font-weight: 700;
+    color: var(--cyan);
   }
   .summary__list li.is-muted {
-    color: var(--muted);
+    color: rgba(225, 230, 245, 0.6);
   }
   .summary__total {
     display: flex;
@@ -473,65 +436,43 @@ const faqSchema = {
   }
   .summary__total span {
     font-size: 0.96rem;
-    color: var(--muted);
+    color: rgba(225, 230, 245, 0.7);
   }
   .summary__total strong {
     font-family: var(--font-display);
     font-weight: 700;
     font-size: 1.6rem;
-    color: var(--electric);
+    color: var(--cyan);
   }
   .summary__cta {
     display: block;
-    margin-top: 20px;
+    width: 100%;
+    margin-top: 22px;
     padding: 15px 24px;
     text-align: center;
-    background: var(--electric);
+    background: var(--grad);
     color: #fff;
+    border: none;
     border-radius: var(--r-sm);
     font-family: var(--font-body);
     font-weight: 700;
     font-size: 0.92rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    cursor: pointer;
     box-shadow: var(--glow-electric);
-    transition: transform 0.18s var(--ease-snap);
+    transition: transform 0.18s var(--ease-snap), box-shadow 0.18s var(--ease-snap);
   }
   .summary__cta:hover {
     transform: translateY(-2px);
+    box-shadow: var(--glow-cyan);
   }
   .summary__note {
     margin-top: 14px;
     font-size: 0.82rem;
     line-height: 1.5;
-    color: var(--muted);
+    color: rgba(225, 230, 245, 0.6);
     text-align: center;
-  }
-
-  /* Proces de plată */
-  .pay {
-    margin-top: 40px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-  .pay__card {
-    padding: 28px;
-    background: var(--canvas);
-    border: 1px solid var(--line);
-    border-radius: var(--r-md);
-  }
-  .pay__card h3 {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.15rem;
-    color: var(--ink);
-  }
-  .pay__card p {
-    margin-top: 10px;
-    font-size: 0.98rem;
-    line-height: 1.55;
-    color: var(--muted);
   }
 
   @media (max-width: 900px) {
@@ -546,9 +487,6 @@ const faqSchema = {
     .calc__pkgs {
       grid-template-columns: 1fr;
     }
-    .pay {
-      grid-template-columns: 1fr;
-    }
   }
 </style>
 
@@ -561,20 +499,21 @@ const faqSchema = {
     const fmt = (n: number) => `${n} €/lună`;
 
     const render = () => {
-      const rows: { label: string; price: number }[] = [];
+      const rows: { label: string; price: number; addon: boolean }[] = [];
 
-      const pkg = form.querySelector<HTMLInputElement>('input[name="pkg"]:checked');
+      const pkg = form.querySelector<HTMLInputElement>('input[name="base"]:checked');
       if (pkg) {
         rows.push({
           label: `Pachet ${pkg.dataset.label}`,
           price: Number(pkg.dataset.price) || 0,
+          addon: false,
         });
       }
 
       form
-        .querySelectorAll<HTMLInputElement>('input[name="addon"]:checked')
+        .querySelectorAll<HTMLInputElement>('input[name="addons"]:checked')
         .forEach((el) => {
-          rows.push({ label: el.dataset.label || '', price: Number(el.dataset.price) || 0 });
+          rows.push({ label: el.dataset.label || '', price: Number(el.dataset.price) || 0, addon: true });
         });
 
       const total = rows.reduce((sum, r) => sum + r.price, 0);
@@ -582,7 +521,7 @@ const faqSchema = {
       summaryList.innerHTML = rows
         .map(
           (r) =>
-            `<li><span>${r.label}</span><span>${r.price}€</span></li>`,
+            `<li class="${r.addon ? 'is-addon' : 'is-base'}"><span>${r.label}</span><span>${r.price}€</span></li>`,
         )
         .join('');
       summaryTotal.textContent = fmt(total);

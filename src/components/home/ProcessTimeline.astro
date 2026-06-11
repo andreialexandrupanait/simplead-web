@@ -2,16 +2,41 @@
 import SectionHeading from '@components/ui/SectionHeading.astro';
 
 const steps = [
-  { n: '01', title: 'Întâlnire & descoperire', body: 'Ne cunoaștem, înțelegem viziunea ta și vedem dacă suntem partenerii potriviți.' },
-  { n: '02', title: 'Analiză & cercetare', body: 'Audităm situația actuală, studiem competiția și identificăm oportunitățile.' },
-  { n: '03', title: 'Strategie & structură', body: 'Construim planul de acțiune, structura informației și direcția.' },
-  { n: '04', title: 'Design & execuție', body: 'Strategia devine realitate: design pixel-perfect și dezvoltare la standarde înalte.' },
-  { n: '05', title: 'Lansare & mentenanță', body: 'Testare riguroasă, lansare, apoi rămânem alături pentru optimizare și suport.' },
+  {
+    n: '01',
+    title: 'Întâlnire & descoperire',
+    body: 'Ne cunoaștem, înțelegem viziunea ta și vedem dacă suntem partenerii potriviți.',
+    tag: 'Kickoff',
+  },
+  {
+    n: '02',
+    title: 'Analiză & cercetare',
+    body: 'Audităm situația actuală, studiem competiția și identificăm oportunitățile.',
+    tag: 'Research',
+  },
+  {
+    n: '03',
+    title: 'Strategie & structură',
+    body: 'Construim planul de acțiune, structura informației și direcția.',
+    tag: 'Strategy',
+  },
+  {
+    n: '04',
+    title: 'Design & execuție',
+    body: 'Strategia devine realitate: design pixel-perfect și dezvoltare la standarde înalte.',
+    tag: 'Build',
+  },
+  {
+    n: '05',
+    title: 'Lansare & mentenanță',
+    body: 'Testare riguroasă, lansare, apoi rămânem alături pentru optimizare și suport.',
+    tag: 'Launch',
+  },
 ];
 ---
 
-<section class="proc">
-  <div class="site-container">
+<section class="proc" id="proces" data-reveal>
+  <div class="site-container proc__inner">
     <SectionHeading
       eyebrow="Cum lucrăm"
       title="Cum funcționează procesul de dezvoltare web?"
@@ -19,138 +44,443 @@ const steps = [
       subtitle="Un proces fluid și transparent, de la idee la lansare."
       align="center"
     />
-    <ol class="proc__steps" data-reveal-stagger>
-      {
-        steps.map((s) => (
-          <li class="proc__step">
-            <span class="proc__node">{s.n}</span>
-            <h3>{s.title}</h3>
-            <p>{s.body}</p>
-          </li>
-        ))
-      }
-    </ol>
+
+    <div class="proc__stage" data-proc>
+      {/* coloana stângă: lista de pași clicabilă */}
+      <ol class="proc__list" role="tablist" aria-label="Etapele procesului">
+        {
+          steps.map((s, i) => (
+            <li>
+              <button
+                class="proc__tab"
+                type="button"
+                role="tab"
+                data-i={i}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                tabindex={i === 0 ? 0 : -1}
+              >
+                <span class="proc__tabn">{s.n}</span>
+                <span class="proc__tabt">{s.title}</span>
+              </button>
+            </li>
+          ))
+        }
+      </ol>
+
+      {/* coloana dreaptă: panoul mare */}
+      <div class="proc__panel">
+        {
+          steps.map((s, i) => (
+            <article
+              class="proc__slide"
+              role="tabpanel"
+              data-i={i}
+              aria-hidden={i === 0 ? 'false' : 'true'}
+            >
+              <span class="proc__ghost" aria-hidden="true">
+                {s.n}
+              </span>
+              <div class="proc__slidebody">
+                <span class="proc__tag">{s.tag}</span>
+                <h3 class="proc__title">{s.title}</h3>
+                <p class="proc__text">{s.body}</p>
+                <div class="proc__count" aria-hidden="true">
+                  <b>{s.n}</b>
+                  <span>/ 05</span>
+                </div>
+              </div>
+            </article>
+          ))
+        }
+        <div class="proc__dots" aria-hidden="true">
+          {steps.map((_, i) => <span class="proc__dot" data-i={i} />)}
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
 <style>
   .proc {
     position: relative;
+    isolation: isolate;
+    /* gri foarte deschis: contrast subtil față de secțiunile albe vecine */
     background: var(--canvas-soft);
-    padding-block: clamp(64px, 9vw, 120px);
+    color: var(--ink);
+    padding-block: clamp(72px, 10vw, 132px);
     overflow: hidden;
   }
-  /* fundal cu puncte subtil */
+  /* textură punctată subtilă + un singur glow electric discret */
   .proc::before {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(rgba(3, 13, 74, 0.06) 1px, transparent 1px);
-    background-size: 28px 28px;
-    -webkit-mask-image: radial-gradient(80% 80% at 50% 0%, #000, transparent 75%);
-    mask-image: radial-gradient(80% 80% at 50% 0%, #000, transparent 75%);
+    z-index: -1;
+    background-image: radial-gradient(rgba(3, 13, 74, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    -webkit-mask-image: radial-gradient(90% 70% at 50% 0%, #000, transparent 78%);
+    mask-image: radial-gradient(90% 70% at 50% 0%, #000, transparent 78%);
     pointer-events: none;
   }
-  .proc :global(.site-container) {
-    position: relative;
+  .proc::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: -12%;
+    right: -6%;
+    width: 44vw;
+    height: 44vw;
+    max-width: 600px;
+    max-height: 600px;
+    background: radial-gradient(circle, rgba(0, 119, 252, 0.12), transparent 64%);
+    pointer-events: none;
   }
   .proc :global(.sh) {
-    margin-bottom: 56px;
+    margin-bottom: clamp(40px, 5vw, 64px);
   }
-  .proc__steps {
+
+  /* layout split */
+  .proc__stage {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(20px, 3vw, 48px);
+    align-items: stretch;
+  }
+
+  /* ---- lista de pași (stânga) ---- */
+  .proc__list {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
-  .proc__step {
+  .proc__tab {
     position: relative;
-    text-align: center;
-    padding: 0 16px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    background: var(--canvas);
+    color: var(--muted);
+    font-family: var(--font-body);
+    text-align: left;
+    cursor: pointer;
+    transition:
+      background 0.3s var(--ease),
+      border-color 0.3s var(--ease),
+      color 0.3s var(--ease),
+      box-shadow 0.3s var(--ease),
+      transform 0.3s var(--ease);
   }
-  /* linia care leagă nodurile (orizontal) */
-  .proc__step::before {
+  /* accent electric pe muchia din stânga (vizibil la activ) */
+  .proc__tab::before {
     content: '';
     position: absolute;
-    top: 23px;
     left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--line);
-    z-index: 0;
+    top: 50%;
+    transform: translateY(-50%) scaleY(0);
+    width: 3px;
+    height: 56%;
+    border-radius: 0 3px 3px 0;
+    background: linear-gradient(180deg, var(--electric), var(--cyan));
+    transition: transform 0.3s var(--ease);
   }
-  .proc__step:first-child::before {
-    left: 50%;
+  .proc__tab:hover {
+    color: var(--ink);
+    border-color: rgba(0, 119, 252, 0.4);
   }
-  .proc__step:last-child::before {
-    right: 50%;
+  .proc__tab[aria-selected='true'] {
+    background: var(--canvas);
+    border-color: rgba(0, 119, 252, 0.5);
+    color: var(--ink);
+    box-shadow: var(--sh-md);
+    transform: translateX(4px);
   }
-  .proc__node {
-    position: relative;
-    z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--electric);
-    color: #fff;
+  .proc__tab[aria-selected='true']::before {
+    transform: translateY(-50%) scaleY(1);
+  }
+  .proc__tabn {
     font-family: var(--font-display);
     font-weight: 700;
     font-size: 0.95rem;
-    box-shadow: 0 0 0 6px var(--canvas-soft);
+    letter-spacing: 0.02em;
+    color: var(--electric);
+    opacity: 0.5;
+    transition: opacity 0.3s var(--ease);
   }
-  .proc__step h3 {
-    margin-top: 22px;
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: var(--ink);
+  .proc__tab:hover .proc__tabn,
+  .proc__tab[aria-selected='true'] .proc__tabn {
+    opacity: 1;
   }
-  .proc__step p {
-    margin-top: 8px;
-    font-size: 0.92rem;
-    line-height: 1.55;
-    color: var(--muted);
+  .proc__tabt {
+    font-weight: 600;
+    font-size: 1.02rem;
+    line-height: 1.25;
   }
 
-  /* mobil: timeline vertical */
-  @media (max-width: 760px) {
-    .proc__steps {
+  /* ---- panoul mare (dreapta) ---- */
+  .proc__panel {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: var(--r-xl);
+    background:
+      radial-gradient(120% 120% at 100% 0%, rgba(0, 119, 252, 0.07), transparent 55%), var(--canvas);
+    box-shadow: var(--sh-lg);
+    padding: clamp(28px, 3.4vw, 52px);
+    min-height: 340px;
+    overflow: hidden;
+  }
+  .proc__slide {
+    position: absolute;
+    inset: clamp(28px, 3.4vw, 52px);
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    transform: translateY(14px);
+    pointer-events: none;
+    transition:
+      opacity 0.5s var(--ease),
+      transform 0.5s var(--ease);
+  }
+  .proc__slide[aria-hidden='false'] {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+  /* număr-fantomă gigant în spate (contur subtil navy) */
+  .proc__ghost {
+    position: absolute;
+    top: 50%;
+    right: -2%;
+    transform: translateY(-50%);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(11rem, 22vw, 19rem);
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(3, 13, 74, 0.09);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .proc__slidebody {
+    position: relative;
+    z-index: 1;
+    max-width: 30ch;
+  }
+  .proc__tag {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--electric);
+    background: rgba(0, 119, 252, 0.07);
+    padding: 6px 12px;
+    border: 1px solid rgba(0, 119, 252, 0.28);
+    border-radius: var(--r-pill);
+    margin-bottom: 20px;
+  }
+  .proc__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .proc__text {
+    margin: 16px 0 0;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .proc__count {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 28px;
+    font-family: var(--font-display);
+  }
+  .proc__count b {
+    font-size: 1.5rem;
+    color: var(--ink);
+  }
+  .proc__count span {
+    font-size: 0.95rem;
+    color: var(--muted);
+  }
+  /* dots de navigare jos */
+  .proc__dots {
+    position: absolute;
+    right: clamp(28px, 3.4vw, 52px);
+    bottom: clamp(22px, 2.4vw, 34px);
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+  }
+  .proc__dot {
+    width: 22px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--line);
+    transition:
+      background 0.3s var(--ease),
+      width 0.3s var(--ease);
+  }
+  .proc__dot.on {
+    width: 34px;
+    background: linear-gradient(90deg, var(--electric), var(--cyan));
+  }
+
+  /* ---- responsive ---- */
+  @media (max-width: 860px) {
+    .proc__stage {
       grid-template-columns: 1fr;
+      gap: 18px;
     }
-    .proc__step {
-      text-align: left;
-      padding: 0 0 30px 64px;
+    /* lista devine un rând orizontal scrollabil de pastile */
+    .proc__list {
+      flex-direction: row;
+      gap: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+      scroll-snap-type: x proximity;
     }
-    .proc__step:last-child {
-      padding-bottom: 0;
+    .proc__list::-webkit-scrollbar {
+      display: none;
     }
-    .proc__step::before {
-      top: 0;
-      bottom: 0;
-      left: 23px;
-      right: auto;
-      width: 2px;
-      height: auto;
+    .proc__list li {
+      flex: 0 0 auto;
+      scroll-snap-align: start;
     }
-    .proc__step:first-child::before {
-      top: 24px;
-      left: 23px;
+    .proc__tab {
+      grid-template-columns: auto;
+      gap: 4px;
+      padding: 12px 16px;
+      min-width: 124px;
     }
-    .proc__step:last-child::before {
-      bottom: auto;
-      height: 24px;
+    .proc__tab[aria-selected='true'] {
+      transform: none;
     }
-    .proc__node {
-      position: absolute;
-      left: 0;
-      top: 0;
+    .proc__tab::before {
+      display: none;
     }
-    .proc__step h3 {
-      margin-top: 10px;
+    .proc__tabt {
+      font-size: 0.9rem;
+    }
+    .proc__ghost {
+      font-size: clamp(8rem, 40vw, 13rem);
+    }
+    .proc__panel {
+      min-height: 300px;
+    }
+  }
+  @media (max-width: 480px) {
+    .proc__slidebody {
+      max-width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .proc__slide,
+    .proc__tab,
+    .proc__tab::before,
+    .proc__dot {
+      transition: none;
     }
   }
 </style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-proc]');
+  if (root) {
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('.proc__tab'));
+    const slides = Array.from(root.querySelectorAll<HTMLElement>('.proc__slide'));
+    const dots = Array.from(root.querySelectorAll<HTMLElement>('.proc__dot'));
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const DUR = 5200;
+
+    let current = 0;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let paused = false;
+
+    const schedule = () => {
+      clearTimeout(timer);
+      if (reduce || paused) return;
+      timer = setTimeout(() => show((current + 1) % slides.length), DUR);
+    };
+
+    const show = (i: number, fromClick = false) => {
+      current = i;
+      tabs.forEach((t, k) => {
+        const on = k === i;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+      });
+      slides.forEach((s, k) => s.setAttribute('aria-hidden', k === i ? 'false' : 'true'));
+      dots.forEach((d, k) => d.classList.toggle('on', k === i));
+      schedule();
+      if (fromClick) tabs[i]?.focus();
+    };
+
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => show(i));
+      // navigare cu săgeți (tab roving)
+      t.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+          e.preventDefault();
+          show((current + 1) % tabs.length, true);
+        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          show((current - 1 + tabs.length) % tabs.length, true);
+        }
+      });
+    });
+
+    // pauză pe hover/focus în secțiune
+    const setPaused = (p: boolean) => {
+      paused = p;
+      if (p) {
+        clearTimeout(timer);
+      } else {
+        schedule();
+      }
+    };
+    root.addEventListener('pointerenter', () => setPaused(true));
+    root.addEventListener('pointerleave', () => setPaused(false));
+    root.addEventListener('focusin', () => setPaused(true));
+    root.addEventListener('focusout', (e) => {
+      if (!root.contains(e.relatedTarget as Node)) setPaused(false);
+    });
+
+    // pornește doar când secțiunea intră în viewport
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((en) => {
+            if (en.isIntersecting) {
+              schedule();
+            } else {
+              clearTimeout(timer);
+            }
+          });
+        },
+        { threshold: 0.35 },
+      );
+      io.observe(root);
+    }
+
+    // stare inițială
+    show(0);
+  }
+</script>

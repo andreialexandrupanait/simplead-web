@@ -23,26 +23,57 @@ const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).f
 ---
 
 <section class="section section--tint svcx" id="servicii">
-  <div class="container svcx__head" data-reveal>
+  <div class="svcx__head container" data-reveal>
     <div class="svcx__top">
       <div class="svcx__intro">
         <span class="svcx__kick">Ce facem</span>
         <h2 class="svcx__title">Servicii gândite să <span class="g">lucreze împreună</span></h2>
       </div>
       <div class="svcx__nav">
-        <button class="svcx__btn" type="button" data-dir="prev" aria-label="Serviciul anterior" disabled>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
+        <button
+          class="svcx__btn"
+          type="button"
+          data-dir="prev"
+          aria-label="Serviciul anterior"
+          disabled
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg
+          >
         </button>
         <button class="svcx__btn" type="button" data-dir="next" aria-label="Serviciul următor">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg
+          >
         </button>
       </div>
     </div>
     <div class="svcx__meta">
-      <p class="svcx__lead">De la identitate la site și campanii: o singură direcție, fără să cobori la cinci furnizori.</p>
+      <p class="svcx__lead">
+        De la identitate la site și campanii: o singură direcție, fără să cobori la cinci furnizori.
+      </p>
       <div class="svcx__links">
-        <a class="link-more" href="/servicii">Vezi toate serviciile
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={arrowR} />
+        <a class="link-more" href="/servicii"
+          >Vezi toate serviciile
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            set:html={arrowR}
+          />
         </a>
       </div>
     </div>
@@ -57,10 +88,20 @@ const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).f
               class:list={['svcx__card', 'svc2-tile', i === 0 && 'hot']}
               href={s.slug === 'mentenanta-website' ? '/mentenanta' : `/servicii/${s.slug}`}
             >
-              <span class="svc2-media"><img src={s.image} alt={s.title} loading="lazy" /></span>
+              <span class="svc2-media">
+                <img src={s.image} alt={s.title} loading="lazy" />
+              </span>
               <span class="svc2-lbl">{s.title}</span>
               <span class="svc2-ab">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" set:html={arrow} />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  set:html={arrow}
+                />
               </span>
             </a>
           </li>

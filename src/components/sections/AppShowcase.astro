@@ -1,0 +1,332 @@
+---
+/**
+ * Secțiuni pe teme despre aplicația proprie „SimpleAd Manager".
+ * Pentru fiecare temă: coloana stângă = intro sticky (etichetă-pill cu iconiță +
+ * titlu + paragraf + un index numerotat al temelor), coloana dreaptă = carduri
+ * numerotate cu detalii, urmate de un acordeon FAQ propriu temei.
+ * Acordeonul refolosește clasele globale `.faq*` din styles/sections.css.
+ */
+import type { AppTopic } from '@data/content';
+
+interface Props {
+  topics: AppTopic[];
+  variant?: 'light' | 'tint';
+}
+const { topics, variant = 'light' } = Astro.props;
+const two = (n: number) => String(n).padStart(2, '0');
+---
+
+{
+  topics.map((topic, ti) => (
+    <section class:list={['section', `section--${ti % 2 === 0 ? variant : variant === 'light' ? 'tint' : 'light'}`]} id={topic.id}>
+      <div class="container">
+        <div class="topic">
+          {/* Stânga: intro sticky */}
+          <div class="topic__intro" data-reveal>
+            <span class="topic__eyebrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" set:html={topic.icon} />
+              {topic.eyebrow}
+            </span>
+            <h2 class="topic__title">
+              {topic.title}
+              <span class="g">{topic.titleAccent}</span>
+            </h2>
+            <p class="topic__lead">{topic.intro}</p>
+            {topics.length > 1 && (
+              <ol class="topic__steps" aria-label="Teme">
+                {topics.map((t, i) => (
+                  <li class:list={['topic__step', t.id === topic.id && 'is-active']}>
+                    <a href={`#${t.id}`}>
+                      <span class="topic__step-n">{two(i + 1)}</span>
+                      <span class="topic__step-label">{t.eyebrow}</span>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+
+          {/* Dreapta: carduri numerotate + FAQ propriu */}
+          <div class="topic__main">
+            <div class="topic__cards" data-reveal-stagger>
+              {topic.cards.map((c, ci) => (
+                <article class="topic-card">
+                  <span class="topic-card__num">{two(ci + 1)}</span>
+                  <div class="topic-card__body">
+                    <h3 class="topic-card__title">{c.title}</h3>
+                    {c.body.map((p) => (
+                      <p class="topic-card__text">{p}</p>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <div class="topic__faq">
+              <h3 class="topic__faq-title">
+                Întrebări frecvente despre {topic.eyebrow.toLowerCase()}
+              </h3>
+              <p class="topic__faq-lead">
+                Mai ai întrebări? Scrie-ne și îți răspundem rapid &mdash; <a href="/contact">contactează-ne</a>.
+              </p>
+              <div class="faq app-faq" id={`faq-${topic.id}`}>
+                {topic.faqs.map((f, i) => (
+                  <div class:list={['faq-item', i === 0 && 'open']}>
+                    <button class="faq-q" aria-expanded={i === 0 ? 'true' : 'false'}>
+                      {f.q}
+                      <span class="faq-ic">
+                        {i === 0 ? (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14" /></svg>
+                        ) : (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                        )}
+                      </span>
+                    </button>
+                    <div class="faq-a">
+                      <div class="faq-a-inner">
+                        <div class="faq-a-body">
+                          {f.body.map((p) => (
+                            <p>{p}</p>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  ))
+}
+
+<style>
+  .topic {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 72px;
+    align-items: start;
+  }
+
+  /* Stânga: intro sticky */
+  .topic__intro {
+    position: sticky;
+    top: calc(var(--nav-h) + 32px);
+  }
+  .topic__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px 7px 12px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--electric) 9%, transparent);
+    color: var(--electric);
+    font-size: 0.86rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .topic__eyebrow svg {
+    width: 17px;
+    height: 17px;
+  }
+  .topic__title {
+    margin-top: 20px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.7rem, 1.2rem + 1.6vw, 2.3rem);
+    line-height: 1.12;
+    color: var(--ink);
+  }
+  .topic__title .g {
+    color: var(--electric);
+  }
+  .topic__lead {
+    margin-top: 18px;
+    font-size: 1.02rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  /* Index numerotat al temelor (înlocuiește săgețile) */
+  .topic__steps {
+    margin-top: 32px;
+    list-style: none;
+    border-top: 1px solid var(--line);
+  }
+  .topic__step a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font-weight: 600;
+    transition: color 0.18s var(--ease-snap);
+  }
+  .topic__step-n {
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    color: var(--line-strong, #b9c2cf);
+  }
+  .topic__step a:hover {
+    color: var(--electric);
+  }
+  .topic__step.is-active a {
+    color: var(--ink);
+    cursor: default;
+  }
+  .topic__step.is-active .topic__step-n {
+    color: var(--electric);
+  }
+  .topic__step.is-active .topic__step-label {
+    position: relative;
+  }
+  .topic__step.is-active .topic__step-label::after {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-left: 10px;
+    border-radius: 50%;
+    background: var(--cyan);
+    vertical-align: middle;
+  }
+
+  /* Dreapta: carduri numerotate (albe, cu badge) */
+  .topic__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .topic-card {
+    display: flex;
+    gap: 22px;
+    padding: 28px 32px;
+    background: var(--canvas);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: var(--sh-sm);
+    transition: border-color 0.18s var(--ease-snap), transform 0.18s var(--ease-snap);
+  }
+  .topic-card:hover {
+    border-color: var(--cyan);
+    transform: translateY(-2px);
+  }
+  .topic-card__num {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--r-sm);
+    background: color-mix(in srgb, var(--electric) 10%, transparent);
+    color: var(--electric);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.92rem;
+  }
+  .topic-card__body {
+    flex: 1;
+  }
+  .topic-card__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.16rem;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .topic-card__text {
+    font-size: 0.98rem;
+    line-height: 1.62;
+    color: var(--muted);
+  }
+  .topic-card__text + .topic-card__text {
+    margin-top: 10px;
+  }
+
+  /* Dreapta: FAQ propriu temei */
+  .topic__faq {
+    margin-top: 52px;
+    padding-top: 44px;
+    border-top: 1px solid var(--line);
+  }
+  .topic__faq-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--ink);
+  }
+  .topic__faq-lead {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: var(--muted);
+  }
+  .topic__faq-lead a {
+    color: var(--electric);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  /* Resetăm marginile globale ale `.faq` (gândit pentru full-width centrat). */
+  .topic__faq :global(.faq) {
+    max-width: none;
+    margin: 20px 0 0;
+  }
+  .topic__faq :global(.faq-q) {
+    font-size: 1.06rem;
+  }
+
+  @media (max-width: 900px) {
+    .topic {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+    .topic__intro {
+      position: static;
+    }
+    .topic__steps {
+      margin-top: 26px;
+    }
+    .topic__faq {
+      margin-top: 40px;
+      padding-top: 36px;
+    }
+  }
+  @media (max-width: 560px) {
+    .topic-card {
+      flex-direction: column;
+      gap: 14px;
+      padding: 24px 22px;
+    }
+  }
+</style>
+
+<script>
+  // Acordeoane single-open, independente, pentru fiecare temă (clasa `.app-faq`),
+  // izolate de FAQ-ul general din subsolul paginii (`#faqList`).
+  document.querySelectorAll<HTMLElement>('.app-faq').forEach((list) => {
+    const items = Array.from(list.querySelectorAll<HTMLElement>('.faq-item'));
+    const setOpen = (item: HTMLElement, open: boolean) => {
+      item.classList.toggle('open', open);
+      const a = item.querySelector<HTMLElement>('.faq-a');
+      const q = item.querySelector<HTMLButtonElement>('.faq-q');
+      const ic = item.querySelector<HTMLElement>('.faq-ic svg path');
+      if (a) a.style.maxHeight = open ? a.scrollHeight + 'px' : '0px';
+      if (q) q.setAttribute('aria-expanded', String(open));
+      if (ic) ic.setAttribute('d', open ? 'M5 12h14' : 'M12 5v14M5 12h14');
+    };
+    items.forEach((it) => setOpen(it, it.classList.contains('open')));
+    items.forEach((item) => {
+      const q = item.querySelector('.faq-q');
+      q?.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        items.forEach((other) => setOpen(other, false));
+        setOpen(item, !isOpen);
+      });
+    });
+  });
+</script>

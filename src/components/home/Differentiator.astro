@@ -4,16 +4,16 @@ import Button from '@components/ui/Button.astro';
 
 const points = [
   {
-    title: 'Știința: fundamentul',
-    body: 'Neuroștiința explică de ce oamenii privesc, simt și decid într-un anume fel. De aici pornește orice proiect: nu de la „cred că ar arăta bine", ci de la cum funcționează atenția și decizia.',
+    title: 'Pornim de la știință',
+    body: 'Neuroștiința explică de ce oamenii privesc, simt și decid într-un anumit fel. De acolo pleacă orice proiect — nu de la „cred că arată bine".',
   },
   {
-    title: 'Cunoștințele: aplicarea',
-    body: 'Știința singură nu vinde. Expertiza e să o traducem în decizii concrete pentru o afacere reală: ce mesaj, ce structură, ce imagine, pentru publicul tău.',
+    title: 'Adaptăm la publicul tău',
+    body: 'Traducem cercetarea în decizii concrete: ce mesaj, ce structură, ce imagini.',
   },
   {
-    title: 'Uneltele: mijloacele',
-    body: 'Eye-tracking, heatmaps, Analytics: instrumente care arată ce se întâmplă, nu vedete. Le folosim pe cele potrivite fiecărei etape, fără să depindem de o singură aplicație.',
+    title: 'Validăm științific',
+    body: 'Confirmăm cu unelte din sfera neuroștiinței — eye-tracking, heatmaps, Analytics — ca să știm ce funcționează, nu să ghicim.',
   },
 ];
 ---
@@ -22,13 +22,22 @@ const points = [
   <div class="site-container diff__inner">
     <div class="diff__head" data-reveal>
       <p class="kicker kicker--cyan">De ce Simplead</p>
-      <h2 class="diff__title">Nu pornim de la gust. Pornim de la <span>cum decide creierul.</span></h2>
+      <h2 class="diff__title">
+        Designul bun nu se ghicește. <span>Se vede și se măsoară.</span>
+      </h2>
       <p class="diff__sub">
-        Trei lucruri stau în spatele fiecărui proiect: știința, cunoștințele și uneltele. În ordinea
-        asta: știința e fundamentul, uneltele sunt doar mijloace.
+        Fiecare decizie de design și mesaj pleacă de la cum funcționează atenția și alegerea — și o
+        validăm cu unelte din neuroștiință (eye-tracking, heatmaps), nu pe presupuneri.
       </p>
       <div class="diff__cta">
-        <Button href={site.founderSite} target="_blank" rel="noopener" variant="outline" onDark withArrow>
+        <Button
+          href={site.founderSite}
+          target="_blank"
+          rel="noopener"
+          variant="outline"
+          onDark
+          withArrow
+        >
           Vezi cercetarea pe panaitandrei.ro
         </Button>
       </div>
