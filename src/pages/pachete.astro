@@ -2,9 +2,11 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import PageHeader from '@components/sections/PageHeader.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
-import Button from '@components/ui/Button.astro';
+import FaqSection from '@components/sections/FaqSection.astro';
 import { getPublicPackages, formatPrice } from '@/lib/server/packages';
 import { getIntegration } from '@/lib/server/settings';
+import { hourlyRates, hourlyRatesIntro, freeMonthBanner } from '@/data/pricing';
+import { packagesFaqs } from '@data/content';
 
 // On-demand: pachetele vin din DB (editabile din admin, fără rebuild).
 export const prerender = false;
@@ -19,9 +21,29 @@ const stripeReady = fromDb && Boolean((await getIntegration('stripe')).secretKey
 const canBuy = (priceCents: number) => stripeReady && priceCents > 0;
 const canceled = Astro.url.searchParams.get('canceled') === '1';
 
+const bySort = (a: { sort: number }, b: { sort: number }) => a.sort - b.sort;
 const services = items.filter((p) => p.kind === 'service');
+// Ordinea cerută explicit, independent de `sort` din DB: Redesign, Prezentare, Magazin.
+const WEB_ORDER = ['ux-ui-redesign', 'site-prezentare', 'magazin-online'];
+const webRank = (p: { slug: string; sort: number }) => {
+  const i = WEB_ORDER.indexOf(p.slug);
+  return i === -1 ? 100 + p.sort : i;
+};
+const web = services
+  .filter((p) => p.category === 'web')
+  .sort((a, b) => webRank(a) - webRank(b));
+const graphics = services.filter((p) => p.category === 'grafica-marketing');
+// Servicii fără grupare: le arătăm tot în secțiunea grafică & marketing.
+const graphicsRest = services.filter(
+  (p) => p.category !== 'web' && p.category !== 'grafica-marketing',
+);
+const graphicsAll = [...graphics, ...graphicsRest].sort(bySort);
+// Cardul „dominant": cel din mijloc când sunt exact 3 (Prezentare).
+const featuredWebIdx = web.length === 3 ? 1 : -1;
 const maintenance = items.filter((p) => p.kind === 'maintenance');
 const addons = items.filter((p) => p.kind === 'addon');
+
+const contactHref = (name: string) => `/contact?service=${encodeURIComponent(name)}`;
 
 const metaDescription =
   'Pachete cu preț fix pentru site-uri, identitate vizuală și grafică, plus abonamente lunare de mentenanță. Alegi pachetul, noi ne apucăm de treabă.';
@@ -38,13 +60,13 @@ const metaDescription =
     eyebrow="Pachete și prețuri"
     title="Pachete clare, fără surprize"
     accent="fără surprize"
-    subtitle="Servicii cu preț fix și abonamente de mentenanță. Știi de la început ce primești și cât costă."
+    subtitle="Preț fix și abonamente lunare. Știi de la început ce primești și cât costă."
   />
 
   {
     canceled && (
-      <section class="section section--light" style="padding-bottom:0">
-        <div class="container">
+      <section class="pk-sec" style="padding-bottom:0">
+        <div class="pk-wrap">
           <p class="pk-canceled">
             Plata a fost anulată. Nicio problemă: pachetele te așteaptă mai jos, iar dacă ai
             întrebări <a href="/contact">scrie-ne</a>.
@@ -54,41 +76,55 @@ const metaDescription =
     )
   }
 
+  {/* 1. Pachete web (showpiece) */}
   {
-    services.length > 0 && (
-      <section class="section section--light">
-        <div class="container">
-          <h2 class="pk-section-title">Pachete de servicii</h2>
-          <p class="pk-section-sub">Plată unică, livrare pe termen clar.</p>
-          <div class="pk-grid" data-reveal-stagger>
-            {services.map((pkg) => (
-              <article class="pk-card">
-                <h3>{pkg.name}</h3>
-                <p class="pk-price">{formatPrice(pkg)}</p>
-                <p class="pk-desc">{pkg.description}</p>
+    web.length > 0 && (
+      <section class="pk-sec pk-web">
+        <div class="pk-wrap">
+          <header class="pk-head pk-head--center" data-reveal>
+            <span class="pk-tag">
+              <span>Pachete web</span>
+            </span>
+            <h2 class="pk-h2">
+              De unde pornește <em>site-ul tău</em>
+            </h2>
+            <p class="pk-lead">Preț fix, livrare pe termen clar. În EUR, fără TVA.</p>
+          </header>
+          <div class="pk-web-grid">
+            {web.map((pkg, i) => (
+              <article class:list={['pk-w', i === featuredWebIdx && 'pk-w--feat']}>
+                {i === featuredWebIdx && (
+                  <span class="pk-w-badge">
+                    <span>Cel mai cerut</span>
+                  </span>
+                )}
+                <span class="pk-w-idx">{String(i + 1).padStart(2, '0')}</span>
+                <h3 class="pk-w-name">{pkg.name}</h3>
+                <p class="pk-w-desc">{pkg.description}</p>
+                <p class="pk-w-price">{formatPrice(pkg)}</p>
                 {pkg.features.length > 0 && (
-                  <ul class="pk-features">
+                  <ul class="pk-w-feat">
                     {pkg.features.map((f) => (
                       <li>{f}</li>
                     ))}
                   </ul>
                 )}
+                {pkg.note && <p class="pk-w-note">{pkg.note}</p>}
                 <div class="pk-cta">
                   {canBuy(pkg.priceCents) && (
                     <form method="post" action="/api/checkout">
                       <input type="hidden" name="slug" value={pkg.slug} />
-                      <button type="submit" class="pk-buy">
+                      <button type="submit" class="pk-btn pk-btn--fill">
                         <span>Cumpără</span>
                       </button>
                     </form>
                   )}
-                  <Button
-                    href={`/contact?service=${encodeURIComponent(pkg.name)}`}
-                    variant={canBuy(pkg.priceCents) ? 'outline' : 'primary'}
-                    withArrow={!canBuy(pkg.priceCents)}
+                  <a
+                    class:list={['pk-btn', i === featuredWebIdx && 'pk-btn--fill']}
+                    href={contactHref(pkg.name)}
                   >
-                    Cere o ofertă
-                  </Button>
+                    <span>Cere ofertă →</span>
+                  </a>
                 </div>
               </article>
             ))}
@@ -98,100 +134,456 @@ const metaDescription =
     )
   }
 
+  {/* 2. Grafică & marketing */}
   {
-    maintenance.length > 0 && (
-      <section class="section section--light pk-section-alt">
-        <div class="container">
-          <h2 class="pk-section-title">Abonamente de mentenanță</h2>
-          <p class="pk-section-sub">
-            Site-ul tău actualizat, salvat și sub supraveghere, lună de lună.
-            <a href="/mentenanta"> Calculează-ți abonamentul pe pagina de mentenanță</a>.
-          </p>
-          <div class="pk-grid" data-reveal-stagger>
-            {maintenance.map((pkg) => (
-              <article class="pk-card pk-card--accent">
-                <h3>{pkg.name}</h3>
-                <p class="pk-price">{formatPrice(pkg)}</p>
-                <p class="pk-desc">{pkg.description}</p>
+    graphicsAll.length > 0 && (
+      <section class="pk-sec pk-sec--soft">
+        <div class="pk-wrap">
+          <header class="pk-head" data-reveal>
+            <span class="pk-tag">
+              <span>Grafică & marketing</span>
+            </span>
+            <h2 class="pk-h2">
+              Brand, vizualuri și <em>strategie</em>
+            </h2>
+            <p class="pk-lead">Preț fix și pentru partea creativă.</p>
+          </header>
+          <div class="pk-grid3">
+            {graphicsAll.map((pkg) => (
+              <article class="pk-card">
+                <div class="pk-card-head">
+                  <h3>{pkg.name}</h3>
+                  <span class="pk-card-price">{formatPrice(pkg)}</span>
+                </div>
+                <p class="pk-card-desc">{pkg.description}</p>
                 {pkg.features.length > 0 && (
-                  <ul class="pk-features">
+                  <ul class="pk-mini-feat">
                     {pkg.features.map((f) => (
                       <li>{f}</li>
                     ))}
                   </ul>
                 )}
-                <div class="pk-cta">
-                  {canBuy(pkg.priceCents) && (
-                    <form method="post" action="/api/checkout">
-                      <input type="hidden" name="slug" value={pkg.slug} />
-                      <button type="submit" class="pk-buy">
-                        <span>Abonează-te</span>
-                      </button>
-                    </form>
-                  )}
-                  <Button
-                    href={`/contact?service=${encodeURIComponent(pkg.name)}`}
-                    variant={canBuy(pkg.priceCents) ? 'outline' : 'primary'}
-                    withArrow={!canBuy(pkg.priceCents)}
-                  >
-                    Cere o ofertă
-                  </Button>
-                </div>
+                {pkg.note && <p class="pk-note">{pkg.note}</p>}
+                <a class="pk-link" href={contactHref(pkg.name)}>
+                  Cere ofertă →
+                </a>
               </article>
             ))}
           </div>
-
-          {addons.length > 0 && (
-            <div class="pk-addons">
-              <h3>Opțiuni suplimentare</h3>
-              <ul>
-                {addons.map((pkg) => (
-                  <li>
-                    <span>{pkg.name}</span>
-                    <span class="pk-addon-price">+{formatPrice(pkg)}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
       </section>
     )
   }
 
-  <CtaSection href="/contact" />
+  {/* 3. Abonamente de mentenanță */}
+  {
+    maintenance.length > 0 && (
+      <section class="pk-sec">
+        <div class="pk-wrap">
+          <header class="pk-head" data-reveal>
+            <span class="pk-tag">
+              <span>Mentenanță</span>
+            </span>
+            <h2 class="pk-h2">
+              Site-ul tău, <em>pe mâini bune</em>, lună de lună
+            </h2>
+            <p class="pk-lead">
+              Actualizat, salvat și supravegheat.{' '}
+              <a href="/mentenanta">Calculează-ți abonamentul →</a>
+            </p>
+          </header>
+          <div class="pk-mnt">
+            <div class="pk-mnt-cards">
+              {maintenance.map((pkg) => (
+                <article class="pk-card pk-card--mnt">
+                  <h3>{pkg.name}</h3>
+                  <p class="pk-mnt-price">{formatPrice(pkg)}</p>
+                  <p class="pk-card-desc">{pkg.description}</p>
+                  {pkg.features.length > 0 && (
+                    <ul class="pk-mini-feat">
+                      {pkg.features.map((f) => (
+                        <li>{f}</li>
+                      ))}
+                    </ul>
+                  )}
+                  <div class="pk-cta">
+                    {canBuy(pkg.priceCents) && (
+                      <form method="post" action="/api/checkout">
+                        <input type="hidden" name="slug" value={pkg.slug} />
+                        <button type="submit" class="pk-btn pk-btn--fill">
+                          <span>Abonează-te</span>
+                        </button>
+                      </form>
+                    )}
+                    <a class="pk-btn" href="/mentenanta">
+                      <span>Alege planul →</span>
+                    </a>
+                  </div>
+                </article>
+              ))}
+            </div>
+            {addons.length > 0 && (
+              <aside class="pk-addons">
+                <h3>Adaugi oricând</h3>
+                <ul>
+                  {addons.map((pkg) => (
+                    <li>
+                      <span>{pkg.name}</span>
+                      <span class="pk-addon-price">+{formatPrice(pkg)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </aside>
+            )}
+          </div>
+          <p class="pk-banner">
+            <span>🎁</span> {freeMonthBanner}
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  {/* 4. Tarife orare */}
+  <section class="pk-sec pk-sec--soft">
+    <div class="pk-wrap">
+      <header class="pk-head" data-reveal>
+        <span class="pk-tag">
+          <span>Tarife orare</span>
+        </span>
+        <h2 class="pk-h2">
+          În afara pachetelor, <em>la oră</em>
+        </h2>
+        <p class="pk-lead">{hourlyRatesIntro}</p>
+      </header>
+      <ul class="pk-rates">
+        {
+          hourlyRates.map((r) => (
+            <li>
+              <span class="pk-rate-label">{r.label}</span>
+              <span class="pk-rate-val">{r.rate}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <FaqSection items={packagesFaqs} variant="tint" />
+
+  <CtaSection
+    title="Nu știi ce pachet ți se potrivește?"
+    subtitle="Scrie-ne: îți răspundem cu o recomandare concretă, nu cu un call de vânzări."
+    href="/contact"
+    cta="Scrie-ne"
+  />
 </BaseLayout>
 
 <style>
-  .pk-section-title {
-    font-size: clamp(1.6rem, 3vw, 2.1rem);
-    margin-bottom: 6px;
+  /* ============ Sistem de secțiuni: dens, cu semnătura oblică ============ */
+  .pk-sec {
+    position: relative;
+    padding-block: clamp(34px, 4.5vw, 58px);
   }
-  .pk-section-sub {
+  .pk-sec--soft {
+    background: var(--canvas-soft);
+  }
+  /* wrapper propriu: doar lățime + padding orizontal (fără cei 110px verticali
+     ai .container global, care dublau spațierea). */
+  .pk-wrap {
+    width: 100%;
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding-inline: clamp(20px, 5vw, 40px);
+  }
+  .pk-head {
+    max-width: 54ch;
+    margin-bottom: clamp(18px, 2.4vw, 28px);
+  }
+  .pk-head--center {
+    margin-inline: auto;
+    text-align: center;
+  }
+  /* etichetă oblică = aceeași semnătură ca butoanele brandului */
+  .pk-tag {
+    display: inline-block;
+    transform: skew(-10deg);
+    background: var(--ink);
+    padding: 6px 14px;
+    border-radius: var(--r-xs);
+    margin-bottom: 16px;
+  }
+  .pk-tag span {
+    display: inline-block;
+    transform: skew(10deg);
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #fff;
+  }
+  .pk-h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.7rem, 3.2vw, 2.5rem);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+  }
+  .pk-h2 em {
+    font-style: normal;
+    color: var(--electric);
+  }
+  .pk-lead {
+    margin-top: 12px;
     color: var(--muted);
-    margin-bottom: 32px;
-    max-width: 60ch;
+    font-size: 1.02rem;
+    line-height: 1.55;
   }
-  .pk-section-sub a {
+  .pk-head--center .pk-lead {
+    margin-inline: auto;
+  }
+  .pk-lead a {
     color: var(--electric);
     font-weight: 600;
   }
-  .pk-section-alt {
-    background: var(--canvas-soft);
+
+  /* ============ Butoane oblice + CTA în coloană ============ */
+  .pk-cta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto;
   }
-  .pk-grid {
+  .pk-cta form {
+    display: contents;
+  }
+  .pk-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    transform: skew(-10deg);
+    border: 1px solid var(--line);
+    border-radius: var(--r-xs);
+    background: var(--canvas);
+    color: var(--ink);
+    padding: 12px 20px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition:
+      transform 0.18s var(--ease-snap),
+      border-color 0.2s,
+      background 0.2s,
+      color 0.2s;
+  }
+  .pk-btn span {
+    display: inline-block;
+    transform: skew(10deg);
+  }
+  .pk-btn:hover {
+    transform: skew(-10deg) translateY(-2px);
+    border-color: var(--electric);
+    color: var(--electric);
+  }
+  .pk-btn--fill {
+    background: var(--electric);
+    border-color: var(--electric);
+    color: #fff;
+    box-shadow: var(--glow-electric);
+  }
+  .pk-btn--fill:hover {
+    background: #1184ff;
+    border-color: #1184ff;
+    color: #fff;
+  }
+
+  /* ============ Web: showpiece ============ */
+  .pk-web {
+    overflow: hidden;
+  }
+  .pk-web::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(38% 48% at 50% -6%, rgba(0, 119, 252, 0.1) 0%, transparent 62%),
+      radial-gradient(32% 42% at 94% 96%, rgba(0, 224, 198, 0.08) 0%, transparent 60%);
+  }
+  .pk-web > .pk-wrap {
+    position: relative;
+    z-index: 1;
+  }
+  .pk-web-grid {
     display: grid;
-    gap: 24px;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: stretch;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  @media (max-width: 900px) {
+    .pk-web-grid {
+      grid-template-columns: 1fr;
+      max-width: 420px;
+      gap: 16px;
+    }
+  }
+  .pk-w {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--canvas);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 24px 22px;
+    box-shadow: var(--sh-sm);
+    transition:
+      transform 0.28s var(--ease-snap),
+      border-color 0.28s var(--ease-snap),
+      box-shadow 0.28s var(--ease-snap);
+  }
+  .pk-w:hover {
+    transform: translateY(-5px);
+    border-color: var(--electric);
+    box-shadow: var(--glow-electric);
+  }
+  .pk-w--feat {
+    border-color: transparent;
+    box-shadow:
+      var(--sh-md),
+      var(--glow-electric);
+  }
+  .pk-w--feat::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--r-lg);
+    padding: 2px;
+    background: linear-gradient(135deg, var(--electric), var(--cyan));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  @media (min-width: 901px) {
+    .pk-w--feat {
+      transform: scale(1.04);
+      z-index: 2;
+    }
+    .pk-w--feat:hover {
+      transform: scale(1.04) translateY(-5px);
+    }
+  }
+  .pk-w-badge {
+    position: absolute;
+    top: 14px;
+    right: -7px;
+    transform: skew(-10deg);
+    background: var(--signal);
+    padding: 6px 13px;
+    box-shadow: 0 8px 18px -8px rgba(245, 217, 63, 0.7);
+  }
+  .pk-w-badge span {
+    display: inline-block;
+    transform: skew(10deg);
+    font-family: var(--font-display);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #1a1205;
+  }
+  .pk-w-idx {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.14em;
+    color: var(--electric);
+  }
+  .pk-w-name {
+    font-family: var(--font-display);
+    font-size: 1.22rem;
+    color: var(--ink);
+    margin: 6px 0;
+  }
+  .pk-w-desc {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.45;
+    margin-bottom: 14px;
+  }
+  .pk-w-price {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 2.15rem;
+    line-height: 1;
+    color: var(--ink);
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .pk-w--feat .pk-w-price {
+    color: var(--electric);
+  }
+  .pk-w-feat {
+    list-style: none;
+    margin: 0 0 18px;
+    padding: 0;
+    flex: 1;
+    display: grid;
+    gap: 9px;
+  }
+  .pk-w-feat li {
+    position: relative;
+    padding-left: 24px;
+    font-size: 0.9rem;
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .pk-w-feat li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 11px;
+    height: 6px;
+    border-left: 2px solid var(--cyan);
+    border-bottom: 2px solid var(--cyan);
+    transform: rotate(-45deg);
+  }
+  .pk-w-note {
+    margin: 0 0 16px;
+    padding: 11px 13px;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    color: var(--ink);
+    background: color-mix(in srgb, var(--cyan) 9%, var(--canvas));
+    border: 1px solid color-mix(in srgb, var(--cyan) 32%, var(--line));
+    border-radius: var(--r-sm);
+  }
+
+  /* ============ Grafică & marketing: 3-up compact ============ */
+  .pk-grid3 {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    align-items: start;
   }
   .pk-card {
     display: flex;
     flex-direction: column;
     background: var(--canvas);
     border: 1px solid var(--line);
-    border-radius: var(--r-lg);
-    padding: 28px;
-    box-shadow: var(--sh-sm);
+    border-radius: var(--r-md);
+    padding: 22px;
     transition:
       transform 0.25s var(--ease-snap),
       border-color 0.25s var(--ease-snap),
@@ -202,81 +594,202 @@ const metaDescription =
     border-color: var(--electric);
     box-shadow: var(--glow-electric);
   }
-  .pk-card--accent {
-    border-top: 3px solid var(--cyan);
-  }
-  .pk-card h3 {
-    font-size: 1.2rem;
+  .pk-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
     margin-bottom: 8px;
   }
-  .pk-price {
+  .pk-card-head h3 {
     font-family: var(--font-display);
-    font-size: 1.9rem;
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+  .pk-card-price {
+    font-family: var(--font-display);
     font-weight: 700;
+    font-size: 1.4rem;
     color: var(--electric);
-    margin-bottom: 12px;
+    white-space: nowrap;
   }
-  .pk-desc {
+  .pk-card-desc {
     color: var(--muted);
-    font-size: 0.97rem;
-    margin-bottom: 16px;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    margin-bottom: 14px;
   }
-  .pk-features {
-    margin: 0 0 24px;
-    padding: 0;
+  .pk-mini-feat {
     list-style: none;
+    margin: 0 0 16px;
+    padding: 0;
     flex: 1;
+    display: grid;
+    gap: 7px;
   }
-  .pk-features li {
+  .pk-mini-feat li {
     position: relative;
-    padding-left: 24px;
-    margin-bottom: 8px;
-    font-size: 0.95rem;
+    padding-left: 22px;
+    font-size: 0.88rem;
+    line-height: 1.35;
+    color: var(--ink);
   }
-  .pk-features li::before {
+  .pk-mini-feat li::before {
     content: '';
     position: absolute;
     left: 0;
-    top: 7px;
-    width: 12px;
-    height: 7px;
+    top: 5px;
+    width: 10px;
+    height: 6px;
     border-left: 2px solid var(--cyan);
     border-bottom: 2px solid var(--cyan);
     transform: rotate(-45deg);
   }
+  .pk-note {
+    margin: 0 0 16px;
+    padding: 11px 13px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--ink);
+    background: color-mix(in srgb, var(--cyan) 9%, var(--canvas));
+    border: 1px solid color-mix(in srgb, var(--cyan) 30%, var(--line));
+    border-radius: var(--r-sm);
+  }
+  .pk-link {
+    align-self: flex-start;
+    margin-top: auto;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--electric);
+    transition: color 0.2s;
+  }
+  .pk-link:hover {
+    color: #1184ff;
+  }
+
+  /* ============ Mentenanță ============ */
+  .pk-mnt {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  @media (max-width: 860px) {
+    .pk-mnt {
+      grid-template-columns: 1fr;
+    }
+  }
+  .pk-mnt-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 520px) {
+    .pk-mnt-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+  .pk-card--mnt {
+    border-top: 3px solid var(--cyan);
+  }
+  .pk-card--mnt h3 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+  .pk-mnt-price {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.7rem;
+    color: var(--electric);
+    margin: 6px 0 10px;
+  }
   .pk-addons {
-    margin-top: 40px;
     background: var(--canvas);
     border: 1px solid var(--line);
     border-radius: var(--r-md);
-    padding: 24px 28px;
+    padding: 20px 22px;
   }
   .pk-addons h3 {
-    font-size: 1.05rem;
-    margin-bottom: 14px;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    margin-bottom: 12px;
+    color: var(--ink);
   }
   .pk-addons ul {
+    list-style: none;
     margin: 0;
     padding: 0;
-    list-style: none;
     display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 0;
   }
   .pk-addons li {
     display: flex;
     justify-content: space-between;
     gap: 12px;
-    padding: 10px 14px;
-    border: 1px solid var(--line);
-    border-radius: var(--r-xs);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    padding: 9px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .pk-addons li:last-child {
+    border-bottom: 0;
   }
   .pk-addon-price {
+    font-family: var(--font-display);
     font-weight: 700;
     color: var(--electric);
     white-space: nowrap;
   }
+  .pk-banner {
+    margin-top: 18px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--ink);
+    background: color-mix(in srgb, var(--signal) 18%, var(--canvas));
+    border: 1px solid color-mix(in srgb, var(--signal) 55%, var(--line));
+    border-radius: var(--r-sm);
+  }
+
+  /* ============ Tarife orare ============ */
+  .pk-rates {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    max-width: 780px;
+  }
+  .pk-rates li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--canvas);
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+  }
+  .pk-rate-label {
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .pk-rate-val {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--electric);
+    white-space: nowrap;
+  }
+
+  /* ============ Notice plată anulată ============ */
   .pk-canceled {
     background: color-mix(in srgb, var(--signal) 14%, var(--canvas));
     border: 1px solid color-mix(in srgb, var(--signal) 50%, var(--line));
@@ -287,34 +800,12 @@ const metaDescription =
     color: var(--electric);
     font-weight: 600;
   }
-  .pk-cta {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  /* Buton de cumpărare: aceeași semnătură oblică ca ui/Button.astro. */
-  .pk-buy {
-    transform: skew(-10deg);
-    border: 1px solid transparent;
-    border-radius: var(--r-xs);
-    background: var(--electric);
-    color: #fff;
-    padding: 13px 24px;
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 0.86rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    cursor: pointer;
-    box-shadow: var(--glow-electric);
-    transition: transform 0.18s var(--ease-snap);
-  }
-  .pk-buy:hover {
-    transform: skew(-10deg) translateY(-2px);
-  }
-  .pk-buy span {
-    display: inline-block;
-    transform: skew(10deg);
+</style>
+
+<!-- Doar pe /pachete: componentele FAQ și CTA folosesc .container global (110px
+     padding vertical). Le strângem ca să nu lase benzi mari de gol. -->
+<style is:global>
+  #faq .container {
+    padding-block: clamp(40px, 5vw, 60px);
   }
 </style>

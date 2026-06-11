@@ -28,6 +28,8 @@ export async function getPublicPackages(): Promise<PublicPackages> {
           currency: row.currency.trim(),
           interval: row.interval,
           features: row.features,
+          category: row.category,
+          note: row.note,
           sort: row.sort,
         })),
         fromDb: true,

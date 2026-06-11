@@ -13,6 +13,8 @@ interface Props {
     currency: string;
     interval: string;
     features: string;
+    category: string;
+    note: string;
     sort: number | string;
     active: boolean;
     otoPackageId: string;
@@ -34,6 +36,11 @@ const intervals = [
   { value: 'one_time', label: 'Plată unică' },
   { value: 'monthly', label: 'Lunar' },
   { value: 'yearly', label: 'Anual' },
+];
+const categories = [
+  { value: '', label: 'Fără grupare' },
+  { value: 'web', label: 'Web' },
+  { value: 'grafica-marketing', label: 'Grafică & marketing' },
 ];
 ---
 
@@ -88,6 +95,19 @@ const intervals = [
       </select>
     </label>
     <label class="admin-field">
+      <span>Grupare pe /pachete</span>
+      <select class="admin-select" name="category">
+        {
+          categories.map((c) => (
+            <option value={c.value} selected={values.category === c.value}>
+              {c.label}
+            </option>
+          ))
+        }
+      </select>
+      <small>Doar pentru pachetele de servicii (web vs. grafică & marketing).</small>
+    </label>
+    <label class="admin-field">
       <span>Ordine afișare</span>
       <input class="admin-input" type="number" name="sort" value={String(values.sort)} min="0" />
       <small>Număr mic = mai sus în listă.</small>
@@ -107,6 +127,13 @@ const intervals = [
   <label class="admin-field">
     <span>Beneficii (unul pe linie)</span>
     <textarea class="admin-textarea" name="features">{values.features}</textarea>
+  </label>
+
+  <label class="admin-field">
+    <span>Notă-callout (opțional)</span>
+    <textarea class="admin-textarea" name="note">{values.note}</textarea>
+    <small>Text afișat vizibil pe card, ex. precizarea „nu creăm logo-uri".</small>
+    {errors.note && <small class="field-error">{errors.note[0]}</small>}
   </label>
 
   <div class="form-grid">

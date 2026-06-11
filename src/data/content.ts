@@ -273,6 +273,40 @@ export const generalFaqs: Faq[] = [
   },
 ];
 
+/** FAQ specific paginii /pachete (timeline, hosting, redesign, tehnologii, taxe). */
+export const packagesFaqs: Faq[] = [
+  {
+    q: 'Cât durează, de la start la lansare?',
+    body: [
+      'Un site de prezentare e gata în 2-4 săptămâni. Dacă vorbim de o platformă cu funcții pe comandă, integrări și panou de administrare, socotește între 2 și 6 luni, depinde cât de complex e ce ai în cap.',
+    ],
+  },
+  {
+    q: 'Vă ocupați și de găzduire și de mentenanță?',
+    body: [
+      'Da. Ne ocupăm de găzduire, mentenanță lunară, securitate și actualizări, plus suport când apare ceva. După ce site-ul e live rămânem alături de tine, nu îți dăm fișierele și succes.',
+    ],
+  },
+  {
+    q: 'Puteți reface un site pe care îl am deja?',
+    body: [
+      'Sigur. Refacem din temelii un site care arată sau merge prost și migrăm de pe WordPress, Joomla sau alt CMS spre ceva modern și rapid. Ce funcționează deja păstrăm.',
+    ],
+  },
+  {
+    q: 'Cu ce lucrați, mai exact?',
+    body: [
+      'Depinde de proiect. La interfață mergem pe React, Next.js sau Vue, iar în spate pe Node.js, Python sau PHP/Laravel. Alegem ce se potrivește treabei tale, nu te punem să te pliezi pe o tehnologie anume.',
+    ],
+  },
+  {
+    q: 'Sunt costuri ascunse?',
+    body: [
+      'Nu. Prețul din pachet e cel pe care îl plătești, fără surprize la final. Simplead nu e plătitor de TVA.',
+    ],
+  },
+];
+
 /**
  * Aplicația proprie de monitorizare „SimpleAd Manager" - secțiunile pe teme de pe
  * pagina Mentenanță (stil simplenet „Viteza ca o fundație"): coloana stângă =

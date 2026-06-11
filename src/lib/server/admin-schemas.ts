@@ -27,6 +27,10 @@ export const packageFormSchema = z.object({
   interval: z.enum(['one_time', 'monthly', 'yearly']),
   // Un beneficiu pe linie.
   features: z.string().default(''),
+  // Grupare pe /pachete (doar pentru pachetele de servicii).
+  category: z.enum(['', 'web', 'grafica-marketing']).default(''),
+  // Text-callout afișat pe card (ex. precizarea despre logo).
+  note: z.string().trim().max(600).default(''),
   sort: z.coerce.number().int().min(0).max(9999).default(0),
   active: z.coerce.boolean().default(false),
   // OTO: pachetul oferit cu discount după cumpărare ('' = fără ofertă).
@@ -64,6 +68,8 @@ export type RawPackageForm = {
   currency: string;
   interval: string;
   features: string;
+  category: string;
+  note: string;
   sort: string;
   active: string;
   otoPackageId: string;
@@ -85,6 +91,8 @@ export function parsePackageForm(
     currency: String(form.get('currency') ?? 'EUR'),
     interval: String(form.get('interval') ?? 'one_time'),
     features: String(form.get('features') ?? ''),
+    category: String(form.get('category') ?? ''),
+    note: String(form.get('note') ?? ''),
     sort: String(form.get('sort') ?? '0'),
     active: form.get('active') ? 'true' : '',
     otoPackageId: String(form.get('otoPackageId') ?? ''),

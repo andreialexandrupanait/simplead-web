@@ -19,6 +19,8 @@ type FormValues = {
   currency: string;
   interval: string;
   features: string;
+  category: string;
+  note: string;
   sort: number | string;
   active: boolean;
   otoPackageId: string;
@@ -36,6 +38,8 @@ let values: FormValues = {
   currency: 'EUR',
   interval: 'one_time',
   features: '',
+  category: '',
+  note: '',
   sort: 0,
   active: false,
   otoPackageId: '',
@@ -58,6 +62,8 @@ if (Astro.request.method === 'POST' && db) {
         currency: parsed.data.currency,
         interval: parsed.data.interval,
         features: featuresToList(parsed.data.features),
+        category: parsed.data.category,
+        note: parsed.data.note,
         sort: parsed.data.sort,
         active: parsed.data.active,
         otoPackageId: parsed.data.otoPackageId || null,

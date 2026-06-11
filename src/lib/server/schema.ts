@@ -49,6 +49,11 @@ export const packages = pgTable('packages', {
   currency: char('currency', { length: 3 }).notNull().default('EUR'),
   interval: billingInterval('interval').notNull().default('one_time'),
   features: jsonb('features').$type<string[]>().notNull().default([]),
+  // Grupare pe pagina /pachete: '' | 'web' | 'grafica-marketing'. Text liber
+  // validat de Zod (admin-schemas), nu enum pg: o grupare nouă = o editare acolo.
+  category: text('category').notNull().default(''),
+  // Text-callout afișat vizibil pe card (ex. precizarea „nu creăm logo-uri").
+  note: text('note').notNull().default(''),
   sort: integer('sort').notNull().default(0),
   active: boolean('active').notNull().default(true),
   stripePriceId: text('stripe_price_id'),

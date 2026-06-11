@@ -29,16 +29,16 @@ export const maintenanceBase: MaintenanceBase[] = [
   {
     slug: 'mentenanta-standard',
     name: 'Standard',
-    price: 50,
+    price: 75,
     tag: 'siguranță esențială',
-    items: ['Backup săptămânal', 'Actualizări CMS', '1h modificări incluse'],
+    items: ['Backup săptămânal', 'Actualizări CMS', 'Securitate', '1h modificări incluse'],
   },
   {
     slug: 'mentenanta-premium',
     name: 'Premium',
-    price: 90,
+    price: 120,
     tag: 'performanță maximă',
-    items: ['Backup zilnic', 'Securitate avansată', '3h modificări incluse'],
+    items: ['Monitorizare continuă', 'Securitate avansată', '3h modificări incluse', 'Priority support'],
   },
 ];
 
@@ -48,7 +48,7 @@ export const maintenanceAddons: MaintenanceAddon[] = [
   {
     slug: 'addon-seo',
     name: 'Optimizare SEO continuă',
-    price: 100,
+    price: 150,
     desc: 'Monitorizare poziții Google, optimizare cuvinte cheie, ajustări on-page lunare.',
   },
   {

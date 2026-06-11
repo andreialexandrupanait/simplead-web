@@ -29,6 +29,8 @@ type FormValues = {
   currency: string;
   interval: string;
   features: string;
+  category: string;
+  note: string;
   sort: number | string;
   active: boolean;
   otoPackageId: string;
@@ -81,6 +83,8 @@ if (Astro.request.method === 'POST') {
             currency: parsed.data.currency,
             interval: parsed.data.interval,
             features: featuresToList(parsed.data.features),
+            category: parsed.data.category,
+            note: parsed.data.note,
             sort: parsed.data.sort,
             active: parsed.data.active,
             // Un pachet nu poate fi propriul OTO.
@@ -123,6 +127,8 @@ const values: FormValues = formOverride ?? {
   currency: row.currency.trim(),
   interval: row.interval,
   features: row.features.join('\n'),
+  category: row.category,
+  note: row.note,
   sort: row.sort,
   active: row.active,
   otoPackageId: row.otoPackageId ?? '',
