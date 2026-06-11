@@ -397,20 +397,22 @@ const faqSchema = {
     padding-bottom: 18px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   }
-  .summary__list li {
+  /* Rândurile sunt injectate din JS (innerHTML), deci nu primesc scope-ul Astro:
+     stilăm descendenții cu :global ca să se aplice și bullet-ul, și culorile. */
+  .summary__list :global(li) {
     display: flex;
     justify-content: space-between;
     gap: 12px;
     font-size: 0.92rem;
     color: rgba(225, 230, 245, 0.9);
   }
-  .summary__list li span:first-child {
+  .summary__list :global(li span:first-child) {
     display: inline-flex;
     align-items: baseline;
     gap: 10px;
   }
-  /* Bullet pentru fiecare element din lista de opțiuni. */
-  .summary__list li span:first-child::before {
+  /* Bullet pentru fiecare serviciu din listă (bază + opțiuni suplimentare). */
+  .summary__list :global(li span:first-child::before) {
     content: '';
     flex-shrink: 0;
     width: 6px;
@@ -419,12 +421,12 @@ const faqSchema = {
     background: var(--cyan);
     transform: translateY(-2px);
   }
-  .summary__list li span:last-child {
+  .summary__list :global(li span:last-child) {
     flex-shrink: 0;
     font-weight: 700;
     color: var(--cyan);
   }
-  .summary__list li.is-muted {
+  .summary__list :global(li.is-muted) {
     color: rgba(225, 230, 245, 0.6);
   }
   .summary__total {
