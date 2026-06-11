@@ -47,11 +47,24 @@ export const POST: APIRoute = async ({ request, redirect }) => {
   const stripe = await getStripe();
   if (!db || !stripe) return fallback();
 
-  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
-    buildLine(`Mentenanță ${base.name}`, base.price),
-    ...addons.map((a) => buildLine(a.name, a.price)),
-  ];
+  // Un singur serviciu „Mentenanță" cu prețul total. Add-on-urile NU sunt linii
+  // separate în Stripe/factură; sunt incluse în descriere (informativ) și în
+  // metadata, dar se facturează ca un singur abonament.
   const amountCents = (base.price + addons.reduce((s, a) => s + a.price, 0)) * 100;
+  const includeDesc = addons.length
+    ? `Abonament lunar de mentenanță website. Include: ${addons.map((a) => a.name).join(', ')}.`
+    : 'Abonament lunar de mentenanță website.';
+  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+    {
+      quantity: 1,
+      price_data: {
+        currency: 'eur',
+        unit_amount: amountCents,
+        product_data: { name: `Mentenanță website — ${base.name}`, description: includeDesc },
+        recurring: { interval: 'month' },
+      },
+    },
+  ];
 
   const siteUrl = serverEnv('SITE_URL') || new URL(request.url).origin;
 
@@ -99,18 +112,3 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     return fallback();
   }
 };
-
-function buildLine(
-  name: string,
-  priceEur: number,
-): Stripe.Checkout.SessionCreateParams.LineItem {
-  return {
-    quantity: 1,
-    price_data: {
-      currency: 'eur',
-      unit_amount: priceEur * 100,
-      product_data: { name },
-      recurring: { interval: 'month' },
-    },
-  };
-}
