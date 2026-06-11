@@ -1,49 +1,267 @@
 ---
-/** „Ce ne face diferiți": values-grid (3 carduri) + vals-row (pill-uri). */
-import { aboutDifferentiators, values } from '@data/content';
-
+/**
+ * „Ce ne face diferiți" / Valorile noastre - layout în stil AppShowcase
+ * (ca pe mentenanță): intro sticky stânga (pill + titlu + misiune + nav numerotat)
+ * + carduri numerotate dreapta, cu scrollspy.
+ */
 interface Props {
   variant?: 'light' | 'tint';
-  eyebrow?: string;
-  title?: string;
-  titleAccent?: string;
 }
-const {
-  variant = 'tint',
-  eyebrow = 'Ce ne face diferiți',
-  title = 'Trei lucruri care ',
-  titleAccent = 'ne deosebesc',
-} = Astro.props;
+const { variant = 'tint' } = Astro.props;
 
-// Iconițe pentru cele 3 valori (din export), mapate pe index.
-const valueIcons = [
-  '<path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2z"/><path d="M9 22h6"/>',
-  '<path d="M4 7h16M4 12h16M4 17h10"/>',
-  '<path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M21 21v-2a4 4 0 0 0-3-3.9"/>',
+// Valorile, ca substantive, cu text dezvoltat.
+const valueCards: { name: string; body: string[] }[] = [
+  {
+    name: 'Simplitate',
+    body: [
+      'Fără jargon și fără pași inutili. Îți explicăm pe înțelesul tău și ținem procesul clar, de la prima discuție până la livrare.',
+      'Un singur partener pentru grafică, web și marketing — nu alergi după mai mulți furnizori și nu se pierde nimic pe drum.',
+    ],
+  },
+  {
+    name: 'Onestitate',
+    body: [
+      'Îți spunem lucrurile pe nume, chiar și când nu sunt comode. Dacă o idee nu merită bugetul, îți zicem direct.',
+      'Promitem doar ce putem livra și raportăm transparent ce am făcut și ce a ieșit — fără surprize la final.',
+    ],
+  },
+  {
+    name: 'Creativitate',
+    body: [
+      'Idei care ies din tipar, dar care au și un rost. Creativitatea nu e decor — e instrumentul care atrage atenția potrivită.',
+      'Combinăm partea vizuală cu cercetarea, ca rezultatul să arate bine și să și funcționeze.',
+    ],
+  },
+  {
+    name: 'Orientare spre rezultate',
+    body: [
+      'Măsurăm, nu presupunem. Urmărim cu date reale ce funcționează și ajustăm pe parcurs.',
+      'Scopul nu e doar un site frumos, ci unul care îți aduce clienți și rezultate concrete.',
+    ],
+  },
 ];
 ---
 
-<section class:list={['section', `section--${variant}`]}>
+<section class:list={['section', `section--${variant}`, 'vsec']}>
+  <span class="vsec__glow" aria-hidden="true"></span>
   <div class="container">
-    <div class="sec-head center" data-reveal>
-      <span class="sec-eyebrow" style="display:inline-flex;justify-content:center;">{eyebrow}</span>
-      <h2 class="sec-title">{title}<span class="g">{titleAccent}</span></h2>
-    </div>
-    <div class="values-grid" data-reveal-stagger>
-      {
-        aboutDifferentiators.map((d, i) => (
-          <div class="value-card">
-            <span class="vi">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" set:html={valueIcons[i % valueIcons.length]} />
-            </span>
-            <h3>{d.title}</h3>
-            <p>{d.text}</p>
-          </div>
-        ))
-      }
-    </div>
-    <div class="vals-row" style="justify-content:center;">
-      {values.map((v) => <span class="val-pill">{v}</span>)}
+    <div class="vvals">
+      <div class="vvals__intro" data-reveal>
+        <span class="vvals__pill">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6L5.7 21 8 13.8 2 9.4h7.6z" /></svg>
+          Ce ne face diferiți
+        </span>
+        <h3 class="vvals__title">Valorile după care <span class="g">lucrăm</span></h3>
+        <p class="vvals__lead">
+          La Simplead, fiecare decizie pleacă de la aceleași patru principii. Nu sunt vorbe de pus pe
+          perete, ci felul în care lucrăm zi de zi: de la prima discuție, la livrare și mai departe.
+        </p>
+        <ol class="vvals__nav">
+          {
+            valueCards.map((vc, i) => (
+              <li class:list={['vvals__navitem', i === 0 && 'is-active']} data-target={`val-${i}`}>
+                <span class="n">{String(i + 1).padStart(2, '0')}</span>
+                <span class="lbl">{vc.name}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <div class="vvals__cards" data-reveal-stagger>
+        {
+          valueCards.map((vc, i) => (
+            <article class="vcard" id={`val-${i}`}>
+              <span class="vcard__num">{String(i + 1).padStart(2, '0')}</span>
+              <div class="vcard__body">
+                <h4>{vc.name}</h4>
+                {vc.body.map((p) => (
+                  <p>{p}</p>
+                ))}
+              </div>
+            </article>
+          ))
+        }
+      </div>
     </div>
   </div>
 </section>
+
+<style>
+  .vsec {
+    position: relative;
+    overflow: hidden;
+  }
+  .vsec__glow {
+    position: absolute;
+    inset: auto 0 -30% 0;
+    height: 70%;
+    background: radial-gradient(50% 100% at 50% 100%, rgba(0, 119, 252, 0.1), transparent 70%);
+    pointer-events: none;
+  }
+  .vsec .container {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Valorile - stil AppShowcase (ca pe mentenanță) */
+  .vvals {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+  .vvals__intro {
+    position: sticky;
+    top: calc(var(--nav-h) + 32px);
+  }
+  .vvals__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px 7px 12px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--electric) 9%, transparent);
+    color: var(--electric);
+    font-size: 0.86rem;
+    font-weight: 600;
+  }
+  .vvals__pill svg {
+    width: 16px;
+    height: 16px;
+  }
+  .vvals__title {
+    margin-top: 20px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.7rem, 2.6vw, 2.3rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .vvals__title .g {
+    color: var(--electric);
+  }
+  .vvals__lead {
+    margin-top: 18px;
+    font-size: 1.02rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .vvals__nav {
+    margin-top: 30px;
+    list-style: none;
+    border-top: 1px solid var(--line);
+  }
+  .vvals__navitem {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 4px;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font-weight: 600;
+    transition: color 0.22s var(--ease-snap);
+  }
+  .vvals__navitem .n {
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    color: #b9c2cf;
+  }
+  .vvals__navitem.is-active {
+    color: var(--ink);
+  }
+  .vvals__navitem.is-active .n {
+    color: var(--electric);
+  }
+  .vvals__navitem.is-active .lbl::after {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-left: 10px;
+    border-radius: 50%;
+    background: var(--cyan);
+    vertical-align: middle;
+  }
+  .vvals__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .vcard {
+    display: flex;
+    gap: 22px;
+    padding: 28px 32px;
+    background: var(--canvas);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: var(--sh-sm);
+    transition:
+      border-color 0.18s var(--ease-snap),
+      transform 0.18s var(--ease-snap);
+  }
+  .vcard:hover {
+    border-color: var(--cyan);
+    transform: translateY(-2px);
+  }
+  .vcard__num {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--r-sm);
+    background: color-mix(in srgb, var(--electric) 10%, transparent);
+    color: var(--electric);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.92rem;
+  }
+  .vcard__body h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.16rem;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .vcard__body p {
+    font-size: 0.98rem;
+    line-height: 1.62;
+    color: var(--muted);
+  }
+  .vcard__body p + p {
+    margin-top: 10px;
+  }
+
+  @media (max-width: 720px) {
+    .vvals {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .vvals__intro {
+      position: static;
+    }
+  }
+</style>
+
+<script>
+  // Scrollspy: evidențiază în nav valoarea al cărei card e în vizor.
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.vvals__navitem'));
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('.vcard'));
+  if (items.length && cards.length && 'IntersectionObserver' in window) {
+    const setActive = (id: string) =>
+      items.forEach((it) => it.classList.toggle('is-active', it.dataset.target === id));
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActive((e.target as HTMLElement).id);
+        });
+      },
+      { rootMargin: '-45% 0px -45% 0px' },
+    );
+    cards.forEach((c) => obs.observe(c));
+  }
+</script>

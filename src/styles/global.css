@@ -130,6 +130,8 @@
 
   html {
     scroll-behavior: smooth;
+    /* Offset pentru ancore, ca ținta să nu ajungă sub navbar-ul fix. */
+    scroll-padding-top: calc(var(--nav-h) + 16px);
   }
 
   body {

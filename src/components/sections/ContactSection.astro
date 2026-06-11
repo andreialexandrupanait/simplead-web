@@ -21,17 +21,17 @@ const isPage = variant === 'page';
           întrebări bune, nu cu un răspuns la indigo.
         </p>
         <div class="contact-sign">
-          {/* TODO: înlocuiește cu fotografia reală a lui Andrei */}
-          <span class="ph av">foto Andrei</span>
+          <span class="ph av">
+            <img src="/andrei.jpg" alt={site.founder} style="object-position: center 22%" />
+          </span>
           <div>
-            <b>{site.founder}</b><br />
+            <b>{site.founder}</b>
             <small>fondator Simplead · {site.founderTitle}</small>
           </div>
         </div>
         <div class="contact-direct">
           <a href={site.contact.phoneHref}><span class="lbl">Telefon</span>{site.contact.phone}</a>
           <a href={`mailto:${site.contact.email}`}><span class="lbl">Email</span>{site.contact.email}</a>
-          <span class="row"><span class="lbl">Birou</span>{site.contact.address}</span>
           {isPage && <span class="row"><span class="lbl">Program</span>{site.contact.schedule}</span>}
         </div>
       </div>

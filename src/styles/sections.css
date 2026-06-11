@@ -513,11 +513,6 @@
     -webkit-mask-image: radial-gradient(75% 75% at 50% 50%, #000 40%, transparent 100%);
     mask-image: radial-gradient(75% 75% at 50% 50%, #000 40%, transparent 100%);
   }
-  #contact::after {
-    content: ""; position: absolute; right: -90px; top: 60px; width: 280px; height: 280px;
-    border: 1.5px solid rgba(124,107,240,0.18); border-radius: 50%; pointer-events: none;
-    box-shadow: 0 0 0 40px rgba(124,107,240,0.05);
-  }
   .contact-wrap { margin-top: 60px; display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 72px; align-items: start; }
   .contact-aside { max-width: 430px; }
   .contact-aside h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(28px,3.2vw,42px); line-height: 1.08; letter-spacing: -0.025em; margin: 18px 0 0; text-wrap: balance; }
@@ -988,8 +983,8 @@
 .tk-grid { display: none; grid-template-columns: repeat(6, 1fr); gap: var(--sp-5); }
 .tk-grid.on { display: grid; animation: fadeUp .4s var(--ease); }
 .tk-item { display: flex; flex-direction: column; align-items: center; gap: 16px; }
-.tk-hex { width: 96px; height: 104px; background: #fff; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 14px 22px rgba(40,70,140,0.16)) drop-shadow(0 3px 6px rgba(40,70,140,0.10)); transition: transform .22s var(--ease); }
-.tk-item:hover .tk-hex { transform: translateY(-6px); }
+.tk-hex { width: 96px; height: 96px; background: #fff; border: 1px solid var(--line); border-radius: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 16px 32px -18px rgba(40,70,140,0.24), 0 3px 8px -4px rgba(40,70,140,0.12); transition: transform .22s var(--ease), box-shadow .22s var(--ease), border-color .22s var(--ease); }
+.tk-item:hover .tk-hex { transform: translateY(-6px); box-shadow: 0 22px 40px -18px rgba(40,70,140,0.3), 0 4px 10px -4px rgba(40,70,140,0.14); border-color: var(--cyan); }
 .tk-hex img { width: 44px; height: 44px; object-fit: contain; }
 .tk-item span { font-size: 16px; font-weight: 500; color: var(--navy); text-align: center; }
 
