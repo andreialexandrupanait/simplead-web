@@ -1,12 +1,10 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import HomeHero from '@components/home/HomeHero.astro';
-import ClientsStrip from '@components/home/ClientsStrip.astro';
 import ServicesSection from '@components/sections/ServicesSection.astro';
 import Differentiator from '@components/home/Differentiator.astro';
-import FounderSection from '@components/home/FounderSection.astro';
 import ProcessTimeline from '@components/home/ProcessTimeline.astro';
-import ProofSection from '@components/home/ProofSection.astro';
+import CaseStudiesTabbed from '@components/home/CaseStudiesTabbed.astro';
 import MaintenanceTeaser from '@components/home/MaintenanceTeaser.astro';
 import AiSection from '@components/home/AiSection.astro';
 import Testimonials from '@components/home/Testimonials.astro';
@@ -22,12 +20,10 @@ export const prerender = false;
       5 Proces → 6 Dovadă → 7 Mentenanță → 8 AI → 9 Testimoniale → 10 CTA final.
       (Tools NU pe homepage: pe /despre.) */}
   <HomeHero />
-  <ClientsStrip />
   <ServicesSection />
   <Differentiator />
-  <FounderSection />
   <ProcessTimeline />
-  <ProofSection />
+  <CaseStudiesTabbed />
   <MaintenanceTeaser />
   <AiSection />
   <Testimonials />

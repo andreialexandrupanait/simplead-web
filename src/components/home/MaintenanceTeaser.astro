@@ -13,22 +13,94 @@ import Button from '@components/ui/Button.astro';
       <p class="kicker kicker--cyan">Mentenanță web</p>
       <h2 class="mnt__title">Site-ul tău, monitorizat continuu, nu doar cârpit când se strică.</h2>
       <p class="mnt__sub">
-        Îți urmărim site-ul în permanență cu aplicația noastră internă, care monitorizează o mulțime
-        de parametri <span class="mnt__todo">[confirmă: lista de parametri]</span>. Așa prindem
-        problemele înainte să le simți tu. Și înainte să te coste.
+        Îți urmărim site-ul non-stop cu aplicația noastră internă, SimpleAd Manager. Tu te ocupi de
+        afacere — noi prindem problemele înainte să le simți tu. Și înainte să te coste.
       </p>
       <div class="mnt__cta">
         <Button href="/mentenanta" size="lg" withArrow>Calculează-ți pachetul</Button>
-        <Button href="/mentenanta#faq" size="lg" variant="outline" onDark>Vezi ce include</Button>
+        <Button href="/mentenanta#monitorizare" size="lg" variant="outline" onDark>Vezi ce monitorizăm</Button>
       </div>
     </div>
 
-    <ul class="mnt__list" aria-hidden="true">
-      <li><span class="mnt__dot"></span> Backup &amp; actualizări automate</li>
-      <li><span class="mnt__dot"></span> Securitate &amp; monitorizare uptime</li>
-      <li><span class="mnt__dot"></span> Intervenție rapidă la probleme</li>
-      <li><span class="mnt__dot"></span> Rapoarte clare, lunar</li>
-    </ul>
+    <!-- Mock de dashboard (SimpleAd Manager). Nume site-uri mascate intenționat. -->
+    <div class="mnt__app" aria-hidden="true">
+      <div class="app__top">
+        <span class="app__brand"><span class="app__logo"></span> SimpleAd Manager</span>
+        <span class="app__live"><span class="app__pulse"></span> Live</span>
+      </div>
+
+      <div class="app__chart">
+        <div class="app__chart-head">
+          <span class="app__chart-label">Uptime · ultimele 30 de zile</span>
+          <span class="app__chart-val">99.85% <i>▲</i></span>
+        </div>
+        <div class="app__spark">
+          <svg viewBox="0 0 300 90" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="mntFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#00e0c6" stop-opacity="0.34" />
+                <stop offset="100%" stop-color="#00e0c6" stop-opacity="0" />
+              </linearGradient>
+              <linearGradient id="mntLine" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#0077fc" />
+                <stop offset="100%" stop-color="#00e0c6" />
+              </linearGradient>
+            </defs>
+            <path
+              class="app__area"
+              d="M0,72 C26,64 46,74 76,55 S136,45 166,51 S226,27 256,33 S282,20 288,23 L300,23 L300,90 L0,90 Z"
+              fill="url(#mntFill)"
+            />
+            <path
+              class="app__line"
+              d="M0,72 C26,64 46,74 76,55 S136,45 166,51 S226,27 256,33 S282,20 288,23"
+              fill="none"
+              stroke="url(#mntLine)"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              vector-effect="non-scaling-stroke"
+            />
+          </svg>
+          <span class="app__pt"></span>
+        </div>
+      </div>
+
+      <div class="app__stats">
+        <div class="app__stat"><b>37</b><span>Site-uri</span></div>
+        <div class="app__stat"><b>1.1 TB</b><span>Backup</span></div>
+        <div class="app__stat app__stat--alert"><b>2</b><span>Alerte</span></div>
+      </div>
+
+      <ul class="app__rows">
+        <li class="app__row">
+          <span class="app__dot is-ok"></span>
+          <span class="app__name" style="width:86px"></span>
+          <span class="app__ic"><i></i><i></i><i class="off"></i></span>
+          <span class="app__health"><span class="ok" style="width:94%"></span></span>
+        </li>
+        <li class="app__row">
+          <span class="app__dot is-warn"></span>
+          <span class="app__name" style="width:112px"></span>
+          <span class="app__badge">7</span>
+          <span class="app__ic"><i></i><i class="warn"></i><i></i></span>
+          <span class="app__health"><span class="warn" style="width:68%"></span></span>
+        </li>
+        <li class="app__row">
+          <span class="app__dot is-ok"></span>
+          <span class="app__name" style="width:72px"></span>
+          <span class="app__ic"><i></i><i></i><i></i></span>
+          <span class="app__health"><span class="ok" style="width:90%"></span></span>
+        </li>
+        <li class="app__row">
+          <span class="app__dot is-down"></span>
+          <span class="app__name" style="width:98px"></span>
+          <span class="app__badge">14</span>
+          <span class="app__ic"><i class="warn"></i><i class="off"></i><i></i></span>
+          <span class="app__health"><span class="down" style="width:34%"></span></span>
+        </li>
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -55,9 +127,9 @@ import Button from '@components/ui/Button.astro';
   .mnt__inner {
     position: relative;
     display: grid;
-    grid-template-columns: 1.15fr 0.85fr;
+    grid-template-columns: 1fr 1fr;
     gap: 56px;
-    align-items: center;
+    align-items: stretch;
   }
   .mnt__title {
     margin-top: 16px;
@@ -75,9 +147,15 @@ import Button from '@components/ui/Button.astro';
     line-height: 1.6;
     color: var(--muted-dark);
   }
-  .mnt__todo {
-    color: var(--signal);
-    font-size: 0.92em;
+  .mnt__sub a {
+    color: var(--cyan);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.16s ease;
+  }
+  .mnt__sub a:hover {
+    color: #fff;
   }
   .mnt__cta {
     margin-top: 30px;
@@ -85,30 +163,245 @@ import Button from '@components/ui/Button.astro';
     flex-wrap: wrap;
     gap: 14px;
   }
-  .mnt__list {
-    list-style: none;
+  /* ===== Mock dashboard SimpleAd Manager (card luminos pe fundal dark) ===== */
+  .mnt__app {
+    align-self: stretch;
+    background: #fff;
+    color: #0b1530;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow:
+      0 30px 70px -28px rgba(0, 0, 0, 0.55),
+      0 18px 50px -24px rgba(0, 224, 198, 0.28);
     display: flex;
     flex-direction: column;
     gap: 14px;
-    padding: 28px;
-    background: var(--ink-soft);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--r-md);
+    overflow: hidden;
   }
-  .mnt__list li {
+  .app__top {
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 0.98rem;
-    color: #fff;
+    justify-content: space-between;
   }
-  .mnt__dot {
-    flex-shrink: 0;
+  .app__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: #0b1530;
+  }
+  .app__logo {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    background: linear-gradient(135deg, var(--electric), var(--cyan));
+  }
+  .app__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #16a34a;
+  }
+  .app__pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5);
+    animation: app-pulse 1.8s ease-out infinite;
+  }
+  @keyframes app-pulse {
+    to {
+      box-shadow: 0 0 0 7px rgba(34, 197, 94, 0);
+    }
+  }
+  /* Grafic uptime (sparkline) */
+  .app__chart {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .app__chart-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .app__chart-label {
+    font-size: 0.66rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #6b7691;
+  }
+  .app__chart-val {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.98rem;
+    color: #0b1530;
+  }
+  .app__chart-val i {
+    font-style: normal;
+    font-size: 0.66rem;
+    color: #22c55e;
+  }
+  .app__spark {
+    position: relative;
+    height: 64px;
+  }
+  .app__spark svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .app__pt {
+    position: absolute;
+    top: 16%;
+    right: 3%;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #00e0c6;
+    box-shadow: 0 0 0 0 rgba(0, 224, 198, 0.5);
+    animation: app-ping 1.8s ease-out infinite;
+  }
+  @keyframes app-ping {
+    to {
+      box-shadow: 0 0 0 9px rgba(0, 224, 198, 0);
+    }
+  }
+  .app__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .app__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px;
+    background: #f5f7fa;
+    border: 1px solid #eef1f6;
+    border-radius: 10px;
+  }
+  .app__stat b {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    color: #0b1530;
+  }
+  .app__stat span {
+    font-size: 0.64rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #6b7691;
+  }
+  .app__stat--alert b {
+    color: #e8a23d;
+  }
+  .app__rows {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+  }
+  .app__row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 2px;
+    border-top: 1px solid #f0f2f7;
+  }
+  .app__row:first-child {
+    border-top: 0;
+  }
+  .app__dot {
+    flex: none;
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--cyan);
-    box-shadow: 0 0 0 4px rgba(0, 224, 198, 0.18);
+  }
+  .app__dot.is-ok {
+    background: #22c55e;
+  }
+  .app__dot.is-warn {
+    background: #e8a23d;
+  }
+  .app__dot.is-down {
+    background: #ef4444;
+  }
+  .app__name {
+    flex: none;
+    height: 7px;
+    border-radius: 4px;
+    background: #e4e8f0;
+  }
+  .app__badge {
+    flex: none;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.66rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .app__ic {
+    margin-left: auto;
+    display: flex;
+    gap: 5px;
+  }
+  .app__ic i {
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 2px;
+    background: #22c55e;
+  }
+  .app__ic i.warn {
+    background: #e8a23d;
+  }
+  .app__ic i.off {
+    background: #d6dbe6;
+  }
+  .app__health {
+    flex: none;
+    width: 54px;
+    height: 6px;
+    border-radius: 3px;
+    background: #eef1f6;
+    overflow: hidden;
+  }
+  .app__health span {
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+  }
+  .app__health span.ok {
+    background: #22c55e;
+  }
+  .app__health span.warn {
+    background: #e8a23d;
+  }
+  .app__health span.down {
+    background: #ef4444;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .app__pulse {
+      animation: none;
+    }
   }
   @media (max-width: 900px) {
     .mnt__inner {

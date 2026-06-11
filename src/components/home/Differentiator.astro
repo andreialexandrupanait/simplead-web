@@ -2,6 +2,8 @@
 import { site } from '@data/site';
 import Button from '@components/ui/Button.astro';
 
+const founderPhoto = '/andrei.jpg';
+
 const points = [
   {
     title: 'Pornim de la știință',
@@ -19,44 +21,61 @@ const points = [
 ---
 
 <section class="diff">
-  <div class="site-container diff__inner">
-    <div class="diff__head" data-reveal>
-      <p class="kicker kicker--cyan">De ce Simplead</p>
-      <h2 class="diff__title">
-        Designul bun nu se ghicește. <span>Se vede și se măsoară.</span>
-      </h2>
-      <p class="diff__sub">
-        Fiecare decizie de design și mesaj pleacă de la cum funcționează atenția și alegerea — și o
-        validăm cu unelte din neuroștiință (eye-tracking, heatmaps), nu pe presupuneri.
-      </p>
-      <div class="diff__cta">
-        <Button
-          href={site.founderSite}
-          target="_blank"
-          rel="noopener"
-          variant="outline"
-          onDark
-          withArrow
-        >
-          Vezi cercetarea pe panaitandrei.ro
-        </Button>
+  <div class="site-container">
+    <div class="diff__top">
+      <div class="diff__head" data-reveal>
+        <p class="kicker kicker--cyan">De ce Simplead</p>
+        <h2 class="diff__title">
+          Designul bun nu se ghicește. <span>Se vede și se măsoară.</span>
+        </h2>
+        <p class="diff__sub">
+          Fiecare decizie de design și mesaj pleacă de la cum funcționează atenția și alegerea — și o
+          validăm cu unelte din neuroștiință (eye-tracking, heatmaps), nu pe presupuneri.
+        </p>
+        <div class="diff__cta">
+          <Button href={site.founderSite} target="_blank" rel="noopener" variant="primary" withArrow>
+            Vezi cercetarea pe panaitandrei.ro
+          </Button>
+        </div>
       </div>
-    </div>
 
-    <ul class="diff__points" data-reveal-stagger>
-      {
-        points.map((p, i) => (
-          <li class="diff__point">
-            <span class="diff__num">{String(i + 1).padStart(2, '0')}</span>
-            <div>
-              <h3>{p.title}</h3>
-              <p>{p.body}</p>
-            </div>
-          </li>
-        ))
-      }
-    </ul>
+      <ul class="diff__points" data-reveal-stagger>
+        {
+          points.map((p, i) => (
+            <li class="diff__point">
+              <span class="diff__num">{String(i + 1).padStart(2, '0')}</span>
+              <div>
+                <h3>{p.title}</h3>
+                <p>{p.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
   </div>
+
+  <!-- „Omul din spate" - bandă full-width la baza secțiunii -->
+  <figure class="diff__founder" data-reveal>
+    <div class="site-container diff__founder-inner">
+      <span class="diff__avatar">
+        {
+          founderPhoto ? (
+            <img src={founderPhoto} alt={site.founder} loading="lazy" />
+          ) : (
+            <span>AP</span>
+          )
+        }
+      </span>
+      <blockquote class="diff__founder-quote">
+        „Nu folosesc știința ca să sune bine, ci ca să luăm decizii mai bune pentru tine.”
+      </blockquote>
+      <figcaption class="diff__founder-by">
+        <b>{site.founder}</b>
+        <span>Doctor în marketing, neuromarketing</span>
+      </figcaption>
+    </div>
+  </figure>
 </section>
 
 <style>
@@ -64,8 +83,8 @@ const points = [
     position: relative;
     background: var(--ink);
     color: #fff;
-    padding-block: clamp(72px, 10vw, 128px);
-    overflow: hidden;
+    padding-block: clamp(72px, 10vw, 128px) 0;
+    overflow: visible;
   }
   .diff::before {
     content: '';
@@ -79,7 +98,7 @@ const points = [
     mask-image: radial-gradient(110% 90% at 15% 0%, #000, transparent 70%);
     pointer-events: none;
   }
-  .diff__inner {
+  .diff__top {
     position: relative;
     display: grid;
     grid-template-columns: 0.95fr 1.05fr;
@@ -109,6 +128,87 @@ const points = [
   }
   .diff__cta {
     margin-top: 30px;
+  }
+
+  /* „Omul din spate" - bandă full-width peste tranziția dark → light */
+  .diff__founder {
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    margin-top: clamp(64px, 9vw, 110px);
+    margin-bottom: clamp(-76px, -6vw, -50px);
+    padding: 32px 0;
+    background:
+      radial-gradient(90% 180% at 86% 130%, rgba(110, 91, 224, 0.4), transparent 55%),
+      radial-gradient(70% 150% at 8% -30%, rgba(0, 119, 252, 0.2), transparent 55%),
+      #020a3a;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 34px 70px -34px rgba(0, 0, 0, 0.55);
+  }
+  .diff__founder-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+  .diff__avatar {
+    flex: none;
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, var(--electric), var(--cyan));
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.4rem;
+    box-shadow: var(--glow-electric);
+  }
+  .diff__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 22%;
+  }
+  .diff__founder-quote {
+    flex: 1;
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.02rem, 1.5vw, 1.28rem);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: #fff;
+    text-wrap: pretty;
+  }
+  .diff__founder-by {
+    flex: none;
+    text-align: right;
+  }
+  .diff__founder-by b {
+    display: block;
+    color: #fff;
+    font-size: 0.98rem;
+  }
+  .diff__founder-by span {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.84rem;
+    color: var(--cyan);
+  }
+  @media (max-width: 760px) {
+    .diff__founder-inner {
+      flex-direction: column;
+      text-align: center;
+      gap: 16px;
+    }
+    .diff__founder-quote,
+    .diff__founder-by {
+      text-align: center;
+    }
   }
   .diff__points {
     list-style: none;
@@ -146,7 +246,7 @@ const points = [
   }
 
   @media (max-width: 900px) {
-    .diff__inner {
+    .diff__top {
       grid-template-columns: 1fr;
       gap: 40px;
     }

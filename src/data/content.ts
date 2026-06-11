@@ -463,6 +463,76 @@ export const testimonials: Testimonial[] = [
   },
 ];
 
+/**
+ * Studii de caz pe taburi (homepage, stil HubSpot). Fiecare tab = o categorie
+ * cu un studiu de caz (imagine + citat + autor + link + 2 statistici).
+ * Cifrele marcate sunt estimative/placeholder - de confirmat de Andrei.
+ */
+export interface CaseStat {
+  value: string;
+  label: string;
+}
+export interface HomeCaseStudy {
+  /** Eticheta tabului. */
+  tab: string;
+  /** Inițiale pentru placeholder-ul de imagine (până la poze reale). */
+  logo: string;
+  /** URL imagine opțional; gol = placeholder grafic. */
+  image: string;
+  imageAlt: string;
+  quote: string;
+  author: string;
+  role: string;
+  href: string;
+  stats: CaseStat[];
+}
+export const homeCaseStudies: HomeCaseStudy[] = [
+  {
+    tab: 'Web & eCommerce',
+    logo: 'EM',
+    image: '',
+    imageAlt: 'Proiect web Echipamente-medicale.ro',
+    quote:
+      'Le-am studiat portofoliul și am remarcat originalitatea și claritatea soluțiilor propuse. Proiectul a decurs conform așteptărilor, iar rezultatul a fost foarte apreciat de compania noastră.',
+    author: 'Silviu Costiniuc',
+    role: 'Echipamente-medicale.ro',
+    href: '/portofoliu',
+    stats: [
+      { value: '3 săpt.', label: 'de la brief la lansare' }, // TODO: confirmă
+      { value: '100%', label: 'responsiv, pe orice dispozitiv' },
+    ],
+  },
+  {
+    tab: 'Branding & creație',
+    logo: 'BS',
+    image: '',
+    imageAlt: 'Proiect de branding Blitzstudio',
+    quote:
+      'Profesionalism, fairplay, pricepere, asumare: cuvinte ce definesc relația noastră cu Simplead. Suntem la al doilea proiect împreună, datorită implicării active și relaționării impecabile.',
+    author: 'Ștefan Chelmu',
+    role: 'Blitzstudio',
+    href: '/portofoliu',
+    stats: [
+      { value: '2', label: 'proiecte împreună' },
+      { value: '100%', label: 'ar recomanda mai departe' }, // TODO: confirmă
+    ],
+  },
+  {
+    tab: 'Mentenanță & suport',
+    logo: 'FE',
+    image: '',
+    imageAlt: 'Mentenanță website FEAA Galați',
+    quote: 'Simply professional. Trustworthy, honest and creative.',
+    author: 'Bogdan Drăgan',
+    role: 'FEAA Galați',
+    href: '/portofoliu',
+    stats: [
+      { value: '99.9%', label: 'uptime monitorizat' }, // TODO: confirmă
+      { value: '5+ ani', label: 'parteneriat continuu' }, // TODO: confirmă
+    ],
+  },
+];
+
 /** Clienți & parteneri (nume; logo-uri de adăugat ulterior). */
 export const clients: string[] = [
   'FEAA Galați',

@@ -124,11 +124,15 @@ const faqSchema = {
     </div>
   </section>
 
-  {mnt?.caseStudy && <ClientCase caseStudy={mnt.caseStudy} variant="tint" />}
+  {mnt?.caseStudy && (
+    <div class="mnt-case">
+      <ClientCase caseStudy={mnt.caseStudy} variant="light" />
+    </div>
+  )}
 
   <FaqSection
     items={generalFaqs}
-    variant="light"
+    variant="tint"
     eyebrow="Întrebări frecvente"
     title="Ai "
     titleAccent="întrebări?"
@@ -489,6 +493,18 @@ const faqSchema = {
     .calc__pkgs {
       grid-template-columns: 1fr;
     }
+  }
+
+  /* Testimonial (ClientCase) - doar pe această pagină: împiedicăm tăierea
+     titlului mare din cardul dark și lăsăm coloana să se strângă. */
+  .mnt-case :global(.cs-stat),
+  .mnt-case :global(.cs-case) {
+    min-width: 0;
+  }
+  .mnt-case :global(.cs-stat .big) {
+    font-size: clamp(30px, 3vw, 42px);
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 </style>
 

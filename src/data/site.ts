@@ -7,8 +7,8 @@ export const site = {
   legalName: 'Simplead', // TODO: denumire legală completă (SRL/PFA)
   tagline: 'Facem lucrurile simple. Și le bazăm pe neuroștiință.',
   description:
-    'Studio de grafică și marketing digital din România. Branding, web și marketing fundamentate pe neuroștiință, nu pe noroc. Condus de Andrei Panait, doctor în marketing, cu cercetare în neuromarketing.',
-  founder: 'Andrei Panait',
+    'Studio de grafică și marketing digital din România. Branding, web și marketing fundamentate pe neuroștiință, nu pe noroc. Condus de Andrei Alexandru Panait, doctor în marketing, cu cercetare în neuromarketing.',
+  founder: 'Andrei Alexandru Panait',
   founderTitle: 'doctor în marketing',
   founderSite: 'https://panaitandrei.ro', // identitatea academică (neuromarketing, cercetare)
   // Credențiale academice (E-E-A-T: intră în schema Person din BaseLayout).
