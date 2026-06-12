@@ -3,8 +3,17 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { contactSchema, type ContactInput } from '../../lib/contact-schema';
 
-/** Formular de contact stilizat ca în design (.cform). Folosit pe Acasă + /contact. */
-export default function ContactForm() {
+interface Props {
+  /** Serviciu pre-completat (ex. din drawer); altfel se citește din ?service= din URL. */
+  service?: string;
+  /** Apelat după trimitere reușită (ex. ca drawer-ul să se închidă). */
+  onSuccess?: () => void;
+  /** Fără card propriu (transparent, fără border/padding) — pentru drawer. */
+  flat?: boolean;
+}
+
+/** Formular de contact stilizat ca în design (.cform). Folosit pe Acasă + /contact + drawer. */
+export default function ContactForm({ service: serviceProp, onSuccess, flat }: Props = {}) {
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [serverError, setServerError] = useState<string | null>(null);
   const [preselected, setPreselected] = useState<string | null>(null);
@@ -17,14 +26,14 @@ export default function ContactForm() {
     formState: { errors },
   } = useForm<ContactInput>({ resolver: zodResolver(contactSchema) });
 
-  // Preselectare din funnel: /contact?service=<pachet> (linkurile de pe /pachete).
+  // Preselectare: prop (drawer) sau ?service= din URL (linkurile de pe /pachete).
   useEffect(() => {
-    const service = new URLSearchParams(window.location.search).get('service');
+    const service = serviceProp ?? new URLSearchParams(window.location.search).get('service') ?? '';
     if (service) {
       setValue('service', service.slice(0, 60));
       setPreselected(service.slice(0, 60));
     }
-  }, [setValue]);
+  }, [serviceProp, setValue]);
 
   const onSubmit = async (data: ContactInput) => {
     setStatus('sending');
@@ -39,6 +48,7 @@ export default function ContactForm() {
       if (res.ok && body.ok) {
         setStatus('success');
         reset();
+        onSuccess?.();
       } else {
         setStatus('error');
         setServerError(body.error ?? null);
@@ -76,7 +86,11 @@ export default function ContactForm() {
   }
 
   return (
-    <form className="cform" onSubmit={handleSubmit(onSubmit)} noValidate>
+    <form
+      className={flat ? 'cform cform--bare' : 'cform'}
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+    >
       {preselected && (
         <p
           style={{

@@ -4,6 +4,7 @@ import Navbar from '@components/Navbar.astro';
 import Footer from '@components/Footer.astro';
 import Analytics from '@components/Analytics.astro';
 import CookieBanner from '@components/CookieBanner.astro';
+import ContactDrawer from '@components/react/ContactDrawer';
 import { site } from '@data/site';
 import { resolveLocale } from '@i18n/index';
 
@@ -162,6 +163,46 @@ const jsonLd = {
     </main>
     <Footer />
     <CookieBanner />
+
+    <ContactDrawer
+      client:load
+      phone={site.contact.phone}
+      phoneHref={site.contact.phoneHref}
+      email={site.contact.email}
+    />
+
+    {
+      /* Linkurile către /contact deschid drawer-ul; fără JS / înainte de hidratare,
+        navighează normal (degradare elegantă). */
+    }
+    <script>
+      document.addEventListener('click', (e) => {
+        const target = e.target as Element | null;
+        const a = target?.closest?.('a[href*="/contact"]') as HTMLAnchorElement | null;
+        if (!a) return;
+        if (
+          e.defaultPrevented ||
+          (e as MouseEvent).button !== 0 ||
+          (e as MouseEvent).metaKey ||
+          (e as MouseEvent).ctrlKey ||
+          (e as MouseEvent).shiftKey ||
+          (e as MouseEvent).altKey
+        )
+          return;
+        if (a.hasAttribute('data-no-drawer') || a.getAttribute('target') === '_blank') return;
+        let url: URL;
+        try {
+          url = new URL(a.href, location.origin);
+        } catch {
+          return;
+        }
+        if (url.pathname !== '/contact') return;
+        // Drawer nehidratat încă → lăsăm linkul să navigheze normal.
+        if (typeof window.openContactDrawer !== 'function') return;
+        e.preventDefault();
+        window.openContactDrawer(url.searchParams.get('service') || '');
+      });
+    </script>
 
     <script>
       // Scroll reveal: subtil, accesibil ([data-reveal] / [data-reveal-stagger]).
