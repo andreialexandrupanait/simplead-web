@@ -77,6 +77,8 @@ export const leads = pgTable('leads', {
   name: text('name').notNull(),
   email: text('email').notNull(),
   phone: text('phone'),
+  // Nume firmă / CUI (opțional, din formularul de contact).
+  company: text('company'),
   service: text('service'),
   message: text('message').notNull(),
   source: text('source').notNull().default('contact-form'),

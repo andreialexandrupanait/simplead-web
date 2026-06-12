@@ -91,6 +91,14 @@ const STATUS_LABEL: Record<string, string> = {
               </>
             )
           }
+          {
+            lead.company && (
+              <>
+                <dt>Firmă/CUI</dt>
+                <dd>{lead.company}</dd>
+              </>
+            )
+          }
         </dl>
         <div class="admin-actions" style="margin-top:16px">
           <a class="admin-btn admin-btn--sm" href={`mailto:${lead.email}`}>Răspunde pe email</a>

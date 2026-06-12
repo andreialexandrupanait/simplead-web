@@ -34,17 +34,20 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
-  const { name, email, phone, service, message, company } = parsed.data;
+  const { firstName, lastName, email, phone, company, service, message, website } = parsed.data;
 
   // Honeypot: dacă e completat, e bot - răspundem „ok" fără a face nimic.
-  if (company) return json({ ok: true });
+  if (website) return json({ ok: true });
+
+  // Nume complet (ordine RO: Nume Prenume) pentru DB, subiect și notificări.
+  const name = `${lastName} ${firstName}`.trim();
 
   // 1) Persistăm lead-ul (best-effort: fără DB sau cu DB căzut, mergem mai departe).
   let leadStored = false;
   const db = getDb();
   if (db) {
     try {
-      await db.insert(leads).values({ name, email, phone, service, message });
+      await db.insert(leads).values({ name, email, phone, company: company || null, service, message });
       leadStored = true;
     } catch (err) {
       console.warn('[contact] Salvarea lead-ului a eșuat:', err);
@@ -55,9 +58,11 @@ export const POST: APIRoute = async ({ request }) => {
   const to = serverEnv('CONTACT_TO_EMAIL') || site.contact.email;
   const subject = `[Simplead] Cerere nouă${service ? `: ${service}` : ''} - ${name}`;
   const text = [
-    `Nume: ${name}`,
+    `Nume: ${lastName}`,
+    `Prenume: ${firstName}`,
     `Email: ${email}`,
-    `Telefon: ${phone || '-'}`,
+    `Telefon: ${phone}`,
+    `Firmă/CUI: ${company || '-'}`,
     `Serviciu: ${service || '-'}`,
     '',
     'Mesaj:',
@@ -68,7 +73,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   // 3) Notificare Slack, fire-and-forget (nu blocăm răspunsul).
   void notifySlack(
-    `:incoming_envelope: Lead nou pe simplead.ro\n*${name}* <${email}>${phone ? ` · ${phone}` : ''}${service ? `\nServiciu: ${service}` : ''}\n${message.length > 300 ? `${message.slice(0, 300)}...` : message}`,
+    `:incoming_envelope: Lead nou pe simplead.ro\n*${name}* <${email}> · ${phone}${company ? `\nFirmă/CUI: ${company}` : ''}${service ? `\nServiciu: ${service}` : ''}\n${message.length > 300 ? `${message.slice(0, 300)}...` : message}`,
   );
 
   // Utilizatorul primește „ok" dacă mesajul a ajuns măcar pe un canal

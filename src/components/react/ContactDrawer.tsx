@@ -158,7 +158,7 @@ export default function ContactDrawer({ phone, phoneHref, email }: Props) {
           </button>
         </header>
 
-        <div style={{ padding: '24px 32px 32px', overflowY: 'auto', flex: 1 }}>
+        <div style={{ padding: '24px 32px', overflowY: 'auto', flex: 1 }}>
           {open && (
             <ContactForm
               key={instance}
@@ -167,27 +167,28 @@ export default function ContactDrawer({ phone, phoneHref, email }: Props) {
               onSuccess={() => setTimeout(close, 2600)}
             />
           )}
-          <p
-            style={{
-              marginTop: 24,
-              paddingTop: 20,
-              borderTop: '1px solid var(--line)',
-              fontSize: 14,
-              lineHeight: 1.6,
-              color: 'var(--muted)',
-            }}
-          >
-            Preferi direct? Sună-ne la{' '}
-            <a href={phoneHref} style={{ color: 'var(--electric)', fontWeight: 600 }}>
-              {phone}
-            </a>{' '}
-            sau scrie la{' '}
-            <a href={`mailto:${email}`} style={{ color: 'var(--electric)', fontWeight: 600 }}>
-              {email}
-            </a>
-            .
-          </p>
         </div>
+        <footer
+          style={{
+            flexShrink: 0,
+            padding: '18px 32px',
+            borderTop: '1px solid var(--line)',
+            textAlign: 'center',
+            fontSize: 14,
+            lineHeight: 1.6,
+            color: 'var(--muted)',
+          }}
+        >
+          Preferi direct? Sună-ne la{' '}
+          <a href={phoneHref} style={{ color: 'var(--electric)', fontWeight: 600 }}>
+            {phone}
+          </a>{' '}
+          sau scrie la{' '}
+          <a href={`mailto:${email}`} style={{ color: 'var(--electric)', fontWeight: 600 }}>
+            {email}
+          </a>
+          .
+        </footer>
       </aside>
     </div>
   );

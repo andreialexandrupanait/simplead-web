@@ -38,6 +38,7 @@ export const GET: APIRoute = async ({ url }) => {
     { header: 'Nume', value: (r) => r.name },
     { header: 'Email', value: (r) => r.email },
     { header: 'Telefon', value: (r) => r.phone },
+    { header: 'Firmă/CUI', value: (r) => r.company },
     { header: 'Serviciu', value: (r) => r.service },
     { header: 'Status', value: (r) => r.status },
     { header: 'Sursă', value: (r) => r.source },

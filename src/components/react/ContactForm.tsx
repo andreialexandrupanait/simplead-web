@@ -103,15 +103,17 @@ export default function ContactForm({ service: serviceProp, onSuccess, flat }: P
         </p>
       )}
       <input type="hidden" {...register('service')} />
-      <div className="cf">
-        <label htmlFor="cf-name">Cum te cheamă?</label>
-        <input
-          id="cf-name"
-          type="text"
-          placeholder="Numele tău (sau al firmei)"
-          {...register('name')}
-        />
-        {errors.name && <div className="cf-error">{errors.name.message}</div>}
+      <div className="cf-row">
+        <div className="cf">
+          <label htmlFor="cf-lastname">Nume</label>
+          <input id="cf-lastname" type="text" placeholder="Popescu" {...register('lastName')} />
+          {errors.lastName && <div className="cf-error">{errors.lastName.message}</div>}
+        </div>
+        <div className="cf">
+          <label htmlFor="cf-firstname">Prenume</label>
+          <input id="cf-firstname" type="text" placeholder="Ion" {...register('firstName')} />
+          {errors.firstName && <div className="cf-error">{errors.firstName.message}</div>}
+        </div>
       </div>
 
       <div className="cf-row">
@@ -121,11 +123,23 @@ export default function ContactForm({ service: serviceProp, onSuccess, flat }: P
           {errors.email && <div className="cf-error">{errors.email.message}</div>}
         </div>
         <div className="cf">
-          <label htmlFor="cf-phone">
-            Telefon <span className="opt">(opțional)</span>
-          </label>
+          <label htmlFor="cf-phone">Telefon</label>
           <input id="cf-phone" type="tel" placeholder="07xx xxx xxx" {...register('phone')} />
+          {errors.phone && <div className="cf-error">{errors.phone.message}</div>}
         </div>
+      </div>
+
+      <div className="cf">
+        <label htmlFor="cf-company">
+          Nume firmă / CUI <span className="opt">(opțional)</span>
+        </label>
+        <input
+          id="cf-company"
+          type="text"
+          placeholder="ex. Simplead SRL / RO41501661"
+          {...register('company')}
+        />
+        {errors.company && <div className="cf-error">{errors.company.message}</div>}
       </div>
 
       <div className="cf">
@@ -141,14 +155,20 @@ export default function ContactForm({ service: serviceProp, onSuccess, flat }: P
       {/* Honeypot anti-spam */}
       <div style={{ position: 'absolute', left: -9999 }} aria-hidden="true">
         <label>
-          Companie
-          <input tabIndex={-1} autoComplete="off" {...register('company')} />
+          Website
+          <input tabIndex={-1} autoComplete="off" {...register('website')} />
         </label>
       </div>
 
       <label className="cf-consent">
         <input type="checkbox" {...register('consent')} />
-        Sunt de acord ca Simplead să-mi folosească datele ca să-mi răspundă la acest mesaj.
+        <span>
+          Sunt de acord ca Simplead să-mi folosească datele ca să-mi răspundă la acest mesaj. Vezi{' '}
+          <a href="/confidentialitate" target="_blank" rel="noopener">
+            politica de confidențialitate
+          </a>
+          .
+        </span>
       </label>
       {errors.consent && (
         <div className="cf-error" style={{ marginTop: -14, marginBottom: 18 }}>

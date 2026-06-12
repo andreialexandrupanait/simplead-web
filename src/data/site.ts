@@ -20,7 +20,7 @@ export const site = {
   contact: {
     phone: '0755 215 135',
     phoneHref: 'tel:+40755215135',
-    email: 'office@simplead.ro',
+    email: 'contact@simplead.ro',
     city: 'Galați',
     country: 'România',
     address: 'Galați, România', // TODO: adresă completă dacă e cazul
