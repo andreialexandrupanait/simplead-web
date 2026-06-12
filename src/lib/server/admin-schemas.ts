@@ -170,6 +170,41 @@ const tagsField = z
       .filter(Boolean),
   );
 
+// „Pe scurt": o concluzie pe rând.
+const takeawaysField = z
+  .string()
+  .default('')
+  .transform((s) =>
+    s
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean),
+  );
+
+/** Parsează FAQ-ul din textarea: blocuri separate de o linie `---`; prima linie
+ * = întrebarea, restul = răspunsul (poate avea paragrafe). */
+export function parseFaq(s: string): { q: string; a: string }[] {
+  return s
+    .split(/^\s*---\s*$/m)
+    .map((block) => {
+      const lines = block.replace(/\r/g, '').split('\n');
+      while (lines.length && !lines[0].trim()) lines.shift();
+      const q = (lines.shift() ?? '').trim();
+      const a = lines.join('\n').trim();
+      return { q, a };
+    })
+    .filter((f) => f.q && f.a);
+}
+const faqField = z.string().default('').transform(parseFaq);
+
+/** Reverse pentru prefill în admin (array → text de editat). */
+export function takeawaysToText(arr: string[]): string {
+  return (arr ?? []).join('\n');
+}
+export function faqToText(arr: { q: string; a: string }[]): string {
+  return (arr ?? []).map((f) => `${f.q}\n${f.a}`).join('\n---\n');
+}
+
 /** Validare pentru formularul de articole de blog din admin. */
 export const postFormSchema = z.object({
   title: z.string().trim().min(2, 'Titlul e obligatoriu (minim 2 caractere).').max(180),
@@ -181,7 +216,10 @@ export const postFormSchema = z.object({
     .default(''),
   body: z.string().default(''),
   author: z.string().trim().max(80).default('Andrei Panait'),
+  category: z.string().trim().max(60).default(''),
   tags: tagsField,
+  takeaways: takeawaysField,
+  faq: faqField,
   cover: z.string().trim().max(500).default(''),
   status: z.enum(['draft', 'published']),
   publishedAt: z.string().trim().default(''),
@@ -204,7 +242,10 @@ export function parsePostForm(
     description: String(form.get('description') ?? ''),
     body: String(form.get('body') ?? ''),
     author: String(form.get('author') ?? 'Andrei Panait'),
+    category: String(form.get('category') ?? ''),
     tags: String(form.get('tags') ?? ''),
+    takeaways: String(form.get('takeaways') ?? ''),
+    faq: String(form.get('faq') ?? ''),
     cover: String(form.get('cover') ?? ''),
     status: String(form.get('status') ?? 'draft'),
     publishedAt: String(form.get('publishedAt') ?? ''),
@@ -216,6 +257,24 @@ export function parsePostForm(
     return { ok: false, errors: parsed.error.flatten().fieldErrors, raw };
   }
   return { ok: true, data: parsed.data };
+}
+
+/** Setări publice ale site-ului (din /admin/setari). */
+export const siteSettingsFormSchema = z.object({
+  showPhone: z.coerce.boolean().default(false),
+  whatsappNumber: z
+    .string()
+    .trim()
+    .max(20)
+    .transform((s) => s.replace(/[^\d]/g, '')),
+});
+export type SiteSettingsFormData = z.infer<typeof siteSettingsFormSchema>;
+
+export function parseSiteSettingsForm(form: FormData): SiteSettingsFormData {
+  return siteSettingsFormSchema.parse({
+    showPhone: form.get('showPhone') ? 'true' : '',
+    whatsappNumber: String(form.get('whatsappNumber') ?? ''),
+  });
 }
 
 /** Validare pentru formularul de proiecte de portofoliu din admin. */

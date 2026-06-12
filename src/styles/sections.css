@@ -31,6 +31,31 @@
   margin: 0 auto;
   padding: 110px 40px;
 }
+@media (max-width: 1024px) {
+  .container {
+    padding: clamp(56px, 9vw, 96px) 40px;
+  }
+}
+@media (max-width: 900px) {
+  .container {
+    padding-inline: 24px;
+  }
+}
+@media (max-width: 480px) {
+  .container {
+    padding-inline: 16px;
+  }
+}
+/* Polish responsive pe telefoane mici: carduri/stat-uri pe 1 coloană. */
+@media (max-width: 560px) {
+  .svc-grid {
+    grid-template-columns: 1fr;
+  }
+  .svchero__stats {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+}
 
 /* section header */
 .sec-head {
@@ -774,56 +799,6 @@ img.pf-shot {
   color: var(--navy);
 }
 
-/* ---- BLOG ---- */
-.blog-grid {
-  margin-top: 56px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 26px;
-}
-.blog-card {
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-}
-.blog-thumb {
-  aspect-ratio: 16 / 10;
-  border-radius: 18px;
-}
-.blog-meta {
-  margin: 18px 0 0;
-  display: flex;
-  gap: 14px;
-  font-size: 13px;
-  color: var(--ink-soft);
-}
-.blog-meta .cat {
-  color: var(--blue);
-  font-weight: 600;
-}
-.blog-card h3 {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 1.28;
-  margin: 10px 0 0;
-  letter-spacing: -0.01em;
-  transition: color 0.18s ease;
-}
-.blog-card:hover h3 {
-  color: var(--blue);
-}
-.blog-card p {
-  margin: 10px 0 0;
-  font-size: 14.5px;
-  line-height: 1.55;
-  color: var(--ink-soft);
-}
-.blog-foot {
-  margin-top: 48px;
-  display: flex;
-  justify-content: center;
-}
 
 /* ---- FINAL CTA ---- */
 .cta-band {
@@ -1766,8 +1741,7 @@ img.pf-shot {
   .proc-step:not(:last-child)::after {
     display: none;
   }
-  .pf-grid,
-  .blog-grid {
+  .pf-grid {
     grid-template-columns: repeat(2, 1fr);
   }
   .cl-row {
@@ -1811,13 +1785,19 @@ img.pf-shot {
     gap: 44px;
   }
 }
+/* Footer: coloanele se stivuiesc pe 1 coloană pe telefoane + tablete portret. */
+@media (max-width: 768px) {
+  .footer-top {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
 @media (max-width: 680px) {
   .container {
     padding: 72px 24px;
   }
   .svc-grid,
   .pf-grid,
-  .blog-grid,
   .proc-steps {
     grid-template-columns: 1fr;
   }
@@ -2174,47 +2154,864 @@ img.pf-shot {
   height: 15px;
 }
 
-/* ---- blog page ---- */
-.blog-feature {
-  margin-top: 48px;
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 40px;
+/* ---- article (blog/[slug]) ---- */
+.article-hero {
+  background: var(--canvas);
+  padding-top: clamp(34px, 5vw, 56px);
+  padding-bottom: clamp(24px, 3.5vw, 38px);
+}
+.article-hero__inner {
+  max-width: 768px;
+  margin-inline: auto;
+}
+.article-crumb {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 26px;
-  overflow: hidden;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 22px;
 }
-.blog-feature .thumb {
-  aspect-ratio: 16 / 11;
-  height: 100%;
+.article-crumb a {
+  color: var(--muted);
+  text-decoration: none;
 }
-.blog-feature .body {
-  padding: 14px 44px 14px 0;
+.article-crumb a:hover {
+  color: var(--electric);
 }
-.blog-feature .body.pad {
-  padding: 44px;
+.article-crumb .cur {
+  color: var(--ink);
+  font-weight: 600;
 }
-.blog-feature h2 {
+.article-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.article-chip {
   font-family: var(--font-display);
-  font-size: clamp(24px, 2.6vw, 34px);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.12;
-  margin: 14px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--electric);
+  background: rgba(0, 119, 252, 0.08);
+  border-radius: var(--r-pill);
+  padding: 5px 12px;
 }
-.blog-feature p {
-  margin: 14px 0 0;
-  font-size: 16px;
-  line-height: 1.6;
+.article-hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  margin: 0;
+  text-wrap: balance;
+}
+.article-hero__dek {
+  margin: 18px 0 0;
+  max-width: 60ch;
+  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+  line-height: 1.55;
+  color: var(--muted);
+}
+.article-draft {
+  margin-top: 18px;
+  background: #fff7e0;
+  border: 1px solid var(--signal);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+.article-meta {
+  margin-top: 26px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 14.5px;
   color: var(--ink-soft);
 }
-.blog-page-grid {
-  margin-top: 30px;
+.article-meta__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-pill);
+  object-fit: cover;
+}
+.article-meta__avatar--mono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+}
+.article-meta__author {
+  font-weight: 600;
+  color: var(--ink);
+}
+.article-meta__dot {
+  color: var(--muted-dark);
+}
+/* Ax unic de aliniere: cover, corp, related, nav — toate în acest shell. */
+.article-shell {
+  width: 100%;
+  max-width: 1080px;
+  margin-inline: auto;
+  padding-inline: 40px;
+}
+.article-body {
+  padding-block: clamp(36px, 5vw, 68px);
+}
+/* Spațiere consistentă între blocurile din coloana de conținut
+   (specificitate ridicată ca să bată stilurile scoped ale componentelor). */
+.article-body .article-main > .article-faq,
+.article-body .article-main > .article-tags,
+.article-body .article-main > .nl-inline,
+.article-body .article-main > .author-box {
+  margin-top: 44px;
+  margin-bottom: 0;
+}
+/* FAQ inline, în continuarea articolului: simplu, fără fundal, în coloană. */
+.article-faq {
+  margin-top: 2.5rem;
+}
+.article-faq__title {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0 0 0.5rem;
+}
+.article-faq__item {
+  border-bottom: 1px solid var(--line);
+}
+.article-faq__item:first-of-type {
+  border-top: 1px solid var(--line);
+}
+.article-faq__q {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 2px;
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  font-weight: 600;
+  color: var(--ink);
+  transition: color 0.18s ease;
+}
+.article-faq__q::-webkit-details-marker {
+  display: none;
+}
+.article-faq__q:hover {
+  color: var(--electric);
+}
+.article-faq__q::after {
+  content: '';
+  flex-shrink: 0;
+  width: 11px;
+  height: 11px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg);
+  transition:
+    transform 0.2s var(--ease),
+    border-color 0.2s ease;
+}
+.article-faq__item[open] .article-faq__q {
+  color: var(--electric);
+}
+.article-faq__item[open] .article-faq__q::after {
+  transform: rotate(-135deg);
+  border-color: var(--electric);
+}
+.article-faq__a {
+  padding: 0 2px 20px;
+}
+.article-faq__a p {
+  margin: 0 0 0.85rem;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.article-faq__a p:last-child {
+  margin-bottom: 0;
+}
+
+/* Etichete la finalul articolului (fără divider propriu — îl dă FAQ-ul/textul). */
+.article-tags {
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.article-tags__label {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.article-tags .article-chips {
+  margin-bottom: 0;
+}
+.article-cover {
+  margin: 0;
+}
+.article-cover img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  max-height: 520px;
+  object-fit: cover;
+  border-radius: var(--r-xl);
+}
+.article-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 56px;
+  align-items: start;
+}
+.article-rail {
+  position: sticky;
+  top: calc(var(--nav-h) + 24px);
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.article-main {
+  min-width: 0;
+}
+.article-main .author-box {
+  margin-top: 44px;
+}
+/* „Pe scurt" — concluzii cheie, sus în coloana de conținut. */
+.article-tldr {
+  margin: 0 0 32px;
+  padding: 22px 24px;
+  background: #f6f8fc;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--electric);
+  border-radius: var(--r-md);
+}
+.article-tldr__label {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--electric);
+  margin: 0 0 12px;
+}
+.article-tldr ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.article-tldr li {
+  position: relative;
+  padding-left: 26px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.article-tldr li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--electric);
+}
+.article-related {
+  margin-top: 56px;
+  border-top: 1px solid var(--line);
+  padding-top: 44px;
+}
+.article-related__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2vw, 1.8rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 28px;
+}
+.article-related__grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 26px;
+  gap: 24px;
+}
+/* Navigare anterior / următor. */
+.article-nav {
+  margin-top: 56px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.article-nav__item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: #fff;
+  transition: border-color 0.18s ease;
+}
+.article-nav__item:hover {
+  border-color: #cfd7e3;
+}
+.article-nav__item:hover .article-nav__t {
+  color: var(--electric);
+}
+.article-nav__t {
+  transition: color 0.18s ease;
+}
+.article-nav__item--next {
+  text-align: right;
+  align-items: flex-end;
+}
+.article-nav__dir {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.article-nav__t {
+  font-family: var(--font-display);
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+}
+@media (max-width: 1024px) {
+  .article-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .article-rail {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+  }
+  .article-toc {
+    display: none;
+  }
+  .article-related__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 680px) {
+  .article-shell {
+    padding-inline: 24px;
+  }
+  .article-related__grid {
+    grid-template-columns: 1fr;
+  }
+  .article-nav {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   BLOG: listă stil editorial (hero dark, filtre, featured dark, carduri)
+   ============================================================ */
+
+/* Pile de tag-uri (reutilizabile). */
+.bpill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 5px 12px;
+  border-radius: var(--r-pill);
+  color: var(--electric);
+  background: rgba(0, 119, 252, 0.08);
+}
+.bpill--ondark {
+  color: #d4ddf5;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  text-decoration: none;
+}
+a.bpill--ondark:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+/* Pila de categorie (etichetă principală, plină). */
+.bpill--cat {
+  background: var(--electric);
+  color: #fff;
+}
+.bpill--catdark {
+  background: var(--grad);
+  color: #fff;
+  border: none;
+}
+
+/* Hero dark cu căutare + pile. */
+.bhero {
+  position: relative;
+  background: #050a33;
+  color: #fff;
+  padding-top: var(--nav-h);
+  overflow: hidden;
+}
+.bhero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(50% 70% at 82% 0%, rgba(0, 119, 252, 0.26) 0%, transparent 60%),
+    radial-gradient(42% 60% at 6% 30%, rgba(0, 224, 198, 0.16) 0%, transparent 60%);
+}
+.bhero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+  pointer-events: none;
+}
+.bhero__inner {
+  position: relative;
+  z-index: 1;
+  padding-block: clamp(40px, 6vw, 72px);
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 40px;
+  align-items: end;
+}
+.bhero__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: #fff;
+  margin: 0;
+}
+.bhero__sub {
+  margin-top: 14px;
+  max-width: 46ch;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--muted-dark);
+}
+.bhero__right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-end;
+}
+.bhero__search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 360px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--r-pill);
+  padding: 11px 18px;
+  transition: border-color 0.18s ease;
+}
+.bhero__search:focus-within {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.bhero__search svg {
+  width: 18px;
+  height: 18px;
+  color: var(--muted-dark);
+  flex-shrink: 0;
+}
+.bhero__search input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 15px;
+  outline: none;
+}
+.bhero__search input::placeholder {
+  color: var(--muted-dark);
+}
+/* Bară de filtre pe categorii (rezervat pentru categorii). */
+.bfilters {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding: clamp(32px, 4vw, 48px) 40px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* Secțiunea listă: ritm vertical consistent sub filtre. */
+.blog-list {
+  padding-top: clamp(32px, 4vw, 48px);
+  padding-bottom: clamp(64px, 8vw, 104px);
+}
+.bfilter {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  background: #fff;
+  text-decoration: none;
+  transition:
+    border-color 0.16s ease,
+    color 0.16s ease,
+    background 0.16s ease;
+}
+.bfilter:hover {
+  border-color: var(--electric);
+  color: var(--electric);
+}
+.bfilter.is-active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+/* Secțiunea de listă. */
+.blog-list__note {
+  font-size: 14.5px;
+  color: var(--ink-soft);
+  margin: 0 0 26px;
+}
+.blog-list__note a,
+.blog-list__empty a {
+  color: var(--electric);
+  font-weight: 600;
+}
+.blog-list__empty {
+  text-align: center;
+  padding: 56px 0;
+  font-size: 16px;
+  color: var(--ink-soft);
+}
+
+/* Grid carduri. */
+.blog-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+.blog-cards--after-feature {
+  margin-top: 40px;
+}
+
+/* Card de articol. */
+.bcard {
+  display: flex;
+  flex-direction: column;
+}
+.bcard__thumb {
+  aspect-ratio: 16 / 10;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--electric), var(--cyan));
+}
+.bcard__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.45s var(--ease);
+}
+.bcard:hover .bcard__thumb img {
+  transform: scale(1.04);
+}
+.bcard__ph {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: #fff;
+}
+.bcard__byline {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.bcard__avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.bcard__avatar--mono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 12px;
+}
+.bcard__author {
+  font-weight: 600;
+  color: var(--ink);
+}
+.bcard__dot {
+  color: var(--muted-dark);
+}
+.bcard__title {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  margin: 10px 0 0;
+  color: var(--ink);
+  transition: color 0.18s ease;
+}
+.bcard:hover .bcard__title {
+  color: var(--electric);
+}
+.bcard__tags {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Articol featured DARK (imagine dreapta). */
+.bfeature {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--ink);
+  color: #fff;
+  border-radius: var(--r-xl);
+  overflow: hidden;
+}
+.bfeature__body {
+  padding: clamp(28px, 4vw, 48px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+.bfeature__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.bfeature__title {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 2.8vw, 38px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.bfeature__title a {
+  color: #fff;
+  text-decoration: none;
+}
+.bfeature__title a:hover {
+  color: var(--cyan);
+}
+.bfeature__excerpt {
+  margin: 16px 0 0;
+  max-width: 50ch;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--muted-dark);
+}
+.bfeature__byline {
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--muted-dark);
+}
+.bfeature__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.bfeature__avatar--mono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--grad);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+}
+.bfeature__author {
+  font-weight: 600;
+  color: #fff;
+}
+.bfeature__dot {
+  color: var(--muted-dark);
+}
+.bfeature__cta {
+  margin-top: 26px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: var(--r-pill);
+  background: var(--grad);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14.5px;
+  text-decoration: none;
+  box-shadow: var(--glow-electric);
+}
+.bfeature__cta svg {
+  width: 17px;
+  height: 17px;
+}
+.bfeature__media {
+  position: relative;
+  min-height: 300px;
+  background: rgba(255, 255, 255, 0.04);
+}
+.bfeature__media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bfeature__media span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Paginare. */
+.blog-pager {
+  margin-top: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.blog-pager__nums {
+  display: flex;
+  gap: 6px;
+}
+.blog-pager__num {
+  min-width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition:
+    border-color 0.16s ease,
+    color 0.16s ease;
+}
+.blog-pager__num.is-active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.blog-pager__num:hover:not(.is-active) {
+  border-color: var(--electric);
+  color: var(--electric);
+}
+.blog-pager__edge {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+.blog-pager__edge:hover {
+  color: var(--electric);
+}
+
+@media (max-width: 980px) {
+  .bhero__inner {
+    grid-template-columns: 1fr;
+    gap: 26px;
+    align-items: start;
+  }
+  .bhero__right {
+    align-items: stretch;
+  }
+  .bhero__search {
+    max-width: none;
+  }
+}
+@media (max-width: 860px) {
+  .bfeature {
+    grid-template-columns: 1fr;
+  }
+  .bfeature__media {
+    order: -1;
+    min-height: 220px;
+  }
+}
+@media (max-width: 1024px) {
+  .blog-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 680px) {
+  .blog-cards {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ---- contact page extras ---- */
@@ -2237,18 +3034,8 @@ img.pf-shot {
   .values-grid {
     grid-template-columns: 1fr;
   }
-  .pf-page-grid,
-  .blog-page-grid {
+  .pf-page-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-  .blog-feature {
-    grid-template-columns: 1fr;
-  }
-  .blog-feature .body {
-    padding: 0 28px 32px;
-  }
-  .blog-feature .body.pad {
-    padding: 28px;
   }
   .cp-grid {
     grid-template-columns: 1fr;
@@ -2262,8 +3049,7 @@ img.pf-shot {
   .svc-list {
     grid-template-columns: 1fr;
   }
-  .pf-page-grid,
-  .blog-page-grid {
+  .pf-page-grid {
     grid-template-columns: 1fr;
   }
 }

@@ -4,7 +4,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 import PostForm from '../../../components/admin/PostForm.astro';
 import { getDb } from '../../../lib/server/db';
 import { posts } from '../../../lib/server/schema';
-import { parsePostForm } from '../../../lib/server/admin-schemas';
+import { parsePostForm, takeawaysToText, faqToText } from '../../../lib/server/admin-schemas';
 import { bustContentCache } from '../../../lib/server/content';
 import { setFlash } from '../../../lib/server/flash';
 
@@ -22,7 +22,10 @@ let values: Record<string, string> = {
   description: '',
   body: '',
   author: 'Andrei Panait',
+  category: '',
   tags: '',
+  takeaways: '',
+  faq: '',
   cover: '',
   status: 'draft',
   publishedAt: '',
@@ -48,6 +51,8 @@ if (Astro.request.method === 'POST') {
         errors = { slug: ['Există deja un articol cu acest slug.'] };
         values = parsed.data as unknown as Record<string, string>;
         values.tags = d.tags.join(', ');
+        values.takeaways = takeawaysToText(d.takeaways);
+        values.faq = faqToText(d.faq);
       } else {
         const publishedAt =
           d.status === 'published'
@@ -63,7 +68,10 @@ if (Astro.request.method === 'POST') {
             description: d.description,
             body: d.body,
             author: d.author,
+            category: d.category,
             tags: d.tags,
+            takeaways: d.takeaways,
+            faq: d.faq,
             cover: d.cover || null,
             status: d.status,
             publishedAt,

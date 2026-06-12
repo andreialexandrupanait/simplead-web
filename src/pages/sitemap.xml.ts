@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { staticRoutes } from '@data/static-routes';
-import { getPublishedPosts, getPublishedProjects } from '@lib/server/content';
+import { getPublishedPosts, getPublishedProjects, getActiveCategories } from '@lib/server/content';
+import { slugify } from '@lib/slug';
 
 export const prerender = false;
 
@@ -12,7 +13,14 @@ export const prerender = false;
 export const GET: APIRoute = async ({ site, url }) => {
   const origin = (site ?? new URL(url.origin)).toString().replace(/\/$/, '');
 
-  const [posts, projects] = await Promise.all([getPublishedPosts(), getPublishedProjects()]);
+  const [posts, projects, categories] = await Promise.all([
+    getPublishedPosts(),
+    getPublishedProjects(),
+    getActiveCategories(),
+  ]);
+
+  // Slug-uri unice de tag + categorii cu articole → pagini de listare.
+  const tagSlugs = [...new Set(posts.flatMap((p) => (p.tags ?? []).map(slugify)))];
 
   const entries: { loc: string; lastmod?: string }[] = [
     ...staticRoutes.map((path) => ({ loc: `${origin}${path}` })),
@@ -20,6 +28,8 @@ export const GET: APIRoute = async ({ site, url }) => {
       loc: `${origin}/blog/${p.slug}`,
       lastmod: p.updatedAt.toISOString(),
     })),
+    ...categories.map((c) => ({ loc: `${origin}/blog/category/${slugify(c)}` })),
+    ...tagSlugs.map((slug) => ({ loc: `${origin}/blog/tag/${slug}` })),
     ...projects.map((p) => ({
       loc: `${origin}/portofoliu/${p.slug}`,
       lastmod: p.updatedAt.toISOString(),

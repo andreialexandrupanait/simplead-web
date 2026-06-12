@@ -1,0 +1,31 @@
+---
+/** Bară de filtre (pile). „Toate" → /blog; restul → {basePath}/{slug}. */
+import { slugify } from '@lib/slug';
+
+interface Props {
+  items: string[];
+  /** Prefix de rută pentru fiecare pilă (ex. /blog/category). */
+  basePath: string;
+  /** Slug-ul activ (gol/undefined = „Toate"). */
+  active?: string;
+}
+const { items, basePath, active } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <nav class="bfilters" aria-label="Filtrează după categorie">
+      <a class:list={['bfilter', !active && 'is-active']} href="/blog">
+        Toate
+      </a>
+      {items.map((label) => {
+        const slug = slugify(label);
+        return (
+          <a class:list={['bfilter', active === slug && 'is-active']} href={`${basePath}/${slug}`}>
+            {label}
+          </a>
+        );
+      })}
+    </nav>
+  )
+}

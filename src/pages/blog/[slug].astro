@@ -1,10 +1,16 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import PageHeader from '@components/sections/PageHeader.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
-import { getPostBySlug } from '@lib/server/content';
-import { readingMinutes, renderMarkdown } from '@lib/server/markdown';
-import { site } from '@data/site';
+import ArticleToc from '@components/sections/ArticleToc.astro';
+import ArticleShare from '@components/sections/ArticleShare.astro';
+import AuthorBox from '@components/sections/AuthorBox.astro';
+import ReadingProgress from '@components/sections/ReadingProgress.astro';
+import NewsletterInline from '@components/sections/NewsletterInline.astro';
+import BlogCard from '@components/sections/BlogCard.astro';
+import { getPostBySlug, getPublishedPosts } from '@lib/server/content';
+import { renderArticle } from '@lib/server/markdown';
+import { slugify } from '@lib/slug';
+import { isFounderName } from '@data/site';
 
 // Articolul vine din DB; on-demand ca publicarea din /admin să fie instant.
 // Adminul logat poate vedea draft-uri cu `?preview=1`.
@@ -20,26 +26,90 @@ if (!post) {
 const title = post.seoTitle || post.title;
 const description = post.seoDescription || post.description;
 const publishedAt = post.publishedAt ?? post.createdAt;
-const dateStr = publishedAt.toLocaleDateString('ro-RO', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-});
-const bodyHtml = renderMarkdown(post.body);
-const minutes = readingMinutes(post.body);
+const dateFmt = (d: Date) =>
+  d.toLocaleDateString('ro-RO', { year: 'numeric', month: 'long', day: 'numeric' });
+const dateStr = dateFmt(publishedAt);
+const showUpdated = post.updatedAt.toDateString() !== publishedAt.toDateString();
+const updatedStr = dateFmt(post.updatedAt);
+
+const { html: bodyHtml, toc, minutes } = renderArticle(post.body);
+const wordCount = post.body.split(/\s+/).filter(Boolean).length;
+const takeaways = (post.takeaways ?? []).filter(Boolean);
+
+const isFounder = isFounderName(post.author);
+const authorAvatar = isFounder ? '/andrei.jpg' : null;
+const authorMonogram = post.author.trim().charAt(0).toUpperCase() || 'S';
+
+// O singură listă publicată → related (tag comun primele) + navigare prev/next.
+const allPublished = await getPublishedPosts();
+const tagSet = new Set(post.tags ?? []);
+const related = allPublished
+  .filter((p) => p.slug !== post.slug)
+  .sort((a, b) => {
+    const am = (a.tags ?? []).some((t) => tagSet.has(t)) ? 0 : 1;
+    const bm = (b.tags ?? []).some((t) => tagSet.has(t)) ? 0 : 1;
+    return am - bm;
+  })
+  .slice(0, 3);
+const curIdx = allPublished.findIndex((p) => p.slug === post.slug);
+const prevPost = curIdx > 0 ? allPublished[curIdx - 1] : null; // mai recent
+const nextPost =
+  curIdx >= 0 && curIdx < allPublished.length - 1 ? allPublished[curIdx + 1] : null; // mai vechi
+
+// FAQ: pentru afișare (FaqSection) + schema FAQPage.
+const faqItems = (post.faq ?? []).filter((f) => f.q && f.a);
+const faqForSection = faqItems.map((f) => ({
+  q: f.q,
+  body: f.a
+    .split(/\n{2,}/)
+    .map((s) => s.trim())
+    .filter(Boolean),
+}));
 
 const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
+const canonical = `${origin}/blog/${post.slug}`;
+
 const blogSchema = {
   '@type': 'BlogPosting',
   headline: post.title,
   description: post.description,
   datePublished: publishedAt.toISOString(),
   dateModified: post.updatedAt.toISOString(),
-  author: { '@type': 'Person', name: post.author },
+  author: isFounder ? { '@id': `${origin}#founder` } : { '@type': 'Person', name: post.author },
   publisher: { '@id': `${origin}#organization` },
-  mainEntityOfPage: `${origin}/blog/${post.slug}`,
-  ...(post.cover ? { image: new URL(post.cover, origin).href } : {}),
+  mainEntityOfPage: canonical,
+  inLanguage: 'ro-RO',
+  wordCount,
+  ...(post.tags && post.tags.length > 0
+    ? { keywords: post.tags.join(', '), articleSection: post.tags[0] }
+    : {}),
+  ...(post.cover
+    ? { image: { '@type': 'ImageObject', url: new URL(post.cover, origin).href } }
+    : {}),
 };
+
+const breadcrumbSchema = {
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Acasă', item: `${origin}/` },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${origin}/blog` },
+    { '@type': 'ListItem', position: 3, name: post.title, item: canonical },
+  ],
+};
+
+const faqSchema =
+  faqItems.length > 0
+    ? {
+        '@type': 'FAQPage',
+        mainEntity: faqItems.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      }
+    : null;
+
+const schema = [blogSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
 
 if (post.status === 'draft') {
   Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
@@ -47,43 +117,175 @@ if (post.status === 'draft') {
 }
 ---
 
-<BaseLayout
-  title={title}
-  description={description}
-  transparentNav={true}
-  navOverDark={true}
-  schema={blogSchema}
-  ogImage={post.cover ?? undefined}
->
-  <PageHeader eyebrow="Blog" title={post.title} />
+<BaseLayout title={title} description={description} schema={schema} ogImage={post.cover ?? undefined}>
+  <ReadingProgress />
 
-  <section class="section section--light">
-    <div class="container" style="max-width:820px">
+  <header class="article-hero">
+    <div class="site-container article-hero__inner">
+      <nav class="article-crumb" aria-label="Breadcrumb">
+        <a href="/">Acasă</a>
+        <span>/</span>
+        <a href="/blog">Blog</a>
+        <span>/</span>
+        <span class="cur">{post.title}</span>
+      </nav>
+
+      <h1 class="article-hero__title">{post.title}</h1>
+      <p class="article-hero__dek">{post.description}</p>
+
       {
         post.status === 'draft' && (
-          <p style="background:#fff7e0;border:1px solid #f5d93f;border-radius:10px;padding:10px 14px;font-size:14px">
+          <p class="article-draft">
             <strong>Draft</strong> — articolul nu e public; doar tu îl vezi, prin previzualizare.
           </p>
         )
       }
-      <a href="/blog" style="font-size:14px;color:var(--ink-soft)">← Înapoi la blog</a>
-      <div
-        style="margin-top:18px;display:flex;flex-wrap:wrap;gap:12px;font-size:14px;color:var(--ink-soft)"
-      >
+
+      <div class="article-meta">
+        {
+          authorAvatar ? (
+            <img class="article-meta__avatar" src={authorAvatar} alt={post.author} width="36" height="36" />
+          ) : (
+            <span class="article-meta__avatar article-meta__avatar--mono" aria-hidden="true">
+              {authorMonogram}
+            </span>
+          )
+        }
+        <span class="article-meta__author">{post.author}</span>
+        <span class="article-meta__dot">·</span>
         <time datetime={publishedAt.toISOString()}>{dateStr}</time>
-        <span>·</span>
-        <span>{post.author}</span>
-        <span>·</span>
+        <span class="article-meta__dot">·</span>
         <span>{minutes} min de citit</span>
-        {post.tags.length > 0 && <span style="color:var(--blue);font-weight:600">#{post.tags[0]}</span>}
+        {
+          showUpdated && (
+            <>
+              <span class="article-meta__dot">·</span>
+              <span>Actualizat la {updatedStr}</span>
+            </>
+          )
+        }
       </div>
-      <article class="prose-simplead" style="margin-top:28px" set:html={bodyHtml} />
+    </div>
+  </header>
+
+  {
+    post.cover && (
+      <figure class="article-cover">
+        <div class="article-shell">
+          <img src={post.cover} alt={post.title} fetchpriority="high" width="1600" height="800" />
+        </div>
+      </figure>
+    )
+  }
+
+  <section class="section section--light article-body">
+    <div class="article-shell">
+      <div class="article-layout">
+        <aside class="article-rail">
+          <ArticleToc toc={toc} />
+          <ArticleShare url={canonical} title={post.title} />
+        </aside>
+
+        <div class="article-main">
+          {
+            takeaways.length > 0 && (
+              <div class="article-tldr">
+                <p class="article-tldr__label">Esențialul</p>
+                <ul>
+                  {takeaways.map((t) => (
+                    <li>{t}</li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+
+          <article class="prose-simplead" data-article set:html={bodyHtml} />
+
+          {
+            faqForSection.length > 0 && (
+              <section class="article-faq" aria-label="Întrebări frecvente">
+                <h2 class="article-faq__title">Întrebări frecvente</h2>
+                {faqForSection.map((f, i) => (
+                  <details class="article-faq__item" name="article-faq" open={i === 0}>
+                    <summary class="article-faq__q">{f.q}</summary>
+                    <div class="article-faq__a">
+                      {f.body.map((p) => (
+                        <p>{p}</p>
+                      ))}
+                    </div>
+                  </details>
+                ))}
+              </section>
+            )
+          }
+
+          {
+            post.tags.length > 0 && (
+              <div class="article-tags">
+                <span class="article-tags__label">Etichete</span>
+                <div class="article-chips">
+                  {post.tags.map((tag) => (
+                    <a class="article-chip" href={`/blog/tag/${slugify(tag)}`}>
+                      {tag}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )
+          }
+
+          <NewsletterInline source={`blog-${post.slug}`} />
+
+          <AuthorBox author={post.author} />
+        </div>
+      </div>
+
+      {
+        related.length > 0 && (
+          <div class="article-related">
+            <h2 class="article-related__title">Citește mai departe</h2>
+            <div class="blog-cards">
+              {related.map((p) => (
+                <BlogCard post={p} />
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      {
+        (prevPost || nextPost) && (
+          <nav class="article-nav" aria-label="Mai multe articole">
+            {prevPost ? (
+              <a class="article-nav__item article-nav__item--prev" href={`/blog/${prevPost.slug}`}>
+                <span class="article-nav__dir">← Articolul anterior</span>
+                <span class="article-nav__t">{prevPost.title}</span>
+              </a>
+            ) : (
+              <span />
+            )}
+            {nextPost ? (
+              <a class="article-nav__item article-nav__item--next" href={`/blog/${nextPost.slug}`}>
+                <span class="article-nav__dir">Articolul următor →</span>
+                <span class="article-nav__t">{nextPost.title}</span>
+              </a>
+            ) : (
+              <span />
+            )}
+          </nav>
+        )
+      }
     </div>
   </section>
 
   <CtaSection
-    title="Vrei rezultate ca acestea pentru afacerea ta?"
-    subtitle={`Scrie-ne sau sună la ${site.contact.phone}. Prima discuție e fără obligații.`}
+    kicker="Ți-a plăcut?"
+    title="Ai un proiect în cap?"
+    subtitle="Hai să vedem dacă se potrivește. Prima discuție e fără obligații — îți spunem sincer dacă te putem ajuta."
     href="/contact"
+    cta="Scrie-ne"
+    secondaryHref="/servicii"
+    secondaryLabel="Vezi serviciile"
   />
 </BaseLayout>

@@ -7,6 +7,7 @@ import CookieBanner from '@components/CookieBanner.astro';
 import ContactDrawer from '@components/react/ContactDrawer';
 import { site } from '@data/site';
 import { resolveLocale } from '@i18n/index';
+import { getPublicSettings, whatsappHref } from '@lib/server/public-settings';
 
 interface Props {
   title?: string;
@@ -42,8 +43,14 @@ const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
 const ogImageUrl = new URL(ogImage, Astro.site ?? Astro.url.origin).href;
 
-// JSON-LD: Organization + LocalBusiness + WebSite (+ schema specific paginii)
+// Setări publice: telefonul apare doar dacă e activat din /admin/setari.
+const pub = await getPublicSettings();
+const waHref = whatsappHref(pub.whatsappNumber);
+
+// JSON-LD: Organization + LocalBusiness + WebSite (+ schema specific paginii).
+// `telephone` intră în datele structurate doar când telefonul e public.
 const telephone = site.contact.phoneHref.replace('tel:', '');
+const phoneLd = pub.showPhone ? { telephone } : {};
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -60,7 +67,7 @@ const jsonLd = {
         addressLocality: site.contact.city,
         addressCountry: 'RO',
       },
-      telephone,
+      ...phoneLd,
       email: site.contact.email,
     },
     {
@@ -70,7 +77,7 @@ const jsonLd = {
       url: origin,
       image: ogImageUrl,
       description: site.description,
-      telephone,
+      ...phoneLd,
       email: site.contact.email,
       priceRange: '$$',
       address: {
@@ -166,9 +173,11 @@ const jsonLd = {
 
     <ContactDrawer
       client:load
-      phone={site.contact.phone}
-      phoneHref={site.contact.phoneHref}
+      phone={pub.showPhone ? site.contact.phone : ''}
+      phoneHref={pub.showPhone ? site.contact.phoneHref : ''}
       email={site.contact.email}
+      showPhone={pub.showPhone}
+      whatsappHref={waHref}
     />
 
     {

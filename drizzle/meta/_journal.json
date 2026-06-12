@@ -43,6 +43,20 @@
       "when": 1781271665157,
       "tag": "0005_cuddly_blockbuster",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1781277921944,
+      "tag": "0006_sloppy_tombstone",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1781284949340,
+      "tag": "0007_friendly_carnage",
+      "breakpoints": true
     }
   ]
 }

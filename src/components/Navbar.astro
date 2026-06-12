@@ -107,6 +107,42 @@ const isActive = (href: string) =>
                 </div>
               </div>
             </div>
+          ) : item.href === '/blog' ? (
+            <div class="nav__item nav__item--has-mega" data-blog-mega>
+              <a
+                href={item.href}
+                class:list={['nav__link', isActive(item.href) && 'is-active']}
+                aria-haspopup="true"
+              >
+                {item.label}
+                <svg class="nav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+              </a>
+              <div class="mega" role="menu">
+                <div class="site-container mega__inner mega__inner--blog">
+                  <div class="mega__zone">
+                    <span class="mega__label">Categorii</span>
+                    <ul data-blogmenu-cats>
+                      <li><a href="/blog" role="menuitem">Toate articolele</a></li>
+                    </ul>
+                  </div>
+                  <div class="mega__zone mega__zone--posts">
+                    <span class="mega__label">Ultimele articole</span>
+                    <div class="mega__posts" data-blogmenu-posts aria-busy="true">
+                      <span class="mega__posts-empty">Se încarcă…</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mega__footwrap">
+                  <div class="site-container mega__foot">
+                    <span class="mega__foot-left">Idei și ghiduri de marketing, pe înțelesul tău.</span>
+                    <a class="mega__foot-right" href="/blog" role="menuitem">
+                      Vezi toate articolele
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
           ) : (
             <div class="nav__item">
               <a
@@ -255,15 +291,17 @@ const isActive = (href: string) =>
   .mega {
     position: absolute;
     top: 100%;
-    left: 0;
-    right: 0;
+    left: 50%;
+    width: calc(100% - 80px);
+    max-width: var(--maxw);
     background: var(--canvas);
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
     box-shadow: var(--sh-lg);
+    overflow: hidden;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(8px);
+    transform: translateX(-50%) translateY(8px);
     pointer-events: none;
     /* Grație de ~120ms la închidere: o ieșire de un pixel nu mai închide meniul. */
     transition:
@@ -275,7 +313,7 @@ const isActive = (href: string) =>
   .nav__item--has-mega:focus-within .mega {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateX(-50%) translateY(0);
     pointer-events: auto;
     transition:
       opacity 0.18s var(--ease-snap),
@@ -382,6 +420,23 @@ const isActive = (href: string) =>
   }
   .mega__quick a:hover {
     color: var(--electric);
+  }
+
+  /* Layout mega-Blog (elemente statice → scoped, ca să bată .mega__inner). */
+  .mega__inner--blog {
+    grid-template-columns: 190px 1fr;
+    gap: 44px;
+    padding-top: 24px;
+    padding-bottom: 22px;
+  }
+  .mega__inner--blog .mega__zone--posts {
+    border-left: 1px solid var(--line);
+    padding-left: 44px;
+  }
+  .mega__posts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
   }
 
   /* Panoul promo (navy + puncte, ca CtaSection). */
@@ -556,6 +611,88 @@ const isActive = (href: string) =>
   }
 </style>
 
+<!-- Stiluri GLOBALE pentru mega-meniul Blog: elementele sunt create din JS, deci
+     NU primesc scope-ul Astro. Numele sunt unice (mega__post*, data-blogmenu-*). -->
+<style is:global>
+  /* Doar elementele create din JS (fără scope Astro). Layout-ul e în <style> scoped. */
+  [data-blogmenu-cats] {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  [data-blogmenu-cats] li {
+    margin: 0;
+  }
+  [data-blogmenu-cats] a {
+    display: block;
+    padding: 7px 0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink);
+    text-decoration: none;
+    transition: color 0.16s ease;
+  }
+  [data-blogmenu-cats] a:hover {
+    color: var(--electric);
+  }
+  .mega__post {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    text-decoration: none;
+  }
+  .mega__post-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    border-radius: var(--r-sm);
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--electric), var(--cyan));
+  }
+  .mega__post-thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .mega__post:hover .mega__post-thumb img {
+    transform: scale(1.05);
+  }
+  .mega__post-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .mega__post-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1.3;
+    color: var(--ink);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.16s ease;
+  }
+  .mega__post:hover .mega__post-title {
+    color: var(--electric);
+  }
+  .mega__post-date {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  .mega__posts-empty {
+    grid-column: 1 / -1;
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+</style>
+
 <script>
   // Navbar „over hero" devine solid la scroll.
   const nav = document.querySelector<HTMLElement>("header[data-nav][data-transparent='true']");
@@ -563,5 +700,73 @@ const isActive = (href: string) =>
     const onScroll = () => nav.classList.toggle('nav-solid', window.scrollY > 24);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
+  }
+</script>
+
+<script>
+  // Mega-meniu Blog: umplere client-side (conținut mereu proaspăt, inclusiv pe
+  // paginile statice). Fetch o singură dată, la primul hover/focus.
+  const blogMega = document.querySelector('[data-blog-mega]');
+  if (blogMega) {
+    let started = false;
+    const fill = async () => {
+      if (started) return;
+      started = true;
+      try {
+        const res = await fetch('/api/blog-menu');
+        if (!res.ok) throw new Error('fetch failed');
+        const data = await res.json();
+        const cats = blogMega.querySelector('[data-blogmenu-cats]');
+        const posts = blogMega.querySelector('[data-blogmenu-posts]');
+        if (cats && Array.isArray(data.categories)) {
+          for (const c of data.categories) {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = `/blog/category/${c.slug}`;
+            a.setAttribute('role', 'menuitem');
+            a.textContent = c.label;
+            li.appendChild(a);
+            cats.appendChild(li);
+          }
+        }
+        if (posts && Array.isArray(data.posts)) {
+          posts.innerHTML = '';
+          posts.removeAttribute('aria-busy');
+          if (!data.posts.length) {
+            posts.innerHTML = '<span class="mega__posts-empty">Curând.</span>';
+          }
+          for (const p of data.posts) {
+            const a = document.createElement('a');
+            a.href = `/blog/${p.slug}`;
+            a.className = 'mega__post';
+            a.setAttribute('role', 'menuitem');
+            const thumb = document.createElement('span');
+            thumb.className = 'mega__post-thumb';
+            if (p.cover) {
+              const img = document.createElement('img');
+              img.src = p.cover;
+              img.alt = '';
+              img.loading = 'lazy';
+              thumb.appendChild(img);
+            }
+            const txt = document.createElement('span');
+            txt.className = 'mega__post-text';
+            const title = document.createElement('span');
+            title.className = 'mega__post-title';
+            title.textContent = p.title;
+            const date = document.createElement('span');
+            date.className = 'mega__post-date';
+            date.textContent = p.date;
+            txt.append(title, date);
+            a.append(thumb, txt);
+            posts.appendChild(a);
+          }
+        }
+      } catch {
+        started = false; // permite re-încercarea la următorul hover
+      }
+    };
+    blogMega.addEventListener('mouseenter', fill);
+    blogMega.addEventListener('focusin', fill);
   }
 </script>

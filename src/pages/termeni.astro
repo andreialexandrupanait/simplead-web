@@ -2,10 +2,12 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import PageHeader from '@components/sections/PageHeader.astro';
 import { site } from '@data/site';
+import { getPublicSettings } from '@lib/server/public-settings';
 
 // DRAFT pregătit pentru verificare juridică. Marcajele [confirmă: ...] se
 // completează de Andrei / jurist înainte de lansarea vânzărilor online.
 const updated = '9 iunie 2026';
+const { showPhone } = await getPublicSettings();
 ---
 
 <BaseLayout
@@ -28,7 +30,7 @@ const updated = '9 iunie 2026';
           [confirmă: forma juridică exactă], cu sediul în {site.contact.city},
           {site.contact.country} [confirmă: adresa completă a sediului], CIF {site.legal.cif},
           înregistrată la Registrul Comerțului sub nr. {site.legal.regCom}. Ne poți contacta la
-          {site.contact.email} sau {site.contact.phone}.
+          {site.contact.email}{showPhone ? ` sau ${site.contact.phone}` : ''}.
         </p>
 
         <h2>2. Obiectul</h2>

@@ -344,13 +344,14 @@ const steps = [
   /* ---- responsive ---- */
   @media (max-width: 860px) {
     .proc__stage {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 18px;
     }
     /* lista devine un rând orizontal scrollabil de pastile */
     .proc__list {
       flex-direction: row;
       gap: 10px;
+      min-width: 0;
       overflow-x: auto;
       scrollbar-width: none;
       padding-bottom: 4px;

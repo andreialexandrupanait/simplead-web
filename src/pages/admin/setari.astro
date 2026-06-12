@@ -1,0 +1,74 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { setFlash } from '../../lib/server/flash';
+import { getPublicSettings, savePublicSettings } from '../../lib/server/public-settings';
+import { parseSiteSettingsForm } from '../../lib/server/admin-schemas';
+
+export const prerender = false;
+
+let saveError: string | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const data = parseSiteSettingsForm(form);
+  const result = await savePublicSettings(data);
+  if (result.ok) {
+    setFlash(Astro.cookies, { kind: 'ok', msg: 'Setările site-ului au fost salvate.' });
+    return Astro.redirect('/admin/setari', 303);
+  }
+  saveError = result.error;
+}
+
+const current = await getPublicSettings();
+---
+
+<AdminLayout title="Setări site">
+  <div class="admin-page-head">
+    <div>
+      <h1>Setări site</h1>
+      <p class="admin-hint">Controlezi ce date de contact apar public. Emailul e mereu vizibil.</p>
+    </div>
+  </div>
+
+  {saveError && <div class="admin-banner admin-banner--error">{saveError}</div>}
+
+  <form method="post" style="max-width:560px">
+    <div class="admin-card">
+      <h2>Telefon</h2>
+      <label class="admin-field admin-check" style="align-self:start">
+        <input type="checkbox" name="showPhone" value="1" checked={current.showPhone} />
+        <span style="margin:0">Afișează numărul de telefon pe site</span>
+      </label>
+      <p class="admin-hint" style="margin-top:8px">
+        Debifat (implicit): numărul nu apare nicăieri — nici în pagini, nici în datele
+        structurate (Google). Bifat: reapare în hero-uri, în sertarul de contact și pe pagina
+        Contact. Numărul rămâne cel din configurație ({''}
+        <code>site.contact.phone</code>).
+      </p>
+    </div>
+
+    <div class="admin-card" style="margin-top:20px">
+      <h2>WhatsApp</h2>
+      <label class="admin-field" style="margin-bottom:0">
+        <span>Număr WhatsApp <small style="display:inline;color:var(--muted)">(cu prefix de țară, doar cifre)</small></span>
+        <input
+          class="admin-input"
+          type="text"
+          name="whatsappNumber"
+          value={current.whatsappNumber}
+          placeholder="40755215135"
+          inputmode="numeric"
+          autocomplete="off"
+        />
+        <small>
+          Gol = WhatsApp ascuns. Setat = apare butonul „Scrie pe WhatsApp" în sertarul de
+          contact, pe pagina Contact și în hero-uri (când telefonul e ascuns).
+        </small>
+      </label>
+    </div>
+
+    <div class="admin-savebar">
+      <button type="submit" class="admin-btn">Salvează setările</button>
+    </div>
+  </form>
+</AdminLayout>

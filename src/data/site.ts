@@ -42,3 +42,14 @@ export const site = {
 } as const;
 
 export type Site = typeof site;
+
+/**
+ * Autorul e fondatorul? Toleranță la forma scurtă din DB ("Andrei Panait")
+ * vs. numele complet din schema E-E-A-T ("Andrei Alexandru Panait"): e fondator
+ * dacă toate cuvintele din numele autorului apar în numele fondatorului.
+ */
+export function isFounderName(name: string): boolean {
+  const founderTokens = site.founder.toLowerCase().split(/\s+/).filter(Boolean);
+  const authorTokens = name.toLowerCase().split(/\s+/).filter(Boolean);
+  return authorTokens.length > 0 && authorTokens.every((t) => founderTokens.includes(t));
+}

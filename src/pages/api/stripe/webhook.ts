@@ -146,7 +146,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
         `Îți mulțumim pentru comandă. Am primit plata pentru „${packageName}" (${amount} ${currency}).`,
         'Te contactăm în cel mult o zi lucrătoare cu pașii următori.',
         '',
-        `Întrebări? Scrie-ne la ${site.contact.email} sau sună la ${site.contact.phone}.`,
+        `Întrebări? Scrie-ne la ${site.contact.email}.`,
         '',
         'Echipa Simplead',
       ].join('\n'),

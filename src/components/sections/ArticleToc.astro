@@ -1,0 +1,192 @@
+---
+/** Cuprins sticky pentru pagina de articol: ancore din H2/H3 + scrollspy. */
+import type { TocItem } from '@lib/server/markdown';
+
+interface Props {
+  toc: TocItem[];
+}
+const { toc } = Astro.props;
+---
+
+{
+  toc.length >= 2 && (
+    <>
+      <nav class="article-toc" aria-label="Cuprins">
+        <p class="article-toc__label">Cuprins</p>
+        <ul>
+          {toc.map((item) => (
+            <li class={item.depth === 3 ? 'is-sub' : ''}>
+              <a href={`#${item.slug}`} data-toc-link={item.slug}>
+                {item.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <details class="toc-m">
+        <summary class="toc-m__sum">
+          Cuprins
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+        </summary>
+        <ul class="toc-m__list">
+          {toc.map((item) => (
+            <li class={item.depth === 3 ? 'is-sub' : ''}>
+              <a href={`#${item.slug}`} data-toc-link={item.slug}>
+                {item.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </details>
+    </>
+  )
+}
+
+<style>
+  .article-toc {
+    font-size: 13.5px;
+    line-height: 1.4;
+  }
+  .article-toc__label {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 14px;
+  }
+  .article-toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-left: 1px solid var(--line);
+  }
+  .article-toc li.is-sub a {
+    padding-left: 28px;
+    font-size: 13px;
+  }
+  .article-toc a {
+    display: block;
+    padding: 6px 0 6px 16px;
+    margin-left: -1px;
+    border-left: 2px solid transparent;
+    color: var(--muted);
+    text-decoration: none;
+    transition:
+      color 0.18s ease,
+      border-color 0.18s ease;
+  }
+  .article-toc a:hover {
+    color: var(--ink);
+  }
+  .article-toc a.is-active {
+    color: var(--electric);
+    border-left-color: var(--electric);
+    font-weight: 600;
+  }
+
+  /* Variantă mobilă: colapsabilă (ascunsă pe desktop). */
+  .toc-m {
+    display: none;
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--canvas-soft);
+  }
+  .toc-m__sum {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .toc-m__sum::-webkit-details-marker {
+    display: none;
+  }
+  .toc-m__sum svg {
+    width: 16px;
+    height: 16px;
+    color: var(--muted);
+    transition: transform 0.2s var(--ease);
+  }
+  .toc-m[open] .toc-m__sum svg {
+    transform: rotate(180deg);
+  }
+  .toc-m__list {
+    list-style: none;
+    margin: 0;
+    padding: 4px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .toc-m__list li.is-sub a {
+    padding-left: 14px;
+    font-size: 13.5px;
+  }
+  .toc-m__list a {
+    display: block;
+    padding: 6px 0;
+    font-size: 14.5px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .toc-m__list a.is-active {
+    color: var(--electric);
+    font-weight: 600;
+  }
+  @media (max-width: 1024px) {
+    .toc-m {
+      display: block;
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  // Scrollspy: evidențiază în cuprins secțiunea curentă (pattern IntersectionObserver
+  // ca în BaseLayout). Linkul activ = ultimul heading trecut de prag.
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'));
+  if (links.length) {
+    const byId = new Map(links.map((a) => [a.dataset.tocLink!, a]));
+    const headings = links
+      .map((a) => document.getElementById(a.dataset.tocLink!))
+      .filter((el): el is HTMLElement => !!el);
+
+    let activeId = '';
+    const setActive = (id: string) => {
+      if (id === activeId) return;
+      activeId = id;
+      links.forEach((a) => a.classList.toggle('is-active', a.dataset.tocLink === id));
+    };
+
+    const onScroll = () => {
+      const offset = 140; // sub navbar
+      let current = headings[0]?.id ?? '';
+      for (const h of headings) {
+        if (h.getBoundingClientRect().top <= offset) current = h.id;
+        else break;
+      }
+      if (current) setActive(current);
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Click instant pe link → activează imediat (înainte ca scroll-ul să se așeze).
+    links.forEach((a) =>
+      a.addEventListener('click', () => setActive(a.dataset.tocLink!)),
+    );
+  }
+</script>

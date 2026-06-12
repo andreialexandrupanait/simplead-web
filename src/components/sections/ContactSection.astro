@@ -1,6 +1,7 @@
 ---
 import ContactForm from '@components/react/ContactForm';
 import { site } from '@data/site';
+import { getPublicSettings, whatsappHref } from '@lib/server/public-settings';
 
 interface Props {
   /** 'home' = layout pe Acasă (contact-wrap); 'page' = pagina Contact (cp-grid + Program). */
@@ -8,6 +9,8 @@ interface Props {
 }
 const { variant = 'home' } = Astro.props;
 const isPage = variant === 'page';
+const pub = await getPublicSettings();
+const waHref = whatsappHref(pub.whatsappNumber);
 ---
 
 <section class="section section--light" id="contact">
@@ -30,7 +33,12 @@ const isPage = variant === 'page';
           </div>
         </div>
         <div class="contact-direct">
-          <a href={site.contact.phoneHref}><span class="lbl">Telefon</span>{site.contact.phone}</a>
+          {pub.showPhone && (
+            <a href={site.contact.phoneHref}><span class="lbl">Telefon</span>{site.contact.phone}</a>
+          )}
+          {waHref && (
+            <a href={waHref} target="_blank" rel="noopener"><span class="lbl">WhatsApp</span>Scrie-ne pe WhatsApp</a>
+          )}
           <a href={`mailto:${site.contact.email}`}><span class="lbl">Email</span>{site.contact.email}</a>
           {isPage && <span class="row"><span class="lbl">Program</span>{site.contact.schedule}</span>}
         </div>

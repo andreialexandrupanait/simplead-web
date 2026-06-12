@@ -54,6 +54,24 @@ export function getPublishedPosts(): Promise<Post[]> {
   );
 }
 
+/** Categoriile (din lista fixă) care au cel puțin un articol publicat. */
+export async function getActiveCategories(): Promise<string[]> {
+  const { postCategories } = await import('@data/categories');
+  const all = await getPublishedPosts();
+  const used = new Set(all.map((p) => p.category).filter(Boolean));
+  return postCategories.filter((c) => used.has(c));
+}
+
+/** Tag-uri distincte din articolele publicate, ordonate după frecvență. */
+export async function getAllTags(): Promise<{ tag: string; count: number }[]> {
+  const all = await getPublishedPosts();
+  const counts = new Map<string, number>();
+  for (const p of all) for (const t of p.tags ?? []) counts.set(t, (counts.get(t) ?? 0) + 1);
+  return [...counts.entries()]
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, 'ro'));
+}
+
 export function getPostBySlug(
   slug: string,
   { includeDrafts = false } = {},

@@ -1,0 +1,50 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import BlogListing from '@components/sections/BlogListing.astro';
+import CtaSection from '@components/sections/CtaSection.astro';
+import { getPublishedPosts, getActiveCategories } from '@lib/server/content';
+import { slugify } from '@lib/slug';
+
+export const prerender = false;
+
+const catSlug = Astro.params.category!;
+const allPosts = await getPublishedPosts();
+const categories = await getActiveCategories();
+
+const match = categories.find((c) => slugify(c) === catSlug);
+const items = allPosts.filter((p) => p.category && slugify(p.category) === catSlug);
+if (!match || items.length === 0) {
+  return Astro.rewrite('/404');
+}
+
+const page = Math.max(1, parseInt(Astro.url.searchParams.get('page') ?? '1', 10) || 1);
+const subtitle = `Articole din categoria ${match.toLowerCase()}.`;
+
+const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
+const schema = {
+  '@type': 'CollectionPage',
+  name: `${match} — Blog Simplead`,
+  description: subtitle,
+  url: `${origin}/blog/category/${catSlug}`,
+};
+---
+
+<BaseLayout
+  title={`${match} — Blog`}
+  description={subtitle}
+  transparentNav={true}
+  navOverDark={true}
+  schema={schema}
+>
+  <BlogListing
+    title={match}
+    subtitle={subtitle}
+    items={items}
+    categories={categories}
+    activeCategory={catSlug}
+    page={page}
+    basePath={`/blog/category/${catSlug}`}
+  />
+
+  <CtaSection />
+</BaseLayout>

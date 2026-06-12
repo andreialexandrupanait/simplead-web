@@ -5,6 +5,10 @@ interface Props {
   phone: string;
   phoneHref: string;
   email: string;
+  /** Telefonul apare doar dacă e activat din /admin/setari. */
+  showPhone?: boolean;
+  /** Link wa.me, gol dacă WhatsApp nu e configurat. */
+  whatsappHref?: string;
 }
 
 declare global {
@@ -20,7 +24,13 @@ declare global {
  * scriptul global din BaseLayout, care apelează window.openContactDrawer). Fără JS
  * sau înainte de hidratare, linkurile navighează normal spre /contact (degradare).
  */
-export default function ContactDrawer({ phone, phoneHref, email }: Props) {
+export default function ContactDrawer({
+  phone,
+  phoneHref,
+  email,
+  showPhone = false,
+  whatsappHref = '',
+}: Props) {
   const [open, setOpen] = useState(false);
   const [service, setService] = useState('');
   const [instance, setInstance] = useState(0); // remontează formularul la fiecare deschidere
@@ -179,14 +189,33 @@ export default function ContactDrawer({ phone, phoneHref, email }: Props) {
             color: 'var(--muted)',
           }}
         >
-          Preferi direct? Sună-ne la{' '}
-          <a href={phoneHref} style={{ color: 'var(--electric)', fontWeight: 600 }}>
-            {phone}
-          </a>{' '}
-          sau scrie la{' '}
+          Preferi direct? Scrie la{' '}
           <a href={`mailto:${email}`} style={{ color: 'var(--electric)', fontWeight: 600 }}>
             {email}
           </a>
+          {showPhone && (
+            <>
+              {' '}
+              sau sună la{' '}
+              <a href={phoneHref} style={{ color: 'var(--electric)', fontWeight: 600 }}>
+                {phone}
+              </a>
+            </>
+          )}
+          {whatsappHref && (
+            <>
+              {' '}
+              ori pe{' '}
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener"
+                style={{ color: 'var(--electric)', fontWeight: 600 }}
+              >
+                WhatsApp
+              </a>
+            </>
+          )}
           .
         </footer>
       </aside>

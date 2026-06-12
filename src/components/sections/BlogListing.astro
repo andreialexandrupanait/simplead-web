@@ -1,0 +1,111 @@
+---
+/** Corpul comun al listei de blog: hero + filtre + featured + grid + paginare.
+ * Folosit de /blog și /blog/tag/[tag] ca să fie identice, fără duplicare. */
+import type { Post } from '@lib/server/content';
+import BlogHero from '@components/sections/BlogHero.astro';
+import BlogFilters from '@components/sections/BlogFilters.astro';
+import BlogFeature from '@components/sections/BlogFeature.astro';
+import BlogCard from '@components/sections/BlogCard.astro';
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  items: Post[];
+  categories?: string[];
+  activeCategory?: string;
+  query?: string;
+  page?: number;
+  pageSize?: number;
+  showFeatured?: boolean;
+  basePath?: string;
+}
+const {
+  title,
+  subtitle,
+  items,
+  categories = [],
+  activeCategory,
+  query = '',
+  page = 1,
+  pageSize = 9,
+  showFeatured = false,
+  basePath = '/blog',
+} = Astro.props;
+
+const featured = showFeatured && page === 1 && items.length > 0 ? items[0] : null;
+const rest = showFeatured ? items.slice(1) : items;
+const totalPages = Math.max(1, Math.ceil(rest.length / pageSize));
+const safePage = Math.min(Math.max(1, page), totalPages);
+const pageItems = rest.slice((safePage - 1) * pageSize, safePage * pageSize);
+
+const pageHref = (n: number) => {
+  const params = new URLSearchParams();
+  if (query) params.set('q', query);
+  if (n > 1) params.set('page', String(n));
+  const qs = params.toString();
+  return qs ? `${basePath}?${qs}` : basePath;
+};
+const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+---
+
+<BlogHero title={title} subtitle={subtitle} query={query} />
+
+<BlogFilters items={categories} basePath="/blog/category" active={activeCategory} />
+
+<section class="section section--light blog-list">
+  <div class="site-container">
+    {
+      query && (
+        <p class="blog-list__note">
+          Rezultate pentru „{query}" — {items.length}{' '}
+          {items.length === 1 ? 'articol' : 'articole'}.{' '}
+          <a href="/blog">Resetează</a>
+        </p>
+      )
+    }
+
+    {featured && <BlogFeature post={featured} />}
+
+    {
+      items.length === 0 && (
+        <p class="blog-list__empty">
+          Nimic pe această temă deocamdată. <a href="/blog">Vezi toate articolele</a>.
+        </p>
+      )
+    }
+
+    {
+      pageItems.length > 0 && (
+        <div class:list={['blog-cards', featured && 'blog-cards--after-feature']}>
+          {pageItems.map((p) => (
+            <BlogCard post={p} />
+          ))}
+        </div>
+      )
+    }
+
+    {
+      totalPages > 1 && (
+        <nav class="blog-pager" aria-label="Paginare">
+          {safePage > 1 && (
+            <a class="blog-pager__edge" href={pageHref(safePage - 1)} rel="prev">
+              ← Înapoi
+            </a>
+          )}
+          <div class="blog-pager__nums">
+            {pages.map((n) => (
+              <a class:list={['blog-pager__num', n === safePage && 'is-active']} href={pageHref(n)}>
+                {n}
+              </a>
+            ))}
+          </div>
+          {safePage < totalPages && (
+            <a class="blog-pager__edge" href={pageHref(safePage + 1)} rel="next">
+              Înainte →
+            </a>
+          )}
+        </nav>
+      )
+    }
+  </div>
+</section>

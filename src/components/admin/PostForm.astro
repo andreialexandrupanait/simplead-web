@@ -7,6 +7,7 @@
  */
 import MarkdownEditor from '../react/admin/MarkdownEditor';
 import CoverField from '../react/admin/CoverField';
+import { postCategories } from '@data/categories';
 
 interface Props {
   values: Record<string, string>;
@@ -97,15 +98,39 @@ const hasErrors = Object.keys(errors).length > 0;
 
   <div class="pf-meta">
     <div class="admin-card">
-      <h2>Copertă & taguri</h2>
+      <h2>Copertă, categorie & taguri</h2>
       <label class="admin-field">
         <span>Imagine de copertă</span>
         <CoverField client:load name="cover" initial={values.cover} />
       </label>
+      <label class="admin-field">
+        <span>Categorie</span>
+        <select class="admin-select" name="category">
+          <option value="" selected={!values.category}>— fără categorie —</option>
+          {postCategories.map((c) => (
+            <option value={c} selected={values.category === c}>{c}</option>
+          ))}
+        </select>
+        <small>Apare ca filtru pe /blog și ca etichetă principală pe card.</small>
+      </label>
       <label class="admin-field" style="margin-bottom:0">
         <span>Taguri (separate prin virgulă)</span>
         <input class="admin-input" type="text" name="tags" value={values.tags} placeholder="Neuromarketing, SEO" />
-        <small>Primul tag apare pe cardul articolului.</small>
+        <small>Tag-uri secundare (pagini /blog/tag/... pentru SEO).</small>
+      </label>
+    </div>
+
+    <div class="admin-card">
+      <h2>Pe scurt & FAQ <small style="display:inline;font-weight:400;color:var(--muted)">(opțional)</small></h2>
+      <label class="admin-field">
+        <span>Pe scurt — concluzii cheie</span>
+        <textarea class="admin-textarea" name="takeaways" style="min-height:88px" placeholder="O concluzie pe rând…">{values.takeaways}</textarea>
+        <small>O concluzie pe rând. Apar într-o casetă sus, sub titlu.</small>
+      </label>
+      <label class="admin-field" style="margin-bottom:0">
+        <span>Întrebări frecvente</span>
+        <textarea class="admin-textarea" name="faq" style="min-height:140px" placeholder={"Ce este X?\nRăspunsul la întrebare, pe unul sau mai multe paragrafe.\n---\nCât costă Y?\nAlt răspuns."}>{values.faq}</textarea>
+        <small>O întrebare per bloc: prima linie = întrebarea, restul = răspunsul. Separă întrebările cu o linie <code>---</code>. Apar ca acordeon la final + în Google (schema FAQ).</small>
       </label>
     </div>
 

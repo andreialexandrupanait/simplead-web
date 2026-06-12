@@ -1,0 +1,158 @@
+---
+/** Casetă de abonare inline (variantă light), pentru pagina de articol.
+ * Postează la /api/newsletter (același endpoint ca footer-ul), cu honeypot. */
+interface Props {
+  source?: string;
+}
+const { source = 'blog-article' } = Astro.props;
+---
+
+<aside class="nl-inline" data-newsletter-inline>
+  <div class="nl-inline__text">
+    <p class="nl-inline__kicker">Newsletter</p>
+    <h3 class="nl-inline__title">Idei utile de marketing, o dată pe lună</h3>
+    <p class="nl-inline__sub">Fără spam. Doar lucruri pe care le poți aplica. Te poți dezabona oricând.</p>
+  </div>
+  <form class="nl-inline__form" data-nl-form data-source={source}>
+    <input
+      type="email"
+      name="email"
+      required
+      placeholder="Adresa ta de email"
+      aria-label="Adresa ta de email"
+    />
+    <input
+      type="text"
+      name="company"
+      tabindex="-1"
+      autocomplete="off"
+      aria-hidden="true"
+      style="position:absolute;left:-9999px"
+    />
+    <button type="submit">Mă abonez</button>
+  </form>
+  <p class="nl-inline__msg" data-nl-msg aria-live="polite"></p>
+</aside>
+
+<style>
+  .nl-inline {
+    margin: var(--sp-8) 0;
+    padding: var(--sp-6);
+    background: linear-gradient(135deg, #f1f6ff 0%, #f5f7fa 100%);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+  }
+  .nl-inline__kicker {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--electric);
+    margin: 0 0 8px;
+  }
+  .nl-inline__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: 0;
+  }
+  .nl-inline__sub {
+    margin: 8px 0 0;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .nl-inline__form {
+    margin-top: 18px;
+    display: flex;
+    gap: 8px;
+    max-width: 460px;
+  }
+  .nl-inline__form input[type='email'] {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 15px;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+  }
+  .nl-inline__form input[type='email']:focus {
+    outline: none;
+    border-color: var(--electric);
+    box-shadow: 0 0 0 3px rgba(0, 119, 252, 0.12);
+  }
+  .nl-inline__form button {
+    padding: 12px 20px;
+    border-radius: var(--r-sm);
+    border: none;
+    background: var(--grad, linear-gradient(90deg, var(--electric), var(--cyan)));
+    color: #fff;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14.5px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .nl-inline__msg {
+    margin: 12px 0 0;
+    font-size: 14px;
+    min-height: 1em;
+  }
+  .nl-inline__msg.is-ok {
+    color: #1f8a5b;
+  }
+  .nl-inline__msg.is-err {
+    color: #c0392b;
+  }
+  @media (max-width: 540px) {
+    .nl-inline__form {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-nl-form]').forEach((form) => {
+    const msg = form.parentElement?.querySelector<HTMLElement>('[data-nl-msg]');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const email = String(data.get('email') ?? '');
+      const company = String(data.get('company') ?? '');
+      const source = form.dataset.source || 'blog-article';
+      if (msg) {
+        msg.className = 'nl-inline__msg';
+        msg.textContent = 'Se trimite…';
+      }
+      try {
+        const res = await fetch('/api/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, company, source }),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (res.ok && body.ok) {
+          form.reset();
+          if (msg) {
+            msg.className = 'nl-inline__msg is-ok';
+            msg.textContent = 'Gata! Verifică-ți inboxul.';
+          }
+        } else if (msg) {
+          msg.className = 'nl-inline__msg is-err';
+          msg.textContent = body.error || 'Ceva n-a mers. Încearcă din nou.';
+        }
+      } catch {
+        if (msg) {
+          msg.className = 'nl-inline__msg is-err';
+          msg.textContent = 'Ceva n-a mers. Încearcă din nou.';
+        }
+      }
+    });
+  });
+</script>

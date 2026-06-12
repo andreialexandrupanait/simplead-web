@@ -76,8 +76,8 @@ const social = site.social;
       </div>
     </div>
 
-    <div class="footer-col footer-col--nav">
-      <h5>Navigare</h5>
+    <details class="footer-col footer-acc" open>
+      <summary class="footer-acc__sum">Navigare</summary>
       <ul>
         {
           mainNav.map((i) => (
@@ -87,10 +87,10 @@ const social = site.social;
           ))
         }
       </ul>
-    </div>
+    </details>
 
-    <div class="footer-col">
-      <h5>Servicii</h5>
+    <details class="footer-col footer-acc" open>
+      <summary class="footer-acc__sum">Servicii</summary>
       <ul>
         {
           footerServices.map((i) => (
@@ -100,7 +100,7 @@ const social = site.social;
           ))
         }
       </ul>
-    </div>
+    </details>
 
     <div class="footer-col footer-news">
       <h5>Newsletter</h5>
@@ -156,6 +156,59 @@ const social = site.social;
       margin-top: 6px;
     }
   }
+
+  /* Coloanele de linkuri: pe desktop = listă normală (deschisă); pe mobil =
+     dropdown/acordeon. JS-ul ține deschis pe desktop, închis pe mobil. */
+  .footer-acc {
+    min-width: 0;
+  }
+  .footer-acc__sum {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: #fff;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin: 0 0 18px;
+    cursor: default;
+  }
+  .footer-acc__sum::-webkit-details-marker {
+    display: none;
+  }
+  .footer-acc__sum::after {
+    content: '';
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    opacity: 0.55;
+    transition: transform 0.2s ease;
+    display: none;
+  }
+  .footer-acc[open] > .footer-acc__sum::after {
+    transform: rotate(-135deg);
+  }
+  @media (max-width: 768px) {
+    .footer-acc__sum {
+      cursor: pointer;
+      margin-bottom: 0;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .footer-acc__sum::after {
+      display: block;
+    }
+    .footer-acc[open] > .footer-acc__sum {
+      margin-bottom: 14px;
+      border-bottom-color: transparent;
+    }
+  }
 </style>
 
 <style>
@@ -208,11 +261,6 @@ const social = site.social;
   .footer-about {
     max-width: none;
   }
-  /* Coloana „Navigare" mutată spre dreapta. */
-  .footer-col--nav {
-    transform: translateX(48px);
-  }
-
   /* ===== Wordmark gigant ===== */
   .footer-wordmark {
     max-width: var(--maxw);
@@ -354,4 +402,13 @@ const social = site.social;
       msg.textContent = 'Eroare de rețea. Încearcă din nou.';
     }
   });
+
+  // Footer: coloanele de linkuri sunt acordeon pe mobil, deschise pe desktop.
+  const accs = Array.from(document.querySelectorAll<HTMLDetailsElement>('.footer-acc'));
+  if (accs.length) {
+    const mq = window.matchMedia('(max-width: 768px)');
+    const sync = () => accs.forEach((d) => (d.open = !mq.matches));
+    sync();
+    mq.addEventListener('change', sync);
+  }
 </script>

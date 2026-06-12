@@ -139,7 +139,13 @@ export const posts = pgTable('posts', {
   // Corpul articolului, în Markdown; randat prin `renderMarkdown()` (sanitizat).
   body: text('body').notNull().default(''),
   author: text('author').notNull().default('Andrei Panait'),
+  // Categorie principală (taxonomie fixă din data/categories.ts); '' = fără.
+  category: text('category').notNull().default(''),
   tags: jsonb('tags').$type<string[]>().notNull().default([]),
+  // Concluzii cheie („Pe scurt"): o listă scurtă afișată sus, bună pt. skim + GEO.
+  takeaways: jsonb('takeaways').$type<string[]>().notNull().default([]),
+  // Întrebări frecvente per-articol: acordeon la final + schema FAQPage (SEO/GEO).
+  faq: jsonb('faq').$type<{ q: string; a: string }[]>().notNull().default([]),
   cover: text('cover'),
   status: contentStatus('status').notNull().default('draft'),
   publishedAt: timestamp('published_at', { withTimezone: true }),

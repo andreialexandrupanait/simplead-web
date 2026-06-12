@@ -1,0 +1,53 @@
+---
+/** Card de articol reutilizabil (blog index, pagini de tag, „Citește mai departe"). */
+import type { Post } from '@lib/server/content';
+import { authorAvatar } from '@lib/author';
+
+interface Props {
+  post: Post;
+}
+const { post } = Astro.props;
+const av = authorAvatar(post.author);
+const dateStr = (post.publishedAt ?? new Date()).toLocaleDateString('ro-RO', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+// Tag-uri fără cel care dublează categoria.
+const tags = (post.tags ?? []).filter((t) => t !== post.category);
+---
+
+<a class="bcard" href={`/blog/${post.slug}`}>
+  <div class="bcard__thumb">
+    {
+      post.cover ? (
+        <img src={post.cover} alt={post.title} loading="lazy" width="640" height="400" />
+      ) : (
+        <span class="bcard__ph">{post.title}</span>
+      )
+    }
+  </div>
+  <div class="bcard__byline">
+    {
+      av.src ? (
+        <img class="bcard__avatar" src={av.src} alt={post.author} width="28" height="28" loading="lazy" />
+      ) : (
+        <span class="bcard__avatar bcard__avatar--mono" aria-hidden="true">{av.monogram}</span>
+      )
+    }
+    <span class="bcard__author">{post.author}</span>
+    <span class="bcard__dot">·</span>
+    <time datetime={(post.publishedAt ?? post.createdAt).toISOString()}>{dateStr}</time>
+  </div>
+  <h3 class="bcard__title">{post.title}</h3>
+  {
+    (post.category || tags.length > 0) && (
+      <div class="bcard__tags">
+        {post.category && <span class="bpill bpill--cat">{post.category}</span>}
+        {tags.slice(0, post.category ? 2 : 3).map((tag) => (
+          <span class="bpill">{tag}</span>
+        ))}
+      </div>
+    )
+  }
+</a>

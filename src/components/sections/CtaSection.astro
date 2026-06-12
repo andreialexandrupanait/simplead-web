@@ -6,23 +6,34 @@ interface Props {
   subtitle?: string;
   href?: string;
   cta?: string;
+  kicker?: string;
+  /** Butonul secundar (default: „Vezi portofoliu" → /portofoliu). */
+  secondaryHref?: string;
+  secondaryLabel?: string;
+  showSecondary?: boolean;
 }
 const {
   title = 'Gata să-ți pui afacerea pe roți?',
   subtitle = 'Hai să discutăm despre proiectul tău. Prima întâlnire e fără obligații.',
   href = '/contact',
   cta = 'Cere o ofertă',
+  kicker = 'Hai să începem',
+  secondaryHref = '/portofoliu',
+  secondaryLabel = 'Vezi portofoliu',
+  showSecondary = true,
 } = Astro.props;
 ---
 
 <section class="cta">
   <div class="site-container cta__inner" data-reveal>
-    <p class="cta__kicker">Hai să începem</p>
+    <p class="cta__kicker">{kicker}</p>
     <h2 class="cta__title">{title}</h2>
     <p class="cta__sub">{subtitle}</p>
     <div class="cta__actions">
       <Button href={href} size="lg" withArrow>{cta}</Button>
-      <Button href="/portofoliu" size="lg" variant="outline" onDark>Vezi portofoliu</Button>
+      {showSecondary && (
+        <Button href={secondaryHref} size="lg" variant="outline" onDark>{secondaryLabel}</Button>
+      )}
     </div>
   </div>
 </section>

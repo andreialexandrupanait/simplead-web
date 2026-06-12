@@ -12,6 +12,7 @@ interface Props {
 /** Meniu mobil: buton burger + overlay full-screen pe canvas light. */
 export default function MobileMenu({ items, services = [], ctaLabel, ctaHref, activePath }: Props) {
   const [open, setOpen] = useState(false);
+  const [blogCats, setBlogCats] = useState<{ label: string; slug: string }[]>([]);
 
   // Blochează scroll-ul body când meniul e deschis + închide pe Escape.
   useEffect(() => {
@@ -23,6 +24,18 @@ export default function MobileMenu({ items, services = [], ctaLabel, ctaHref, ac
       window.removeEventListener('keydown', onKey);
     };
   }, [open]);
+
+  // Categoriile de blog (paritate cu mega-ul desktop): luate la prima deschidere,
+  // client-side din /api/blog-menu (proaspete chiar pe paginile statice).
+  useEffect(() => {
+    if (!open || blogCats.length) return;
+    fetch('/api/blog-menu')
+      .then((r) => r.json())
+      .then((d) => {
+        if (Array.isArray(d?.categories)) setBlogCats(d.categories);
+      })
+      .catch(() => {});
+  }, [open, blogCats.length]);
 
   const isActive = (href: string) =>
     href === '/' ? activePath === '/' : activePath?.startsWith(href);
@@ -82,6 +95,22 @@ export default function MobileMenu({ items, services = [], ctaLabel, ctaHref, ac
                     className="mm-service"
                   >
                     {s.label}
+                  </a>
+                ))}
+              </div>
+            )}
+
+            {blogCats.length > 0 && (
+              <div className="mm-services">
+                <span className="mm-services__label">Categorii blog</span>
+                {blogCats.map((c) => (
+                  <a
+                    key={c.slug}
+                    href={`/blog/category/${c.slug}`}
+                    onClick={() => setOpen(false)}
+                    className="mm-service"
+                  >
+                    {c.label}
                   </a>
                 ))}
               </div>

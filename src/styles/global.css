@@ -132,6 +132,7 @@
     scroll-behavior: smooth;
     /* Offset pentru ancore, ca ținta să nu ajungă sub navbar-ul fix. */
     scroll-padding-top: calc(var(--nav-h) + 16px);
+    overflow-x: clip;
   }
 
   body {
@@ -140,6 +141,9 @@
     background: var(--canvas);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Plasă de siguranță: niciun decor/element lat nu mai produce scroll
+       orizontal. `clip` (nu `hidden`) nu strică position: sticky. */
+    overflow-x: clip;
   }
 
   a {
@@ -179,6 +183,11 @@
 @media (max-width: 900px) {
   .site-container {
     padding-inline: 24px;
+  }
+}
+@media (max-width: 480px) {
+  .site-container {
+    padding-inline: 16px;
   }
 }
 
@@ -270,4 +279,76 @@
 .prose-simplead strong {
   color: var(--ink);
   font-weight: 700;
+}
+/* Ancorele TOC nu trebuie să intre sub navbar-ul sticky. */
+.prose-simplead h2,
+.prose-simplead h3,
+.prose-simplead h4 {
+  scroll-margin-top: calc(var(--nav-h) + 20px);
+}
+.prose-simplead img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 1.75rem 0;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+}
+.prose-simplead figure {
+  margin: 1.75rem 0;
+}
+.prose-simplead figure img {
+  margin: 0;
+}
+.prose-simplead figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+  text-align: center;
+}
+.prose-simplead hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 2.5rem 0;
+}
+.prose-simplead code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--canvas-soft);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.12em 0.4em;
+}
+.prose-simplead pre {
+  margin: 1.5rem 0;
+  padding: 1.1rem 1.25rem;
+  background: var(--ink);
+  border-radius: var(--r-md);
+  overflow-x: auto;
+}
+.prose-simplead pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: #e6ecff;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.prose-simplead table {
+  width: 100%;
+  margin: 1.75rem 0;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.prose-simplead th,
+.prose-simplead td {
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+.prose-simplead thead th {
+  background: var(--canvas-soft);
+  color: var(--ink);
+  font-weight: 600;
 }

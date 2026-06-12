@@ -1,0 +1,118 @@
+---
+/** Caseta autorului (semnal E-E-A-T): foto, nume, rol, bio, linkuri verificabile. */
+import { site, isFounderName } from '@data/site';
+
+interface Props {
+  author: string;
+}
+const { author } = Astro.props;
+
+const isFounder = isFounderName(author);
+const role = isFounder ? site.founderTitle : 'Echipa Simplead';
+const bio = isFounder
+  ? 'Fondator Simplead. Cercetare în neuromarketing — fac branding, web și marketing pe bază de neuroștiință, nu de noroc.'
+  : 'Scrie pentru Simplead despre branding, marketing digital și design.';
+const avatar = isFounder ? '/andrei.jpg' : null;
+const monogram = author.trim().charAt(0).toUpperCase() || 'S';
+---
+
+<aside class="author-box">
+  {
+    avatar ? (
+      <img class="author-box__avatar" src={avatar} alt={author} width="72" height="72" loading="lazy" />
+    ) : (
+      <span class="author-box__avatar author-box__avatar--mono" aria-hidden="true">
+        {monogram}
+      </span>
+    )
+  }
+  <div class="author-box__body">
+    <p class="author-box__kicker">Scris de</p>
+    <p class="author-box__name">
+      {author}
+      <span class="author-box__role">· {role}</span>
+    </p>
+    <p class="author-box__bio">{bio}</p>
+    <div class="author-box__links">
+      <a href="/despre">Despre noi</a>
+      {
+        isFounder && (
+          <a href={site.founderOrcid} target="_blank" rel="noopener">
+            ORCID
+          </a>
+        )
+      }
+    </div>
+  </div>
+</aside>
+
+<style>
+  .author-box {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    background: var(--canvas-soft);
+  }
+  .author-box__avatar {
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    border-radius: var(--r-pill);
+    object-fit: cover;
+  }
+  .author-box__avatar--mono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--ink);
+  }
+  .author-box__kicker {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 4px;
+  }
+  .author-box__name {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+  }
+  .author-box__role {
+    font-family: var(--font-body);
+    font-weight: 400;
+    color: var(--muted);
+  }
+  .author-box__bio {
+    margin: 8px 0 0;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .author-box__links {
+    margin-top: 12px;
+    display: flex;
+    gap: 18px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .author-box__links a {
+    color: var(--electric);
+    text-decoration: none;
+  }
+  .author-box__links a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

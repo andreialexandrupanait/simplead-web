@@ -1,0 +1,49 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import BlogListing from '@components/sections/BlogListing.astro';
+import CtaSection from '@components/sections/CtaSection.astro';
+import { getPublishedPosts, getAllTags } from '@lib/server/content';
+import { slugify } from '@lib/slug';
+
+export const prerender = false;
+
+const tagSlug = Astro.params.tag!;
+const allPosts = await getPublishedPosts();
+const allTags = (await getAllTags()).map((t) => t.tag);
+
+// Numele real al tag-ului (din slug) + articolele care îl conțin.
+const match = allTags.find((t) => slugify(t) === tagSlug);
+const items = allPosts.filter((p) => (p.tags ?? []).some((t) => slugify(t) === tagSlug));
+if (!match || items.length === 0) {
+  return Astro.rewrite('/404');
+}
+
+const page = Math.max(1, parseInt(Astro.url.searchParams.get('page') ?? '1', 10) || 1);
+const subtitle = `Tot ce am scris despre ${match.toLowerCase()}.`;
+
+const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
+const schema = {
+  '@type': 'CollectionPage',
+  name: `${match} — Blog Simplead`,
+  description: subtitle,
+  url: `${origin}/blog/tag/${tagSlug}`,
+};
+---
+
+<BaseLayout
+  title={`${match} — Blog`}
+  description={subtitle}
+  transparentNav={true}
+  navOverDark={true}
+  schema={schema}
+>
+  <BlogListing
+    title={match}
+    subtitle={subtitle}
+    items={items}
+    page={page}
+    basePath={`/blog/tag/${tagSlug}`}
+  />
+
+  <CtaSection />
+</BaseLayout>

@@ -4,7 +4,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 import PostForm from '../../../components/admin/PostForm.astro';
 import { getDb } from '../../../lib/server/db';
 import { posts } from '../../../lib/server/schema';
-import { parsePostForm } from '../../../lib/server/admin-schemas';
+import { parsePostForm, takeawaysToText, faqToText } from '../../../lib/server/admin-schemas';
 import { bustContentCache } from '../../../lib/server/content';
 import { setFlash } from '../../../lib/server/flash';
 
@@ -49,7 +49,12 @@ if (Astro.request.method === 'POST') {
         .limit(1);
       if (clash.length > 0) {
         errors = { slug: ['Există deja un alt articol cu acest slug.'] };
-        formValues = { ...d, tags: d.tags.join(', ') } as unknown as Record<string, string>;
+        formValues = {
+          ...d,
+          tags: d.tags.join(', '),
+          takeaways: takeawaysToText(d.takeaways),
+          faq: faqToText(d.faq),
+        } as unknown as Record<string, string>;
       } else {
         const [existing] = await db.select().from(posts).where(eq(posts.id, id)).limit(1);
         const publishedAt =
@@ -66,7 +71,10 @@ if (Astro.request.method === 'POST') {
             description: d.description,
             body: d.body,
             author: d.author,
+            category: d.category,
             tags: d.tags,
+            takeaways: d.takeaways,
+            faq: d.faq,
             cover: d.cover || null,
             status: d.status,
             publishedAt,
@@ -106,7 +114,10 @@ const values: Record<string, string> = formValues ?? {
   description: post.description,
   body: post.body,
   author: post.author,
+  category: post.category,
   tags: post.tags.join(', '),
+  takeaways: takeawaysToText(post.takeaways),
+  faq: faqToText(post.faq),
   cover: post.cover ?? '',
   status: post.status,
   publishedAt: toLocal(post.publishedAt),

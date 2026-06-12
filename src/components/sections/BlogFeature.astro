@@ -1,32 +1,56 @@
 ---
-/** Articol featured (blog-feature) din capul paginii de blog. */
+/** Articol featured (capul listei de blog): card DARK, imagine în dreapta. */
 import type { Post } from '@lib/server/content';
+import { authorAvatar } from '@lib/author';
 
 interface Props {
   post: Post;
 }
 const { post } = Astro.props;
-const fmt = (d: Date | null) =>
-  (d ?? new Date()).toLocaleDateString('ro-RO', { year: 'numeric', month: 'long', day: 'numeric' });
+const av = authorAvatar(post.author);
+const dateStr = (post.publishedAt ?? new Date()).toLocaleDateString('ro-RO', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+const tags = (post.tags ?? []).filter((t) => t !== post.category);
 const arrow = '<path d="M5 12h14M13 6l6 6-6 6"/>';
 ---
 
-<article class="blog-feature">
-  <a class="ph thumb" href={`/blog/${post.slug}`}>
-    {post.cover ? <img src={post.cover} alt={post.title} /> : post.title}
-  </a>
-  <div class="body pad">
-    <div class="blog-meta">
-      <span class="cat">{post.tags[0] ?? 'Blog'}</span>
-      <span>{fmt(post.publishedAt)}</span>
+<article class="bfeature">
+  <div class="bfeature__body">
+    {
+      (post.category || tags.length > 0) && (
+        <div class="bfeature__tags">
+          {post.category && <span class="bpill bpill--catdark">{post.category}</span>}
+          {tags.slice(0, post.category ? 2 : 3).map((tag) => (
+            <span class="bpill bpill--ondark">{tag}</span>
+          ))}
+        </div>
+      )
+    }
+    <h2 class="bfeature__title">
+      <a href={`/blog/${post.slug}`}>{post.title}</a>
+    </h2>
+    <p class="bfeature__excerpt">{post.description}</p>
+    <div class="bfeature__byline">
+      {
+        av.src ? (
+          <img class="bfeature__avatar" src={av.src} alt={post.author} width="32" height="32" />
+        ) : (
+          <span class="bfeature__avatar bfeature__avatar--mono" aria-hidden="true">{av.monogram}</span>
+        )
+      }
+      <span class="bfeature__author">{post.author}</span>
+      <span class="bfeature__dot">·</span>
+      <time datetime={(post.publishedAt ?? post.createdAt).toISOString()}>{dateStr}</time>
     </div>
-    <h2>{post.title}</h2>
-    <p>{post.description}</p>
-    <div style="margin-top:22px;">
-      <a class="link-more" href={`/blog/${post.slug}`}>
-        Citește articolul
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={arrow} />
-      </a>
-    </div>
+    <a class="bfeature__cta" href={`/blog/${post.slug}`}>
+      Citește articolul
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={arrow} />
+    </a>
   </div>
+  <a class="bfeature__media" href={`/blog/${post.slug}`} aria-label={post.title}>
+    {post.cover ? <img src={post.cover} alt={post.title} width="800" height="600" /> : <span>{post.title}</span>}
+  </a>
 </article>
