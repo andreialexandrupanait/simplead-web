@@ -4,8 +4,31 @@ Studio de grafică și marketing digital din Galați, condus de Andrei Panait (d
 Poziționare: **„Facem lucrurile simple. Și le bazăm pe date."**
 
 Site static în **română** (pregătit pentru engleză), construit cu **Astro + TypeScript + Tailwind**
-și câteva **React islands** (grafic orbital — CSS, formular contact, meniu mobil). Dezvoltarea se
-face **integral în Docker** pe Windows.
+și câteva **React islands** (grafic orbital — CSS, formular contact, meniu mobil).
+
+---
+
+## ⚡ Flux de lucru zilnic (citește asta)
+
+**Regula de aur: se editează DOAR local, niciodată direct pe server.** Codul circulă într-o
+singură direcție — `editezi local → push pe GitHub → deploy pe server` — așa local-ul nu mai
+rămâne în urma versiunii de pe live.
+
+Dev-ul rulează **nativ pe Windows** (Node, fără Docker Desktop), cu DB-ul de dev de pe server.
+
+```powershell
+# Începutul zilei — un singur buton:
+.\dev.ps1          # git pull + sync continut prod->dev + porneste dev pe http://localhost:4321
+
+# Publicare pe live — un singur buton:
+.\deploy.ps1 "mesaj de commit"     # commit + push + deploy pe server (rebuild + restart)
+
+# Doar re-sincronizare continut prod->dev (fara restart dev):
+.\sync-db.ps1
+```
+
+> `dev.ps1` te ține mereu pe ultima versiune și cu conținut real. Dacă vrei doar codul fără
+> sync DB, vezi comentariile din script. Detalii infra (server, baze de date): mai jos.
 
 ---
 
