@@ -1,0 +1,187 @@
+---
+/**
+ * Lista de beneficii a unui pachet: listă cu separatoare fine (hairline), FĂRĂ
+ * glyph de bifă (alegere de design — bifele păreau puerile). Când primește
+ * `featureGroups`, randează sub-titluri de grup (ex. „La început" / „Lunar");
+ * altfel o listă plată din `features`.
+ * Variante: 'lg' (carduri web showpiece) · 'sm' (carduri compacte).
+ *
+ * Un item poate purta un detaliu afișat la hover: „Label || detaliu lung".
+ * Eticheta scurtă stă pe un rând, iar „i"-ul deschide restul.
+ */
+import type { FeatureGroup } from '@/data/packages-fallback';
+
+interface Props {
+  features?: string[];
+  featureGroups?: FeatureGroup[] | null;
+  variant?: 'lg' | 'sm';
+}
+const { features = [], featureGroups, variant = 'lg' } = Astro.props;
+const groups: FeatureGroup[] =
+  featureGroups && featureGroups.length > 0
+    ? featureGroups
+    : features.length > 0
+      ? [{ heading: '', items: features }]
+      : [];
+
+/** „Label || detaliu" → { label, detail }. Fără „||" → doar label. */
+function parseItem(item: string): { label: string; detail: string } {
+  const [label, ...rest] = item.split('||');
+  return { label: label.trim(), detail: rest.join('||').trim() };
+}
+---
+
+{
+  groups.length > 0 && (
+    <div class:list={['pf', `pf--${variant}`]}>
+      {groups.map((g) => (
+        <>
+          {g.heading && <p class="pf-group">{g.heading}</p>}
+          <ul class="pf-list">
+            {g.items.map((item) => {
+              const { label, detail } = parseItem(item);
+              return (
+                <li>
+                  {label}
+                  {detail && (
+                    <span class="pf-info" tabindex="0" aria-label={detail}>
+                      <span class="pf-info__dot">i</span>
+                      <span class="pf-tip" role="tooltip">
+                        {detail}
+                      </span>
+                    </span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .pf {
+    flex: 1;
+    margin-bottom: 16px;
+  }
+  .pf-group {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--electric);
+    margin: 18px 0 10px;
+  }
+  .pf-group:first-child {
+    margin-top: 0;
+  }
+  .pf-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  /* Bulină rotundă, ca pe pagina de calculator (/mentenanta). */
+  .pf-list li {
+    position: relative;
+    padding-left: 22px;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .pf-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cyan);
+  }
+  /* Variante de dimensiune */
+  .pf--lg .pf-list li {
+    font-size: 0.92rem;
+  }
+  .pf--sm .pf-list li {
+    font-size: 0.86rem;
+  }
+  .pf--sm .pf-list li::before {
+    top: 6px;
+  }
+
+  /* „i" cu tooltip la hover/focus, pentru detalii care n-ar încăpea pe un rând. */
+  .pf-info {
+    position: relative;
+    display: inline-flex;
+    margin-left: 6px;
+    vertical-align: middle;
+    cursor: help;
+  }
+  .pf-info__dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+    font-family: var(--font-display);
+    font-size: 0.62rem;
+    font-weight: 700;
+    font-style: italic;
+    line-height: 1;
+    color: var(--electric);
+    border: 1px solid color-mix(in srgb, var(--electric) 45%, var(--line));
+    border-radius: 50%;
+  }
+  .pf-info:hover .pf-info__dot,
+  .pf-info:focus-visible .pf-info__dot {
+    color: #fff;
+    background: var(--electric);
+    border-color: var(--electric);
+  }
+  .pf-tip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    width: max-content;
+    max-width: 240px;
+    transform: translateX(-50%) translateY(4px);
+    padding: 9px 12px;
+    font-size: 0.8rem;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 0;
+    text-transform: none;
+    color: #fff;
+    background: var(--ink);
+    border-radius: var(--r-sm);
+    box-shadow: var(--sh-md);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.18s,
+      transform 0.18s;
+    z-index: 20;
+    pointer-events: none;
+  }
+  .pf-tip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--ink);
+  }
+  .pf-info:hover .pf-tip,
+  .pf-info:focus .pf-tip,
+  .pf-info:focus-within .pf-tip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>

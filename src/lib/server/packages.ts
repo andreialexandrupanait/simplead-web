@@ -28,6 +28,8 @@ export async function getPublicPackages(): Promise<PublicPackages> {
           currency: row.currency.trim(),
           interval: row.interval,
           features: row.features,
+          featureGroups: row.featureGroups ?? undefined,
+          pricing: (row.pricing as DisplayPackage['pricing']) ?? 'fixed',
           category: row.category,
           note: row.note,
           sort: row.sort,
@@ -48,11 +50,19 @@ export function formatAmount(cents: number, currency: string): string {
   return `${amount}${currency.trim() === 'EUR' ? '€' : ' lei'}`;
 }
 
-/** Format de afișare a prețului: „480 €" / „50 €/lună" / „[confirmă: preț]". */
+/** Format de afișare a prețului: „480€" / „de la 480€" / „La cerere". */
 export function formatPrice(pkg: DisplayPackage): string {
+  if (pkg.pricing === 'quote') return 'La cerere';
   if (pkg.priceCents === 0) return '[confirmă: preț]';
   const amount = (pkg.priceCents / 100).toFixed(2).replace(/\.00$/, '');
   const symbol = pkg.currency === 'EUR' ? '€' : ' lei';
   const suffix = pkg.interval === 'monthly' ? '/lună' : pkg.interval === 'yearly' ? '/an' : '';
-  return `${amount}${symbol}${suffix}`;
+  const prefix = pkg.pricing === 'from' ? 'de la ' : '';
+  return `${prefix}${amount}${symbol}${suffix}`;
+}
+
+/** Cumpărarea directă apare doar cu preț fix + Stripe configurat. Pachetele
+ *  „de la"/„la cerere" (scope variabil) merg pe „Cere ofertă", fără checkout. */
+export function canBuy(pkg: DisplayPackage, stripeReady: boolean): boolean {
+  return stripeReady && pkg.priceCents > 0 && (pkg.pricing ?? 'fixed') === 'fixed';
 }

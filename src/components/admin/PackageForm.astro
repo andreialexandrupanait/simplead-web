@@ -12,6 +12,7 @@ interface Props {
     price: string;
     currency: string;
     interval: string;
+    pricing: string;
     features: string;
     category: string;
     note: string;
@@ -41,6 +42,11 @@ const categories = [
   { value: '', label: 'Fără grupare' },
   { value: 'web', label: 'Web' },
   { value: 'grafica-marketing', label: 'Grafică & marketing' },
+];
+const pricings = [
+  { value: 'fixed', label: 'Preț fix (afișează preț + Cumpără)' },
+  { value: 'from', label: 'De la (scope variabil, doar Cere ofertă)' },
+  { value: 'quote', label: 'La cerere (fără preț, doar Cere ofertă)' },
 ];
 ---
 
@@ -95,6 +101,19 @@ const categories = [
       </select>
     </label>
     <label class="admin-field">
+      <span>Mod preț</span>
+      <select class="admin-select" name="pricing">
+        {
+          pricings.map((p) => (
+            <option value={p.value} selected={values.pricing === p.value}>
+              {p.label}
+            </option>
+          ))
+        }
+      </select>
+      <small>„De la"/„La cerere" ascund butonul Cumpără (scope pe ofertă).</small>
+    </label>
+    <label class="admin-field">
       <span>Grupare pe /pachete</span>
       <select class="admin-select" name="category">
         {
@@ -126,7 +145,12 @@ const categories = [
 
   <label class="admin-field">
     <span>Beneficii (unul pe linie)</span>
-    <textarea class="admin-textarea" name="features">{values.features}</textarea>
+    <textarea class="admin-textarea" name="features" rows="8">{values.features}</textarea>
+    <small>
+      Pentru grupuri (ex. „La început" / „Lunar"), începe un grup cu o linie
+      <code>## Titlu grup</code>; liniile de sub el sunt itemele lui. Pentru un detaliu afișat la
+      hover (un „i"), scrie <code>Etichetă || detaliul lung</code>.
+    </small>
   </label>
 
   <label class="admin-field">

@@ -49,6 +49,13 @@ export const packages = pgTable('packages', {
   currency: char('currency', { length: 3 }).notNull().default('EUR'),
   interval: billingInterval('interval').notNull().default('one_time'),
   features: jsonb('features').$type<string[]>().notNull().default([]),
+  // Beneficii grupate (ex. „La început" vs „Lunar"). Când e prezent, înlocuiește
+  // lista plată `features` la randare. NULL = pachet simplu (folosește `features`).
+  featureGroups: jsonb('feature_groups').$type<{ heading: string; items: string[] }[]>(),
+  // Mod de afișare a prețului/CTA: 'fixed' (preț + Cumpără dacă Stripe), 'from'
+  // („de la {preț}" + doar Cere ofertă), 'quote' (fără preț, doar Cere ofertă).
+  // Text liber validat de Zod, nu enum pg: un mod nou = o editare în admin-schemas.
+  pricing: text('pricing').$type<'fixed' | 'from' | 'quote'>().notNull().default('fixed'),
   // Grupare pe pagina /pachete: '' | 'web' | 'grafica-marketing'. Text liber
   // validat de Zod (admin-schemas), nu enum pg: o grupare nouă = o editare acolo.
   category: text('category').notNull().default(''),

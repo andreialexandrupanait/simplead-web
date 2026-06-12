@@ -3,9 +3,12 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import PageHeader from '@components/sections/PageHeader.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
 import FaqSection from '@components/sections/FaqSection.astro';
-import { getPublicPackages, formatPrice } from '@/lib/server/packages';
+import PackageFeatures from '@components/sections/PackageFeatures.astro';
+import ServiceIcon from '@components/ui/ServiceIcon.astro';
+import type { ServiceIcon as ServiceIconName } from '@data/services';
+import { getPublicPackages, formatPrice, canBuy } from '@/lib/server/packages';
 import { getIntegration } from '@/lib/server/settings';
-import { hourlyRates, hourlyRatesIntro, freeMonthBanner } from '@/data/pricing';
+import { hourlyRates, hourlyRatesIntro } from '@/data/pricing';
 import { packagesFaqs } from '@data/content';
 
 // On-demand: pachetele vin din DB (editabile din admin, fără rebuild).
@@ -16,9 +19,9 @@ if (!fromDb) {
   Astro.response.headers.set('Cache-Control', 'no-store');
 }
 
-// Cumpărarea directă apare doar cu Stripe configurat (din /admin/integrari).
+// Cumpărarea directă apare doar cu Stripe configurat (din /admin/integrari) și
+// doar pe pachetele cu preț fix; vezi canBuy() din lib/server/packages.
 const stripeReady = fromDb && Boolean((await getIntegration('stripe')).secretKey.value);
-const canBuy = (priceCents: number) => stripeReady && priceCents > 0;
 const canceled = Astro.url.searchParams.get('canceled') === '1';
 
 const bySort = (a: { sort: number }, b: { sort: number }) => a.sort - b.sort;
@@ -29,9 +32,7 @@ const webRank = (p: { slug: string; sort: number }) => {
   const i = WEB_ORDER.indexOf(p.slug);
   return i === -1 ? 100 + p.sort : i;
 };
-const web = services
-  .filter((p) => p.category === 'web')
-  .sort((a, b) => webRank(a) - webRank(b));
+const web = services.filter((p) => p.category === 'web').sort((a, b) => webRank(a) - webRank(b));
 const graphics = services.filter((p) => p.category === 'grafica-marketing');
 // Servicii fără grupare: le arătăm tot în secțiunea grafică & marketing.
 const graphicsRest = services.filter(
@@ -45,8 +46,12 @@ const addons = items.filter((p) => p.kind === 'addon');
 
 const contactHref = (name: string) => `/contact?service=${encodeURIComponent(name)}`;
 
+// Icon pe cardurile grafică (map pe slug; fallback `grafica` pt. pachete noi din admin).
+const graphicsIcon = (slug: string): ServiceIconName =>
+  slug === 'strategie-marketing' ? 'marketing' : 'grafica';
+
 const metaDescription =
-  'Pachete cu preț fix pentru site-uri, identitate vizuală și grafică, plus abonamente lunare de mentenanță. Alegi pachetul, noi ne apucăm de treabă.';
+  'Pachete clare pentru site-uri, identitate vizuală și grafică, plus abonamente lunare de mentenanță. Știi de la început ce primești și de unde pornește prețul.';
 ---
 
 <BaseLayout
@@ -60,7 +65,7 @@ const metaDescription =
     eyebrow="Pachete și prețuri"
     title="Pachete clare, fără surprize"
     accent="fără surprize"
-    subtitle="Preț fix și abonamente lunare. Știi de la început ce primești și cât costă."
+    subtitle="Prețuri clare și abonamente lunare. Știi de la început ce primești și cât plătești."
   />
 
   {
@@ -79,16 +84,17 @@ const metaDescription =
   {/* 1. Pachete web (showpiece) */}
   {
     web.length > 0 && (
-      <section class="pk-sec pk-web">
+      <section class="pk-sec pk-web" id="web">
         <div class="pk-wrap">
           <header class="pk-head pk-head--center" data-reveal>
-            <span class="pk-tag">
-              <span>Pachete web</span>
-            </span>
+            <span class="pk-eyebrow">Pachete web</span>
             <h2 class="pk-h2">
-              De unde pornește <em>site-ul tău</em>
+              Site-uri și <em>magazine online</em>
             </h2>
-            <p class="pk-lead">Preț fix, livrare pe termen clar. În EUR, fără TVA.</p>
+            <p class="pk-lead">
+              Site de prezentare, magazin online sau redesign, construite în WordPress — rapide,
+              sigure și ușor de administrat de tine.
+            </p>
           </header>
           <div class="pk-web-grid">
             {web.map((pkg, i) => (
@@ -102,16 +108,14 @@ const metaDescription =
                 <h3 class="pk-w-name">{pkg.name}</h3>
                 <p class="pk-w-desc">{pkg.description}</p>
                 <p class="pk-w-price">{formatPrice(pkg)}</p>
-                {pkg.features.length > 0 && (
-                  <ul class="pk-w-feat">
-                    {pkg.features.map((f) => (
-                      <li>{f}</li>
-                    ))}
-                  </ul>
-                )}
+                <PackageFeatures
+                  features={pkg.features}
+                  featureGroups={pkg.featureGroups}
+                  variant="lg"
+                />
                 {pkg.note && <p class="pk-w-note">{pkg.note}</p>}
                 <div class="pk-cta">
-                  {canBuy(pkg.priceCents) && (
+                  {canBuy(pkg, stripeReady) && (
                     <form method="post" action="/api/checkout">
                       <input type="hidden" name="slug" value={pkg.slug} />
                       <button type="submit" class="pk-btn pk-btn--fill">
@@ -129,85 +133,54 @@ const metaDescription =
               </article>
             ))}
           </div>
-        </div>
-      </section>
-    )
-  }
-
-  {/* 2. Grafică & marketing */}
-  {
-    graphicsAll.length > 0 && (
-      <section class="pk-sec pk-sec--soft">
-        <div class="pk-wrap">
-          <header class="pk-head" data-reveal>
-            <span class="pk-tag">
-              <span>Grafică & marketing</span>
+          <aside class="pk-ai-note">
+            <span class="pk-ai-note__icon">
+              <ServiceIcon icon="ai" />
             </span>
-            <h2 class="pk-h2">
-              Brand, vizualuri și <em>strategie</em>
-            </h2>
-            <p class="pk-lead">Preț fix și pentru partea creativă.</p>
-          </header>
-          <div class="pk-grid3">
-            {graphicsAll.map((pkg) => (
-              <article class="pk-card">
-                <div class="pk-card-head">
-                  <h3>{pkg.name}</h3>
-                  <span class="pk-card-price">{formatPrice(pkg)}</span>
-                </div>
-                <p class="pk-card-desc">{pkg.description}</p>
-                {pkg.features.length > 0 && (
-                  <ul class="pk-mini-feat">
-                    {pkg.features.map((f) => (
-                      <li>{f}</li>
-                    ))}
-                  </ul>
-                )}
-                {pkg.note && <p class="pk-note">{pkg.note}</p>}
-                <a class="pk-link" href={contactHref(pkg.name)}>
-                  Cere ofertă →
-                </a>
-              </article>
-            ))}
-          </div>
+            <p>
+              <strong>Ai nevoie de ceva simplu?</strong> Uneori cea mai bună variantă e un site
+              static, construit rapid cu ajutorul AI — fără să plătești pentru complexitate de care
+              nu ai nevoie. Folosim AI acolo unde chiar ajută și recomandăm mereu soluția potrivită,
+              nu cea mai scumpă.
+            </p>
+          </aside>
         </div>
       </section>
     )
   }
 
-  {/* 3. Abonamente de mentenanță */}
+  {/* 2. Abonamente de mentenanță */}
   {
     maintenance.length > 0 && (
-      <section class="pk-sec">
+      <section class="pk-sec pk-sec--soft" id="mentenanta">
         <div class="pk-wrap">
-          <header class="pk-head" data-reveal>
-            <span class="pk-tag">
-              <span>Mentenanță</span>
-            </span>
+          <header class="pk-head pk-head--center" data-reveal>
+            <span class="pk-eyebrow">Mentenanță</span>
             <h2 class="pk-h2">
-              Site-ul tău, <em>pe mâini bune</em>, lună de lună
+              Întreținem site-ul, <em>lună de lună</em>
             </h2>
             <p class="pk-lead">
-              Actualizat, salvat și supravegheat.{' '}
-              <a href="/mentenanta">Calculează-ți abonamentul →</a>
+              Ținem site-ul actualizat, salvat și supravegheat, ca să meargă bine fără să-ți faci
+              griji. <a href="/mentenanta">Calculează-ți abonamentul →</a>
             </p>
           </header>
           <div class="pk-mnt">
             <div class="pk-mnt-cards">
               {maintenance.map((pkg) => (
                 <article class="pk-card pk-card--mnt">
+                  <span class="pk-card-icon">
+                    <ServiceIcon icon="mentenanta" />
+                  </span>
                   <h3>{pkg.name}</h3>
                   <p class="pk-mnt-price">{formatPrice(pkg)}</p>
                   <p class="pk-card-desc">{pkg.description}</p>
-                  {pkg.features.length > 0 && (
-                    <ul class="pk-mini-feat">
-                      {pkg.features.map((f) => (
-                        <li>{f}</li>
-                      ))}
-                    </ul>
-                  )}
+                  <PackageFeatures
+                    features={pkg.features}
+                    featureGroups={pkg.featureGroups}
+                    variant="sm"
+                  />
                   <div class="pk-cta">
-                    {canBuy(pkg.priceCents) && (
+                    {canBuy(pkg, stripeReady) && (
                       <form method="post" action="/api/checkout">
                         <input type="hidden" name="slug" value={pkg.slug} />
                         <button type="submit" class="pk-btn pk-btn--fill">
@@ -216,7 +189,7 @@ const metaDescription =
                       </form>
                     )}
                     <a class="pk-btn" href="/mentenanta">
-                      <span>Alege planul →</span>
+                      <span>Vezi detalii →</span>
                     </a>
                   </div>
                 </article>
@@ -236,23 +209,61 @@ const metaDescription =
               </aside>
             )}
           </div>
-          <p class="pk-banner">
-            <span>🎁</span> {freeMonthBanner}
-          </p>
+        </div>
+      </section>
+    )
+  }
+
+  {/* 3. Grafică & marketing */}
+  {
+    graphicsAll.length > 0 && (
+      <section class="pk-sec" id="grafica">
+        <div class="pk-wrap">
+          <header class="pk-head pk-head--center" data-reveal>
+            <span class="pk-eyebrow">Grafică & marketing</span>
+            <h2 class="pk-h2">
+              Identitate, vizualuri și <em>strategie</em>
+            </h2>
+            <p class="pk-lead">
+              De la identitatea vizuală și materialele grafice până la strategia de marketing — tot
+              ce ține de imaginea brandului tău, cu preț fix.
+            </p>
+          </header>
+          <div class="pk-grid3">
+            {graphicsAll.map((pkg) => (
+              <article class="pk-card pk-card--gfx">
+                <span class="pk-card-icon">
+                  <ServiceIcon icon={graphicsIcon(pkg.slug)} />
+                </span>
+                <div class="pk-card-head">
+                  <h3>{pkg.name}</h3>
+                  <span class="pk-card-price">{formatPrice(pkg)}</span>
+                </div>
+                <p class="pk-card-desc">{pkg.description}</p>
+                <PackageFeatures
+                  features={pkg.features}
+                  featureGroups={pkg.featureGroups}
+                  variant="sm"
+                />
+                {pkg.note && <p class="pk-note">{pkg.note}</p>}
+                <a class="pk-link" href={contactHref(pkg.name)}>
+                  Cere ofertă →
+                </a>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
     )
   }
 
   {/* 4. Tarife orare */}
-  <section class="pk-sec pk-sec--soft">
+  <section class="pk-sec pk-sec--dark" id="tarife">
     <div class="pk-wrap">
-      <header class="pk-head" data-reveal>
-        <span class="pk-tag">
-          <span>Tarife orare</span>
-        </span>
+      <header class="pk-head pk-head--center" data-reveal>
+        <span class="pk-eyebrow">Tarife orare</span>
         <h2 class="pk-h2">
-          În afara pachetelor, <em>la oră</em>
+          Și pentru lucrări <em>punctuale</em>
         </h2>
         <p class="pk-lead">{hourlyRatesIntro}</p>
       </header>
@@ -261,11 +272,19 @@ const metaDescription =
           hourlyRates.map((r) => (
             <li>
               <span class="pk-rate-label">{r.label}</span>
-              <span class="pk-rate-val">{r.rate}</span>
+              <span class="pk-rate-val">
+                {r.amount}
+                <span class="pk-rate-period">{r.period}</span>
+              </span>
             </li>
           ))
         }
       </ul>
+      <div class="pk-rates-cta">
+        <a class="pk-btn pk-btn--fill" href="/contact?service=Lucrare%20la%20or%C4%83">
+          <span>Cere o estimare →</span>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -280,13 +299,39 @@ const metaDescription =
 </BaseLayout>
 
 <style>
-  /* ============ Sistem de secțiuni: dens, cu semnătura oblică ============ */
+  /* ============ Etichetă de secțiune (kicker, ca pe restul site-ului) ============ */
+  .pk-eyebrow {
+    display: inline-block;
+    margin-bottom: 16px;
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--electric);
+  }
+
+  /* ============ Sistem de secțiuni ============ */
   .pk-sec {
     position: relative;
     padding-block: clamp(34px, 4.5vw, 58px);
+    scroll-margin-top: 84px;
   }
   .pk-sec--soft {
     background: var(--canvas-soft);
+  }
+  /* Secțiune dark (tarife orare) — contrast pe finalul paginii. */
+  .pk-sec--dark {
+    background: var(--ink);
+  }
+  .pk-sec--dark .pk-eyebrow {
+    color: var(--cyan);
+  }
+  .pk-sec--dark .pk-h2 {
+    color: #fff;
+  }
+  .pk-sec--dark .pk-lead {
+    color: var(--muted-dark);
   }
   /* wrapper propriu: doar lățime + padding orizontal (fără cei 110px verticali
      ai .container global, care dublau spațierea). */
@@ -297,8 +342,7 @@ const metaDescription =
     padding-inline: clamp(20px, 5vw, 40px);
   }
   .pk-head {
-    max-width: 54ch;
-    margin-bottom: clamp(18px, 2.4vw, 28px);
+    margin-bottom: clamp(26px, 3vw, 40px);
   }
   .pk-head--center {
     margin-inline: auto;
@@ -325,11 +369,19 @@ const metaDescription =
   }
   .pk-h2 {
     font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(1.7rem, 3.2vw, 2.5rem);
-    line-height: 1.08;
-    letter-spacing: -0.025em;
+    font-weight: 800;
+    font-size: clamp(2rem, 3.8vw, 2.95rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
     color: var(--ink);
+    /* titlul pe un singur rând; pe ecrane mici revine la wrap (vezi media query) */
+    white-space: nowrap;
+  }
+  @media (max-width: 720px) {
+    .pk-h2 {
+      white-space: normal;
+      text-wrap: balance;
+    }
   }
   .pk-h2 em {
     font-style: normal;
@@ -340,6 +392,7 @@ const metaDescription =
     color: var(--muted);
     font-size: 1.02rem;
     line-height: 1.55;
+    text-wrap: pretty;
   }
   .pk-head--center .pk-lead {
     margin-inline: auto;
@@ -404,9 +457,8 @@ const metaDescription =
   }
 
   /* ============ Web: showpiece ============ */
-  .pk-web {
-    overflow: hidden;
-  }
+  /* fără overflow:hidden — altfel tooltip-urile (.pf-tip) ar fi tăiate; gradientul
+     din ::after e oricum delimitat de inset:0. */
   .pk-web::after {
     content: '';
     position: absolute;
@@ -422,11 +474,9 @@ const metaDescription =
   }
   .pk-web-grid {
     display: grid;
-    gap: 18px;
+    gap: 22px;
     grid-template-columns: repeat(3, 1fr);
     align-items: stretch;
-    max-width: 1000px;
-    margin: 0 auto;
   }
   @media (max-width: 900px) {
     .pk-web-grid {
@@ -451,38 +501,19 @@ const metaDescription =
   }
   .pk-w:hover {
     transform: translateY(-5px);
-    border-color: var(--electric);
-    box-shadow: var(--glow-electric);
+    box-shadow: var(--sh-lg);
   }
+  /* Cardul „dominant": fără border colorat — îl scoatem în evidență printr-un
+     fundal ușor tentat și o elevație mai mare. */
   .pk-w--feat {
-    border-color: transparent;
-    box-shadow:
-      var(--sh-md),
-      var(--glow-electric);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--electric) 7%, var(--canvas)),
+      var(--canvas) 62%
+    );
+    box-shadow: var(--sh-lg);
   }
-  .pk-w--feat::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: var(--r-lg);
-    padding: 2px;
-    background: linear-gradient(135deg, var(--electric), var(--cyan));
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-  @media (min-width: 901px) {
-    .pk-w--feat {
-      transform: scale(1.04);
-      z-index: 2;
-    }
-    .pk-w--feat:hover {
-      transform: scale(1.04) translateY(-5px);
-    }
-  }
+  /* Etichetă „cel mai cerut": tag galben oblic, sus-dreapta — iese în evidență. */
   .pk-w-badge {
     position: absolute;
     top: 14px;
@@ -510,7 +541,9 @@ const metaDescription =
   }
   .pk-w-name {
     font-family: var(--font-display);
-    font-size: 1.22rem;
+    font-weight: 800;
+    font-size: 1.42rem;
+    letter-spacing: -0.02em;
     color: var(--ink);
     margin: 6px 0;
   }
@@ -519,6 +552,13 @@ const metaDescription =
     font-size: 0.92rem;
     line-height: 1.45;
     margin-bottom: 14px;
+    /* Rezervă 2 rânduri, ca lista să înceapă la același nivel pe toate cardurile. */
+    min-height: 2.7rem;
+  }
+  @media (max-width: 900px) {
+    .pk-w-desc {
+      min-height: 0;
+    }
   }
   .pk-w-price {
     font-family: var(--font-display);
@@ -533,41 +573,47 @@ const metaDescription =
   .pk-w--feat .pk-w-price {
     color: var(--electric);
   }
-  .pk-w-feat {
-    list-style: none;
-    margin: 0 0 18px;
-    padding: 0;
-    flex: 1;
-    display: grid;
-    gap: 9px;
-  }
-  .pk-w-feat li {
-    position: relative;
-    padding-left: 24px;
-    font-size: 0.9rem;
-    line-height: 1.35;
-    color: var(--ink);
-  }
-  .pk-w-feat li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 5px;
-    width: 11px;
-    height: 6px;
-    border-left: 2px solid var(--cyan);
-    border-bottom: 2px solid var(--cyan);
-    transform: rotate(-45deg);
-  }
   .pk-w-note {
     margin: 0 0 16px;
     padding: 11px 13px;
     font-size: 0.84rem;
     line-height: 1.45;
-    color: var(--ink);
-    background: color-mix(in srgb, var(--cyan) 9%, var(--canvas));
-    border: 1px solid color-mix(in srgb, var(--cyan) 32%, var(--line));
+    color: var(--muted);
+    background: var(--canvas-soft);
+    border: 1px solid var(--line);
     border-radius: var(--r-sm);
+  }
+  .pk-ai-note {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    max-width: 720px;
+    margin: clamp(34px, 4vw, 52px) auto 0;
+    padding: 20px 24px;
+    background: var(--canvas-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    box-shadow: var(--sh-sm);
+  }
+  .pk-ai-note p {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  .pk-ai-note strong {
+    color: var(--ink);
+  }
+  .pk-ai-note__icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    color: var(--electric);
+    background: color-mix(in srgb, var(--electric) 12%, var(--canvas));
   }
 
   /* ============ Grafică & marketing: 3-up compact ============ */
@@ -591,8 +637,18 @@ const metaDescription =
   }
   .pk-card:hover {
     transform: translateY(-4px);
-    border-color: var(--electric);
-    box-shadow: var(--glow-electric);
+    box-shadow: var(--sh-md);
+  }
+  .pk-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 14px;
+    border-radius: var(--r-sm);
+    color: var(--electric);
+    background: color-mix(in srgb, var(--electric) 10%, var(--canvas));
   }
   .pk-card-head {
     display: flex;
@@ -603,7 +659,8 @@ const metaDescription =
   }
   .pk-card-head h3 {
     font-family: var(--font-display);
-    font-size: 1.1rem;
+    font-weight: 800;
+    font-size: 1.18rem;
     color: var(--ink);
   }
   .pk-card-price {
@@ -619,40 +676,14 @@ const metaDescription =
     line-height: 1.45;
     margin-bottom: 14px;
   }
-  .pk-mini-feat {
-    list-style: none;
-    margin: 0 0 16px;
-    padding: 0;
-    flex: 1;
-    display: grid;
-    gap: 7px;
-  }
-  .pk-mini-feat li {
-    position: relative;
-    padding-left: 22px;
-    font-size: 0.88rem;
-    line-height: 1.35;
-    color: var(--ink);
-  }
-  .pk-mini-feat li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 5px;
-    width: 10px;
-    height: 6px;
-    border-left: 2px solid var(--cyan);
-    border-bottom: 2px solid var(--cyan);
-    transform: rotate(-45deg);
-  }
   .pk-note {
     margin: 0 0 16px;
     padding: 11px 13px;
     font-size: 0.82rem;
     line-height: 1.45;
-    color: var(--ink);
-    background: color-mix(in srgb, var(--cyan) 9%, var(--canvas));
-    border: 1px solid color-mix(in srgb, var(--cyan) 30%, var(--line));
+    color: var(--muted);
+    background: var(--canvas-soft);
+    border: 1px solid var(--line);
     border-radius: var(--r-sm);
   }
   .pk-link {
@@ -692,12 +723,10 @@ const metaDescription =
       grid-template-columns: 1fr;
     }
   }
-  .pk-card--mnt {
-    border-top: 3px solid var(--cyan);
-  }
   .pk-card--mnt h3 {
     font-family: var(--font-display);
-    font-size: 1.1rem;
+    font-weight: 800;
+    font-size: 1.18rem;
     color: var(--ink);
   }
   .pk-mnt-price {
@@ -743,50 +772,55 @@ const metaDescription =
     color: var(--electric);
     white-space: nowrap;
   }
-  .pk-banner {
-    margin-top: 18px;
-    padding: 14px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    text-align: center;
-    font-weight: 600;
-    color: var(--ink);
-    background: color-mix(in srgb, var(--signal) 18%, var(--canvas));
-    border: 1px solid color-mix(in srgb, var(--signal) 55%, var(--line));
-    border-radius: var(--r-sm);
-  }
-
-  /* ============ Tarife orare ============ */
+  /* ============ Tarife orare (pe fundal dark) ============ */
   .pk-rates {
     list-style: none;
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
-    display: grid;
-    gap: 12px;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    max-width: 780px;
+    max-width: 480px;
+    background: var(--ink-soft);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--r-md);
+    overflow: hidden;
   }
   .pk-rates li {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 18px;
-    background: var(--canvas);
-    border: 1px solid var(--line);
-    border-radius: var(--r-sm);
+    align-items: baseline;
+    gap: 16px;
+    padding: 16px 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .pk-rates li:last-child {
+    border-bottom: 0;
   }
   .pk-rate-label {
     font-weight: 600;
-    color: var(--ink);
+    color: #fff;
   }
   .pk-rate-val {
     font-family: var(--font-display);
     font-weight: 700;
-    color: var(--electric);
+    font-size: 1.55rem;
+    color: var(--cyan);
     white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .pk-rate-period {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--muted-dark);
+    margin-left: 2px;
+  }
+  .pk-rates-cta {
+    display: flex;
+    justify-content: center;
+    margin-top: 22px;
+  }
+  .pk-rates-cta .pk-btn {
+    width: auto;
+    padding-inline: 30px;
   }
 
   /* ============ Notice plată anulată ============ */

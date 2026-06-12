@@ -6,7 +6,8 @@ import { getDb } from '../../../lib/server/db';
 import { orders, packages } from '../../../lib/server/schema';
 import {
   centsToPrice,
-  featuresToList,
+  featuresToInput,
+  parseFeaturesInput,
   parsePackageForm,
   priceToCents,
 } from '../../../lib/server/admin-schemas';
@@ -28,6 +29,7 @@ type FormValues = {
   price: string;
   currency: string;
   interval: string;
+  pricing: string;
   features: string;
   category: string;
   note: string;
@@ -72,6 +74,7 @@ if (Astro.request.method === 'POST') {
       };
     } else {
       try {
+        const parsedFeatures = parseFeaturesInput(parsed.data.features);
         await db
           .update(packages)
           .set({
@@ -82,7 +85,9 @@ if (Astro.request.method === 'POST') {
             priceCents: priceToCents(parsed.data.price),
             currency: parsed.data.currency,
             interval: parsed.data.interval,
-            features: featuresToList(parsed.data.features),
+            pricing: parsed.data.pricing,
+            features: parsedFeatures.features,
+            featureGroups: parsedFeatures.featureGroups,
             category: parsed.data.category,
             note: parsed.data.note,
             sort: parsed.data.sort,
@@ -126,7 +131,8 @@ const values: FormValues = formOverride ?? {
   price: row.priceCents === 0 ? '' : centsToPrice(row.priceCents),
   currency: row.currency.trim(),
   interval: row.interval,
-  features: row.features.join('\n'),
+  pricing: row.pricing,
+  features: featuresToInput(row.features, row.featureGroups),
   category: row.category,
   note: row.note,
   sort: row.sort,

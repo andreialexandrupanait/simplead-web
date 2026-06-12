@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { FeatureGroup } from '../../data/packages-fallback';
 
 const slugSchema = z
   .string()
@@ -25,7 +26,9 @@ export const packageFormSchema = z.object({
     .regex(/^\d+([.,]\d{1,2})?$/, 'Prețul trebuie să fie un număr (ex. 480 sau 480.50).'),
   currency: z.enum(['EUR', 'RON']),
   interval: z.enum(['one_time', 'monthly', 'yearly']),
-  // Un beneficiu pe linie.
+  // Mod preț/CTA: 'fixed' (preț + Cumpără), 'from' („de la"), 'quote' (la cerere).
+  pricing: z.enum(['fixed', 'from', 'quote']).default('fixed'),
+  // Un beneficiu pe linie; o linie „## Titlu" începe un grup de beneficii.
   features: z.string().default(''),
   // Grupare pe /pachete (doar pentru pachetele de servicii).
   category: z.enum(['', 'web', 'grafica-marketing']).default(''),
@@ -59,6 +62,44 @@ export function featuresToList(features: string): string[] {
     .filter(Boolean);
 }
 
+/**
+ * Parsează textarea-ul de beneficii. O linie „## Titlu" începe un grup; liniile
+ * de sub ea sunt iteme. Dacă există cel puțin un grup, întoarce `featureGroups`;
+ * altfel o listă plată în `features`. (Liniile fără grup ajung în `features`.)
+ */
+export function parseFeaturesInput(text: string): {
+  features: string[];
+  featureGroups: FeatureGroup[] | null;
+} {
+  const groups: FeatureGroup[] = [];
+  const flat: string[] = [];
+  let current: FeatureGroup | null = null;
+  for (const raw of text.split('\n')) {
+    const line = raw.trim();
+    if (!line) continue;
+    const heading = /^##\s+(.+)$/.exec(line);
+    if (heading) {
+      current = { heading: heading[1].trim(), items: [] };
+      groups.push(current);
+    } else if (current) {
+      current.items.push(line);
+    } else {
+      flat.push(line);
+    }
+  }
+  const realGroups = groups.filter((g) => g.items.length > 0);
+  if (realGroups.length > 0) return { features: flat, featureGroups: realGroups };
+  return { features: flat, featureGroups: null };
+}
+
+/** Serializează features/featureGroups înapoi în formatul textarea („## Titlu"). */
+export function featuresToInput(features: string[], featureGroups?: FeatureGroup[] | null): string {
+  if (featureGroups && featureGroups.length > 0) {
+    return featureGroups.map((g) => `## ${g.heading}\n${g.items.join('\n')}`).join('\n');
+  }
+  return features.join('\n');
+}
+
 export type RawPackageForm = {
   name: string;
   slug: string;
@@ -67,6 +108,7 @@ export type RawPackageForm = {
   price: string;
   currency: string;
   interval: string;
+  pricing: string;
   features: string;
   category: string;
   note: string;
@@ -90,6 +132,7 @@ export function parsePackageForm(
     price: String(form.get('price') ?? ''),
     currency: String(form.get('currency') ?? 'EUR'),
     interval: String(form.get('interval') ?? 'one_time'),
+    pricing: String(form.get('pricing') ?? 'fixed'),
     features: String(form.get('features') ?? ''),
     category: String(form.get('category') ?? ''),
     note: String(form.get('note') ?? ''),
@@ -131,7 +174,11 @@ const tagsField = z
 export const postFormSchema = z.object({
   title: z.string().trim().min(2, 'Titlul e obligatoriu (minim 2 caractere).').max(180),
   slug: slugSchema,
-  description: z.string().trim().max(300, 'Descrierea poate avea maxim 300 de caractere.').default(''),
+  description: z
+    .string()
+    .trim()
+    .max(300, 'Descrierea poate avea maxim 300 de caractere.')
+    .default(''),
   body: z.string().default(''),
   author: z.string().trim().max(80).default('Andrei Panait'),
   tags: tagsField,

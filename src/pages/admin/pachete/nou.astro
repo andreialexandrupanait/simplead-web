@@ -3,7 +3,11 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 import PackageForm from '../../../components/admin/PackageForm.astro';
 import { getDb } from '../../../lib/server/db';
 import { packages } from '../../../lib/server/schema';
-import { featuresToList, parsePackageForm, priceToCents } from '../../../lib/server/admin-schemas';
+import {
+  parseFeaturesInput,
+  parsePackageForm,
+  priceToCents,
+} from '../../../lib/server/admin-schemas';
 import { asc, eq } from 'drizzle-orm';
 
 export const prerender = false;
@@ -18,6 +22,7 @@ type FormValues = {
   price: string;
   currency: string;
   interval: string;
+  pricing: string;
   features: string;
   category: string;
   note: string;
@@ -37,6 +42,7 @@ let values: FormValues = {
   price: '',
   currency: 'EUR',
   interval: 'one_time',
+  pricing: 'fixed',
   features: '',
   category: '',
   note: '',
@@ -53,6 +59,7 @@ if (Astro.request.method === 'POST' && db) {
     values = { ...parsed.raw, sort: parsed.raw.sort, active: parsed.raw.active === 'true' };
   } else {
     try {
+      const parsedFeatures = parseFeaturesInput(parsed.data.features);
       await db.insert(packages).values({
         name: parsed.data.name,
         slug: parsed.data.slug,
@@ -61,7 +68,9 @@ if (Astro.request.method === 'POST' && db) {
         priceCents: priceToCents(parsed.data.price),
         currency: parsed.data.currency,
         interval: parsed.data.interval,
-        features: featuresToList(parsed.data.features),
+        pricing: parsed.data.pricing,
+        features: parsedFeatures.features,
+        featureGroups: parsedFeatures.featureGroups,
         category: parsed.data.category,
         note: parsed.data.note,
         sort: parsed.data.sort,

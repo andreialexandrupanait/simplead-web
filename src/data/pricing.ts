@@ -4,12 +4,12 @@
  */
 
 export const hourlyRatesIntro =
-  'Lucrările în afara pachetelor se tarifează orar, transparent: de la 35€/oră.';
+  'Pentru lucrări mici sau în afara pachetelor lucrăm la oră, transparent — știi exact cât plătești, fără surprize.';
 
-export const hourlyRates: { label: string; rate: string }[] = [
-  { label: 'Servicii grafică', rate: '35€ / oră' },
-  { label: 'Consultanță marketing', rate: '60€ / oră' },
-  { label: 'Development', rate: '75€ / oră' },
+export const hourlyRates: { label: string; amount: string; period: string }[] = [
+  { label: 'Servicii grafică', amount: '35€', period: '/oră' },
+  { label: 'Consultanță marketing', amount: '60€', period: '/oră' },
+  { label: 'Development', amount: '75€', period: '/oră' },
 ];
 
 export const freeMonthBanner =
