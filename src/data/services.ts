@@ -3,9 +3,9 @@
  * src/components/ui/ServiceIcon.astro. Slug-urile corespund cu
  * src/data/nav.ts (servicesNav).
  *
- * Conținut real, derivat din Copy_site_Simplead.md, pentru: mentenanță,
- * ux/ui, grafică, social media, consultanță. AI pentru business e nou,
- * marcat [COPY] acolo unde Andrei trebuie să confirme.
+ * Conținut original Simplead. Procesul („Cum lucrăm") e specific fiecărui
+ * serviciu, iar FAQ-urile sunt rescrise în vocea Simplead (date/neuromarketing,
+ * un singur partener) - nu mai sunt preluate de la terți.
  */
 import type { Faq } from './content';
 
@@ -162,27 +162,27 @@ export const services: Service[] = [
     },
     faqs: [
       {
-        q: 'Ce include un abonament de mentenanță?',
+        q: 'Ce intră într-un abonament de mentenanță?',
         body: [
-          'Actualizări de platformă și pluginuri, backup-uri regulate, monitorizare de securitate și uptime, plus mici modificări și suport prioritar. La final primești și un raport clar.',
+          'Actualizări de platformă și module, backup-uri regulate, monitorizare de securitate și uptime, plus mici modificări și suport prioritar. La final primești un raport clar, fără jargon.',
         ],
       },
       {
-        q: 'Cum folosiți AI în mentenanță?',
+        q: 'Cum intră AI-ul în mentenanță?',
         body: [
-          'Folosim AI pentru monitorizare, detectarea timpurie a problemelor și optimizări repetitive, ca să intervenim mai repede și să prevenim, nu doar să reparăm. Deciziile importante rămân la oameni.',
+          'Îl folosim pentru supraveghere non-stop, prinderea din vreme a problemelor și sarcinile repetitive — ca să intervenim mai repede și să prevenim, nu doar să reparăm. Deciziile importante rămân la oameni.',
         ],
       },
       {
-        q: 'Faceți mentenanță și pentru site-uri create de altcineva?',
+        q: 'Preluați și site-uri făcute de altcineva?',
         body: [
-          'Da. Analizăm întâi site-ul actual, identificăm riscurile și apoi îți propunem un plan de mentenanță potrivit.',
+          'Da. Ne uităm întâi la site-ul actual, identificăm riscurile și abia apoi îți propunem un plan de mentenanță potrivit pentru el.',
         ],
       },
       {
-        q: 'Ce se întâmplă dacă site-ul cade?',
+        q: 'Ce se întâmplă dacă pică site-ul?',
         body: [
-          'Monitorizăm disponibilitatea și intervenim. Cu backup-urile regulate putem restaura rapid site-ul la o versiune funcțională.',
+          'Urmărim disponibilitatea și intervenim imediat. Cu backup-urile regulate putem readuce rapid site-ul la o versiune funcțională.',
         ],
       },
     ],
@@ -259,28 +259,28 @@ export const services: Service[] = [
     process: [
       {
         n: '01',
-        title: 'Discovery & Analiză',
-        body: 'Înțelegem obiectivele de business, publicul-țintă și cerințele funcționale. Definim structura, conținutul și estimăm bugetul și termenele.',
+        title: 'Brief & obiective',
+        body: 'Pornim de la afacerea ta: ce vrei să obții, cui te adresezi și ce trebuie să facă efectiv site-ul. Stabilim împreună structura, conținutul, bugetul și termenele — ca să lucrăm pe obiective, nu pe presupuneri.',
       },
       {
         n: '02',
-        title: 'Design UI/UX',
-        body: 'Construim wireframe-uri și apoi designul vizual: clar, pe brandul tău și gândit pe conversii, nu doar „să arate bine".',
+        title: 'Arhitectură & wireframe',
+        body: 'Înainte de design, așezăm scheletul: ce pagini, ce informație unde și pe ce drum trece vizitatorul. Aici intră prima dată partea de atenție vizuală, ca structura să ghideze spre acțiune.',
       },
       {
         n: '03',
-        title: 'Dezvoltare & Integrare',
-        body: 'Transformăm designul într-un site real: rapid, responsive și ușor de administrat. Integrăm plăți, formulare și alte unelte de care ai nevoie.',
+        title: 'Design pe brand',
+        body: 'Ducem scheletul într-un design clar, pe identitatea ta, gândit pe conversii și validat cu principii de neuromarketing — nu doar „să arate bine".',
       },
       {
         n: '04',
-        title: 'Testare & QA',
-        body: 'Verificăm totul pe dispozitive și browsere diferite, viteză, formulare, linkuri, ca lansarea să fie fără surprize.',
+        title: 'Dezvoltare & integrări',
+        body: 'Construim site-ul: rapid, responsive și ușor de administrat de tine. Conectăm plăți, formulare, curierat sau orice altă unealtă de care ai nevoie.',
       },
       {
         n: '05',
-        title: 'Lansare & Suport',
-        body: 'Punem site-ul online, îl optimizăm pentru Google și rămânem alături de tine cu mentenanță și suport.',
+        title: 'Lansare & optimizare',
+        body: 'Testăm pe dispozitive și browsere, punem site-ul online cu SEO de bază făcut, apoi urmărim datele și ajustăm. Și rămânem aproape, cu mentenanță și suport.',
       },
     ],
     caseStudy: {
@@ -295,27 +295,27 @@ export const services: Service[] = [
     },
     faqs: [
       {
-        q: 'Ce tehnologii folosiți pentru site-uri?',
+        q: 'Cu ce construiți site-urile?',
         body: [
-          'Lucrăm în principal cu WordPress și WooCommerce, ușor de administrat de către tine. Pentru proiecte speciale folosim și soluții la comandă. Alegem tehnologia în funcție de nevoile tale, nu invers.',
+          'De obicei pe WordPress și WooCommerce, ca să le poți administra singur, fără să depinzi de noi pentru fiecare modificare. Când proiectul cere altceva, folosim soluții la comandă. Tehnologia o alegem după nevoia ta, nu invers.',
         ],
       },
       {
-        q: 'Cât durează realizarea unui website?',
+        q: 'În cât timp e gata un site?',
         body: [
-          'Depinde de complexitate. Un site de prezentare durează de obicei câteva săptămâni, un magazin online ceva mai mult. La prima discuție îți dăm o estimare clară de timp.',
+          'Depinde de cât de complex e. Un site de prezentare se face de obicei în câteva săptămâni, un magazin online durează ceva mai mult. La prima discuție primești o estimare concretă, nu una „de complezență".',
         ],
       },
       {
-        q: 'Site-urile sunt optimizate pentru SEO?',
+        q: 'Site-ul iese optimizat pentru Google?',
         body: [
-          'Da. Livrăm cu SEO de bază la lansare (structură, viteză, mobil, meta) și putem continua cu o strategie SEO dedicată.',
+          'Da. Pleacă la drum cu SEO de bază pus la punct — structură, viteză, versiune de mobil, meta — iar dacă vrei, continuăm cu o strategie SEO dedicată.',
         ],
       },
       {
-        q: 'Puteți moderniza un site existent?',
+        q: 'Aveți deja un site — îl puteți reface?',
         body: [
-          'Sigur. Analizăm site-ul actual și îți propunem fie o îmbunătățire, fie o reconstrucție, în funcție de ce e mai eficient pentru tine.',
+          'Sigur. Ne uităm la ce ai acum și îți spunem onest dacă merită îmbunătățit sau reconstruit de la zero. Păstrăm ce funcționează și schimbăm ce te ține pe loc.',
         ],
       },
     ],
@@ -386,6 +386,33 @@ export const services: Service[] = [
         ],
       },
     ],
+    process: [
+      {
+        n: '01',
+        title: 'Brief creativ',
+        body: 'Pornim de la brandul tău, publicul lui și mesajul care contează. Strângem referințe și stabilim ce trebuie să comunice materialele, înainte să desenăm ceva.',
+      },
+      {
+        n: '02',
+        title: 'Concept & direcție',
+        body: 'Propunem direcția vizuală: ton, paletă, tipografie, atmosferă. Alegem împreună drumul, ca să nu pierdem timp pe variante care nu te reprezintă.',
+      },
+      {
+        n: '03',
+        title: 'Execuție vizuală',
+        body: 'Ducem conceptul în materiale concrete — logo, identitate, grafică de campanie, print sau foto-video — coerente între ele și gata de folosit.',
+      },
+      {
+        n: '04',
+        title: 'Validare cu neuromarketing',
+        body: 'Verificăm ierarhia vizuală și unde se duce atenția, cu heatmaps și principii de neuromarketing. Așa ne asigurăm că mesajul important se vede primul, nu se pierde.',
+      },
+      {
+        n: '05',
+        title: 'Livrare',
+        body: 'Predăm fișierele în toate formatele de care ai nevoie — print (CMYK, la rezoluția corectă) și online — plus regulile de folosire, ca totul să rămână coerent.',
+      },
+    ],
     caseStudy: {
       statBig: '10+',
       statBigAccent: 'ani',
@@ -398,27 +425,27 @@ export const services: Service[] = [
     },
     faqs: [
       {
-        q: 'Realizați doar logo sau și identitate completă?',
+        q: 'Faceți doar logo sau identitate completă?',
         body: [
-          'Amândouă. Putem livra doar un logo, dar recomandăm un sistem vizual complet (brand guide), cu paletă, tipografie și reguli de folosire, ca brandul tău să arate coerent peste tot.',
+          'Și una, și alta. Putem livra doar logo-ul, dar recomandăm un sistem vizual complet (brand guide) — paletă, tipografie, reguli — ca brandul să arate la fel de bine peste tot, nu doar pe logo.',
         ],
       },
       {
-        q: 'Faceți și fotografie / video?',
+        q: 'Vă ocupați și de foto-video?',
         body: [
-          'Da. Avem un fotograf cu peste 10 ani de experiență și ne ocupăm de fotografie de produs și brand, conținut video pentru social media și post-producție.',
+          'Da. Lucrăm cu un fotograf cu peste 10 ani de experiență: fotografie de produs și de brand, conținut video pentru social media și post-producție.',
         ],
       },
       {
-        q: 'Ce înseamnă „design validat cu neuromarketing"?',
+        q: 'Ce e „design validat cu neuromarketing"?',
         body: [
-          'Verificăm ierarhia vizuală și atenția cu heatmaps și principii de neuromarketing, ca materialele să comunice clar mesajul important, nu doar „să arate bine".',
+          'Înseamnă că nu ne oprim la „arată bine". Verificăm cu heatmaps și principii de neuromarketing unde se uită oamenii, ca mesajul principal să fie primul observat.',
         ],
       },
       {
-        q: 'Pot primi materialele în formate pentru print și online?',
+        q: 'Primesc materialele și pentru print, și pentru online?',
         body: [
-          'Sigur. Livrăm fișierele în formatele de care ai nevoie, atât pentru print (CMYK, la rezoluție corectă), cât și pentru online (web/social).',
+          'Da. Le predăm în formatele potrivite fiecărui canal — print (CMYK, rezoluție corectă) și online (web/social) — gata de pus în folosință.',
         ],
       },
     ],
@@ -488,6 +515,33 @@ export const services: Service[] = [
         ],
       },
     ],
+    process: [
+      {
+        n: '01',
+        title: 'Audit & obiective',
+        body: 'Ne uităm la ce ai acum, la concurență și la publicul tău, apoi stabilim obiective clare: ce vrei să obții din social media, dincolo de aprecieri.',
+      },
+      {
+        n: '02',
+        title: 'Strategie & calendar',
+        body: 'Construim direcția de conținut și un calendar editorial pe canalele unde chiar se află publicul tău, ca să nu postăm „de dragul de a posta".',
+      },
+      {
+        n: '03',
+        title: 'Producție de conținut',
+        body: 'Creăm vizualul și textul, coerente cu brandul, și pregătim eventualele campanii plătite gândite pe conversii, nu pe afișări.',
+      },
+      {
+        n: '04',
+        title: 'Publicare & comunitate',
+        body: 'Publicăm pe calendar și ținem prezența vie: răspundem, ajustăm și menținem un ton consecvent, ca brandul să fie recognoscibil.',
+      },
+      {
+        n: '05',
+        title: 'Raportare & optimizare',
+        body: 'Măsurăm ce funcționează cu date reale, raportăm clar, fără jargon, și optimizăm de la o lună la alta. Decizii pe cifre, nu pe impresii.',
+      },
+    ],
     caseStudy: {
       statBig: 'al doilea',
       statBigAccent: 'proiect',
@@ -500,21 +554,21 @@ export const services: Service[] = [
     },
     faqs: [
       {
-        q: 'Pe ce canale lucrați?',
+        q: 'Pe ce rețele lucrați?',
         body: [
-          'În principal Facebook, Instagram și TikTok, iar la nevoie YouTube. Alegem canalele în funcție de unde se află publicul tău și de obiectiv.',
+          'În principal Facebook, Instagram și TikTok, plus YouTube când are sens. Alegem canalele după publicul tău și obiectiv, nu „pe toate, ca să fie".',
         ],
       },
       {
-        q: 'Creați și conținutul, sau doar îl postați?',
+        q: 'Creați conținutul sau doar îl publicați?',
         body: [
-          'Creăm conținutul, vizual și text, și îl publicăm pe un calendar editorial clar. Putem integra și materiale pe care le ai deja.',
+          'Îl creăm — vizual și text — și îl publicăm pe un calendar editorial clar. Dacă ai deja materiale bune, le integrăm în plan.',
         ],
       },
       {
         q: 'Cât costă administrarea de social media?',
         body: [
-          'Depinde de numărul de canale, frecvența postărilor și de bugetul de campanii. Pornim mereu de la o discuție și o ofertă pe obiective. [COPY: confirmă pachete/prețuri]',
+          'Depinde de câte canale acoperim, cât de des postăm și de bugetul de campanii. Nu lucrăm cu prețuri de raft: pornim de la o discuție și o ofertă pe obiectivele tale.',
         ],
       },
     ],
@@ -585,6 +639,33 @@ export const services: Service[] = [
         ],
       },
     ],
+    process: [
+      {
+        n: '01',
+        title: 'Discuție & audit',
+        body: 'Pornim de la unde ești: ce ai încercat, ce funcționează și ce nu. Ne uităm la datele existente și la prezența ta actuală, ca să avem o imagine reală.',
+      },
+      {
+        n: '02',
+        title: 'Cercetare',
+        body: 'Studiem publicul, concurența și piața. Aici intră partea de neuromarketing — atenție vizuală, heatmaps — și datele din Analytics, ca să lucrăm cu fapte, nu cu impresii.',
+      },
+      {
+        n: '03',
+        title: 'Strategie pe obiective',
+        body: 'Transformăm concluziile într-o strategie clară: poziționare, mesaje, canale și obiective măsurabile. Știi exact ce urmărim și de ce.',
+      },
+      {
+        n: '04',
+        title: 'Plan de execuție',
+        body: 'Îți dăm un plan concret, prioritizat, cu pași pe care îi poți urma — singur sau împreună cu noi, dacă vrei și partea de execuție.',
+      },
+      {
+        n: '05',
+        title: 'Măsurare & ajustare',
+        body: 'Urmărim rezultatele cu date reale și ajustăm pe parcurs. Marketingul bun nu e o singură decizie, ci o serie de decizii corectate la timp.',
+      },
+    ],
     caseStudy: {
       statBig: 'doctorat',
       statBigAccent: 'în marketing',
@@ -597,21 +678,21 @@ export const services: Service[] = [
     },
     faqs: [
       {
-        q: 'Ce înseamnă „marketing bazat pe neuromarketing"?',
+        q: 'Ce înseamnă „marketing pe neuromarketing"?',
         body: [
-          'Validăm deciziile cu instrumente de analiză a atenției vizuale (eye-tracking, heatmaps prin expoze.app) și cu date reale din Analytics, înainte și după lansare. Așa investești acolo unde chiar aduce rezultate.',
+          'Înseamnă că validăm deciziile înainte și după lansare: analizăm atenția vizuală (eye-tracking, heatmaps prin expoze.app) și ne uităm la date reale din Analytics. Așa pui bugetul acolo unde chiar mișcă acul.',
         ],
       },
       {
-        q: 'Lucrați doar consultanță sau și execuție?',
+        q: 'Faceți doar consultanță sau și execuție?',
         body: [
-          'Amândouă. Putem livra doar strategia și recomandările, sau să ne ocupăm și de execuție (web, grafică, social media), în funcție de ce ai nevoie.',
+          'Cum ai nevoie. Putem livra doar strategia și recomandările, sau să ducem mai departe și execuția — web, grafică, social media — fiind un singur partener pentru tot.',
         ],
       },
       {
-        q: 'Pentru ce tip de afaceri e potrivită consultanța?',
+        q: 'Pentru cine e potrivită consultanța?',
         body: [
-          'Pentru afaceri care vor să crească cu decizii informate, de la firme mici la organizații mai mari. Pornim de la obiectivele tale, nu de la un șablon.',
+          'Pentru orice afacere care vrea să crească cu decizii informate, de la firme mici la organizații mai mari. Pornim de la obiectivele tale, nu de la un șablon aplicat la toți.',
         ],
       },
     ],
@@ -682,22 +763,51 @@ export const services: Service[] = [
         ],
       },
     ],
+    process: [
+      {
+        n: '01',
+        title: 'Discuție despre procese',
+        body: 'Pornim de la cum lucrezi azi: ce sarcini se repetă, ce îți mănâncă timp și unde apar erorile. Fără asta, „AI" rămâne doar un cuvânt.',
+      },
+      {
+        n: '02',
+        title: 'Identificăm ce se automatizează',
+        body: 'Separăm munca repetitivă de cea care cere context uman și îți spunem onest unde merită AI și unde nu. Uneori răspunsul corect e „aici nu ai nevoie".',
+      },
+      {
+        n: '03',
+        title: 'Construim & integrăm',
+        body: 'Punem automatizările la treabă și le conectăm cu uneltele pe care le folosești deja, ca să se potrivească în fluxul tău, nu invers.',
+      },
+      {
+        n: '04',
+        title: 'Testare & control uman',
+        body: 'Verificăm că totul merge cum trebuie și păstrăm omul în buclă pentru deciziile importante și verificarea finală. AI-ul propune, omul confirmă.',
+      },
+      {
+        n: '05',
+        title: 'Monitorizare & optimizare',
+        body: 'Urmărim cum se comportă în timp, prindem din vreme ce nu merge și îmbunătățim pe parcurs. Tu primești un rezumat clar, nu un sistem de care trebuie să ai grijă.',
+      },
+    ],
     faqs: [
       {
-        q: 'Înlocuiește AI-ul oamenii din echipă?',
+        q: 'AI-ul înlocuiește oamenii din echipă?',
         body: [
-          'Nu, și nici nu îl folosim așa. AI-ul preia munca repetitivă: sortat, copiat, supravegheat, prime versiuni. Deciziile, relația cu clienții și verificarea finală rămân la oameni, pentru că acolo contează contextul pe care doar oamenii îl au.',
+          'Nu — și nici nu îl folosim așa. Preia munca repetitivă: sortat, copiat, supravegheat, prime versiuni. Deciziile, relația cu clienții și verificarea finală rămân la oameni, fiindcă acolo contează contextul pe care doar ei îl au.',
         ],
       },
       {
-        q: 'De unde știu dacă afacerea mea are nevoie de AI?',
+        q: 'Cum știu dacă afacerea mea are nevoie de AI?',
         body: [
-          'Regula simplă: dacă există sarcini pe care le faci la fel, cel puțin săptămânal, există loc de automatizare. Pornim de la o discuție despre procesele tale și îți spunem onest unde ajută și unde nu merită: uneori răspunsul corect e „aici nu ai nevoie de AI", și îl spunem ca atare.',
+          'Regula simplă: dacă faci sarcini la fel, măcar săptămânal, e loc de automatizare. Pornim de la o discuție despre procesele tale și îți spunem cinstit unde ajută și unde nu merită.',
         ],
       },
       {
         q: 'Cât costă un proiect de AI pentru business?',
-        body: ['[COPY: confirmă modelul de preț și pachetele.]'],
+        body: [
+          'Depinde de procesele pe care le automatizăm și de cât de adânc se integrează cu uneltele tale. Nu lucrăm cu prețuri de raft: pornim de la o discuție și o ofertă pe obiective.',
+        ],
       },
     ],
   },

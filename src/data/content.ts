@@ -630,27 +630,27 @@ export const svcHubStats: HubStat[] = [
 /** FAQ specific paginii hub /servicii (diferit de FAQ-ul de pe Acasă). */
 export const servicesFaqs: Faq[] = [
   {
-    q: 'Pot lua un singur serviciu sau trebuie tot pachetul?',
+    q: 'Pot lua un singur serviciu sau trebuie pachetul întreg?',
     body: [
-      'Cum vrei tu. Poți începe cu un singur serviciu, de exemplu doar site-ul sau doar social media, și adăugăm restul când ai nevoie. Avantajul e că, fiind un singur partener, totul rămâne coerent.',
+      'Cum vrei tu. Poți începe cu un singur lucru — doar site-ul sau doar social media — și adăugăm restul când ai nevoie. Avantajul e că, fiind un singur partener, totul rămâne coerent.',
     ],
   },
   {
-    q: 'Ce înseamnă „bazat pe date și neuromarketing"?',
+    q: 'Ce înseamnă „pe date și neuromarketing"?',
     body: [
-      'Înseamnă că nu ne bazăm pe „mie îmi place". Testăm deciziile de design cu instrumente de neuromarketing (atenție vizuală, hărți termice) și le validăm cu date reale din Analytics și tracking de conversii, înainte și după lansare.',
+      'Înseamnă că nu mergem pe „mie îmi place". Testăm deciziile cu instrumente de neuromarketing (atenție vizuală, heatmaps) și le validăm cu date reale din Analytics și tracking de conversii, înainte și după lansare.',
     ],
   },
   {
     q: 'Cât costă o colaborare cu Simplead?',
     body: [
-      'Depinde de obiective și de amploarea proiectului: de aceea pornim mereu de la o discuție și o ofertă personalizată, nu de la un preț de raft. Spune-ne ce ai nevoie și îți facem o propunere clară, cu buget pe obiective.',
+      'Depinde de obiective și de amploarea proiectului — de aceea pornim mereu de la o discuție și o ofertă pe obiective, nu de la un preț de raft. Spune-ne ce ai nevoie și primești o propunere clară.',
     ],
   },
   {
-    q: 'În cât timp văd primele rezultate?',
+    q: 'În cât timp se văd primele rezultate?',
     body: [
-      'Depinde de serviciu: un site se vede în câteva săptămâni, o campanie începe să dea semnale în primele zile, iar brandingul construiește pe termen lung. La prima discuție îți dăm așteptări realiste, nu promisiuni goale.',
+      'Depinde de serviciu: un site se vede în câteva săptămâni, o campanie dă primele semnale în câteva zile, iar brandingul construiește pe termen lung. La prima discuție îți dăm așteptări realiste, nu promisiuni.',
     ],
   },
   {
