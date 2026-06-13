@@ -148,6 +148,7 @@ const isActive = (href: string) =>
               <a
                 href={item.href}
                 class:list={['nav__link', isActive(item.href) && 'is-active']}
+                {...(item.href === '/contact' ? { 'data-no-drawer': '' } : {})}
               >
                 {item.label}
               </a>

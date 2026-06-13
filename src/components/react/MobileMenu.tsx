@@ -79,6 +79,7 @@ export default function MobileMenu({ items, services = [], ctaLabel, ctaHref, ac
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className={`mm-link ${isActive(item.href) ? 'is-active' : ''}`}
+                  {...(item.href === '/contact' ? { 'data-no-drawer': '' } : {})}
                 >
                   {item.label}
                 </a>

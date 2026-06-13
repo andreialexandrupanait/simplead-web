@@ -82,7 +82,9 @@ const social = site.social;
         {
           mainNav.map((i) => (
             <li>
-              <a href={i.href}>{i.label}</a>
+              <a href={i.href} {...(i.href === '/contact' ? { 'data-no-drawer': '' } : {})}>
+                {i.label}
+              </a>
             </li>
           ))
         }
