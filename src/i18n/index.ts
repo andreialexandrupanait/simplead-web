@@ -18,9 +18,19 @@ export function useTranslations(locale: Locale = defaultLocale): UiStrings {
   return getStrings(locale);
 }
 
-/** Extrage locale-ul din Astro.currentLocale (fallback la implicit). */
+/** Extrage locale-ul dintr-un segment/valoare (fallback la implicit). */
 export function resolveLocale(current: string | undefined): Locale {
   return current === 'en' ? 'en' : 'ro';
+}
+
+/**
+ * Locale derivat din pathname, fără să atingă `Accept-Language`. Pe paginile
+ * prerandate, `Astro.currentLocale` citește `Astro.request.headers` (avertisment
+ * la build); pentru rutarea noastră (`prefixDefaultLocale: false`) prefixul din
+ * URL e sursa corectă: `/en/...` → en, restul → ro (implicit).
+ */
+export function localeFromPath(pathname: string): Locale {
+  return resolveLocale(pathname.split('/')[1]);
 }
 
 export type { UiStrings };

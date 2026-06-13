@@ -2,11 +2,11 @@
 import Button from '@components/ui/Button.astro';
 import OrbitGraphic from '@components/sections/OrbitGraphic.astro';
 import { heroPillars, stats } from '@data/content';
-import { useTranslations, resolveLocale } from '@i18n/index';
+import { useTranslations, localeFromPath } from '@i18n/index';
 import { getPublicSettings, getDirectContact } from '@lib/server/public-settings';
 import { phoneIconPath, whatsappIconPath } from '@lib/icons';
 
-const t = useTranslations(resolveLocale(Astro.currentLocale));
+const t = useTranslations(localeFromPath(Astro.url.pathname));
 const direct = getDirectContact(await getPublicSettings());
 const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPath;
 ---

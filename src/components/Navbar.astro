@@ -5,7 +5,7 @@ import MobileMenu from '@components/react/MobileMenu';
 import ServiceIcon from '@components/ui/ServiceIcon.astro';
 import { mainNav, servicesNav, megaQuickLinks, megaPromo } from '@data/nav';
 import { site } from '@data/site';
-import { useTranslations, resolveLocale } from '@i18n/index';
+import { useTranslations, localeFromPath } from '@i18n/index';
 
 interface Props {
   /** Navbar-ul stă peste hero (fundal transparent până la scroll). */
@@ -15,7 +15,7 @@ interface Props {
   activePath?: string;
 }
 const { transparent = false, overDark = false, activePath = Astro.url.pathname } = Astro.props;
-const t = useTranslations(resolveLocale(Astro.currentLocale));
+const t = useTranslations(localeFromPath(Astro.url.pathname));
 
 const isActive = (href: string) =>
   href === '/' ? activePath === '/' : activePath.startsWith(href);

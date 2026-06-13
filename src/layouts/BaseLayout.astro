@@ -6,7 +6,7 @@ import Analytics from '@components/Analytics.astro';
 import CookieBanner from '@components/CookieBanner.astro';
 import ContactDrawer from '@components/react/ContactDrawer';
 import { site } from '@data/site';
-import { resolveLocale } from '@i18n/index';
+import { localeFromPath } from '@i18n/index';
 import { getPublicSettings, whatsappHref } from '@lib/server/public-settings';
 
 interface Props {
@@ -37,7 +37,7 @@ const {
   schema,
 } = Astro.props;
 
-const locale = resolveLocale(Astro.currentLocale);
+const locale = localeFromPath(Astro.url.pathname);
 const fullTitle = title ? `${title} · ${site.name}` : `${site.name} · Grafică & marketing digital`;
 const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
