@@ -26,6 +26,12 @@ const MAP: Record<string, { label: string; tone: string }> = {
   published: { label: 'Publicat', tone: 'ok' },
   // Abonați
   confirmed: { label: 'Confirmat', tone: 'ok' },
+  // Tichete de suport
+  deschis: { label: 'Deschis', tone: 'info' },
+  in_lucru: { label: 'În lucru', tone: 'warn' },
+  oferta_trimisa: { label: 'Ofertă trimisă', tone: 'info' },
+  rezolvat: { label: 'Rezolvat', tone: 'ok' },
+  inchis: { label: 'Închis', tone: 'neutral' },
 };
 
 const entry = MAP[status] ?? { label: status, tone: 'neutral' };

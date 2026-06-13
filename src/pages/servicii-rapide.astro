@@ -27,7 +27,8 @@ const fixIcon = (slug: string): ServiceIconName => {
   return 'mentenanta';
 };
 
-const contactHref = (name: string) => `/contact?service=${encodeURIComponent(name)}`;
+// „Cere ofertă" pe o lucrare → tichet de suport, cu lucrarea preselectată.
+const supportHref = (slug: string) => `/suport?pachet=${encodeURIComponent(slug)}`;
 
 const metaDescription =
   'Lucrări punctuale la preț fix: optimizare viteză, configurare email profesional, securizare și scanare malware, migrare site, setup Cloudflare. Știi prețul de la început.';
@@ -77,7 +78,7 @@ const metaDescription =
                       </button>
                     </form>
                   )}
-                  <a class="sr-btn" href={contactHref(pkg.name)}>
+                  <a class="sr-btn" href={supportHref(pkg.slug)}>
                     <span>Cere ofertă →</span>
                   </a>
                 </div>
@@ -85,8 +86,8 @@ const metaDescription =
             ))}
           </div>
           <p class="sr-foot">
-            Nu găsești ce-ți trebuie?{' '}
-            <a href={contactHref('Lucrare punctuală')}>Spune-ne ce ai nevoie</a> și îți dăm un preț.
+            Nu găsești ce-ți trebuie? <a href="/suport">Spune-ne ce ai nevoie</a> și îți dăm un
+            preț.
           </p>
         </div>
       </section>

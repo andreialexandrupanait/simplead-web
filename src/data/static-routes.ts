@@ -15,6 +15,7 @@ export const staticRoutes: string[] = [
   '/mentenanta',
   '/pachete',
   '/servicii-rapide',
+  '/suport',
   '/portofoliu',
   '/blog',
   '/despre',

@@ -33,6 +33,19 @@ export const orderStatus = pgEnum('order_status', [
   'refunded',
   'canceled',
 ]);
+export const ticketStatus = pgEnum('ticket_status', [
+  'deschis',
+  'in_lucru',
+  'oferta_trimisa',
+  'rezolvat',
+  'inchis',
+]);
+export const ticketPriority = pgEnum('ticket_priority', [
+  'scazuta',
+  'normala',
+  'ridicata',
+  'urgenta',
+]);
 
 /**
  * Setări cheie/valoare. Cheile sunt namespaced (ex. `integration.stripe.secret_key`).
@@ -93,6 +106,33 @@ export const leads = pgTable('leads', {
   // Notițe interne (vizibile doar în admin).
   notes: text('notes').notNull().default(''),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Tichete de suport: intake structurat (categorie, URL site, prioritate),
+ * separat de lead-urile din formularul de contact. Sursă unică pentru pagina
+ * publică /suport și pentru gestionarea din /admin/tichete.
+ */
+export const tickets = pgTable('tickets', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  phone: text('phone'),
+  company: text('company'),
+  // Categorie validată în Zod (text liber, ca `projects.service`): o categorie
+  // nouă = o linie în ticket-schema.ts, nu o migrație.
+  category: text('category').notNull().default('altele'),
+  siteUrl: text('site_url'),
+  priority: ticketPriority('priority').notNull().default('normala'),
+  message: text('message').notNull(),
+  source: text('source').notNull().default('ticket-form'),
+  status: ticketStatus('status').notNull().default('deschis'),
+  // Notițe interne (vizibile doar în admin).
+  notes: text('notes').notNull().default(''),
+  // Leagă tichetul de o lucrare la preț fix (când vine din /servicii-rapide).
+  packageSlug: text('package_slug'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
 /** Stub pentru Milestone 2 (Stripe). */
