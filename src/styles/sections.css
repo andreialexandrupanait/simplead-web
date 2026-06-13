@@ -1061,7 +1061,7 @@ img.pf-shot {
   white-space: nowrap;
 }
 .footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
   /* In acelasi container ca restul footer-ului: copyright la marginea stanga,
      linkurile la marginea dreapta (aliniate cu coloanele de deasupra). */
   padding: 24px var(--gutter);
@@ -1072,6 +1072,16 @@ img.pf-shot {
   gap: 16px;
   flex-wrap: wrap;
   font-size: 13px;
+}
+/* Linia de separare cat CONTENT-ul (nu pana la marginile containerului). */
+.footer-bottom::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--gutter);
+  right: var(--gutter);
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
 }
 .footer-bottom .links {
   display: flex;
