@@ -15,19 +15,36 @@ import { homeCaseStudies } from '@data/content';
       <span class="cs2__rule" aria-hidden="true"></span>
       <a class="cs2__all" href="/portofoliu">
         Vezi tot portofoliul
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg
+        >
       </a>
     </div>
     <div class="cs2__head-main">
-      <h2 class="cs2__title">Rezultate remarcabile, <span class="g">pentru orice afacere.</span></h2>
-      <p class="cs2__sub">Proiecte reale, pentru afaceri reale. Dovada e în rezultatele clienților noștri.</p>
+      <h2 class="cs2__title">
+        Rezultate remarcabile, <span class="g">pentru orice afacere.</span>
+      </h2>
+      <p class="cs2__sub">
+        Proiecte reale, pentru afaceri reale. Dovada e în rezultatele clienților noștri.
+      </p>
     </div>
 
     <!-- Taburi -->
     <div class="cs2__tabs" role="tablist" aria-label="Categorii studii de caz">
       {
         homeCaseStudies.map((c, i) => (
-          <button class="cs2__tab" role="tab" type="button" data-i={i} aria-selected={i === 0 ? 'true' : 'false'}>
+          <button
+            class="cs2__tab"
+            role="tab"
+            type="button"
+            data-i={i}
+            aria-selected={i === 0 ? 'true' : 'false'}
+          >
             {c.tab}
           </button>
         ))
@@ -38,7 +55,12 @@ import { homeCaseStudies } from '@data/content';
     <div class="cs2__panels">
       {
         homeCaseStudies.map((c, i) => (
-          <article class:list={['cs2__card', i === 0 && 'on']} role="tabpanel" data-i={i} aria-hidden={i === 0 ? 'false' : 'true'}>
+          <article
+            class:list={['cs2__card', i === 0 && 'on']}
+            role="tabpanel"
+            data-i={i}
+            aria-hidden={i === 0 ? 'false' : 'true'}
+          >
             <div class="cs2__main">
               <div class="cs2__media">
                 {c.image ? (
@@ -57,7 +79,16 @@ import { homeCaseStudies } from '@data/content';
                 </div>
                 <a class="cs2__read" href={c.href}>
                   Citește studiul complet
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
                 </a>
               </div>
             </div>
@@ -114,7 +145,10 @@ import { homeCaseStudies } from '@data/content';
     font-weight: 600;
     font-size: 0.92rem;
     color: var(--ink);
-    transition: background 0.18s var(--ease-snap), color 0.18s var(--ease-snap), gap 0.18s var(--ease-snap);
+    transition:
+      background 0.18s var(--ease-snap),
+      color 0.18s var(--ease-snap),
+      gap 0.18s var(--ease-snap);
   }
   .cs2__all svg {
     width: 17px;
@@ -389,7 +423,7 @@ import { homeCaseStudies } from '@data/content';
           e.preventDefault();
           const dir = e.key === 'ArrowRight' ? 1 : -1;
           const next = tabs[(idx + dir + tabs.length) % tabs.length];
-          next?.dataset.i && select(next.dataset.i);
+          if (next?.dataset.i) select(next.dataset.i);
           next?.focus();
         }
       });

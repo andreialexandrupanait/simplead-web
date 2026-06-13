@@ -26,11 +26,30 @@ const calLink = import.meta.env.CALCOM_LINK;
     calLink && (
       <section class="section section--tint">
         <div class="container" style="text-align:center">
-          <h2 class="sec-title" style="font-size:clamp(24px,2.6vw,34px)">Preferi o discuție directă?</h2>
-          <p class="sec-sub" style="margin-left:auto;margin-right:auto">Programează o întâlnire la un moment care ți se potrivește.</p>
-          <a class="pill pill--grad" href={calLink} target="_blank" rel="noopener" style="margin-top:28px">
+          <h2 class="sec-title" style="font-size:clamp(24px,2.6vw,34px)">
+            Preferi o discuție directă?
+          </h2>
+          <p class="sec-sub" style="margin-left:auto;margin-right:auto">
+            Programează o întâlnire la un moment care ți se potrivește.
+          </p>
+          <a
+            class="pill pill--grad"
+            href={calLink}
+            target="_blank"
+            rel="noopener"
+            style="margin-top:28px"
+          >
             Programează o întâlnire
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
           </a>
         </div>
       </section>

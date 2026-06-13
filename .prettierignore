@@ -1,0 +1,23 @@
+# Prettier guvernează codul sursă. Artefactele generate, conținutul editorial
+# și fișierele de blocare rămân în afara formatării.
+
+# Build / generate
+dist/
+.astro/
+
+# Lockfile + snapshot-uri Drizzle (generate automat — nu le formatăm manual)
+pnpm-lock.yaml
+drizzle/meta/
+
+# Conținut & documentație (proză cu formatare intenționată, marcaje [COPY]/[confirmă])
+content-seed/
+docs/
+README.md
+Simplead_Pagina_Pachete_Preturi.md
+
+# Material de referință design (heavy, necomis)
+design/
+
+# prettier-plugin-astro nu poate parsa scripturile `is:inline` cu `define:vars`
+# (limitare cunoscută a plugin-ului). Frontmatter-ul e minimal; excludem fișierul.
+src/components/Analytics.astro

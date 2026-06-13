@@ -27,7 +27,15 @@ const check = '<path d="M20 6L9 17l-5-5"/>';
           <div class="cap-card">
             <div class="cap-head">
               <span class="cap-ic">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" set:html={cap.icon} />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  set:html={cap.icon}
+                />
               </span>
               <h3>{cap.title}</h3>
             </div>
@@ -35,7 +43,15 @@ const check = '<path d="M20 6L9 17l-5-5"/>';
             <ul class="cap-list">
               {cap.items.map((it) => (
                 <li>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" set:html={check} />
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    set:html={check}
+                  />
                   {it}
                 </li>
               ))}

@@ -27,7 +27,16 @@ const { toc } = Astro.props;
       <details class="toc-m">
         <summary class="toc-m__sum">
           Cuprins
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
         </summary>
         <ul class="toc-m__list">
           {toc.map((item) => (
@@ -159,7 +168,6 @@ const { toc } = Astro.props;
   // ca în BaseLayout). Linkul activ = ultimul heading trecut de prag.
   const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'));
   if (links.length) {
-    const byId = new Map(links.map((a) => [a.dataset.tocLink!, a]));
     const headings = links
       .map((a) => document.getElementById(a.dataset.tocLink!))
       .filter((el): el is HTMLElement => !!el);
@@ -185,8 +193,6 @@ const { toc } = Astro.props;
     window.addEventListener('scroll', onScroll, { passive: true });
 
     // Click instant pe link → activează imediat (înainte ca scroll-ul să se așeze).
-    links.forEach((a) =>
-      a.addEventListener('click', () => setActive(a.dataset.tocLink!)),
-    );
+    links.forEach((a) => a.addEventListener('click', () => setActive(a.dataset.tocLink!)));
   }
 </script>

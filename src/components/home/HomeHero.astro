@@ -36,7 +36,12 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
               {...(direct.kind === 'whatsapp' ? { target: '_blank', rel: 'noopener' } : {})}
             >
               <span class="hero__phone-ic">
-                <svg viewBox="0 0 24 24" fill="currentColor" set:html={directIcon} aria-hidden="true" />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  set:html={directIcon}
+                  aria-hidden="true"
+                />
               </span>
               <span class="hero__phone-txt">
                 <small>{direct.sub}</small>
@@ -75,11 +80,11 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
             <div class="mock__line"></div>
             <div class="mock__line mock__line--sm"></div>
             <svg class="mock__heat" viewBox="0 0 200 200">
-              <circle cx="120" cy="58" r="60" fill="var(--signal)" opacity="0.14" />
-              <circle cx="120" cy="58" r="44" fill="var(--signal)" opacity="0.22" />
-              <circle cx="120" cy="58" r="28" fill="var(--electric)" opacity="0.26" />
-              <circle cx="120" cy="58" r="14" fill="var(--electric)" opacity="0.55" />
-              <circle cx="120" cy="58" r="4.5" fill="var(--electric)" />
+              <circle cx="120" cy="58" r="60" fill="var(--signal)" opacity="0.14"></circle>
+              <circle cx="120" cy="58" r="44" fill="var(--signal)" opacity="0.22"></circle>
+              <circle cx="120" cy="58" r="28" fill="var(--electric)" opacity="0.26"></circle>
+              <circle cx="120" cy="58" r="14" fill="var(--electric)" opacity="0.55"></circle>
+              <circle cx="120" cy="58" r="4.5" fill="var(--electric)"></circle>
             </svg>
           </div>
         </div>
@@ -105,8 +110,20 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
     z-index: 1;
     pointer-events: none;
     background:
-      linear-gradient(90deg, var(--canvas) 0%, transparent 22%, transparent 72%, var(--canvas) 100%),
-      linear-gradient(180deg, var(--canvas) 0%, transparent 16%, transparent 80%, var(--canvas) 100%);
+      linear-gradient(
+        90deg,
+        var(--canvas) 0%,
+        transparent 22%,
+        transparent 72%,
+        var(--canvas) 100%
+      ),
+      linear-gradient(
+        180deg,
+        var(--canvas) 0%,
+        transparent 16%,
+        transparent 80%,
+        var(--canvas) 100%
+      );
   }
   .hero__inner {
     position: relative;

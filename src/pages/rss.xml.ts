@@ -11,8 +11,7 @@ export const GET: APIRoute = async ({ site: configSite, url }) => {
 
   return rss({
     title: `${site.name} — Blog`,
-    description:
-      'Idei și ghiduri din lumea marketingului: branding, neuromarketing și web design.',
+    description: 'Idei și ghiduri din lumea marketingului: branding, neuromarketing și web design.',
     site: origin,
     items: posts.map((p) => ({
       title: p.title,

@@ -18,7 +18,9 @@ import Button from '@components/ui/Button.astro';
       </p>
       <div class="mnt__cta">
         <Button href="/mentenanta" size="lg" withArrow>Calculează-ți pachetul</Button>
-        <Button href="/mentenanta#monitorizare" size="lg" variant="outline" onDark>Vezi ce monitorizăm</Button>
+        <Button href="/mentenanta#monitorizare" size="lg" variant="outline" onDark
+          >Vezi ce monitorizăm</Button
+        >
       </div>
     </div>
 
@@ -38,19 +40,18 @@ import Button from '@components/ui/Button.astro';
           <svg viewBox="0 0 300 90" preserveAspectRatio="none">
             <defs>
               <linearGradient id="mntFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#00e0c6" stop-opacity="0.34" />
-                <stop offset="100%" stop-color="#00e0c6" stop-opacity="0" />
+                <stop offset="0%" stop-color="#00e0c6" stop-opacity="0.34"></stop>
+                <stop offset="100%" stop-color="#00e0c6" stop-opacity="0"></stop>
               </linearGradient>
               <linearGradient id="mntLine" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#0077fc" />
-                <stop offset="100%" stop-color="#00e0c6" />
+                <stop offset="0%" stop-color="#0077fc"></stop>
+                <stop offset="100%" stop-color="#00e0c6"></stop>
               </linearGradient>
             </defs>
             <path
               class="app__area"
               d="M0,72 C26,64 46,74 76,55 S136,45 166,51 S226,27 256,33 S282,20 288,23 L300,23 L300,90 L0,90 Z"
-              fill="url(#mntFill)"
-            />
+              fill="url(#mntFill)"></path>
             <path
               class="app__line"
               d="M0,72 C26,64 46,74 76,55 S136,45 166,51 S226,27 256,33 S282,20 288,23"
@@ -59,8 +60,7 @@ import Button from '@components/ui/Button.astro';
               stroke-width="2.5"
               stroke-linecap="round"
               stroke-linejoin="round"
-              vector-effect="non-scaling-stroke"
-            />
+              vector-effect="non-scaling-stroke"></path>
           </svg>
           <span class="app__pt"></span>
         </div>

@@ -22,7 +22,14 @@ const err = (field: string) => errors[field]?.[0];
       <div class="admin-card">
         <label class="admin-field">
           <span>Titlu proiect</span>
-          <input class="admin-input" type="text" name="title" value={values.title} required id="pfTitle" />
+          <input
+            class="admin-input"
+            type="text"
+            name="title"
+            value={values.title}
+            required
+            id="pfTitle"
+          />
           {err('title') && <small class="field-error">{err('title')}</small>}
         </label>
         <label class="admin-field">
@@ -61,12 +68,16 @@ const err = (field: string) => errors[field]?.[0];
         </div>
         <label class="admin-field">
           <span>Rezumat (apare pe card și sub titlu)</span>
-          <textarea class="admin-textarea" name="summary" style="min-height:60px">{values.summary}</textarea>
+          <textarea class="admin-textarea" name="summary" style="min-height:60px"
+            >{values.summary}</textarea
+          >
           {err('summary') && <small class="field-error">{err('summary')}</small>}
         </label>
         <label class="admin-field">
           <span>Rezultat (apare pe card și în panoul lateral — cifre concrete, dacă există)</span>
-          <textarea class="admin-textarea" name="result" style="min-height:60px">{values.result}</textarea>
+          <textarea class="admin-textarea" name="result" style="min-height:60px"
+            >{values.result}</textarea
+          >
         </label>
       </div>
 
@@ -83,19 +94,33 @@ const err = (field: string) => errors[field]?.[0];
         <label class="admin-field">
           <span>Status</span>
           <select class="admin-select" name="status">
-            <option value="draft" selected={values.status !== 'published'}>Draft (nepublicat)</option>
+            <option value="draft" selected={values.status !== 'published'}
+              >Draft (nepublicat)</option
+            >
             <option value="published" selected={values.status === 'published'}>Publicat</option>
           </select>
         </label>
         <label class="admin-field">
           <span>Ordine în listă (mai mic = mai sus)</span>
-          <input class="admin-input" type="number" name="sort" value={values.sort} min="0" max="9999" />
+          <input
+            class="admin-input"
+            type="number"
+            name="sort"
+            value={values.sort}
+            min="0"
+            max="9999"
+          />
         </label>
         <div class="admin-actions">
           <button type="submit" class="admin-btn">{submitLabel}</button>
           {
             previewHref && (
-              <a class="admin-btn admin-btn--ghost admin-btn--sm" href={previewHref} target="_blank" rel="noopener">
+              <a
+                class="admin-btn admin-btn--ghost admin-btn--sm"
+                href={previewHref}
+                target="_blank"
+                rel="noopener"
+              >
                 Previzualizează ↗
               </a>
             )
@@ -111,11 +136,15 @@ const err = (field: string) => errors[field]?.[0];
         </label>
         <label class="admin-field">
           <span>Provocarea (opțional)</span>
-          <textarea class="admin-textarea" name="challenge" style="min-height:60px">{values.challenge}</textarea>
+          <textarea class="admin-textarea" name="challenge" style="min-height:60px"
+            >{values.challenge}</textarea
+          >
         </label>
         <label class="admin-field">
           <span>Soluția (opțional)</span>
-          <textarea class="admin-textarea" name="solution" style="min-height:60px">{values.solution}</textarea>
+          <textarea class="admin-textarea" name="solution" style="min-height:60px"
+            >{values.solution}</textarea
+          >
         </label>
       </div>
 
@@ -127,7 +156,9 @@ const err = (field: string) => errors[field]?.[0];
         </label>
         <label class="admin-field">
           <span>Descriere SEO</span>
-          <textarea class="admin-textarea" name="seoDescription" style="min-height:60px">{values.seoDescription}</textarea>
+          <textarea class="admin-textarea" name="seoDescription" style="min-height:60px"
+            >{values.seoDescription}</textarea
+          >
         </label>
       </details>
 

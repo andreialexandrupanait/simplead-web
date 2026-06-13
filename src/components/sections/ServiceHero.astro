@@ -23,9 +23,25 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
     <div class="svc-hero__text" data-reveal>
       <div class="crumb">
         <a href="/">Acasă</a>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          set:html={chev}
+        />
         <a href="/servicii">Servicii</a>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          set:html={chev}
+        />
         <span class="cur">{current}</span>
       </div>
       <h1 class="svc-hero__title">{title}<span class="accent">{titleAccent}</span></h1>
@@ -39,14 +55,23 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
               href={direct.href}
               {...(direct.kind === 'whatsapp' ? { target: '_blank', rel: 'noopener' } : {})}
             >
-              <span class="gic"><svg viewBox="0 0 24 24" fill="currentColor" set:html={directIcon} /></span>
-              <span><small>{direct.sub}</small><b>{direct.label}</b></span>
+              <span class="gic">
+                <svg viewBox="0 0 24 24" fill="currentColor" set:html={directIcon} />
+              </span>
+              <span>
+                <>
+                  <small>{direct.sub}</small>
+                  <b>{direct.label}</b>
+                </>
+              </span>
             </a>
           )
         }
       </div>
     </div>
-    <div class="svc-hero__photo" data-reveal><img src={image} alt={imageAlt} loading="eager" /></div>
+    <div class="svc-hero__photo" data-reveal>
+      <img src={image} alt={imageAlt} loading="eager" />
+    </div>
   </div>
 </section>
 

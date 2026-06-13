@@ -15,15 +15,13 @@ if (!db) {
   return Astro.redirect('/admin/comenzi', 302);
 }
 
-let row:
-  | {
-      order: typeof orders.$inferSelect;
-      packageName: string | null;
-      packageSlug: string | null;
-      customerName: string | null;
-      stripeCustomerId: string | null;
-    }
-  | null = null;
+let row: {
+  order: typeof orders.$inferSelect;
+  packageName: string | null;
+  packageSlug: string | null;
+  customerName: string | null;
+  stripeCustomerId: string | null;
+} | null = null;
 try {
   const rows = await db
     .select({
@@ -73,9 +71,13 @@ const dateFmt = new Intl.DateTimeFormat('ro-RO', { dateStyle: 'long', timeStyle:
         <dt>Pachet</dt>
         <dd>
           {packageName ?? '–'}
-          {packageSlug && (
-            <a href={`/pachete`} style="color:var(--electric);margin-left:6px" target="_blank">vezi pe site ↗</a>
-          )}
+          {
+            packageSlug && (
+              <a href={`/pachete`} style="color:var(--electric);margin-left:6px" target="_blank">
+                vezi pe site ↗
+              </a>
+            )
+          }
         </dd>
         {
           order.otoForOrderId && (

@@ -32,14 +32,7 @@ function renderTitle() {
 const t = renderTitle();
 ---
 
-<div
-  class:list={[
-    'sh',
-    align === 'center' && 'sh--center',
-    onDark && 'sh--dark',
-    className,
-  ]}
->
+<div class:list={['sh', align === 'center' && 'sh--center', onDark && 'sh--dark', className]}>
   {
     eyebrow && (
       <div class="sh__kicker">

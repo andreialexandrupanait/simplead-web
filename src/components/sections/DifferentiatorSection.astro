@@ -25,10 +25,10 @@ const points = [
         <span class="sec-eyebrow">Avantajul tău</span>
         <h2 class="sec-title">Nu ghicim.<br /><span class="g">Măsurăm.</span></h2>
         <p class="sec-sub">
-          Majoritatea „simt" că un design e bun. Noi îl testăm. Folosim instrumente de neuromarketing
-          (analiza atenției vizuale și hărți termice) alături de date din Google Analytics și
-          tracking de conversii. Mai puțin buget irosit, mai multă atenție din partea publicului
-          potrivit.
+          Majoritatea „simt" că un design e bun. Noi îl testăm. Folosim instrumente de
+          neuromarketing (analiza atenției vizuale și hărți termice) alături de date din Google
+          Analytics și tracking de conversii. Mai puțin buget irosit, mai multă atenție din partea
+          publicului potrivit.
         </p>
 
         <div class="diff-points">
@@ -36,7 +36,15 @@ const points = [
             points.map((p) => (
               <div class="diff-point">
                 <span class="n">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" set:html={p.icon} />
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    set:html={p.icon}
+                  />
                 </span>
                 <div>
                   <h4>{p.title}</h4>

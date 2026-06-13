@@ -46,7 +46,13 @@ const schema = {
   <section class="section section--light" style="padding-bottom:0">
     <div class="container">
       <nav class="faq-toc" aria-label="Categorii de întrebări">
-        {groups.map((g) => <a class="pill" href={`#${g.id}`}>{g.title}</a>)}
+        {
+          groups.map((g) => (
+            <a class="pill" href={`#${g.id}`}>
+              {g.title}
+            </a>
+          ))
+        }
       </nav>
     </div>
   </section>

@@ -75,7 +75,9 @@ const KIND_LABEL: Record<string, string> = {
                 </form>
               ) : (
                 <div class="res-paid">
-                  <span class="res-price">{r.priceLabel?.includes('[confirmă') ? 'Preț în curând' : r.priceLabel}</span>
+                  <span class="res-price">
+                    {r.priceLabel?.includes('[confirmă') ? 'Preț în curând' : r.priceLabel}
+                  </span>
                   <a class="pill pill--grad" href={`/contact?service=${r.slug}`}>
                     Vreau să aflu primul
                   </a>

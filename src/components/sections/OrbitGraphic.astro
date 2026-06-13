@@ -76,8 +76,13 @@ const nodes = [
           </linearGradient>
           <linearGradient id="oc-c" x1="175.862" y1="45.227" x2="944.483" y2="771.483" href="#oc-b"
           ></linearGradient>
-          <linearGradient id="oc-d" x1="-129.45" y1="368.348" x2="639.171" y2="1094.604" href="#oc-b"
-          ></linearGradient>
+          <linearGradient
+            id="oc-d"
+            x1="-129.45"
+            y1="368.348"
+            x2="639.171"
+            y2="1094.604"
+            href="#oc-b"></linearGradient>
           <linearGradient id="oc-e" x1="27.589" y1="202.149" x2="796.21" y2="928.405" href="#oc-b"
           ></linearGradient>
         </defs>
@@ -111,7 +116,9 @@ const nodes = [
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            {n.label === 'Copywriting' && <path d="M12 20h9M3 20l1-4 11-11a2.1 2.1 0 0 1 3 3L7 19z" />}
+            {n.label === 'Copywriting' && (
+              <path d="M12 20h9M3 20l1-4 11-11a2.1 2.1 0 0 1 3 3L7 19z" />
+            )}
             {n.label === 'Branding' && (
               <>
                 <circle cx="12" cy="12" r="9" />

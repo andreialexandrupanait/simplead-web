@@ -47,13 +47,29 @@ const chevron = '<path d="M9 6l6 6-6 6"/>';
           <>
             {i > 0 && (
               <span class="pstep-sep">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={chevron} />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  set:html={chevron}
+                />
               </span>
             )}
             <button class:list={['pstep', i === 0 && 'active']} role="tab" data-i={i}>
               <span class="pstep-box">{String(s.n).padStart(2, '0')}</span>
               <span class="pstep-ic">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" set:html={stepIcons[i % stepIcons.length]} />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  set:html={stepIcons[i % stepIcons.length]}
+                />
               </span>
               <span class="pstep-lbl">{s.title}</span>
             </button>
@@ -69,7 +85,15 @@ const chevron = '<path d="M9 6l6 6-6 6"/>';
           processSteps.map((s, i) => (
             <div class:list={['pproc-detail', i === 0 && 'on']} data-i={i}>
               <span class="pic">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" set:html={stepIcons[i % stepIcons.length]} />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  set:html={stepIcons[i % stepIcons.length]}
+                />
               </span>
               <div class="pbody">
                 <h3>{s.title}</h3>

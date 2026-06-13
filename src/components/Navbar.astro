@@ -42,7 +42,16 @@ const isActive = (href: string) =>
                 aria-haspopup="true"
               >
                 {item.label}
-                <svg class="nav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+                <svg
+                  class="nav__chev"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  aria-hidden="true"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
               </a>
               <div class="mega" role="menu">
                 <div class="site-container mega__inner">
@@ -51,7 +60,9 @@ const isActive = (href: string) =>
                     <div class="mega__grid">
                       {servicesNav.map((s) => (
                         <a class="mega__card" href={s.href} role="menuitem">
-                          <span class="mega__icon"><ServiceIcon icon={s.icon} /></span>
+                          <span class="mega__icon">
+                            <ServiceIcon icon={s.icon} />
+                          </span>
                           <span class="mega__card-text">
                             <span class="mega__title">{s.label}</span>
                             <span class="mega__desc">{s.desc}</span>
@@ -66,7 +77,9 @@ const isActive = (href: string) =>
                     <ul class="mega__quick">
                       {megaQuickLinks.map((l) => (
                         <li>
-                          <a href={l.href} role="menuitem">{l.label}</a>
+                          <a href={l.href} role="menuitem">
+                            {l.label}
+                          </a>
                         </li>
                       ))}
                     </ul>
@@ -78,14 +91,34 @@ const isActive = (href: string) =>
                     <ul class="mega__promo-bullets">
                       {megaPromo.bullets.map((b) => (
                         <li>
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.4"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                          >
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
                           {b}
                         </li>
                       ))}
                     </ul>
                     <span class="mega__promo-cta">
                       {megaPromo.ctaLabel}
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                      </svg>
                     </span>
                   </a>
                 </div>
@@ -95,13 +128,50 @@ const isActive = (href: string) =>
                     <span class="mega__foot-left">
                       Scrie-ne direct:
                       <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
-                      {site.social.facebook && <a href={site.social.facebook} target="_blank" rel="noopener" aria-label="Facebook">Facebook</a>}
-                      {site.social.instagram && <a href={site.social.instagram} target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>}
-                      {site.social.linkedin && <a href={site.social.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>}
+                      {site.social.facebook && (
+                        <a
+                          href={site.social.facebook}
+                          target="_blank"
+                          rel="noopener"
+                          aria-label="Facebook"
+                        >
+                          Facebook
+                        </a>
+                      )}
+                      {site.social.instagram && (
+                        <a
+                          href={site.social.instagram}
+                          target="_blank"
+                          rel="noopener"
+                          aria-label="Instagram"
+                        >
+                          Instagram
+                        </a>
+                      )}
+                      {site.social.linkedin && (
+                        <a
+                          href={site.social.linkedin}
+                          target="_blank"
+                          rel="noopener"
+                          aria-label="LinkedIn"
+                        >
+                          LinkedIn
+                        </a>
+                      )}
                     </span>
                     <a class="mega__foot-right" href="/contact" role="menuitem">
                       Ai un proiect? <b>Hai să vorbim</b>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                      </svg>
                     </a>
                   </div>
                 </div>
@@ -115,14 +185,27 @@ const isActive = (href: string) =>
                 aria-haspopup="true"
               >
                 {item.label}
-                <svg class="nav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+                <svg
+                  class="nav__chev"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  aria-hidden="true"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
               </a>
               <div class="mega" role="menu">
                 <div class="site-container mega__inner mega__inner--blog">
                   <div class="mega__zone">
                     <span class="mega__label">Categorii</span>
                     <ul data-blogmenu-cats>
-                      <li><a href="/blog" role="menuitem">Toate articolele</a></li>
+                      <li>
+                        <a href="/blog" role="menuitem">
+                          Toate articolele
+                        </a>
+                      </li>
                     </ul>
                   </div>
                   <div class="mega__zone mega__zone--posts">
@@ -134,10 +217,22 @@ const isActive = (href: string) =>
                 </div>
                 <div class="mega__footwrap">
                   <div class="site-container mega__foot">
-                    <span class="mega__foot-left">Idei și ghiduri de marketing, pe înțelesul tău.</span>
+                    <span class="mega__foot-left">
+                      Idei și ghiduri de marketing, pe înțelesul tău.
+                    </span>
                     <a class="mega__foot-right" href="/blog" role="menuitem">
                       Vezi toate articolele
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                      </svg>
                     </a>
                   </div>
                 </div>

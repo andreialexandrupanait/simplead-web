@@ -9,7 +9,6 @@ import {
   findMaintenanceAddon,
   findMaintenanceBase,
   type MaintenanceAddon,
-  type MaintenanceBase,
 } from '../../lib/maintenance-plans';
 
 export const prerender = false;
@@ -27,9 +26,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
   const base = findMaintenanceBase(baseSlug);
 
   // Add-on-uri valide, deduplicate, în ordinea din catalog.
-  const selectedAddonSlugs = new Set(
-    (form?.getAll('addons') ?? []).map((v) => String(v).trim()),
-  );
+  const selectedAddonSlugs = new Set((form?.getAll('addons') ?? []).map((v) => String(v).trim()));
   const addons: MaintenanceAddon[] = [...selectedAddonSlugs]
     .map((s) => findMaintenanceAddon(s))
     .filter((a): a is MaintenanceAddon => Boolean(a));

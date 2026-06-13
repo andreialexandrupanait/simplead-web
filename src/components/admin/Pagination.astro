@@ -25,27 +25,32 @@ const windowPages = Array.from({ length: end - start + 1 }, (_, i) => start + i)
 ---
 
 {
-  totalPages > 1 && (
+  totalItems > 0 && (
     <nav class="admin-pagination" aria-label="Paginare">
       <span>
         {totalItems} {totalItems === 1 ? 'rezultat' : 'rezultate'}
       </span>
-      <div class="admin-pagination__pages">
-        <a href={pageUrl(page - 1)} class:list={[page <= 1 && 'is-disabled']} aria-label="Pagina anterioară">
-          ←
-        </a>
-        {windowPages.map((p) =>
-          p === page ? <span class="is-current">{p}</span> : <a href={pageUrl(p)}>{p}</a>,
-        )}
-        <a
-          href={pageUrl(page + 1)}
-          class:list={[page >= totalPages && 'is-disabled']}
-          aria-label="Pagina următoare"
-        >
-          →
-        </a>
-      </div>
+      {totalPages > 1 && (
+        <div class="admin-pagination__pages">
+          <a
+            href={pageUrl(page - 1)}
+            class:list={[page <= 1 && 'is-disabled']}
+            aria-label="Pagina anterioară"
+          >
+            ←
+          </a>
+          {windowPages.map((p) =>
+            p === page ? <span class="is-current">{p}</span> : <a href={pageUrl(p)}>{p}</a>,
+          )}
+          <a
+            href={pageUrl(page + 1)}
+            class:list={[page >= totalPages && 'is-disabled']}
+            aria-label="Pagina următoare"
+          >
+            →
+          </a>
+        </div>
+      )}
     </nav>
   )
 }
-{totalPages <= 1 && totalItems > 0 && <div class="admin-pagination"><span>{totalItems} {totalItems === 1 ? 'rezultat' : 'rezultate'}</span></div>}

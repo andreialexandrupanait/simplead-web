@@ -2,9 +2,18 @@
 import Button from '@components/ui/Button.astro';
 
 const features = [
-  { title: 'Monitorizare inteligentă', body: 'Aplicația internă urmărește continuu starea site-ului tău și semnalează din timp ce nu e în regulă.' },
-  { title: 'Automatizări', body: 'Sarcini repetitive (rapoarte, alerte, fluxuri) trec pe pilot automat, ca să rămână timp de afacere.' },
-  { title: 'Conținut asistat', body: 'AI-ul accelerează ciornele și ideile, dar deciziile și forma finală rămân la om.' },
+  {
+    title: 'Monitorizare inteligentă',
+    body: 'Aplicația internă urmărește continuu starea site-ului tău și semnalează din timp ce nu e în regulă.',
+  },
+  {
+    title: 'Automatizări',
+    body: 'Sarcini repetitive (rapoarte, alerte, fluxuri) trec pe pilot automat, ca să rămână timp de afacere.',
+  },
+  {
+    title: 'Conținut asistat',
+    body: 'AI-ul accelerează ciornele și ideile, dar deciziile și forma finală rămân la om.',
+  },
 ];
 ---
 
@@ -14,8 +23,8 @@ const features = [
       <p class="kicker">AI pentru business</p>
       <h2 class="ai__title">AI, acolo unde <span>chiar îți face treaba.</span></h2>
       <p class="ai__sub">
-        Folosim AI-ul unde aduce rezultat concret: monitorizarea site-ului, automatizări și producția
-        de conținut. Și spunem clar unde nu ajută.
+        Folosim AI-ul unde aduce rezultat concret: monitorizarea site-ului, automatizări și
+        producția de conținut. Și spunem clar unde nu ajută.
       </p>
       <div class="ai__cta">
         <Button href="/servicii/ai-pentru-business" withArrow>Descoperă AI pentru business</Button>
@@ -27,7 +36,16 @@ const features = [
         features.map((f) => (
           <li class="ai__feature">
             <span class="ai__spark">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4.5 13H11l-1 9 8.5-11H12z" /></svg>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M13 2L4.5 13H11l-1 9 8.5-11H12z" />
+              </svg>
             </span>
             <div>
               <h3>{f.title}</h3>

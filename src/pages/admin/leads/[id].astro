@@ -69,7 +69,9 @@ const STATUS_LABEL: Record<string, string> = {
   <div class="lead-cols">
     <div class="admin-card">
       <h2>Mesaj</h2>
-      <p class="admin-hint">{lead.service ? `Serviciu vizat: ${lead.service}` : 'Fără serviciu selectat.'}</p>
+      <p class="admin-hint">
+        {lead.service ? `Serviciu vizat: ${lead.service}` : 'Fără serviciu selectat.'}
+      </p>
       <p style="white-space:pre-wrap;line-height:1.65;margin:0">{lead.message}</p>
     </div>
 
@@ -102,7 +104,13 @@ const STATUS_LABEL: Record<string, string> = {
         </dl>
         <div class="admin-actions" style="margin-top:16px">
           <a class="admin-btn admin-btn--sm" href={`mailto:${lead.email}`}>Răspunde pe email</a>
-          {lead.phone && <a class="admin-btn admin-btn--ghost admin-btn--sm" href={`tel:${lead.phone}`}>Sună</a>}
+          {
+            lead.phone && (
+              <a class="admin-btn admin-btn--ghost admin-btn--sm" href={`tel:${lead.phone}`}>
+                Sună
+              </a>
+            )
+          }
         </div>
       </div>
 
@@ -123,7 +131,11 @@ const STATUS_LABEL: Record<string, string> = {
         </label>
         <label class="admin-field">
           <span>Notițe</span>
-          <textarea class="admin-textarea" name="notes" placeholder="Ex: am sunat, revine joi cu buget…">{lead.notes}</textarea>
+          <textarea
+            class="admin-textarea"
+            name="notes"
+            placeholder="Ex: am sunat, revine joi cu buget…">{lead.notes}</textarea
+          >
         </label>
         <button type="submit" class="admin-btn">Salvează</button>
       </form>

@@ -88,7 +88,11 @@ export const megaQuickLinks: NavItem[] = [
 export const megaPromo = {
   eyebrow: 'Mentenanță website',
   title: 'Site-ul tău, monitorizat non-stop',
-  bullets: ['Backup & update-uri regulate', 'Monitorizare permanentă', 'Intervenții lunare incluse'],
+  bullets: [
+    'Backup & update-uri regulate',
+    'Monitorizare permanentă',
+    'Intervenții lunare incluse',
+  ],
   ctaLabel: 'Vezi planurile',
   ctaHref: '/mentenanta#calc',
 } as const;

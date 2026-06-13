@@ -1,7 +1,6 @@
 // Seed cu catalogul de pachete (prețuri fixe, EUR). Oglindește
 // src/data/packages-fallback.ts. Sincronizează din cod: pe slug existent face
 // UPDATE (atenție: suprascrie edițiile din /admin pe pachetele cu acel slug).
-import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
 const url = process.env.DATABASE_URL?.trim();

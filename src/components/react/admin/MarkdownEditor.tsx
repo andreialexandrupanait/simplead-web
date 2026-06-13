@@ -184,7 +184,7 @@ export default function MarkdownEditor({ name, initial = '' }: Props) {
   );
 
   const editor = (
-    <div className={`admin-editor2${fullscreen ? ' is-fullscreen' : ''}`}>
+    <div className={`admin-editor2${fullscreen ? 'is-fullscreen' : ''}`}>
       <div className="admin-editor2__bar">
         <div className="admin-editor2__tools" role="toolbar" aria-label="Formatare">
           <button type="button" onClick={() => wrap('**', '**', 'text')} title="Bold (Ctrl+B)">
@@ -194,27 +194,47 @@ export default function MarkdownEditor({ name, initial = '' }: Props) {
             <em>I</em>
           </button>
           <span className="sep" />
-          <button type="button" onClick={() => wrap('\n## ', '', 'Subtitlu')} title="Subtitlu mare (H2)">
+          <button
+            type="button"
+            onClick={() => wrap('\n## ', '', 'Subtitlu')}
+            title="Subtitlu mare (H2)"
+          >
             H2
           </button>
-          <button type="button" onClick={() => wrap('\n### ', '', 'Subtitlu')} title="Subtitlu mic (H3)">
+          <button
+            type="button"
+            onClick={() => wrap('\n### ', '', 'Subtitlu')}
+            title="Subtitlu mic (H3)"
+          >
             H3
           </button>
           <span className="sep" />
           <button type="button" onClick={() => wrap('\n- ', '', 'element')} title="Listă cu puncte">
             ≔
           </button>
-          <button type="button" onClick={() => wrap('\n1. ', '', 'element')} title="Listă numerotată">
+          <button
+            type="button"
+            onClick={() => wrap('\n1. ', '', 'element')}
+            title="Listă numerotată"
+          >
             1.
           </button>
           <button type="button" onClick={() => wrap('\n> ', '', 'citat')} title="Citat">
             ❝
           </button>
           <span className="sep" />
-          <button type="button" onClick={() => wrap('[', '](https://)', 'text link')} title="Link (Ctrl+K)">
+          <button
+            type="button"
+            onClick={() => wrap('[', '](https://)', 'text link')}
+            title="Link (Ctrl+K)"
+          >
             🔗
           </button>
-          <button type="button" onClick={() => setPickerOpen(true)} title="Inserează imagine din bibliotecă">
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            title="Inserează imagine din bibliotecă"
+          >
             🖼
           </button>
         </div>

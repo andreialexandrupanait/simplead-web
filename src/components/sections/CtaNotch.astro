@@ -31,8 +31,15 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
             href={direct.href}
             {...(direct.kind === 'whatsapp' ? { target: '_blank', rel: 'noopener' } : {})}
           >
-            <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" set:html={directIcon} /></span>
-            <span class="txt"><small>{direct.sub}</small><b>{direct.label}</b></span>
+            <span class="ic">
+              <svg viewBox="0 0 24 24" fill="currentColor" set:html={directIcon} />
+            </span>
+            <span class="txt">
+              <>
+                <small>{direct.sub}</small>
+                <b>{direct.label}</b>
+              </>
+            </span>
           </a>
         )
       }

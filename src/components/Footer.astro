@@ -14,15 +14,12 @@ const social = site.social;
       {
         // Repetăm de 4× (track = 2 jumătăți identice late) ca, la orice lățime de
         // ecran, banda să fie continuă, fără gol și fără salt la buclare.
-        [
-          ...footerServices,
-          ...footerServices,
-          ...footerServices,
-          ...footerServices,
-        ].map((s) => (
+        [...footerServices, ...footerServices, ...footerServices, ...footerServices].map((s) => (
           <span class="fmq-item">
             {s.label}
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2 8 8 2-8 2-2 8-2-8-8-2 8-2z" /></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l2 8 8 2-8 2-2 8-2-8-8-2 8-2z" />
+            </svg>
           </span>
         ))
       }
@@ -115,7 +112,14 @@ const social = site.social;
           placeholder="Adresa ta de email"
           aria-label="Adresa ta de email"
         />
-        <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px" />
+        <input
+          type="text"
+          name="company"
+          tabindex="-1"
+          autocomplete="off"
+          aria-hidden="true"
+          style="position:absolute;left:-9999px"
+        />
         <button type="submit">Mă abonez</button>
       </form>
       <p class="footer-news-msg" data-newsletter-msg aria-live="polite"></p>

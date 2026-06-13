@@ -46,7 +46,13 @@ const hasErrors = Object.keys(errors).length > 0;
         placeholder="Titlul articolului…"
         autocomplete="off"
       />
-      {err('title') && <small class="field-error" style="display:block">{err('title')}</small>}
+      {
+        err('title') && (
+          <small class="field-error" style="display:block">
+            {err('title')}
+          </small>
+        )
+      }
       <div class="admin-slug-line">
         <span>simplead.ro/blog/</span>
         <input
@@ -60,13 +66,26 @@ const hasErrors = Object.keys(errors).length > 0;
           spellcheck="false"
         />
       </div>
-      {err('slug') && <small class="field-error" style="display:block;margin-top:4px">{err('slug')}</small>}
+      {
+        err('slug') && (
+          <small class="field-error" style="display:block;margin-top:4px">
+            {err('slug')}
+          </small>
+        )
+      }
       <small id="pfSlugWarn" style="display:none;color:#7a6505;margin-top:4px">
-        ⚠ Schimbarea slug-ului unui articol publicat rupe linkurile existente (Google, social media).
+        ⚠ Schimbarea slug-ului unui articol publicat rupe linkurile existente (Google, social
+        media).
       </small>
       <label class="admin-field" style="margin:16px 0 0">
-        <span>Descriere scurtă <small style="display:inline;color:var(--muted)">(apare în listă și în Google — max 300 caractere)</small></span>
-        <textarea class="admin-textarea" name="description" style="min-height:58px">{values.description}</textarea>
+        <span
+          >Descriere scurtă <small style="display:inline;color:var(--muted)"
+            >(apare în listă și în Google — max 300 caractere)</small
+          ></span
+        >
+        <textarea class="admin-textarea" name="description" style="min-height:58px"
+          >{values.description}</textarea
+        >
         {err('description') && <small class="field-error">{err('description')}</small>}
       </label>
     </div>
@@ -82,7 +101,12 @@ const hasErrors = Object.keys(errors).length > 0;
       </label>
       <label class="admin-field">
         <span>Data publicării</span>
-        <input class="admin-input" type="datetime-local" name="publishedAt" value={values.publishedAt} />
+        <input
+          class="admin-input"
+          type="datetime-local"
+          name="publishedAt"
+          value={values.publishedAt}
+        />
         <small>Gol = data curentă la prima publicare.</small>
       </label>
       <label class="admin-field" style="margin-bottom:0">
@@ -92,7 +116,10 @@ const hasErrors = Object.keys(errors).length > 0;
     </div>
   </div>
 
-  <div class="admin-card" style="margin-top:20px;padding:0;border:none;box-shadow:none;background:transparent">
+  <div
+    class="admin-card"
+    style="margin-top:20px;padding:0;border:none;box-shadow:none;background:transparent"
+  >
     <MarkdownEditor client:load name="body" initial={values.body} />
   </div>
 
@@ -107,35 +134,65 @@ const hasErrors = Object.keys(errors).length > 0;
         <span>Categorie</span>
         <select class="admin-select" name="category">
           <option value="" selected={!values.category}>— fără categorie —</option>
-          {postCategories.map((c) => (
-            <option value={c} selected={values.category === c}>{c}</option>
-          ))}
+          {
+            postCategories.map((c) => (
+              <option value={c} selected={values.category === c}>
+                {c}
+              </option>
+            ))
+          }
         </select>
         <small>Apare ca filtru pe /blog și ca etichetă principală pe card.</small>
       </label>
       <label class="admin-field" style="margin-bottom:0">
         <span>Taguri (separate prin virgulă)</span>
-        <input class="admin-input" type="text" name="tags" value={values.tags} placeholder="Neuromarketing, SEO" />
+        <input
+          class="admin-input"
+          type="text"
+          name="tags"
+          value={values.tags}
+          placeholder="Neuromarketing, SEO"
+        />
         <small>Tag-uri secundare (pagini /blog/tag/... pentru SEO).</small>
       </label>
     </div>
 
     <div class="admin-card">
-      <h2>Pe scurt & FAQ <small style="display:inline;font-weight:400;color:var(--muted)">(opțional)</small></h2>
+      <h2>
+        Pe scurt & FAQ <small style="display:inline;font-weight:400;color:var(--muted)"
+          >(opțional)</small
+        >
+      </h2>
       <label class="admin-field">
         <span>Pe scurt — concluzii cheie</span>
-        <textarea class="admin-textarea" name="takeaways" style="min-height:88px" placeholder="O concluzie pe rând…">{values.takeaways}</textarea>
+        <textarea
+          class="admin-textarea"
+          name="takeaways"
+          style="min-height:88px"
+          placeholder="O concluzie pe rând…">{values.takeaways}</textarea
+        >
         <small>O concluzie pe rând. Apar într-o casetă sus, sub titlu.</small>
       </label>
       <label class="admin-field" style="margin-bottom:0">
         <span>Întrebări frecvente</span>
-        <textarea class="admin-textarea" name="faq" style="min-height:140px" placeholder={"Ce este X?\nRăspunsul la întrebare, pe unul sau mai multe paragrafe.\n---\nCât costă Y?\nAlt răspuns."}>{values.faq}</textarea>
-        <small>O întrebare per bloc: prima linie = întrebarea, restul = răspunsul. Separă întrebările cu o linie <code>---</code>. Apar ca acordeon la final + în Google (schema FAQ).</small>
+        <textarea
+          class="admin-textarea"
+          name="faq"
+          style="min-height:140px"
+          placeholder={'Ce este X?\nRăspunsul la întrebare, pe unul sau mai multe paragrafe.\n---\nCât costă Y?\nAlt răspuns.'}
+          >{values.faq}</textarea
+        >
+        <small
+          >O întrebare per bloc: prima linie = întrebarea, restul = răspunsul. Separă întrebările cu
+          o linie <code>---</code>. Apar ca acordeon la final + în Google (schema FAQ).</small
+        >
       </label>
     </div>
 
     <div class="admin-card">
-      <h2>SEO <small style="display:inline;font-weight:400;color:var(--muted)">(opțional)</small></h2>
+      <h2>
+        SEO <small style="display:inline;font-weight:400;color:var(--muted)">(opțional)</small>
+      </h2>
       <label class="admin-field">
         <span>Titlu SEO</span>
         <input class="admin-input" type="text" name="seoTitle" value={values.seoTitle} />
@@ -143,7 +200,9 @@ const hasErrors = Object.keys(errors).length > 0;
       </label>
       <label class="admin-field" style="margin-bottom:0">
         <span>Descriere SEO</span>
-        <textarea class="admin-textarea" name="seoDescription" style="min-height:58px">{values.seoDescription}</textarea>
+        <textarea class="admin-textarea" name="seoDescription" style="min-height:58px"
+          >{values.seoDescription}</textarea
+        >
         <small>Gol = se folosește descrierea scurtă.</small>
       </label>
     </div>
@@ -171,7 +230,12 @@ const hasErrors = Object.keys(errors).length > 0;
     <button type="submit" class="admin-btn">{submitLabel}</button>
     {
       previewHref && (
-        <a class="admin-btn admin-btn--ghost admin-btn--sm" href={previewHref} target="_blank" rel="noopener">
+        <a
+          class="admin-btn admin-btn--ghost admin-btn--sm"
+          href={previewHref}
+          target="_blank"
+          rel="noopener"
+        >
           Previzualizează ↗
         </a>
       )

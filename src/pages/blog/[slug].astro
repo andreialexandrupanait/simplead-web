@@ -53,8 +53,7 @@ const related = allPublished
   .slice(0, 3);
 const curIdx = allPublished.findIndex((p) => p.slug === post.slug);
 const prevPost = curIdx > 0 ? allPublished[curIdx - 1] : null; // mai recent
-const nextPost =
-  curIdx >= 0 && curIdx < allPublished.length - 1 ? allPublished[curIdx + 1] : null; // mai vechi
+const nextPost = curIdx >= 0 && curIdx < allPublished.length - 1 ? allPublished[curIdx + 1] : null; // mai vechi
 
 // FAQ: pentru afișare (FaqSection) + schema FAQPage.
 const faqItems = (post.faq ?? []).filter((f) => f.q && f.a);
@@ -117,7 +116,12 @@ if (post.status === 'draft') {
 }
 ---
 
-<BaseLayout title={title} description={description} schema={schema} ogImage={post.cover ?? undefined}>
+<BaseLayout
+  title={title}
+  description={description}
+  schema={schema}
+  ogImage={post.cover ?? undefined}
+>
   <ReadingProgress />
 
   <header class="article-hero">
@@ -144,7 +148,13 @@ if (post.status === 'draft') {
       <div class="article-meta">
         {
           authorAvatar ? (
-            <img class="article-meta__avatar" src={authorAvatar} alt={post.author} width="36" height="36" />
+            <img
+              class="article-meta__avatar"
+              src={authorAvatar}
+              alt={post.author}
+              width="36"
+              height="36"
+            />
           ) : (
             <span class="article-meta__avatar article-meta__avatar--mono" aria-hidden="true">
               {authorMonogram}

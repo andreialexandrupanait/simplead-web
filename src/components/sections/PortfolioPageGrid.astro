@@ -10,7 +10,15 @@ interface Props {
 const { projects, variant = 'light' } = Astro.props;
 
 // Categoriile, în ordinea preferată din export, intersectate cu ce există.
-const preferred = ['Branding', 'Web Design', 'Marketing', 'Grafică', 'Foto-Video', 'Social Media', 'Mentenanță'];
+const preferred = [
+  'Branding',
+  'Web Design',
+  'Marketing',
+  'Grafică',
+  'Foto-Video',
+  'Social Media',
+  'Mentenanță',
+];
 const present = new Set<string>(projects.map((p) => p.service));
 const cats = ['Toate', ...preferred.filter((c) => present.has(c))];
 const trend = '<path d="M3 17l6-6 4 4 7-7"/><path d="M14 7h7v7"/>';
@@ -28,7 +36,12 @@ const trend = '<path d="M3 17l6-6 4 4 7-7"/><path d="M14 7h7v7"/>';
     <div class="pf-filters" id="pfFilters" role="tablist" data-reveal>
       {
         cats.map((c, i) => (
-          <button class="pf-filter" role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-cat={c}>
+          <button
+            class="pf-filter"
+            role="tab"
+            aria-selected={i === 0 ? 'true' : 'false'}
+            data-cat={c}
+          >
             {c}
           </button>
         ))
@@ -39,7 +52,11 @@ const trend = '<path d="M3 17l6-6 4 4 7-7"/><path d="M14 7h7v7"/>';
         projects.map((project) => (
           <a class="pf-page-card" href={`/portofoliu/${project.slug}`} data-cat={project.service}>
             <div class="ph thumb">
-              {project.cover ? <img src={project.cover} alt={project.title} loading="lazy" /> : project.title}
+              {project.cover ? (
+                <img src={project.cover} alt={project.title} loading="lazy" />
+              ) : (
+                project.title
+              )}
             </div>
             <div class="body">
               <span class="tag">{project.service}</span>
@@ -47,7 +64,15 @@ const trend = '<path d="M3 17l6-6 4 4 7-7"/><path d="M14 7h7v7"/>';
               <p>{project.summary}</p>
               {project.result && (
                 <span class="pf-result">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={trend} />
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    set:html={trend}
+                  />
                   {excerpt(project.result, 90)}
                 </span>
               )}

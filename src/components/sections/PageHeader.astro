@@ -32,7 +32,15 @@ const t = splitTitle();
           {crumb.map((c, i) => (
             <>
               {i > 0 && (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  set:html={chev}
+                />
               )}
               {c.href ? <a href={c.href}>{c.label}</a> : <span class="cur">{c.label}</span>}
             </>

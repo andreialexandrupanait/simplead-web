@@ -19,7 +19,14 @@ const monogram = author.trim().charAt(0).toUpperCase() || 'S';
 <aside class="author-box">
   {
     avatar ? (
-      <img class="author-box__avatar" src={avatar} alt={author} width="72" height="72" loading="lazy" />
+      <img
+        class="author-box__avatar"
+        src={avatar}
+        alt={author}
+        width="72"
+        height="72"
+        loading="lazy"
+      />
     ) : (
       <span class="author-box__avatar author-box__avatar--mono" aria-hidden="true">
         {monogram}

@@ -27,7 +27,8 @@ export const GET: APIRoute = async ({ url }) => {
       or(ilike(orders.customerEmail, like), ilike(orders.stripeCheckoutSessionId, like))!,
     );
   }
-  if (from && !Number.isNaN(Date.parse(from))) conditions.push(gte(orders.createdAt, new Date(from)));
+  if (from && !Number.isNaN(Date.parse(from)))
+    conditions.push(gte(orders.createdAt, new Date(from)));
   if (to && !Number.isNaN(Date.parse(to)))
     conditions.push(lte(orders.createdAt, new Date(`${to}T23:59:59`)));
 

@@ -37,7 +37,13 @@ const serviceSchema = {
 };
 ---
 
-<BaseLayout title={`${service.title} · Servicii`} description={service.summary} transparentNav={true} navOverDark={true} schema={serviceSchema}>
+<BaseLayout
+  title={`${service.title} · Servicii`}
+  description={service.summary}
+  transparentNav={true}
+  navOverDark={true}
+  schema={serviceSchema}
+>
   <ServiceHero
     title={service.heroTitle}
     titleAccent={service.heroTitleAccent}

@@ -14,18 +14,30 @@ const arrow = '<path d="M5 12h14M13 6l6 6-6 6"/>';
 <section class:list={['section', `section--${variant}`]}>
   <div class="container">
     <div class="sec-head center" data-reveal>
-      <span class="sec-eyebrow" style="display:inline-flex;justify-content:center;">Servicii Simplead</span>
+      <span class="sec-eyebrow" style="display:inline-flex;justify-content:center;"
+        >Servicii Simplead</span
+      >
       <h2 class="sec-title">Explorează și <span class="g">celelalte servicii</span></h2>
     </div>
     <div class="rel-grid" data-reveal-stagger>
       {
         items.map((s) => (
           <a class="rel-card" href={`/servicii/${s.slug}`}>
-            <span class="ri"><ServiceIcon icon={s.icon} class="h-6 w-6" /></span>
+            <span class="ri">
+              <ServiceIcon icon={s.icon} class="h-6 w-6" />
+            </span>
             <h3>
               {s.title}
               <span class="ar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={arrow} />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  set:html={arrow}
+                />
               </span>
             </h3>
             <p>{s.summary}</p>

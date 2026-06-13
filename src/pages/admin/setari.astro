@@ -40,9 +40,9 @@ const current = await getPublicSettings();
         <span style="margin:0">Afișează numărul de telefon pe site</span>
       </label>
       <p class="admin-hint" style="margin-top:8px">
-        Debifat (implicit): numărul nu apare nicăieri — nici în pagini, nici în datele
-        structurate (Google). Bifat: reapare în hero-uri, în sertarul de contact și pe pagina
-        Contact. Numărul rămâne cel din configurație ({''}
+        Debifat (implicit): numărul nu apare nicăieri — nici în pagini, nici în datele structurate
+        (Google). Bifat: reapare în hero-uri, în sertarul de contact și pe pagina Contact. Numărul
+        rămâne cel din configurație ({''}
         <code>site.contact.phone</code>).
       </p>
     </div>
@@ -50,7 +50,11 @@ const current = await getPublicSettings();
     <div class="admin-card" style="margin-top:20px">
       <h2>WhatsApp</h2>
       <label class="admin-field" style="margin-bottom:0">
-        <span>Număr WhatsApp <small style="display:inline;color:var(--muted)">(cu prefix de țară, doar cifre)</small></span>
+        <span
+          >Număr WhatsApp <small style="display:inline;color:var(--muted)"
+            >(cu prefix de țară, doar cifre)</small
+          ></span
+        >
         <input
           class="admin-input"
           type="text"
@@ -61,8 +65,8 @@ const current = await getPublicSettings();
           autocomplete="off"
         />
         <small>
-          Gol = WhatsApp ascuns. Setat = apare butonul „Scrie pe WhatsApp" în sertarul de
-          contact, pe pagina Contact și în hero-uri (când telefonul e ascuns).
+          Gol = WhatsApp ascuns. Setat = apare butonul „Scrie pe WhatsApp" în sertarul de contact,
+          pe pagina Contact și în hero-uri (când telefonul e ascuns).
         </small>
       </label>
     </div>

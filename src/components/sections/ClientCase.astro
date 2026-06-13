@@ -7,7 +7,8 @@ interface Props {
   variant?: 'light' | 'tint';
 }
 const { caseStudy: cs, variant = 'light' } = Astro.props;
-const star = '<path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 7.1-1.01L12 2z"/>';
+const star =
+  '<path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 7.1-1.01L12 2z"/>';
 const prev = '<path d="M15 18l-6-6 6-6"/>';
 const next = '<path d="M9 6l6 6-6 6"/>';
 ---
@@ -19,23 +20,51 @@ const next = '<path d="M9 6l6 6-6 6"/>';
         <div class="big">{cs.statBig}{' '}<span class="g">{cs.statBigAccent}</span></div>
         <p class="cap">{cs.statCap}</p>
         <div class="stars">
-          {Array.from({ length: 5 }).map(() => (
-            <svg viewBox="0 0 24 24" fill="currentColor" set:html={star} />
-          ))}
+          {
+            Array.from({ length: 5 }).map(() => (
+              <svg viewBox="0 0 24 24" fill="currentColor" set:html={star} />
+            ))
+          }
         </div>
-        <p class="rev">Recenzii reale de la clienți · <a href="/portofoliu">Vezi recomandările</a></p>
+        <p class="rev">
+          Recenzii reale de la clienți · <a href="/portofoliu">Vezi recomandările</a>
+        </p>
       </div>
       <div class="cs-case">
         <p class="qt">{cs.quote}</p>
         <p class="body">{cs.body}</p>
         <div class="cs-foot">
           <div class="cs-who">
-            <span class="cl-word" style="width:54px;height:54px;border-radius:12px;border:1px solid var(--line);font-size:15px;flex:none;">{cs.clientLogo}</span>
+            <span
+              class="cl-word"
+              style="width:54px;height:54px;border-radius:12px;border:1px solid var(--line);font-size:15px;flex:none;"
+              >{cs.clientLogo}</span
+            >
             <span><b>{cs.client}</b><small>{cs.clientNote}</small></span>
           </div>
           <div class="cs-arrows">
-            <button aria-label="Anterior" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={prev} /></button>
-            <button aria-label="Următor" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={next} /></button>
+            <button aria-label="Anterior" type="button"
+              ><svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                set:html={prev}
+              /></button
+            >
+            <button aria-label="Următor" type="button"
+              ><svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                set:html={next}
+              /></button
+            >
           </div>
         </div>
       </div>

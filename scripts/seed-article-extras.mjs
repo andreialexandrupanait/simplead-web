@@ -51,7 +51,11 @@ try {
     SET takeaways = ${sql.json(takeaways)}, faq = ${sql.json(faq)}, updated_at = now()
     WHERE slug = ${SLUG}
     RETURNING slug`;
-  console.log(rows.length ? `✓ ${SLUG} (${takeaways.length} takeaways, ${faq.length} FAQ)` : `– ${SLUG} negăsit`);
+  console.log(
+    rows.length
+      ? `✓ ${SLUG} (${takeaways.length} takeaways, ${faq.length} FAQ)`
+      : `– ${SLUG} negăsit`,
+  );
   await sql.end();
 } catch (err) {
   console.error('[extras] Eșec:', err);

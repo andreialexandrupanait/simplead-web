@@ -81,7 +81,11 @@ const STATUS_LABEL: Record<string, string> = {
       </div>
     )
   }
-  {dbError && <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>}
+  {
+    dbError && (
+      <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>
+    )
+  }
 
   {
     db && !dbError && (

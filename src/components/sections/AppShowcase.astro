@@ -18,13 +18,27 @@ const two = (n: number) => String(n).padStart(2, '0');
 
 {
   topics.map((topic, ti) => (
-    <section class:list={['section', `section--${ti % 2 === 0 ? variant : variant === 'light' ? 'tint' : 'light'}`]} id={topic.id}>
+    <section
+      class:list={[
+        'section',
+        `section--${ti % 2 === 0 ? variant : variant === 'light' ? 'tint' : 'light'}`,
+      ]}
+      id={topic.id}
+    >
       <div class="container">
         <div class="topic">
           {/* Stânga: intro sticky */}
           <div class="topic__intro" data-reveal>
             <span class="topic__eyebrow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" set:html={topic.icon} />
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                set:html={topic.icon}
+              />
               {topic.eyebrow}
             </span>
             <h2 class="topic__title">
@@ -67,7 +81,8 @@ const two = (n: number) => String(n).padStart(2, '0');
                 Întrebări frecvente despre {topic.eyebrow.toLowerCase()}
               </h3>
               <p class="topic__faq-lead">
-                Mai ai întrebări? Scrie-ne și îți răspundem rapid &mdash; <a href="/contact">contactează-ne</a>.
+                Mai ai întrebări? Scrie-ne și îți răspundem rapid &mdash;{' '}
+                <a href="/contact">contactează-ne</a>.
               </p>
               <div class="faq app-faq" id={`faq-${topic.id}`}>
                 {topic.faqs.map((f, i) => (
@@ -76,9 +91,25 @@ const two = (n: number) => String(n).padStart(2, '0');
                       {f.q}
                       <span class="faq-ic">
                         {i === 0 ? (
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14" /></svg>
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.4"
+                            stroke-linecap="round"
+                          >
+                            <path d="M5 12h14" />
+                          </svg>
                         ) : (
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.4"
+                            stroke-linecap="round"
+                          >
+                            <path d="M12 5v14M5 12h14" />
+                          </svg>
                         )}
                       </span>
                     </button>
@@ -209,7 +240,9 @@ const two = (n: number) => String(n).padStart(2, '0');
     border: 1px solid var(--line);
     border-radius: var(--r-lg);
     box-shadow: var(--sh-sm);
-    transition: border-color 0.18s var(--ease-snap), transform 0.18s var(--ease-snap);
+    transition:
+      border-color 0.18s var(--ease-snap),
+      transform 0.18s var(--ease-snap);
   }
   .topic-card:hover {
     border-color: var(--cyan);

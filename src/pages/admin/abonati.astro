@@ -68,8 +68,8 @@ const exportUrl = `/api/admin/export/subscribers.csv${Astro.url.search}`;
     <div>
       <h1>Abonați newsletter</h1>
       <p class="admin-sub">
-        Adunați din formularul din footer și de pe /resurse. Exportă lista pentru Postmark
-        Broadcast când trimiți newsletterul.
+        Adunați din formularul din footer și de pe /resurse. Exportă lista pentru Postmark Broadcast
+        când trimiți newsletterul.
       </p>
     </div>
   </div>
@@ -81,7 +81,11 @@ const exportUrl = `/api/admin/export/subscribers.csv${Astro.url.search}`;
       </div>
     )
   }
-  {dbError && <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>}
+  {
+    dbError && (
+      <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>
+    )
+  }
 
   {
     db && !dbError && (

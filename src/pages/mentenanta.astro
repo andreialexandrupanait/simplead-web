@@ -7,7 +7,10 @@ import CtaNotch from '@components/sections/CtaNotch.astro';
 import FaqSection from '@components/sections/FaqSection.astro';
 import { generalFaqs, appTopics } from '@data/content';
 import { getService } from '@data/services';
-import { maintenanceBase as basePackages, maintenanceAddons as addOns } from '@lib/maintenance-plans';
+import {
+  maintenanceBase as basePackages,
+  maintenanceAddons as addOns,
+} from '@lib/maintenance-plans';
 
 // Conținutul serviciului „Mentenanță website" trăiește acum pe această pagină unică.
 const mnt = getService('mentenanta-website');
@@ -67,7 +70,9 @@ const faqSchema = {
                     <span class="pkg__card">
                       <span class="pkg__top">
                         <span class="pkg__name">{p.name}</span>
-                        <span class="pkg__price">{p.price}€<small>/lună</small></span>
+                        <span class="pkg__price">
+                          {p.price}€<small>/lună</small>
+                        </span>
                       </span>
                       <span class="pkg__tag">{p.tag}</span>
                       <ul class="pkg__list">
@@ -89,9 +94,24 @@ const faqSchema = {
               {
                 addOns.map((a) => (
                   <label class="addon">
-                    <input type="checkbox" name="addons" value={a.slug} data-price={a.price} data-label={a.name} />
+                    <input
+                      type="checkbox"
+                      name="addons"
+                      value={a.slug}
+                      data-price={a.price}
+                      data-label={a.name}
+                    />
                     <span class="addon__box" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7" /></svg>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M5 12l5 5L20 7" />
+                      </svg>
                     </span>
                     <span class="addon__body">
                       <span class="addon__row">
@@ -117,18 +137,22 @@ const faqSchema = {
               <strong id="summaryTotal">50 €/lună</strong>
             </div>
             <button type="submit" class="summary__cta">Mergi la plată</button>
-            <p class="summary__note">Plată securizată prin Stripe, abonament lunar. Nu se adaugă TVA. Poți anula oricând.</p>
+            <p class="summary__note">
+              Plată securizată prin Stripe, abonament lunar. Nu se adaugă TVA. Poți anula oricând.
+            </p>
           </div>
         </aside>
       </form>
     </div>
   </section>
 
-  {mnt?.caseStudy && (
-    <div class="mnt-case">
-      <ClientCase caseStudy={mnt.caseStudy} variant="light" />
-    </div>
-  )}
+  {
+    mnt?.caseStudy && (
+      <div class="mnt-case">
+        <ClientCase caseStudy={mnt.caseStudy} variant="light" />
+      </div>
+    )
+  }
 
   <FaqSection
     items={generalFaqs}
@@ -469,7 +493,9 @@ const faqSchema = {
     letter-spacing: 0.04em;
     cursor: pointer;
     box-shadow: var(--glow-electric);
-    transition: transform 0.18s var(--ease-snap), box-shadow 0.18s var(--ease-snap);
+    transition:
+      transform 0.18s var(--ease-snap),
+      box-shadow 0.18s var(--ease-snap);
   }
   .summary__cta:hover {
     transform: translateY(-2px);
@@ -530,11 +556,13 @@ const faqSchema = {
         });
       }
 
-      form
-        .querySelectorAll<HTMLInputElement>('input[name="addons"]:checked')
-        .forEach((el) => {
-          rows.push({ label: el.dataset.label || '', price: Number(el.dataset.price) || 0, addon: true });
+      form.querySelectorAll<HTMLInputElement>('input[name="addons"]:checked').forEach((el) => {
+        rows.push({
+          label: el.dataset.label || '',
+          price: Number(el.dataset.price) || 0,
+          addon: true,
         });
+      });
 
       const total = rows.reduce((sum, r) => sum + r.price, 0);
 

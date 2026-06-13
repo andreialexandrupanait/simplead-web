@@ -48,10 +48,7 @@ if (db) {
     ] = await Promise.all([
       db.select({ n: count() }).from(leads).where(eq(leads.status, 'nou')),
       db.select({ n: count() }).from(leads).where(gte(leads.createdAt, d7)),
-      db
-        .select({ n: count() })
-        .from(orders)
-        .where(gte(orders.createdAt, d30)),
+      db.select({ n: count() }).from(orders).where(gte(orders.createdAt, d30)),
       db
         .select({ s: sum(orders.amountCents) })
         .from(orders)
@@ -231,7 +228,9 @@ const fmtMoney = (cents: number) => `${(cents / 100).toLocaleString('ro-RO')} �
         {
           checklist.map((item) => (
             <li>
-              <span class:list={['check-dot', item.done && 'is-done']}>{item.done ? '✓' : '·'}</span>
+              <span class:list={['check-dot', item.done && 'is-done']}>
+                {item.done ? '✓' : '·'}
+              </span>
               {item.label}
               {item.action && item.href && (
                 <a class="check-action" href={item.href}>

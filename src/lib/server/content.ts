@@ -72,10 +72,7 @@ export async function getAllTags(): Promise<{ tag: string; count: number }[]> {
     .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, 'ro'));
 }
 
-export function getPostBySlug(
-  slug: string,
-  { includeDrafts = false } = {},
-): Promise<Post | null> {
+export function getPostBySlug(slug: string, { includeDrafts = false } = {}): Promise<Post | null> {
   return cached(`post:${slug}:${includeDrafts}`, () =>
     safeQuery('citirea articolului', null as Post | null, async () => {
       const db = getDb()!;

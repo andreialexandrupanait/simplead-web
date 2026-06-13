@@ -6,7 +6,8 @@ export const prerender = false;
 
 const writable = await uploadsWritable();
 const entries = await listUploads();
-const fmtSize = (b: number) => (b > 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1)} MB` : `${Math.round(b / 1024)} KB`);
+const fmtSize = (b: number) =>
+  b > 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1)} MB` : `${Math.round(b / 1024)} KB`;
 ---
 
 <AdminLayout title="Media">
@@ -14,8 +15,8 @@ const fmtSize = (b: number) => (b > 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1
     <div>
       <h1>Bibliotecă media</h1>
       <p class="admin-sub">
-        Imaginile pentru articole și portofoliu. Inserarea în conținut se face din editor
-        (butonul 🖼 Imagine).
+        Imaginile pentru articole și portofoliu. Inserarea în conținut se face din editor (butonul
+        🖼 Imagine).
       </p>
     </div>
   </div>
@@ -52,17 +53,31 @@ const fmtSize = (b: number) => (b > 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1
               <span style="color:var(--muted-dark)">{fmtSize(e.size)}</span>
             </figcaption>
             <div style="display:flex;gap:6px;padding:0 8px 8px">
-              <button type="button" class="admin-btn admin-btn--ghost admin-btn--sm" style="flex:1" data-copy={e.url}>
+              <button
+                type="button"
+                class="admin-btn admin-btn--ghost admin-btn--sm"
+                style="flex:1"
+                data-copy={e.url}
+              >
                 Copiază URL
               </button>
-              <button type="button" class="admin-btn admin-btn--danger admin-btn--sm" data-delete={e.name} aria-label={`Șterge ${e.name}`}>
+              <button
+                type="button"
+                class="admin-btn admin-btn--danger admin-btn--sm"
+                data-delete={e.name}
+                aria-label={`Șterge ${e.name}`}
+              >
                 ✕
               </button>
             </div>
           </figure>
         ))
       }
-      {entries.length === 0 && <p style="color:var(--muted);grid-column:1/-1">Nicio imagine încă — încarcă prima.</p>}
+      {
+        entries.length === 0 && (
+          <p style="color:var(--muted);grid-column:1/-1">Nicio imagine încă — încarcă prima.</p>
+        )
+      }
     </div>
   </div>
 </AdminLayout>
@@ -114,7 +129,9 @@ const fmtSize = (b: number) => (b > 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1
     btn.addEventListener('click', async () => {
       const name = btn.dataset.delete!;
       if (!confirm(`Ștergi „${name}"? Paginile care o folosesc vor rămâne fără imagine.`)) return;
-      const res = await fetch(`/api/admin/uploads/${encodeURIComponent(name)}`, { method: 'DELETE' });
+      const res = await fetch(`/api/admin/uploads/${encodeURIComponent(name)}`, {
+        method: 'DELETE',
+      });
       if (res.ok) {
         document.querySelector(`[data-name="${CSS.escape(name)}"]`)?.remove();
         window.adminToast?.('Imagine ștearsă.');

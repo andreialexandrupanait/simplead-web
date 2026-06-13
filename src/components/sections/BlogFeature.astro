@@ -38,7 +38,9 @@ const arrow = '<path d="M5 12h14M13 6l6 6-6 6"/>';
         av.src ? (
           <img class="bfeature__avatar" src={av.src} alt={post.author} width="32" height="32" />
         ) : (
-          <span class="bfeature__avatar bfeature__avatar--mono" aria-hidden="true">{av.monogram}</span>
+          <span class="bfeature__avatar bfeature__avatar--mono" aria-hidden="true">
+            {av.monogram}
+          </span>
         )
       }
       <span class="bfeature__author">{post.author}</span>
@@ -47,10 +49,24 @@ const arrow = '<path d="M5 12h14M13 6l6 6-6 6"/>';
     </div>
     <a class="bfeature__cta" href={`/blog/${post.slug}`}>
       Citește articolul
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={arrow} />
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        set:html={arrow}
+      />
     </a>
   </div>
   <a class="bfeature__media" href={`/blog/${post.slug}`} aria-label={post.title}>
-    {post.cover ? <img src={post.cover} alt={post.title} width="800" height="600" /> : <span>{post.title}</span>}
+    {
+      post.cover ? (
+        <img src={post.cover} alt={post.title} width="800" height="600" />
+      ) : (
+        <span>{post.title}</span>
+      )
+    }
   </a>
 </article>

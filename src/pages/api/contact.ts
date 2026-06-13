@@ -47,7 +47,9 @@ export const POST: APIRoute = async ({ request }) => {
   const db = getDb();
   if (db) {
     try {
-      await db.insert(leads).values({ name, email, phone, company: company || null, service, message });
+      await db
+        .insert(leads)
+        .values({ name, email, phone, company: company || null, service, message });
       leadStored = true;
     } catch (err) {
       console.warn('[contact] Salvarea lead-ului a eșuat:', err);

@@ -31,9 +31,13 @@ const {
     <p class="cta__sub">{subtitle}</p>
     <div class="cta__actions">
       <Button href={href} size="lg" withArrow>{cta}</Button>
-      {showSecondary && (
-        <Button href={secondaryHref} size="lg" variant="outline" onDark>{secondaryLabel}</Button>
-      )}
+      {
+        showSecondary && (
+          <Button href={secondaryHref} size="lg" variant="outline" onDark>
+            {secondaryLabel}
+          </Button>
+        )
+      }
     </div>
   </div>
 </section>

@@ -20,7 +20,15 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
     <div class="svchub-hero__text" data-reveal>
       <div class="crumb">
         <a href="/">Acasă</a>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          set:html={chev}
+        />
         <span class="cur">Servicii</span>
       </div>
       <span class="svchub-hero__kicker">{eyebrow}</span>
@@ -28,8 +36,17 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
       <p class="svchub-hero__sub">{sub}</p>
       <div class="svchub-hero__actions">
         <Button href="/contact" size="lg" withArrow>Cere o ofertă</Button>
-        <a class="link-more" href="#servicii">Vezi serviciile
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={arrowR} />
+        <a class="link-more" href="#servicii"
+          >Vezi serviciile
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            set:html={arrowR}
+          />
         </a>
       </div>
     </div>
@@ -40,7 +57,15 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
         {
           whyPanel.map((item) => (
             <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" set:html={check} />
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                set:html={check}
+              />
               {item}
             </li>
           ))
@@ -50,7 +75,10 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
         {
           svcHubStats.map((s) => (
             <div class="s">
-              <b>{s.value}<em>{s.em}</em></b>
+              <b>
+                {s.value}
+                <em>{s.em}</em>
+              </b>
               <span>{s.label}</span>
             </div>
           ))

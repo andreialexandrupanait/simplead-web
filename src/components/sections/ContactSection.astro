@@ -33,14 +33,32 @@ const waHref = whatsappHref(pub.whatsappNumber);
           </div>
         </div>
         <div class="contact-direct">
-          {pub.showPhone && (
-            <a href={site.contact.phoneHref}><span class="lbl">Telefon</span>{site.contact.phone}</a>
-          )}
-          {waHref && (
-            <a href={waHref} target="_blank" rel="noopener"><span class="lbl">WhatsApp</span>Scrie-ne pe WhatsApp</a>
-          )}
-          <a href={`mailto:${site.contact.email}`}><span class="lbl">Email</span>{site.contact.email}</a>
-          {isPage && <span class="row"><span class="lbl">Program</span>{site.contact.schedule}</span>}
+          {
+            pub.showPhone && (
+              <a href={site.contact.phoneHref}>
+                <span class="lbl">Telefon</span>
+                {site.contact.phone}
+              </a>
+            )
+          }
+          {
+            waHref && (
+              <a href={waHref} target="_blank" rel="noopener">
+                <span class="lbl">WhatsApp</span>Scrie-ne pe WhatsApp
+              </a>
+            )
+          }
+          <a href={`mailto:${site.contact.email}`}
+            ><span class="lbl">Email</span>{site.contact.email}</a
+          >
+          {
+            isPage && (
+              <span class="row">
+                <span class="lbl">Program</span>
+                {site.contact.schedule}
+              </span>
+            )
+          }
         </div>
       </div>
 

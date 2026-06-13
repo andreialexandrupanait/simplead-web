@@ -76,7 +76,11 @@ const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
       </div>
     )
   }
-  {dbError && <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>}
+  {
+    dbError && (
+      <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>
+    )
+  }
 
   {
     db && !dbError && (
@@ -84,8 +88,12 @@ const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
         <Toolbar searchPlaceholder="Caută după titlu sau client…" q={q}>
           <select class="admin-select" name="status" data-autosubmit>
             <option value="">Toate</option>
-            <option value="published" selected={filter === 'published'}>Publicate</option>
-            <option value="draft" selected={filter === 'draft'}>Drafturi</option>
+            <option value="published" selected={filter === 'published'}>
+              Publicate
+            </option>
+            <option value="draft" selected={filter === 'draft'}>
+              Drafturi
+            </option>
           </select>
           <select class="admin-select" name="service" data-autosubmit>
             <option value="">Toate serviciile</option>

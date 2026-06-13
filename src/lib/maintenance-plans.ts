@@ -38,13 +38,23 @@ export const maintenanceBase: MaintenanceBase[] = [
     name: 'Premium',
     price: 120,
     tag: 'performanță maximă',
-    items: ['Monitorizare continuă', 'Securitate avansată', '3h modificări incluse', 'Priority support'],
+    items: [
+      'Monitorizare continuă',
+      'Securitate avansată',
+      '3h modificări incluse',
+      'Priority support',
+    ],
   },
 ];
 
 /** Opțiuni suplimentare (se bifează câte vrei). */
 export const maintenanceAddons: MaintenanceAddon[] = [
-  { slug: 'addon-suport', name: '+2 ore suport tehnic', price: 40, desc: 'Ore suplimentare de intervenții și modificări, în același abonament.' },
+  {
+    slug: 'addon-suport',
+    name: '+2 ore suport tehnic',
+    price: 40,
+    desc: 'Ore suplimentare de intervenții și modificări, în același abonament.',
+  },
   {
     slug: 'addon-seo',
     name: 'Optimizare SEO continuă',

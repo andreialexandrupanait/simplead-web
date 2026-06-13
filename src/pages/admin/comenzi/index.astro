@@ -92,7 +92,11 @@ const STATUS_LABEL: Record<string, string> = {
       </div>
     )
   }
-  {dbError && <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>}
+  {
+    dbError && (
+      <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>
+    )
+  }
 
   {
     db && !dbError && (
@@ -149,7 +153,9 @@ const STATUS_LABEL: Record<string, string> = {
                       <td>{order.customerEmail ?? '–'}</td>
                       <td>
                         {packageName ?? '–'}
-                        {order.otoForOrderId && <span class="admin-tag admin-tag--plain"> OTO</span>}
+                        {order.otoForOrderId && (
+                          <span class="admin-tag admin-tag--plain"> OTO</span>
+                        )}
                       </td>
                       <td class="num">{formatAmount(order.amountCents, order.currency)}</td>
                       <td>

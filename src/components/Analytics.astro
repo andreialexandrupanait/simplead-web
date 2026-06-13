@@ -15,8 +15,8 @@ const hasTrackers = Boolean(GA4_ID || GTM_ID || CLARITY_ID);
   hasTrackers && (
     <script is:inline define:vars={{ GA4_ID, GTM_ID, CLARITY_ID }}>
       (function () {
-        var KEY = 'sa_cookie_consent';
-        var loaded = false;
+        const KEY = 'sa_cookie_consent';
+        let loaded = false;
 
         function loadTrackers() {
           if (loaded) return;
@@ -26,9 +26,9 @@ const hasTrackers = Boolean(GA4_ID || GTM_ID || CLARITY_ID);
             (function (w, d, s, l, i) {
               w[l] = w[l] || [];
               w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-              var f = d.getElementsByTagName(s)[0],
-                j = d.createElement(s),
-                dl = l != 'dataLayer' ? '&l=' + l : '';
+              const f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != 'dataLayer' ? '&l=' + l : '';
               j.async = true;
               j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
               f.parentNode.insertBefore(j, f);
@@ -36,12 +36,14 @@ const hasTrackers = Boolean(GA4_ID || GTM_ID || CLARITY_ID);
           }
 
           if (GA4_ID) {
-            var s = document.createElement('script');
+            const s = document.createElement('script');
             s.async = true;
             s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA4_ID;
             document.head.appendChild(s);
             window.dataLayer = window.dataLayer || [];
             function gtag() {
+              // Snippet gtag canonic Google: `arguments` e parte din pattern-ul oficial.
+              // eslint-disable-next-line prefer-rest-params
               dataLayer.push(arguments);
             }
             window.gtag = gtag;
@@ -54,6 +56,8 @@ const hasTrackers = Boolean(GA4_ID || GTM_ID || CLARITY_ID);
               c[a] =
                 c[a] ||
                 function () {
+                  // Snippet Microsoft Clarity canonic: `arguments` e parte din pattern-ul oficial.
+                  // eslint-disable-next-line prefer-rest-params
                   (c[a].q = c[a].q || []).push(arguments);
                 };
               t = l.createElement(r);
@@ -68,10 +72,10 @@ const hasTrackers = Boolean(GA4_ID || GTM_ID || CLARITY_ID);
         // Expus pentru CookieBanner.
         window.__saLoadTrackers = loadTrackers;
 
-        var stored = null;
+        let stored = null;
         try {
           stored = localStorage.getItem(KEY);
-        } catch (e) {
+        } catch {
           /* localStorage indisponibil */
         }
         if (stored === 'accepted') loadTrackers();

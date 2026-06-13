@@ -1,4 +1,4 @@
-import { marked, Renderer } from 'marked';
+import { marked, Renderer, type Tokens } from 'marked';
 import sanitizeHtml from 'sanitize-html';
 
 /**
@@ -116,7 +116,7 @@ export function renderArticle(md: string): { html: string; toc: TocItem[]; minut
   const toc: TocItem[] = [];
   const used = new Map<string, number>();
   const renderer = new Renderer();
-  renderer.heading = function (this: any, { tokens, depth }: any) {
+  renderer.heading = function (this: Renderer, { tokens, depth }: Tokens.Heading) {
     const inline: string = this.parser.parseInline(tokens);
     const text = decodeEntities(inline.replace(/<[^>]+>/g, '')).trim();
     const slug = uniqueSlug(slugify(text), used);

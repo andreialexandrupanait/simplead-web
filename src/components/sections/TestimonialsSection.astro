@@ -17,7 +17,10 @@ import { testimonials } from '@data/content';
                 <div class="tst-inner">
                   <span class="tst-mark">&ldquo;</span>
                   <p class="tst-quote">{t.quote}</p>
-                  <div class="tst-who">{t.author}<span>{t.company}</span></div>
+                  <div class="tst-who">
+                    {t.author}
+                    <span>{t.company}</span>
+                  </div>
                 </div>
               </div>
             ))
@@ -27,7 +30,11 @@ import { testimonials } from '@data/content';
       <div class="tst-nav" id="tstNav">
         {
           testimonials.map((_, i) => (
-            <button class:list={['tst-dot', i === 0 && 'on']} data-i={i} aria-label={`Testimonial ${i + 1}`} />
+            <button
+              class:list={['tst-dot', i === 0 && 'on']}
+              data-i={i}
+              aria-label={`Testimonial ${i + 1}`}
+            />
           ))
         }
       </div>

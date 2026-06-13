@@ -92,8 +92,9 @@ const INTERVAL_LABEL: Record<string, string> = {
     <div>
       <h1>Pachete</h1>
       <p class="admin-sub">
-        Pachetele afișate pe <a href="/pachete" target="_blank" style="color:var(--electric)">/pachete</a>.
-        Prețurile marcate <code>[confirmă]</code> sunt drafturi de completat.
+        Pachetele afișate pe <a href="/pachete" target="_blank" style="color:var(--electric)"
+          >/pachete</a
+        >. Prețurile marcate <code>[confirmă]</code> sunt drafturi de completat.
       </p>
     </div>
     <a href="/admin/pachete/nou" class="admin-btn">+ Pachet nou</a>
@@ -107,7 +108,11 @@ const INTERVAL_LABEL: Record<string, string> = {
       </div>
     )
   }
-  {dbError && <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>}
+  {
+    dbError && (
+      <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>
+    )
+  }
 
   {
     db && !dbError && (
@@ -149,7 +154,9 @@ const INTERVAL_LABEL: Record<string, string> = {
                       <small style="color:var(--muted)"> {INTERVAL_LABEL[p.interval]}</small>
                     </td>
                     <td>
-                      <span class:list={['admin-tag', p.active ? 'admin-tag--ok' : 'admin-tag--warn']}>
+                      <span
+                        class:list={['admin-tag', p.active ? 'admin-tag--ok' : 'admin-tag--warn']}
+                      >
                         {p.active ? 'Activ' : 'Inactiv'}
                       </span>
                     </td>
@@ -157,7 +164,11 @@ const INTERVAL_LABEL: Record<string, string> = {
                       <div style="display:flex;gap:6px;flex-wrap:wrap">
                         <form method="post" style="display:inline">
                           <input type="hidden" name="id" value={p.id} />
-                          <input type="hidden" name="action" value={p.active ? 'deactivate' : 'activate'} />
+                          <input
+                            type="hidden"
+                            name="action"
+                            value={p.active ? 'deactivate' : 'activate'}
+                          />
                           <button type="submit" class="admin-btn admin-btn--ghost admin-btn--sm">
                             {p.active ? 'Dezactivează' : 'Activează'}
                           </button>

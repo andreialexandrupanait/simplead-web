@@ -56,7 +56,11 @@ if (db) {
 }
 
 const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
-const dateFmt = new Intl.DateTimeFormat('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' });
+const dateFmt = new Intl.DateTimeFormat('ro-RO', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+});
 const chipUrl = (status: string) => {
   const u = new URL(Astro.url);
   u.searchParams.delete('page');
@@ -85,7 +89,11 @@ const chipUrl = (status: string) => {
       </div>
     )
   }
-  {dbError && <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>}
+  {
+    dbError && (
+      <div class="admin-banner admin-banner--error">Conexiunea la baza de date a eșuat.</div>
+    )
+  }
 
   {
     db && !dbError && (
@@ -105,7 +113,13 @@ const chipUrl = (status: string) => {
           <span class="admin-toolbar__spacer" />
           <form method="get" class="admin-toolbar__search" style="max-width:320px">
             {filter && <input type="hidden" name="status" value={filter} />}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.3-4.3" />
             </svg>
@@ -136,8 +150,17 @@ const chipUrl = (status: string) => {
             <div class="post-list">
               {rows.map((post) => (
                 <div class="post-row">
-                  <a class="post-row__thumb" href={`/admin/articole/${post.id}`} aria-hidden="true" tabindex="-1">
-                    {post.cover ? <img src={post.cover} alt="" loading="lazy" /> : <span>fără copertă</span>}
+                  <a
+                    class="post-row__thumb"
+                    href={`/admin/articole/${post.id}`}
+                    aria-hidden="true"
+                    tabindex="-1"
+                  >
+                    {post.cover ? (
+                      <img src={post.cover} alt="" loading="lazy" />
+                    ) : (
+                      <span>fără copertă</span>
+                    )}
                   </a>
                   <div class="post-row__main">
                     <div class="post-row__title">
@@ -159,7 +182,10 @@ const chipUrl = (status: string) => {
                     </div>
                   </div>
                   <div class="post-row__actions">
-                    <a class="admin-btn admin-btn--ghost admin-btn--sm" href={`/admin/articole/${post.id}`}>
+                    <a
+                      class="admin-btn admin-btn--ghost admin-btn--sm"
+                      href={`/admin/articole/${post.id}`}
+                    >
                       Editează
                     </a>
                     <a

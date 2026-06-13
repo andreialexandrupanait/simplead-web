@@ -30,9 +30,18 @@ const tags = (post.tags ?? []).filter((t) => t !== post.category);
   <div class="bcard__byline">
     {
       av.src ? (
-        <img class="bcard__avatar" src={av.src} alt={post.author} width="28" height="28" loading="lazy" />
+        <img
+          class="bcard__avatar"
+          src={av.src}
+          alt={post.author}
+          width="28"
+          height="28"
+          loading="lazy"
+        />
       ) : (
-        <span class="bcard__avatar bcard__avatar--mono" aria-hidden="true">{av.monogram}</span>
+        <span class="bcard__avatar bcard__avatar--mono" aria-hidden="true">
+          {av.monogram}
+        </span>
       )
     }
     <span class="bcard__author">{post.author}</span>
@@ -61,8 +70,8 @@ const tags = (post.tags ?? []).filter((t) => t !== post.category);
       stroke-linejoin="round"
       aria-hidden="true"
     >
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+      <polyline points="12 5 19 12 12 19"></polyline>
     </svg>
   </span>
 </a>

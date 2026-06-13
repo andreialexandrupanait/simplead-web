@@ -20,7 +20,13 @@ const { searchPlaceholder = 'Caută…', q = '', noSearch = false } = Astro.prop
     {
       !noSearch && (
         <div class="admin-toolbar__search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.3-4.3" />
           </svg>
@@ -42,7 +48,9 @@ const { searchPlaceholder = 'Caută…', q = '', noSearch = false } = Astro.prop
 </div>
 
 <script>
-  document.querySelectorAll<HTMLSelectElement>('.admin-toolbar select[data-autosubmit]').forEach((sel) => {
-    sel.addEventListener('change', () => sel.form?.submit());
-  });
+  document
+    .querySelectorAll<HTMLSelectElement>('.admin-toolbar select[data-autosubmit]')
+    .forEach((sel) => {
+      sel.addEventListener('change', () => sel.form?.submit());
+    });
 </script>

@@ -32,15 +32,33 @@ const links = [
   <div class="article-share__btns">
     {
       links.map((l) => (
-        <a class="article-share__btn" href={l.href} target="_blank" rel="noopener" aria-label={l.label}>
+        <a
+          class="article-share__btn"
+          href={l.href}
+          target="_blank"
+          rel="noopener"
+          aria-label={l.label}
+        >
           <svg viewBox="0 0 24 24" fill="currentColor" set:html={l.icon} />
         </a>
       ))
     }
-    <button class="article-share__btn" type="button" data-copy-link={url} aria-label="Copiază linkul">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M10 13a5 5 0 0 0 7.07 0l3-3A5 5 0 0 0 13 3l-1.5 1.5" />
-        <path d="M14 11a5 5 0 0 0-7.07 0l-3 3A5 5 0 0 0 11 21l1.5-1.5" />
+    <button
+      class="article-share__btn"
+      type="button"
+      data-copy-link={url}
+      aria-label="Copiază linkul"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M10 13a5 5 0 0 0 7.07 0l3-3A5 5 0 0 0 13 3l-1.5 1.5"></path>
+        <path d="M14 11a5 5 0 0 0-7.07 0l-3 3A5 5 0 0 0 11 21l1.5-1.5"></path>
       </svg>
     </button>
   </div>

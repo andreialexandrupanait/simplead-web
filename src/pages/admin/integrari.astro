@@ -42,7 +42,6 @@ if (Astro.request.method === 'POST') {
   }
 }
 
-
 // Descrieri + etichete per câmp pentru formulare.
 const FIELD_META: Record<string, Record<string, { label: string; hint?: string }>> = {
   stripe: {
@@ -135,7 +134,9 @@ const masked = Object.fromEntries(
               {configured ? 'Configurată' : 'Neconfigurată'}
             </span>
           </div>
-          <p class="admin-hint" style="margin-top:6px">{INTEGRATION_DESC[name]}</p>
+          <p class="admin-hint" style="margin-top:6px">
+            {INTEGRATION_DESC[name]}
+          </p>
           <form method="post">
             <input type="hidden" name="integration" value={name} />
             {fields.map(([fieldName, field]) => {
@@ -224,7 +225,10 @@ const masked = Object.fromEntries(
         result.classList.add(body.ok ? 'is-ok' : 'is-error');
         const toast = (window as unknown as { adminToast?: (m: string, k?: string) => void })
           .adminToast;
-        toast?.(body.ok ? `Testul ${name} a reușit.` : `Testul ${name} a eșuat.`, body.ok ? 'ok' : 'error');
+        toast?.(
+          body.ok ? `Testul ${name} a reușit.` : `Testul ${name} a eșuat.`,
+          body.ok ? 'ok' : 'error',
+        );
       } catch {
         result.textContent = 'Testul a eșuat (eroare de rețea).';
         result.classList.add('is-error');

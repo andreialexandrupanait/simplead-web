@@ -99,13 +99,17 @@ export default function MediaPicker({ onPick, onClose }: Props) {
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <strong style={{ fontSize: '1.05rem' }}>Bibliotecă media</strong>
-          <button type="button" className="admin-btn admin-btn--ghost admin-btn--sm" onClick={onClose}>
+          <button
+            type="button"
+            className="admin-btn admin-btn--ghost admin-btn--sm"
+            onClick={onClose}
+          >
             Închide
           </button>
         </div>
 
         <div
-          className={`admin-dropzone${over ? ' is-over' : ''}`}
+          className={`admin-dropzone${over ? 'is-over' : ''}`}
           onDragOver={(e) => {
             e.preventDefault();
             setOver(true);
@@ -118,7 +122,9 @@ export default function MediaPicker({ onPick, onClose }: Props) {
           }}
           onClick={() => fileInput.current?.click()}
         >
-          {busy ? 'Se încarcă…' : 'Trage imagini aici sau apasă ca să alegi (JPG/PNG/WebP/AVIF, max 5MB).'}
+          {busy
+            ? 'Se încarcă…'
+            : 'Trage imagini aici sau apasă ca să alegi (JPG/PNG/WebP/AVIF, max 5MB).'}
           <input
             ref={fileInput}
             type="file"
@@ -132,7 +138,11 @@ export default function MediaPicker({ onPick, onClose }: Props) {
           />
         </div>
 
-        {error && <div className="admin-banner admin-banner--error" style={{ margin: 0 }}>{error}</div>}
+        {error && (
+          <div className="admin-banner admin-banner--error" style={{ margin: 0 }}>
+            {error}
+          </div>
+        )}
 
         <div className="admin-media-grid" style={{ overflowY: 'auto' }}>
           {entries.length === 0 && !busy && (
