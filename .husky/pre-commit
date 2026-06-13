@@ -1,0 +1,4 @@
+# Înainte de fiecare commit: eslint --fix + prettier pe fișierele din stage.
+# Calitatea nu mai depinde de disciplină; e automată. Sări peste cu `--no-verify`
+# doar în situații excepționale.
+lint-staged

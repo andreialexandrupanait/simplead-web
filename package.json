@@ -12,10 +12,13 @@
     "astro": "astro",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node scripts/migrate.mjs",
     "db:seed": "node scripts/seed.mjs",
-    "gen:key": "node scripts/gen-secrets.mjs"
+    "gen:key": "node scripts/gen-secrets.mjs",
+    "prepare": "husky"
   },
   "dependencies": {
     "@astrojs/node": "^10.1.2",

@@ -6,8 +6,8 @@ on:
   pull_request:
 
 jobs:
-  build:
-    name: Type-check & build
+  quality:
+    name: Lint · test · type-check · build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,5 +25,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build (astro check + astro build)
+      # Pașii rulează în ordinea în care eșecul e cel mai ieftin de citit:
+      # întâi lint (eslint + prettier), apoi testele, apoi type-check + build.
+      # Oricare pică → tot job-ul (și PR-ul) pică.
+      - name: Lint (eslint + prettier)
+        run: pnpm lint
+
+      - name: Test (vitest)
+        run: pnpm test
+
+      - name: Type-check & build (astro check + astro build)
         run: pnpm build
