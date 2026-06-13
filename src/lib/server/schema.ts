@@ -10,7 +10,14 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 
-export const packageKind = pgEnum('package_kind', ['service', 'maintenance', 'addon']);
+// 'fix-service' = lucrare punctuală la preț fix (vândabilă prin același checkout
+// ca pachetele), distinctă de serviciile-pilon ('service') și de mentenanță.
+export const packageKind = pgEnum('package_kind', [
+  'service',
+  'maintenance',
+  'addon',
+  'fix-service',
+]);
 export const billingInterval = pgEnum('billing_interval', ['one_time', 'monthly', 'yearly']);
 export const leadStatus = pgEnum('lead_status', [
   'nou',

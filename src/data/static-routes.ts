@@ -14,6 +14,7 @@ export const staticRoutes: string[] = [
   '/servicii/ai-pentru-business',
   '/mentenanta',
   '/pachete',
+  '/servicii-rapide',
   '/portofoliu',
   '/blog',
   '/despre',

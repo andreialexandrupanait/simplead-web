@@ -57,6 +57,13 @@
       "when": 1781284949340,
       "tag": "0007_friendly_carnage",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1781383512595,
+      "tag": "0008_conscious_sleepwalker",
+      "breakpoints": true
     }
   ]
 }

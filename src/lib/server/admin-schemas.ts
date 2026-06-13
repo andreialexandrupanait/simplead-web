@@ -17,7 +17,7 @@ export const packageFormSchema = z.object({
     .min(2, 'Slug-ul e obligatoriu.')
     .max(80)
     .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug-ul poate conține doar litere mici, cifre și cratime.'),
-  kind: z.enum(['service', 'maintenance', 'addon']),
+  kind: z.enum(['service', 'maintenance', 'addon', 'fix-service']),
   description: z.string().trim().max(2000).default(''),
   // Preț în EUR (acceptă „480" sau „480.50"); convertit în cenți la salvare.
   price: z

@@ -78,6 +78,7 @@ export const footerLegal: NavItem[] = [
 /** Linkurile „Utile" din coloana secundară a mega-meniului Servicii. */
 export const megaQuickLinks: NavItem[] = [
   { label: 'Pachete & prețuri', href: '/pachete' },
+  { label: 'Servicii rapide (preț fix)', href: '/servicii-rapide' },
   { label: 'Calculator mentenanță', href: '/mentenanta#calc' },
   { label: 'Portofoliu', href: '/portofoliu' },
   { label: 'Resurse', href: '/resurse' },

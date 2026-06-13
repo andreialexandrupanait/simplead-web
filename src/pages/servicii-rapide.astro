@@ -1,0 +1,243 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHeader from '@components/sections/PageHeader.astro';
+import PackageFeatures from '@components/sections/PackageFeatures.astro';
+import ServiceIcon from '@components/ui/ServiceIcon.astro';
+import type { ServiceIcon as ServiceIconName } from '@data/services';
+import { getPublicPackages, formatPrice, canBuy } from '@/lib/server/packages';
+import { getIntegration } from '@/lib/server/settings';
+
+// On-demand: lucrările vin din DB (editabile din admin), cu fallback în cod.
+export const prerender = false;
+
+const { items, fromDb } = await getPublicPackages();
+if (!fromDb) {
+  Astro.response.headers.set('Cache-Control', 'no-store');
+}
+
+const stripeReady = fromDb && Boolean((await getIntegration('stripe')).secretKey.value);
+
+const fixes = items.filter((p) => p.kind === 'fix-service').sort((a, b) => a.sort - b.sort);
+
+// Icon pe slug (fallback `mentenanta` pentru lucrări noi adăugate din admin).
+const fixIcon = (slug: string): ServiceIconName => {
+  if (slug.includes('email') || slug.includes('migrare') || slug.includes('cloudflare'))
+    return 'web';
+  if (slug.includes('viteza') || slug.includes('analytics')) return 'marketing';
+  return 'mentenanta';
+};
+
+const contactHref = (name: string) => `/contact?service=${encodeURIComponent(name)}`;
+
+const metaDescription =
+  'Lucrări punctuale la preț fix: optimizare viteză, configurare email profesional, securizare și scanare malware, migrare site, setup Cloudflare. Știi prețul de la început.';
+---
+
+<BaseLayout
+  title="Servicii rapide la preț fix"
+  description={metaDescription}
+  transparentNav={true}
+  navOverDark={true}
+>
+  <PageHeader
+    crumb={[{ label: 'Acasă', href: '/' }, { label: 'Servicii rapide' }]}
+    eyebrow="Lucrări punctuale"
+    title="Servicii rapide, la preț fix"
+    accent="preț fix"
+    subtitle="Ai o problemă concretă pe site? O rezolvăm punctual, cu preț clar de la început — fără abonament."
+  />
+
+  {
+    fixes.length > 0 ? (
+      <section class="sr-sec">
+        <div class="sr-wrap">
+          <div class="sr-grid">
+            {fixes.map((pkg) => (
+              <article class="sr-card">
+                <span class="sr-card-icon">
+                  <ServiceIcon icon={fixIcon(pkg.slug)} />
+                </span>
+                <div class="sr-card-head">
+                  <h3>{pkg.name}</h3>
+                  <span class="sr-card-price">{formatPrice(pkg)}</span>
+                </div>
+                <p class="sr-card-desc">{pkg.description}</p>
+                <PackageFeatures
+                  features={pkg.features}
+                  featureGroups={pkg.featureGroups}
+                  variant="sm"
+                />
+                {pkg.note && <p class="sr-note">{pkg.note}</p>}
+                <div class="sr-cta">
+                  {canBuy(pkg, stripeReady) && (
+                    <form method="post" action="/api/checkout">
+                      <input type="hidden" name="slug" value={pkg.slug} />
+                      <button type="submit" class="sr-btn sr-btn--fill">
+                        <span>Cumpără acum</span>
+                      </button>
+                    </form>
+                  )}
+                  <a class="sr-btn" href={contactHref(pkg.name)}>
+                    <span>Cere ofertă →</span>
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+          <p class="sr-foot">
+            Nu găsești ce-ți trebuie?{' '}
+            <a href={contactHref('Lucrare punctuală')}>Spune-ne ce ai nevoie</a> și îți dăm un preț.
+          </p>
+        </div>
+      </section>
+    ) : (
+      <section class="sr-sec">
+        <div class="sr-wrap">
+          <p class="sr-empty">
+            Pregătim lista de lucrări punctuale. Între timp, <a href="/contact">scrie-ne</a> ce ai
+            nevoie.
+          </p>
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .sr-sec {
+    background: var(--canvas);
+    padding-block: clamp(48px, 7vw, 96px);
+  }
+  .sr-wrap {
+    max-width: 1100px;
+    margin-inline: auto;
+    padding-inline: var(--gutter, 24px);
+  }
+  .sr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 22px;
+  }
+  .sr-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--canvas);
+    border: 1px solid var(--line);
+    border-radius: var(--r-xl);
+    padding: 26px;
+    box-shadow: var(--sh-sm);
+    transition:
+      box-shadow 0.18s var(--ease-snap),
+      transform 0.18s var(--ease-snap);
+  }
+  .sr-card:hover {
+    box-shadow: var(--sh-md);
+    transform: translateY(-2px);
+  }
+  .sr-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--r-md);
+    background: var(--canvas-soft);
+    border: 1px solid var(--line);
+    color: var(--electric);
+    margin-bottom: 16px;
+  }
+  .sr-card-icon :global(svg) {
+    width: 22px;
+    height: 22px;
+  }
+  .sr-card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .sr-card-head h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.12rem;
+    color: var(--ink);
+  }
+  .sr-card-price {
+    flex-shrink: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--electric);
+  }
+  .sr-card-desc {
+    margin-top: 8px;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  .sr-note {
+    margin-top: 12px;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--muted);
+    padding: 10px 12px;
+    background: var(--canvas-soft);
+    border-radius: var(--r-sm);
+  }
+  .sr-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 18px;
+  }
+  .sr-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 130px;
+    padding: 11px 18px;
+    border: 1px solid var(--ink);
+    border-radius: var(--r-sm);
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--ink);
+    transition:
+      background 0.18s var(--ease-snap),
+      color 0.18s var(--ease-snap);
+  }
+  .sr-btn:hover {
+    background: var(--ink);
+    color: #fff;
+  }
+  .sr-btn--fill {
+    background: var(--electric);
+    border-color: var(--electric);
+    color: var(--ink);
+  }
+  .sr-btn--fill:hover {
+    filter: brightness(0.95);
+    background: var(--electric);
+    color: var(--ink);
+  }
+  .sr-cta form {
+    flex: 1;
+    display: flex;
+  }
+  .sr-cta form .sr-btn {
+    width: 100%;
+  }
+  .sr-foot,
+  .sr-empty {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 0.98rem;
+    color: var(--muted);
+  }
+  .sr-foot a,
+  .sr-empty a {
+    color: var(--electric);
+    font-weight: 600;
+  }
+</style>
