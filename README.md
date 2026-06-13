@@ -83,7 +83,23 @@ docker compose up
 docker exec simplead-web pnpm build      # build de producție (rulează și astro check)
 docker exec simplead-web pnpm lint       # eslint + prettier --check
 docker exec simplead-web pnpm format     # prettier --write
+docker exec simplead-web pnpm test       # teste Vitest (utilitare server + validări)
 ```
+
+---
+
+## ✅ Calitate — reguli aplicate automat
+
+Standardul de cod nu mai depinde de disciplină; e impus de unelte:
+
+- **Pre-commit** (husky + lint-staged): la fiecare commit rulează `eslint --fix` +
+  `prettier` pe fișierele din stage. Se instalează singur la `pnpm install`
+  (scriptul `prepare`). Sări peste doar excepțional, cu `git commit --no-verify`.
+- **CI** (`.github/workflows/ci.yml`): pe fiecare push/PR rulează, în ordine,
+  `pnpm lint` → `pnpm test` → `pnpm build` (astro check + build). Oricare pică,
+  PR-ul pică.
+- **Type-check strict**: `tsconfig` extinde `astro/tsconfigs/strict`; `pnpm build`
+  rulează `astro check` și oprește build-ul la prima eroare de tip.
 
 ---
 
