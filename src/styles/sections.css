@@ -1062,8 +1062,11 @@ img.pf-shot {
 }
 .footer-bottom {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  /* full-width: copyright + linkurile ajung pana la marginile ecranului (doar gutter) */
+  /* In acelasi container ca restul footer-ului: copyright la marginea stanga,
+     linkurile la marginea dreapta (aliniate cu coloanele de deasupra). */
   padding: 24px var(--gutter);
+  max-width: var(--maxw);
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   gap: 16px;
