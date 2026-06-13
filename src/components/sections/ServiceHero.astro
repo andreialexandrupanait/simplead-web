@@ -55,7 +55,6 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
     position: relative;
     background: #050a33;
     color: #fff;
-    padding-top: var(--nav-h);
     overflow: hidden;
   }
   .svc-hero::after {
@@ -82,7 +81,8 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
     grid-template-columns: 1.05fr 0.95fr;
     gap: 56px;
     align-items: center;
-    padding-block: clamp(44px, 6vw, 80px);
+    padding-top: calc(var(--nav-h) + var(--hero-pad-top));
+    padding-bottom: var(--hero-pad-bottom);
   }
   .crumb {
     display: flex;
@@ -108,7 +108,7 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
     font-family: var(--font-display);
     font-weight: 700;
     font-size: clamp(1.9rem, 3.6vw, 3rem);
-    line-height: 1.07;
+    line-height: 1.14;
     letter-spacing: -0.025em;
     color: #fff;
     text-wrap: balance;

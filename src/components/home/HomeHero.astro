@@ -93,8 +93,8 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
   .hero {
     position: relative;
     background: var(--canvas);
-    padding-top: calc(var(--nav-h) + clamp(36px, 5vw, 72px));
-    padding-bottom: clamp(72px, 9vw, 120px);
+    padding-top: calc(var(--nav-h) + var(--hero-pad-top));
+    padding-bottom: var(--hero-pad-bottom);
     overflow: hidden;
   }
   /* fade alb pe margini, ca plasa să se estompeze (mai puțin intensă) */
@@ -123,7 +123,7 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
     font-family: var(--font-display);
     font-weight: 700;
     font-size: clamp(2.05rem, 3.8vw, 3.5rem);
-    line-height: 1.07;
+    line-height: 1.12;
     letter-spacing: -0.025em;
     color: var(--ink);
   }
@@ -388,10 +388,9 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
     box-shadow: 0 0 0 4px rgba(0, 224, 198, 0.25);
   }
 
-  @media (max-width: 960px) {
+  @media (max-width: 1024px) {
     .hero {
       min-height: auto;
-      padding-bottom: 56px;
     }
     .hero__inner {
       grid-template-columns: 1fr;
@@ -400,12 +399,6 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
     .hero__visual {
       order: -1;
       max-width: 340px;
-    }
-  }
-  @media (max-width: 480px) {
-    .hero__cta {
-      flex-direction: column;
-      align-items: flex-start;
     }
   }
 </style>

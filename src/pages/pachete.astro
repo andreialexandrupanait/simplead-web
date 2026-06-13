@@ -339,7 +339,7 @@ const metaDescription =
     width: 100%;
     max-width: var(--maxw);
     margin-inline: auto;
-    padding-inline: clamp(20px, 5vw, 40px);
+    padding-inline: var(--gutter);
   }
   .pk-head {
     margin-bottom: clamp(26px, 3vw, 40px);
@@ -377,7 +377,7 @@ const metaDescription =
     /* titlul pe un singur rând; pe ecrane mici revine la wrap (vezi media query) */
     white-space: nowrap;
   }
-  @media (max-width: 720px) {
+  @media (max-width: 768px) {
     .pk-h2 {
       white-space: normal;
       text-wrap: balance;
@@ -718,7 +718,7 @@ const metaDescription =
     grid-template-columns: 1fr 1fr;
     gap: 16px;
   }
-  @media (max-width: 520px) {
+  @media (max-width: 480px) {
     .pk-mnt-cards {
       grid-template-columns: 1fr;
     }

@@ -65,7 +65,6 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
     position: relative;
     background: #050a33;
     color: #fff;
-    padding-top: var(--nav-h);
     overflow: hidden;
   }
   .svchub-hero::after {
@@ -92,7 +91,8 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
     grid-template-columns: 1.1fr 0.9fr;
     gap: 56px;
     align-items: center;
-    padding-block: clamp(44px, 6vw, 80px);
+    padding-top: calc(var(--nav-h) + var(--hero-pad-top));
+    padding-bottom: var(--hero-pad-bottom);
   }
   .crumb {
     display: flex;
@@ -128,7 +128,7 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
     font-family: var(--font-display);
     font-weight: 700;
     font-size: clamp(1.9rem, 3.6vw, 3rem);
-    line-height: 1.07;
+    line-height: 1.14;
     letter-spacing: -0.025em;
     color: #fff;
     text-wrap: balance;

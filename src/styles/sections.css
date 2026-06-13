@@ -29,21 +29,11 @@
   width: 100%;
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: 110px 40px;
+  padding: 110px var(--gutter);
 }
 @media (max-width: 1024px) {
   .container {
-    padding: clamp(56px, 9vw, 96px) 40px;
-  }
-}
-@media (max-width: 900px) {
-  .container {
-    padding-inline: 24px;
-  }
-}
-@media (max-width: 480px) {
-  .container {
-    padding-inline: 16px;
+    padding: clamp(56px, 9vw, 96px) var(--gutter);
   }
 }
 /* Polish responsive pe telefoane mici: carduri/stat-uri pe 1 coloană. */
@@ -969,12 +959,12 @@ img.pf-shot {
   display: grid;
   grid-template-columns: 1.5fr 1fr 1fr 1.4fr;
   gap: 40px;
-  padding: 80px 40px 56px;
+  padding: 80px var(--gutter) 56px;
   max-width: var(--maxw);
   margin: 0 auto;
 }
 .footer .brand img {
-  height: 30px;
+  height: 36px;
 }
 .footer-about {
   margin-top: 20px;
@@ -1026,10 +1016,11 @@ img.pf-shot {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 13px;
 }
 .footer-col a {
-  font-size: 14.5px;
+  font-size: 15px;
+  color: rgba(225, 230, 245, 0.82);
   transition: color 0.16s ease;
 }
 .footer-col a:hover {
@@ -1053,7 +1044,7 @@ img.pf-shot {
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 16px;
 }
 .footer-form input::placeholder {
   color: rgba(255, 255, 255, 0.4);
@@ -1071,7 +1062,7 @@ img.pf-shot {
 }
 .footer-bottom {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 24px 40px;
+  padding: 24px var(--gutter);
   max-width: var(--maxw);
   margin: 0 auto;
   display: flex;
@@ -1082,8 +1073,11 @@ img.pf-shot {
 }
 .footer-bottom .links {
   display: flex;
-  gap: 20px;
+  gap: 14px;
   flex-wrap: wrap;
+}
+.footer-bottom .links a {
+  white-space: nowrap;
 }
 .footer-bottom a:hover {
   color: #fff;
@@ -1381,6 +1375,33 @@ img.pf-shot {
   padding: 18px 36px;
   font-size: 15px;
 }
+/* Pe mobil, grupurile de 2 butoane rămân ALĂTURI (jumătăți egale), nu stivuite.
+   Un singur buton (în secțiunile CTA centrate) rămâne centrat, lățime auto. */
+@media (max-width: 480px) {
+  .cta__actions,
+  .mnt__cta {
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+  .cta__actions > .btn,
+  .mnt__cta > .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    text-align: center;
+  }
+  .cta__actions > .btn .btn__inner,
+  .mnt__cta > .btn .btn__inner {
+    display: flex;
+    justify-content: center;
+    white-space: normal;
+  }
+  /* Un singur buton: lățime auto (centrat de justify-content în secțiunile CTA),
+     NU întins pe toată lățimea. */
+  .cta__actions > .btn:only-child,
+  .mnt__cta > .btn:only-child {
+    flex: 0 0 auto;
+  }
+}
 /* green skewed phone tag, identical to reference */
 .cta-notch .phone {
   gap: 16px;
@@ -1640,7 +1661,7 @@ img.pf-shot {
 .cf textarea {
   width: 100%;
   font-family: var(--font-body);
-  font-size: 15.5px;
+  font-size: 16px;
   color: var(--ink);
   padding: 14px 16px;
   border: 1px solid var(--line);
@@ -1791,6 +1812,44 @@ img.pf-shot {
     grid-template-columns: 1fr;
     gap: 32px;
   }
+  /* Butonul „Cercetare & neuromarketing" pe toată lățimea coloanei. */
+  .footer-founder {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+  /* Iconițele sociale centrate. */
+  .footer-socials {
+    justify-content: center;
+  }
+  /* Accent gradient sub titlul coloanei — DOAR pe mobil. */
+  .footer-col ul::before {
+    content: '';
+    width: 26px;
+    height: 3px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, var(--electric), var(--cyan));
+  }
+  .footer-col h5::after {
+    content: '';
+    display: block;
+    width: 26px;
+    height: 3px;
+    border-radius: 3px;
+    margin-top: 8px;
+    background: linear-gradient(90deg, var(--electric), var(--cyan));
+  }
+  /* Copyright + termeni: centrate, pe același rând (wrap doar dacă nu încap). */
+  .footer-bottom {
+    justify-content: center;
+    text-align: center;
+    font-size: 12px;
+  }
+  .footer-bottom .links {
+    justify-content: center;
+    gap: 10px 12px;
+  }
 }
 @media (max-width: 680px) {
   .container {
@@ -1813,10 +1872,10 @@ img.pf-shot {
   .footer-top {
     grid-template-columns: 1fr;
     gap: 32px;
-    padding: 56px 24px 40px;
+    padding: 56px var(--gutter) 40px;
   }
   .footer-bottom {
-    padding: 24px;
+    padding-block: 24px;
   }
   .proc2-tabs {
     grid-template-columns: repeat(2, 1fr);
@@ -2157,8 +2216,8 @@ img.pf-shot {
 /* ---- article (blog/[slug]) ---- */
 .article-hero {
   background: var(--canvas);
-  padding-top: clamp(34px, 5vw, 56px);
-  padding-bottom: clamp(24px, 3.5vw, 38px);
+  /* navbar e sticky pe articol (în flux) → fără offset nav-h; gol egal sus/jos */
+  padding-block: var(--hero-pad-bottom);
 }
 .article-hero__inner {
   max-width: 768px;
@@ -2205,7 +2264,7 @@ img.pf-shot {
   font-family: var(--font-display);
   font-size: clamp(1.9rem, 4vw, 3rem);
   font-weight: 700;
-  line-height: 1.08;
+  line-height: 1.14;
   letter-spacing: -0.025em;
   color: var(--ink);
   margin: 0;
@@ -2263,7 +2322,7 @@ img.pf-shot {
   width: 100%;
   max-width: 1080px;
   margin-inline: auto;
-  padding-inline: 40px;
+  padding-inline: var(--gutter);
 }
 .article-body {
   padding-block: clamp(36px, 5vw, 68px);
@@ -2507,6 +2566,9 @@ img.pf-shot {
   .article-layout {
     grid-template-columns: 1fr;
     gap: 28px;
+    /* Rail-ul nu mai e lateral → coloană de citire centrată, măsură confortabilă. */
+    max-width: 720px;
+    margin-inline: auto;
   }
   .article-rail {
     position: static;
@@ -2524,9 +2586,6 @@ img.pf-shot {
   }
 }
 @media (max-width: 680px) {
-  .article-shell {
-    padding-inline: 24px;
-  }
   .article-related__grid {
     grid-template-columns: 1fr;
   }
@@ -2578,7 +2637,6 @@ a.bpill--ondark:hover {
   position: relative;
   background: #050a33;
   color: #fff;
-  padding-top: var(--nav-h);
   overflow: hidden;
 }
 .bhero::after {
@@ -2601,7 +2659,8 @@ a.bpill--ondark:hover {
 .bhero__inner {
   position: relative;
   z-index: 1;
-  padding-block: clamp(40px, 6vw, 72px);
+  padding-top: calc(var(--nav-h) + var(--hero-pad-top));
+  padding-bottom: var(--hero-pad-bottom);
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
   gap: 40px;
@@ -2609,10 +2668,10 @@ a.bpill--ondark:hover {
 }
 .bhero__title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(1.9rem, 5.5vw, 3rem);
   font-weight: 700;
   letter-spacing: -0.025em;
-  line-height: 1.05;
+  line-height: 1.14;
   color: #fff;
   margin: 0;
 }
@@ -2657,7 +2716,7 @@ a.bpill--ondark:hover {
   border: none;
   color: #fff;
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: 16px;
   outline: none;
 }
 .bhero__search input::placeholder {
@@ -2668,7 +2727,7 @@ a.bpill--ondark:hover {
   width: 100%;
   max-width: var(--maxw);
   margin-inline: auto;
-  padding: clamp(32px, 4vw, 48px) 40px 0;
+  padding: clamp(32px, 4vw, 48px) var(--gutter) 0;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -2684,7 +2743,7 @@ a.bpill--ondark:hover {
   font-family: var(--font-display);
   font-size: 14px;
   font-weight: 600;
-  padding: 9px 18px;
+  padding: 10px 16px;
   border-radius: var(--r-pill);
   border: 1px solid var(--line);
   color: var(--ink-soft);
@@ -2727,10 +2786,11 @@ a.bpill--ondark:hover {
 .blog-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+  column-gap: clamp(20px, 3vw, 28px);
+  row-gap: clamp(36px, 5vw, 48px);
 }
 .blog-cards--after-feature {
-  margin-top: 40px;
+  margin-top: clamp(28px, 4vw, 40px);
 }
 
 /* Card de articol. */
@@ -2743,6 +2803,11 @@ a.bpill--ondark:hover {
   border-radius: var(--r-lg);
   overflow: hidden;
   background: linear-gradient(135deg, var(--electric), var(--cyan));
+  box-shadow: 0 1px 2px rgba(3, 13, 74, 0);
+  transition: box-shadow 0.35s var(--ease);
+}
+.bcard:hover .bcard__thumb {
+  box-shadow: var(--sh-md);
 }
 .bcard__thumb img {
   width: 100%;
@@ -2798,7 +2863,7 @@ a.bpill--ondark:hover {
 }
 .bcard__title {
   font-family: var(--font-display);
-  font-size: 19px;
+  font-size: clamp(17.5px, 1.3vw, 19px);
   font-weight: 600;
   line-height: 1.3;
   letter-spacing: -0.01em;
@@ -2814,6 +2879,27 @@ a.bpill--ondark:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+}
+/* Afordanță „citește articolul" — indiciu fin, aliniat jos, animat la hover. */
+.bcard__more {
+  margin-top: auto;
+  padding-top: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--electric);
+}
+.bcard__more svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s var(--ease);
+}
+.bcard:hover .bcard__more svg {
+  transform: translateX(5px);
 }
 
 /* Articol featured DARK (imagine dreapta). */
@@ -2908,11 +2994,15 @@ a.bpill--ondark:hover {
 .bfeature__cta svg {
   width: 17px;
   height: 17px;
+  transition: transform 0.3s var(--ease);
+}
+.bfeature__cta:hover svg {
+  transform: translateX(5px);
 }
 .bfeature__media {
   position: relative;
   min-height: 300px;
-  background: rgba(255, 255, 255, 0.04);
+  background: linear-gradient(135deg, var(--electric), var(--cyan));
 }
 .bfeature__media img {
   position: absolute;
@@ -2920,6 +3010,10 @@ a.bpill--ondark:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.5s var(--ease);
+}
+.bfeature:hover .bfeature__media img {
+  transform: scale(1.03);
 }
 .bfeature__media span {
   position: absolute;
@@ -2931,16 +3025,19 @@ a.bpill--ondark:hover {
   text-align: center;
   font-family: var(--font-display);
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: clamp(18px, 2vw, 22px);
+  line-height: 1.25;
+  color: #fff;
 }
 
 /* Paginare. */
 .blog-pager {
   margin-top: 48px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 12px 16px;
 }
 .blog-pager__nums {
   display: flex;
@@ -2981,7 +3078,17 @@ a.bpill--ondark:hover {
   color: var(--electric);
 }
 
-@media (max-width: 980px) {
+/* ===== Responsive blog — breakpoint-uri armonizate (1024 / 768 / 560) ===== */
+
+/* Tabletă: grila de carduri 3 → 2 coloane. */
+@media (max-width: 1024px) {
+  .blog-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobil mare: hero & featured se stivuiesc, filtrele devin scroll orizontal. */
+@media (max-width: 768px) {
   .bhero__inner {
     grid-template-columns: 1fr;
     gap: 26px;
@@ -2993,24 +3100,69 @@ a.bpill--ondark:hover {
   .bhero__search {
     max-width: none;
   }
-}
-@media (max-width: 860px) {
+
   .bfeature {
     grid-template-columns: 1fr;
   }
   .bfeature__media {
     order: -1;
-    min-height: 220px;
+    aspect-ratio: 16 / 10;
+    min-height: 0;
+  }
+
+  /* Filtre: un singur rând derulabil lateral, cu fade subtil la margini. */
+  .bfilters {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 16px,
+      #000 calc(100% - 16px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 16px,
+      #000 calc(100% - 16px),
+      transparent 100%
+    );
+  }
+  .bfilters::-webkit-scrollbar {
+    display: none;
+  }
+  .bfilter {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  /* Țintă de tap mai mare pe paginare. */
+  .blog-pager__num {
+    min-width: 40px;
+    height: 40px;
   }
 }
-@media (max-width: 1024px) {
-  .blog-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 680px) {
+
+/* Mobil: o singură coloană de carduri. */
+@media (max-width: 560px) {
   .blog-cards {
     grid-template-columns: 1fr;
+  }
+  /* Fără etichete pe mobil (carduri + featured) — listă mai curată, mai aerisită. */
+  .bcard__tags,
+  .bfeature__tags {
+    display: none;
+  }
+  /* CTA featured full-width — buton intenționat, ușor de atins. */
+  .bfeature__cta {
+    width: 100%;
+    justify-content: center;
+    padding-block: 14px;
   }
 }
 
@@ -3057,7 +3209,7 @@ a.bpill--ondark:hover {
 .cf-select {
   width: 100%;
   font-family: var(--font-body);
-  font-size: 15.5px;
+  font-size: 16px;
   color: var(--ink);
   padding: 14px 16px;
   border: 1px solid var(--line);

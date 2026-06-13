@@ -149,13 +149,6 @@ const social = site.social;
     margin-left: 10px;
     opacity: 0.72;
   }
-  @media (max-width: 560px) {
-    .footer-legal {
-      display: block;
-      margin-left: 0;
-      margin-top: 6px;
-    }
-  }
 
   /* Coloanele de linkuri: pe desktop = listă normală (deschisă); pe mobil =
      dropdown/acordeon. JS-ul ține deschis pe desktop, închis pe mobil. */
@@ -265,7 +258,7 @@ const social = site.social;
   .footer-wordmark {
     max-width: var(--maxw);
     margin: 0 auto;
-    padding: 0 40px 0;
+    padding: 0 var(--gutter) 0;
     /* Înălțime limitată + overflow: textul iese puțin peste (jos), ca să NU
        crească footerul. */
     height: clamp(48px, 9.5vw, 144px);

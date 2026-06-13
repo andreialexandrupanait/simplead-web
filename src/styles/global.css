@@ -54,6 +54,12 @@
   --nav-h: 80px;
   --maxw: 1280px;
 
+  /* Spațiere hero unificată, compactă și echilibrată vizual.
+     Sus: doar clearance pentru navbar-ul fix + un gol mic (titlul stă aproape de nav).
+     Jos: un gol compact, calibrat să pară egal cu cel de sus (navbar-ul e transparent). */
+  --hero-pad-top: clamp(14px, 1.8vw, 26px);
+  --hero-pad-bottom: clamp(32px, 4vw, 56px);
+
   /* Alias-uri „bare" de culoare → noua paletă flat */
   --canvas: #ffffff;
   --canvas-soft: #f5f7fa;
@@ -173,22 +179,28 @@
    UTILITARE REUTILIZABILE
    ============================================================ */
 
+/* Gutter orizontal unic, folosit de TOATE containerele site-ului (o singură sursă
+   de adevăr → padding stânga/dreapta identic pe tot site-ul). */
+:root {
+  --gutter: 40px;
+}
+@media (max-width: 900px) {
+  :root {
+    --gutter: 24px;
+  }
+}
+@media (max-width: 480px) {
+  :root {
+    --gutter: 16px;
+  }
+}
+
 /* Container centrat */
 .site-container {
   width: 100%;
   max-width: var(--maxw);
   margin-inline: auto;
-  padding-inline: 40px;
-}
-@media (max-width: 900px) {
-  .site-container {
-    padding-inline: 24px;
-  }
-}
-@media (max-width: 480px) {
-  .site-container {
-    padding-inline: 16px;
-  }
+  padding-inline: var(--gutter);
 }
 
 /* Micro-etichetă „tech" (kicker): monospace, uppercase, accent */
@@ -351,4 +363,13 @@
   background: var(--canvas-soft);
   color: var(--ink);
   font-weight: 600;
+}
+/* Pe mobil, tabelele late se derulează lateral în loc să spargă layout-ul. */
+@media (max-width: 680px) {
+  .prose-simplead table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
 }
