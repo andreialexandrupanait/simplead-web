@@ -1,0 +1,17 @@
+---
+import ToolRunner from '@components/tools/ToolRunner.astro';
+---
+
+<ToolRunner
+  title="Inspector DNS"
+  eyebrow="Instrument gratuit"
+  accent="DNS"
+  subtitle="Vezi cum e configurat un domeniu: nameservers, înregistrări A/AAAA, MX și TXT, plus prezența SPF și DMARC."
+  crumbLabel="Inspector DNS"
+  inputLabel="Domeniul de inspectat (ex: exemplu.ro)"
+  placeholder="exemplu.ro"
+  endpoint="/api/tools/dns-inspector"
+  field="domain"
+  kind="dns"
+  toolId="dns-inspector"
+/>

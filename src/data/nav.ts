@@ -79,6 +79,7 @@ export const footerLegal: NavItem[] = [
 export const megaQuickLinks: NavItem[] = [
   { label: 'Pachete & prețuri', href: '/pachete' },
   { label: 'Servicii rapide (preț fix)', href: '/servicii-rapide' },
+  { label: 'Instrumente gratuite', href: '/instrumente' },
   { label: 'Cere suport', href: '/suport' },
   { label: 'Calculator mentenanță', href: '/mentenanta#calc' },
   { label: 'Portofoliu', href: '/portofoliu' },

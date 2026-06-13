@@ -1,0 +1,17 @@
+---
+import ToolRunner from '@components/tools/ToolRunner.astro';
+---
+
+<ToolRunner
+  title="Verificator email deliverability"
+  eyebrow="Instrument gratuit"
+  accent="email"
+  subtitle="Vezi de ce ajung emailurile tale în spam: verificăm MX, SPF, DKIM și DMARC pentru domeniul tău, în câteva secunde."
+  crumbLabel="Verificator email"
+  inputLabel="Domeniul tău (ex: exemplu.ro)"
+  placeholder="exemplu.ro"
+  endpoint="/api/tools/email-deliverability"
+  field="domain"
+  kind="checks"
+  toolId="email-deliverability"
+/>

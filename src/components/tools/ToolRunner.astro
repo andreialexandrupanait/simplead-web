@@ -1,0 +1,421 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHeader from '@components/sections/PageHeader.astro';
+
+/**
+ * Chrome partajat pentru un instrument gratuit: input + buton + zonă de rezultat
+ * + captură „trimite-mi raportul pe email". Logica de diagnostic stă pe server
+ * (rutele /api/tools/*); aici doar trimitem inputul și randăm răspunsul.
+ */
+interface Props {
+  title: string;
+  eyebrow: string;
+  accent?: string;
+  subtitle: string;
+  crumbLabel: string;
+  inputLabel: string;
+  placeholder: string;
+  endpoint: string;
+  /** Numele câmpului trimis în body: 'domain' (DNS) sau 'url' (scanner). */
+  field: 'domain' | 'url';
+  /** Forma rezultatului: 'checks' (listă de verdicte) sau 'dns' (înregistrări). */
+  kind: 'checks' | 'dns';
+  /** Identificator pentru captura de lead (source `tool:<id>`). */
+  toolId: string;
+}
+
+const {
+  title,
+  eyebrow,
+  accent,
+  subtitle,
+  crumbLabel,
+  inputLabel,
+  placeholder,
+  endpoint,
+  field,
+  kind,
+  toolId,
+} = Astro.props;
+
+const config = JSON.stringify({ endpoint, field, kind, toolId });
+---
+
+<BaseLayout title={title} description={subtitle} transparentNav={true} navOverDark={true}>
+  <PageHeader
+    crumb={[
+      { label: 'Acasă', href: '/' },
+      { label: 'Instrumente', href: '/instrumente' },
+      { label: crumbLabel },
+    ]}
+    eyebrow={eyebrow}
+    title={title}
+    accent={accent}
+    subtitle={subtitle}
+  />
+
+  <section class="tool-sec">
+    <div class="tool-wrap" data-tool={config}>
+      <form class="tool-form" data-tool-form novalidate>
+        <label class="tool-field">
+          <span>{inputLabel}</span>
+          <div class="tool-inputrow">
+            <input
+              type="text"
+              name="value"
+              placeholder={placeholder}
+              required
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button type="submit">Verifică</button>
+          </div>
+        </label>
+        <p class="tool-msg" data-tool-msg role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="tool-result" data-tool-result hidden></div>
+
+      <form class="tool-report" data-tool-report hidden>
+        <p class="tool-report__lead">Vrei raportul și pașii de rezolvare pe email?</p>
+        <div class="tool-inputrow">
+          <input
+            type="email"
+            name="email"
+            placeholder="adresa ta de email"
+            required
+            autocomplete="email"
+          />
+          <button type="submit">Trimite-mi raportul</button>
+        </div>
+        <input
+          type="text"
+          name="website"
+          tabindex="-1"
+          autocomplete="off"
+          class="tool-hp"
+          aria-hidden="true"
+        />
+        <p class="tool-msg" data-report-msg role="status" aria-live="polite"></p>
+      </form>
+
+      <p class="tool-foot">
+        Vrei să rezolvăm noi? Vezi <a href="/servicii-rapide">serviciile la preț fix</a> sau
+        <a href="/suport">cere suport</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  type ToolCheck = { id: string; label: string; status: 'pass' | 'warn' | 'fail'; detail: string };
+
+  const root = document.querySelector<HTMLElement>('[data-tool]');
+  if (root) {
+    const cfg = JSON.parse(root.dataset.tool!) as {
+      endpoint: string;
+      field: string;
+      kind: 'checks' | 'dns';
+      toolId: string;
+    };
+    const form = root.querySelector<HTMLFormElement>('[data-tool-form]')!;
+    const input = form.querySelector<HTMLInputElement>('input[name="value"]')!;
+    const msg = root.querySelector<HTMLElement>('[data-tool-msg]')!;
+    const resultEl = root.querySelector<HTMLElement>('[data-tool-result]')!;
+    const reportForm = root.querySelector<HTMLFormElement>('[data-tool-report]')!;
+    let lastTarget = '';
+
+    const esc = (s: unknown) =>
+      String(s).replace(
+        /[&<>"]/g,
+        (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c] ?? c,
+      );
+    const badgeLabel = (s: string) => (s === 'pass' ? 'OK' : s === 'warn' ? 'Atenție' : 'Problemă');
+    const verdictLabel = (s: string) =>
+      s === 'pass' ? 'Arată bine' : s === 'warn' ? 'De îmbunătățit' : 'Probleme de rezolvat';
+
+    function renderChecks(result: { verdict: string; checks: ToolCheck[] }) {
+      const items = result.checks
+        .map(
+          (c) =>
+            `<li class="tool-check tool-check--${c.status}"><div class="tool-check__head"><span class="tool-badge tool-badge--${c.status}">${badgeLabel(c.status)}</span><strong>${esc(c.label)}</strong></div><p>${esc(c.detail)}</p></li>`,
+        )
+        .join('');
+      return `<div class="tool-verdict tool-verdict--${result.verdict}">Verdict: ${verdictLabel(result.verdict)}</div><ul class="tool-checks">${items}</ul>`;
+    }
+
+    function renderDns(r: Record<string, string[] | boolean>) {
+      const row = (label: string, vals: unknown) =>
+        Array.isArray(vals) && vals.length
+          ? `<dt>${esc(label)}</dt><dd>${vals.map(esc).join('<br>')}</dd>`
+          : '';
+      return `<dl class="tool-dns">${row('Nameservers', r.nameservers)}${row('A (IPv4)', r.a)}${row('AAAA (IPv6)', r.aaaa)}${row('MX', r.mx)}${row('TXT', r.txt)}<dt>SPF</dt><dd>${r.hasSpf ? 'prezent' : 'lipsește'}</dd><dt>DMARC</dt><dd>${r.hasDmarc ? 'prezent' : 'lipsește'}</dd></dl>`;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const value = input.value.trim();
+      if (!value) return;
+      lastTarget = value;
+      const btn = form.querySelector('button')!;
+      btn.disabled = true;
+      msg.textContent = 'Se verifică…';
+      msg.className = 'tool-msg';
+      resultEl.hidden = true;
+      reportForm.hidden = true;
+      try {
+        const res = await fetch(cfg.endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ [cfg.field]: value }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.ok) {
+          resultEl.innerHTML =
+            cfg.kind === 'dns' ? renderDns(data.result) : renderChecks(data.result);
+          resultEl.hidden = false;
+          msg.textContent = '';
+          reportForm.hidden = false;
+        } else {
+          msg.textContent = data.error || 'Verificarea a eșuat.';
+          msg.classList.add('tool-msg--err');
+        }
+      } catch {
+        msg.textContent = 'Conexiune întreruptă. Încearcă din nou.';
+        msg.classList.add('tool-msg--err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Verifică';
+      }
+    });
+
+    reportForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const emailInput = reportForm.querySelector<HTMLInputElement>('input[name="email"]')!;
+      const hp = reportForm.querySelector<HTMLInputElement>('input[name="website"]')!;
+      const rmsg = reportForm.querySelector<HTMLElement>('[data-report-msg]')!;
+      const rbtn = reportForm.querySelector('button')!;
+      rbtn.disabled = true;
+      try {
+        const res = await fetch('/api/tools/send-report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: emailInput.value.trim(),
+            tool: cfg.toolId,
+            target: lastTarget,
+            website: hp.value,
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        rmsg.textContent =
+          res.ok && data.ok
+            ? 'Gata! Îți trimitem raportul și pașii utili.'
+            : data.error || 'Nu am putut trimite.';
+        rmsg.className = res.ok && data.ok ? 'tool-msg tool-msg--ok' : 'tool-msg tool-msg--err';
+      } catch {
+        rmsg.textContent = 'Conexiune întreruptă.';
+        rmsg.className = 'tool-msg tool-msg--err';
+      } finally {
+        rbtn.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  .tool-sec {
+    background: var(--canvas);
+    padding-block: clamp(36px, 6vw, 72px);
+  }
+  .tool-wrap {
+    max-width: 760px;
+    margin-inline: auto;
+    padding-inline: var(--gutter, 24px);
+  }
+  .tool-field > span {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .tool-inputrow {
+    display: flex;
+    gap: 10px;
+  }
+  .tool-inputrow input {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    background: var(--canvas);
+    color: var(--ink);
+    font: inherit;
+  }
+  .tool-inputrow input:focus {
+    outline: none;
+    border-color: var(--electric);
+  }
+  .tool-inputrow button {
+    flex-shrink: 0;
+    padding: 12px 22px;
+    border-radius: var(--r-sm);
+    background: var(--electric);
+    color: var(--ink);
+    font-weight: 700;
+    border: 1px solid var(--electric);
+    cursor: pointer;
+  }
+  .tool-inputrow button:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  @media (max-width: 540px) {
+    .tool-inputrow {
+      flex-direction: column;
+    }
+  }
+  .tool-msg {
+    margin: 10px 0 0;
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+  .tool-msg--err {
+    color: #c0392b;
+  }
+  .tool-msg--ok {
+    color: #0a7d4a;
+  }
+  .tool-result {
+    margin-top: 26px;
+  }
+  .tool-verdict {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: var(--r-pill);
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 18px;
+  }
+  .tool-verdict--pass {
+    background: rgba(10, 125, 74, 0.12);
+    color: #0a7d4a;
+  }
+  .tool-verdict--warn {
+    background: rgba(180, 130, 0, 0.14);
+    color: #946a00;
+  }
+  .tool-verdict--fail {
+    background: rgba(192, 57, 43, 0.12);
+    color: #c0392b;
+  }
+  .tool-checks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .tool-check {
+    border: 1px solid var(--line);
+    border-left-width: 3px;
+    border-radius: var(--r-sm);
+    padding: 13px 16px;
+  }
+  .tool-check--pass {
+    border-left-color: #0a7d4a;
+  }
+  .tool-check--warn {
+    border-left-color: #b48200;
+  }
+  .tool-check--fail {
+    border-left-color: #c0392b;
+  }
+  .tool-check__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .tool-check p {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+    word-break: break-word;
+  }
+  .tool-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: var(--r-pill);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .tool-badge--pass {
+    background: #0a7d4a;
+    color: #fff;
+  }
+  .tool-badge--warn {
+    background: #b48200;
+    color: #fff;
+  }
+  .tool-badge--fail {
+    background: #c0392b;
+    color: #fff;
+  }
+  .tool-dns {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 8px 18px;
+    margin: 0;
+  }
+  .tool-dns dt {
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .tool-dns dd {
+    margin: 0;
+    color: var(--muted);
+    word-break: break-word;
+    font-size: 0.92rem;
+  }
+  @media (max-width: 540px) {
+    .tool-dns {
+      grid-template-columns: 1fr;
+      gap: 2px 0;
+    }
+    .tool-dns dd {
+      margin-bottom: 8px;
+    }
+  }
+  .tool-report {
+    margin-top: 28px;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--canvas-soft);
+  }
+  .tool-report__lead {
+    margin: 0 0 12px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .tool-hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .tool-foot {
+    margin-top: 26px;
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+  .tool-foot a {
+    color: var(--electric);
+    font-weight: 600;
+  }
+</style>
