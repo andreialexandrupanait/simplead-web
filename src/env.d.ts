@@ -23,6 +23,9 @@ interface ImportMetaEnv {
   readonly ADMIN_SETUP_PASSWORD?: string;
   // Înregistrare publică (default OFF). 'true' = activează signup-ul public.
   readonly PUBLIC_SIGNUP?: string;
+  // Flag-uri rezervate pentru extensii viitoare (vezi docs/roadmap-auth.md).
+  readonly ENABLE_2FA?: string;
+  readonly ENABLE_ORGANIZATIONS?: string;
   // Better Auth: secret de semnare (fallback pe SESSION_SECRET) + URL de bază (fallback pe SITE_URL).
   readonly BETTER_AUTH_SECRET?: string;
   readonly BETTER_AUTH_URL?: string;

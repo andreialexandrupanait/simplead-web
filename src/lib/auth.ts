@@ -80,7 +80,14 @@ function createAuth() {
       useSecureCookies: import.meta.env.PROD,
     },
 
-    plugins: [admin({ ac, roles, defaultRole: 'client', adminRoles: ['admin'] })],
+    plugins: [
+      admin({ ac, roles, defaultRole: 'client', adminRoles: ['admin'] }),
+      // Cârlige pregătite (inactive) — vezi docs/roadmap-auth.md pentru activare:
+      //   twoFactor({ issuer: 'Simplead Admin' }),        // 2FA TOTP
+      //   organization({ allowUserToCreateOrganization: false }), // multi-tenant clienți
+      //   passkey(),                                       // WebAuthn / passkeys
+      // (la activare: adaugă importul, regenerează schema + migrația, adaugă varianta client)
+    ],
   });
 }
 

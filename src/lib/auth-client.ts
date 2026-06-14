@@ -9,7 +9,12 @@ import { ac, roles } from './permissions';
  * câmpurilor custom (role/banned etc.) din configul server.
  */
 export const authClient = createAuthClient({
-  plugins: [adminClient({ ac, roles }), inferAdditionalFields<Auth>()],
+  plugins: [
+    adminClient({ ac, roles }),
+    inferAdditionalFields<Auth>(),
+    // Cârlige pregătite (inactive) — vezi docs/roadmap-auth.md:
+    //   twoFactorClient(), organizationClient(), passkeyClient()
+  ],
 });
 
 export const { signIn, signOut, signUp, useSession } = authClient;
