@@ -23,7 +23,7 @@ const steps = [
   {
     n: '04',
     title: 'Execuție',
-    body: 'Ducem planul în realitate — design, web, campanii — transparent și cu update-uri regulate, ca să știi mereu unde suntem.',
+    body: 'Ducem planul în realitate (design, web, campanii), transparent și cu update-uri regulate, ca să știi mereu unde suntem.',
     tag: 'Execuție',
   },
   {
@@ -39,7 +39,7 @@ const steps = [
   <div class="site-container proc__inner">
     <SectionHeading
       eyebrow="Cum lucrăm"
-      title="De la idee la rezultate, pas cu pas"
+      title="Procesul, pas cu pas"
       accent="pas cu pas"
       subtitle="Un proces clar și transparent, în care la fiecare etapă știi exact unde suntem și de ce."
       align="center"
@@ -142,7 +142,7 @@ const steps = [
   /* layout split */
   .proc__stage {
     display: grid;
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
     gap: clamp(20px, 3vw, 48px);
     align-items: stretch;
   }
@@ -240,7 +240,7 @@ const steps = [
     position: absolute;
     inset: clamp(28px, 3.4vw, 52px);
     display: flex;
-    align-items: center;
+    align-items: stretch;
     opacity: 0;
     transform: translateY(14px);
     pointer-events: none;
@@ -272,7 +272,11 @@ const steps = [
   .proc__slidebody {
     position: relative;
     z-index: 1;
-    max-width: 30ch;
+    max-width: 40ch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: 100%;
   }
   .proc__tag {
     display: inline-block;
@@ -292,10 +296,13 @@ const steps = [
     margin: 0;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(1.6rem, 3vw, 2.4rem);
-    line-height: 1.08;
+    font-size: clamp(1.5rem, 2.4vw, 2.05rem);
+    line-height: 1.1;
     letter-spacing: -0.02em;
     color: var(--ink);
+    /* pe desktop titlul rămâne pe un singur rând la toate etapele,
+       deci textul de sub el pornește mereu din același punct */
+    white-space: nowrap;
   }
   .proc__text {
     margin: 16px 0 0;
@@ -307,7 +314,8 @@ const steps = [
     display: flex;
     align-items: baseline;
     gap: 6px;
-    margin-top: 28px;
+    margin-top: auto;
+    padding-top: 28px;
     font-family: var(--font-display);
   }
   .proc__count b {
@@ -399,6 +407,10 @@ const steps = [
     }
     .proc__panel {
       min-height: 300px;
+    }
+    /* pe ecrane mici titlul poate curge pe mai multe rânduri */
+    .proc__title {
+      white-space: normal;
     }
   }
   @media (max-width: 480px) {

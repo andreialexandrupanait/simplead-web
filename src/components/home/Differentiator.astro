@@ -1,63 +1,94 @@
 ---
 import { site } from '@data/site';
-import Button from '@components/ui/Button.astro';
 
 const founderPhoto = '/andrei.jpg';
-
-const points = [
-  {
-    title: 'Pornim de la știință',
-    body: 'Neuroștiința explică de ce oamenii privesc, simt și decid într-un anumit fel. De acolo pleacă orice proiect — nu de la „cred că arată bine".',
-  },
-  {
-    title: 'Adaptăm la publicul tău',
-    body: 'Traducem cercetarea în decizii concrete: ce mesaj, ce structură, ce imagini.',
-  },
-  {
-    title: 'Validăm științific',
-    body: 'Confirmăm cu unelte din sfera neuroștiinței — eye-tracking, heatmaps, Analytics — ca să știm ce funcționează, nu să ghicim.',
-  },
-];
 ---
 
 <section class="diff">
   <div class="site-container">
     <div class="diff__top">
-      <div class="diff__head" data-reveal>
-        <p class="kicker kicker--cyan">De ce Simplead</p>
-        <h2 class="diff__title">
-          Designul bun nu se ghicește. <span>Se vede și se măsoară.</span>
-        </h2>
-        <p class="diff__sub">
-          Fiecare decizie de design și mesaj pleacă de la cum funcționează atenția și alegerea — și
-          o validăm cu unelte din neuroștiință (eye-tracking, heatmaps), nu pe presupuneri.
-        </p>
-        <div class="diff__cta">
-          <Button
-            href={site.founderSite}
-            target="_blank"
-            rel="noopener"
-            variant="primary"
-            withArrow
-          >
-            Vezi cercetarea pe panaitandrei.ro
-          </Button>
+      <div class="diff__body">
+        <div class="diff__lead" data-reveal>
+          <p class="diff__eyebrow"><span class="diff__tick"></span>De ce Simplead</p>
+          <h2 class="diff__title">
+            Designul bun nu se ghicește. <span>Se vede și se măsoară.</span>
+          </h2>
+          <p class="diff__sub">
+            Un material bun nu e cel care arată frumos, ci cel care chiar funcționează. De-asta, în
+            fiecare proiect, fie că vorbim de identitate vizuală sau de un site, pornim de la cum
+            gândesc și aleg oamenii. Vrem rezultate reale, nu lucruri făcute de dragul de a bifa.
+            AI-ul ne ajută să lucrăm mai repede, dar cum arată totul la final decidem noi.
+          </p>
+          <dl class="diff__meta">
+            <div>
+              <dt>Metodă</dt>
+              <dd>Eye-tracking + heatmap</dd>
+            </div>
+            <div>
+              <dt>Ce citim</dt>
+              <dd>Primele secunde de atenție</dd>
+            </div>
+          </dl>
         </div>
-      </div>
 
-      <ul class="diff__points" data-reveal-stagger>
-        {
-          points.map((p, i) => (
-            <li class="diff__point">
-              <span class="diff__num">{String(i + 1).padStart(2, '0')}</span>
-              <div>
-                <h3>{p.title}</h3>
-                <p>{p.body}</p>
-              </div>
-            </li>
-          ))
-        }
-      </ul>
+        <figure class="study" data-reveal>
+          <span class="study__mark study__mark--tl" aria-hidden="true"></span>
+          <span class="study__mark study__mark--tr" aria-hidden="true"></span>
+          <span class="study__mark study__mark--bl" aria-hidden="true"></span>
+          <span class="study__mark study__mark--br" aria-hidden="true"></span>
+
+          <figcaption class="study__cap">
+            <span class="study__id">Studiu de caz</span>
+            <span class="study__client">FEAA Galați · reclamă</span>
+          </figcaption>
+
+          <div class="study__plate">
+            <div class="plate">
+              <span class="plate__tag">Fig. 01 · Design</span>
+              <img
+                src="/exemplu-design.png"
+                alt="Reclama FEAA Galați așa cum a fost publicată."
+                loading="lazy"
+              />
+            </div>
+            <div class="study__arrow" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg
+              >
+            </div>
+            <div class="plate plate--heat">
+              <span class="plate__tag">Fig. 02 · Heatmap</span>
+              <img
+                src="/exemplu-heatmap.png"
+                alt="Aceeași reclamă cu heatmap din eye-tracking, care arată unde se concentrează privirea."
+                loading="lazy"
+              />
+            </div>
+          </div>
+
+          <div class="study__legend" aria-hidden="true">
+            <span>Atenție</span>
+            <i class="study__scale"></i>
+            <span>scăzută → ridicată</span>
+          </div>
+
+          <div class="study__notes">
+            <p>
+              <b>Reclama, așa cum o vede oricine.</b> Un design publicat pentru FEAA Galați. Frumos,
+              dar atât poate vedea ochiul liber.
+            </p>
+            <p>
+              <b>Heatmap din eye-tracking.</b> Zonele calde arată unde cade privirea întâi: pe fețe,
+              pe „economic", pe buton. De-aici știm unde să punem mesajul, fără să ghicim.
+            </p>
+          </div>
+        </figure>
+      </div>
     </div>
   </div>
 
@@ -74,11 +105,12 @@ const points = [
         }
       </span>
       <blockquote class="diff__founder-quote">
-        „Nu folosesc știința ca să sune bine, ci ca să luăm decizii mai bune pentru tine.”
+        „Nu folosesc partea asta ca să sune bine, ci ca să iau decizii mai bune pentru proiectul
+        tău.”
       </blockquote>
       <figcaption class="diff__founder-by">
         <b>{site.founder}</b>
-        <span>Doctor în marketing, neuromarketing</span>
+        <span>Doctor în marketing, cu cercetare în neuromarketing</span>
       </figcaption>
     </div>
   </figure>
@@ -106,34 +138,298 @@ const points = [
   }
   .diff__top {
     position: relative;
-    display: grid;
-    grid-template-columns: 0.95fr 1.05fr;
-    gap: 64px;
-    align-items: start;
+    --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', 'Roboto Mono', Menlo, monospace;
   }
-  .kicker--cyan {
+
+  /* Header */
+  .diff__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
     color: var(--cyan);
+  }
+  .diff__tick {
+    width: 30px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--cyan), transparent);
   }
   .diff__title {
     margin-top: 16px;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(2.2rem, 4vw, 3.4rem);
-    line-height: 1.06;
+    font-size: clamp(1.7rem, 2.7vw, 2.5rem);
+    line-height: 1.1;
     letter-spacing: -0.02em;
+    text-wrap: balance;
   }
   .diff__title span {
     color: var(--cyan);
   }
+
+  /* Body grid: lead (text) stânga, figura dreapta */
+  .diff__body {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(36px, 5vw, 72px);
+    align-items: center;
+  }
+
+  /* Left lead */
   .diff__sub {
-    margin-top: 22px;
-    max-width: 44ch;
-    font-size: 1.0625rem;
-    line-height: 1.6;
+    margin: 22px 0 0;
+    max-width: 46ch;
+    font-size: 1.075rem;
+    line-height: 1.65;
+    color: #d7deef;
+  }
+  .diff__meta {
+    margin: 26px 0 0;
+    display: grid;
+    gap: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--r-sm);
+    overflow: hidden;
+  }
+  .diff__meta > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 13px 16px;
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .diff__meta dt {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
     color: var(--muted-dark);
   }
-  .diff__cta {
-    margin-top: 30px;
+  .diff__meta dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #fff;
+  }
+
+  /* Right: research figure */
+  .study {
+    position: relative;
+    margin: 0;
+    padding: clamp(16px, 1.8vw, 24px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--r-lg);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012));
+    box-shadow: var(--sh-lg);
+  }
+  .study__mark {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border: 0 solid rgba(0, 224, 198, 0.65);
+    pointer-events: none;
+  }
+  .study__mark--tl {
+    top: 7px;
+    left: 7px;
+    border-top-width: 1px;
+    border-left-width: 1px;
+    border-top-left-radius: 9px;
+  }
+  .study__mark--tr {
+    top: 7px;
+    right: 7px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-top-right-radius: 9px;
+  }
+  .study__mark--bl {
+    bottom: 7px;
+    left: 7px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-bottom-left-radius: 9px;
+  }
+  .study__mark--br {
+    bottom: 7px;
+    right: 7px;
+    border-bottom-width: 1px;
+    border-right-width: 1px;
+    border-bottom-right-radius: 9px;
+  }
+
+  .study__cap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.16);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .study__id {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--cyan);
+  }
+  .study__id::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 0 4px rgba(0, 224, 198, 0.16);
+  }
+  .study__client {
+    color: var(--muted-dark);
+  }
+
+  .study__plate {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: clamp(10px, 1.4vw, 18px);
+  }
+  .plate {
+    position: relative;
+    border-radius: var(--r-sm);
+    overflow: hidden;
+    background: #02061f;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition:
+      transform 0.3s ease,
+      border-color 0.3s ease;
+  }
+  .plate:hover {
+    transform: translateY(-3px);
+    border-color: rgba(0, 224, 198, 0.4);
+  }
+  .plate img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .plate__tag {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 9px;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+    background: rgba(2, 8, 40, 0.74);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 6px;
+  }
+  .plate--heat .plate__tag {
+    color: var(--signal);
+  }
+  .plate--heat .plate__tag::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--signal);
+    animation: studyPulse 2.2s ease-out infinite;
+  }
+  @keyframes studyPulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(245, 217, 63, 0.55);
+    }
+    70% {
+      box-shadow: 0 0 0 7px rgba(245, 217, 63, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(245, 217, 63, 0);
+    }
+  }
+  .study__arrow {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    color: var(--cyan);
+  }
+  .study__arrow svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .study__legend {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted-dark);
+  }
+  .study__scale {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--electric), var(--cyan), var(--signal), #ff4d3d);
+  }
+
+  .study__notes {
+    counter-reset: note;
+    margin-top: 20px;
+    display: grid;
+    gap: 12px;
+  }
+  .study__notes p {
+    position: relative;
+    margin: 0;
+    padding-left: 28px;
+    font-size: 0.86rem;
+    line-height: 1.55;
+    color: var(--muted-dark);
+  }
+  .study__notes p b {
+    color: #fff;
+    font-weight: 600;
+  }
+  .study__notes p::before {
+    counter-increment: note;
+    content: '0' counter(note);
+    position: absolute;
+    left: 0;
+    top: 1px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--cyan);
+  }
+
+  @media (max-width: 560px) {
+    .study__plate {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .study__arrow {
+      transform: rotate(90deg);
+      justify-self: center;
+    }
   }
 
   /* „Omul din spate" - bandă full-width peste tranziția dark → light */
@@ -191,6 +487,7 @@ const points = [
   }
   .diff__founder-by {
     flex: none;
+    margin-left: clamp(28px, 5vw, 80px);
     text-align: right;
   }
   .diff__founder-by b {
@@ -214,44 +511,12 @@ const points = [
     .diff__founder-by {
       text-align: center;
     }
+    .diff__founder-by {
+      margin-left: 0;
+    }
   }
-  .diff__points {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--r-md);
-    overflow: hidden;
-  }
-  .diff__point {
-    display: flex;
-    gap: 20px;
-    padding: 28px;
-    background: var(--ink-soft);
-  }
-  .diff__num {
-    font-family: var(--font-display);
-    font-size: 0.85rem;
-    color: var(--cyan);
-    padding-top: 4px;
-  }
-  .diff__point h3 {
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: #fff;
-  }
-  .diff__point p {
-    margin-top: 8px;
-    font-size: 0.96rem;
-    line-height: 1.55;
-    color: var(--muted-dark);
-  }
-
   @media (max-width: 900px) {
-    .diff__top {
+    .diff__body {
       grid-template-columns: 1fr;
       gap: 40px;
     }

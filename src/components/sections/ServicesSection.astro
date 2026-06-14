@@ -27,7 +27,9 @@ const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).f
     <div class="svcx__top">
       <div class="svcx__intro">
         <span class="svcx__kick">Ce facem</span>
-        <h2 class="svcx__title">Servicii gândite să <span class="g">lucreze împreună</span></h2>
+        <h2 class="svcx__title">
+          Drumul cel mai simplu<br />spre <span class="g">rezultatul</span> pe care îl vrei.
+        </h2>
       </div>
       <div class="svcx__nav">
         <button
@@ -60,7 +62,8 @@ const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).f
     </div>
     <div class="svcx__meta">
       <p class="svcx__lead">
-        De la identitate la site și campanii: o singură direcție, fără să cobori la cinci furnizori.
+        Nu reinventăm roata: folosim ce funcționează deja și ajungem la rezultat în cel mai scurt
+        timp. Mai jos ai lista serviciilor pe care ți le putem oferi.
       </p>
       <div class="svcx__links">
         <a class="link-more" href="/servicii"
@@ -140,7 +143,7 @@ const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).f
   }
   .svcx__title {
     margin: 0;
-    max-width: 18ch;
+    max-width: 34ch;
     font-family: var(--font-display);
     font-weight: 700;
     font-size: clamp(2rem, 3.8vw, 3rem);
@@ -163,10 +166,11 @@ const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).f
   }
   .svcx__lead {
     margin: 0;
-    max-width: 52ch;
+    max-width: 76ch;
     font-size: 1.05rem;
     line-height: 1.6;
     color: var(--muted);
+    text-wrap: balance;
   }
   .svcx__links {
     display: flex;

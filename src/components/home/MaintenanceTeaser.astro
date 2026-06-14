@@ -13,14 +13,23 @@ import Button from '@components/ui/Button.astro';
       <p class="kicker kicker--cyan">Mentenanță web</p>
       <h2 class="mnt__title">Site-ul tău, monitorizat continuu, nu doar cârpit când se strică.</h2>
       <p class="mnt__sub">
-        Îți urmărim site-ul non-stop cu aplicația noastră internă, SimpleAd Manager. Tu te ocupi de
-        afacere — noi prindem problemele înainte să le simți tu. Și înainte să te coste.
+        Site-ul tău e monitorizat în permanență de aplicația noastră, SimpleAd Manager. Așa, tu îți
+        vezi liniștit de afacere, iar noi rezolvăm problemele înainte să le simți tu. Și înainte să
+        te coste.
       </p>
       <div class="mnt__cta">
         <Button href="/mentenanta" size="lg" withArrow>Calculează-ți pachetul</Button>
-        <Button href="/mentenanta#monitorizare" size="lg" variant="outline" onDark
-          >Vezi ce monitorizăm</Button
-        >
+        <a class="mnt__link" href="/mentenanta#monitorizare">
+          Vezi ce monitorizăm
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg
+          >
+        </a>
       </div>
     </div>
 
@@ -161,7 +170,28 @@ import Button from '@components/ui/Button.astro';
     margin-top: 30px;
     display: flex;
     flex-wrap: wrap;
-    gap: 14px;
+    align-items: center;
+    gap: 14px 24px;
+  }
+  .mnt__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.98rem;
+    color: var(--cyan);
+    transition:
+      gap 0.18s ease,
+      color 0.18s ease;
+  }
+  .mnt__link svg {
+    width: 18px;
+    height: 18px;
+  }
+  .mnt__link:hover {
+    gap: 12px;
+    color: #fff;
   }
   /* ===== Mock dashboard SimpleAd Manager (card luminos pe fundal dark) ===== */
   .mnt__app {
