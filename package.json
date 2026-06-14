@@ -19,7 +19,7 @@
     "db:seed": "node scripts/seed.mjs",
     "seed:admin": "node scripts/seed-admin.mjs",
     "gen:key": "node scripts/gen-secrets.mjs",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "dependencies": {
     "@astrojs/node": "^10.1.2",
