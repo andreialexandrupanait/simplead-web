@@ -5,7 +5,7 @@ import { getDb } from '../../lib/server/db';
 import { tickets } from '../../lib/server/schema';
 import { sendEmail } from '../../lib/server/email';
 import { notifySlack } from '../../lib/server/slack';
-import { serverEnv } from '../../lib/server/env';
+import { getContactToEmail } from '../../lib/server/settings';
 import { createRateLimiter } from '../../lib/server/rate-limit';
 
 export const prerender = false;
@@ -87,7 +87,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   }
 
   // 2) Email către noi (Postmark sau simulare pe consolă, fără token).
-  const to = serverEnv('CONTACT_TO_EMAIL') || site.contact.email;
+  const to = await getContactToEmail(site.contact.email);
   const subject = `[Simplead] Tichet nou: ${categoryLabel} - ${name}`;
   const text = [
     `Nume: ${name}`,

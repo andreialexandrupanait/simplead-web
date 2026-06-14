@@ -1,17 +1,20 @@
 import type { APIRoute } from 'astro';
 import { randomBytes } from 'node:crypto';
-import { isGoogleConfigured } from '../../../../lib/server/auth';
 import {
   OAUTH_STATE_COOKIE,
   buildAuthUrl,
+  getGoogleConfig,
   getRedirectUri,
 } from '../../../../lib/server/oauth-google';
 
 export const prerender = false;
 
 /** Pornește fluxul Google: setează `state` (CSRF) și redirecționează la Google. */
-export const GET: APIRoute = ({ cookies, request, redirect }) => {
-  if (!isGoogleConfigured()) return redirect('/admin/login?error=google-disabled', 302);
+export const GET: APIRoute = async ({ cookies, request, redirect }) => {
+  const cfg = await getGoogleConfig();
+  if (!cfg.clientId || !cfg.clientSecret) {
+    return redirect('/admin/login?error=google-disabled', 302);
+  }
 
   const state = randomBytes(16).toString('hex');
   cookies.set(OAUTH_STATE_COOKIE, state, {
@@ -22,5 +25,9 @@ export const GET: APIRoute = ({ cookies, request, redirect }) => {
     maxAge: 600,
   });
 
-  return redirect(buildAuthUrl(state, getRedirectUri(request.url)), 302);
+  const url = buildAuthUrl(state, getRedirectUri(request.url), {
+    clientId: cfg.clientId,
+    allowedDomain: cfg.allowedDomain,
+  });
+  return redirect(url, 302);
 };

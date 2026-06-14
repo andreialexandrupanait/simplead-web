@@ -16,7 +16,7 @@ import {
 export const prerender = false;
 
 const configured = isAdminConfigured();
-const googleOn = isGoogleConfigured();
+const googleOn = await isGoogleConfigured();
 let error: string | null = null;
 
 // Erori venite prin redirect (ex. de la fluxul Google).

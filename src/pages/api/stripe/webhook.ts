@@ -7,7 +7,7 @@ import { getStripe, getStripeWebhookSecret } from '../../../lib/server/stripe';
 import { sendEmail } from '../../../lib/server/email';
 import { notifySlack } from '../../../lib/server/slack';
 import { issueInvoice } from '../../../lib/server/smartbill';
-import { serverEnv } from '../../../lib/server/env';
+import { getContactToEmail } from '../../../lib/server/settings';
 import { site } from '../../../data/site';
 
 export const prerender = false;
@@ -154,7 +154,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
   }
 
   // Notificare internă (email + Slack).
-  const internalTo = serverEnv('CONTACT_TO_EMAIL') || site.contact.email;
+  const internalTo = await getContactToEmail(site.contact.email);
   await sendEmail({
     to: internalTo,
     subject: `[Simplead] Comandă nouă: ${packageName} (${amount} ${currency})`,

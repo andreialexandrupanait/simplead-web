@@ -6,6 +6,7 @@ import { safeEqual, verifyPassword } from './crypto';
 import { getDb } from './db';
 import { passwordResetTokens } from './schema';
 import { findAdminByEmail, touchLastLogin } from './admin-users';
+import { getIntegration } from './settings';
 
 export const SESSION_COOKIE = 'sa_admin';
 const SESSION_TTL_S = 7 * 24 * 60 * 60; // 7 zile (implicit, fără „ține-mă minte")
@@ -22,9 +23,11 @@ export function isAdminConfigured(): boolean {
   );
 }
 
-/** Login cu Google e disponibil doar dacă există client OAuth configurat. */
-export function isGoogleConfigured(): boolean {
-  return Boolean(serverEnv('GOOGLE_CLIENT_ID') && serverEnv('GOOGLE_CLIENT_SECRET'));
+/** Login cu Google e disponibil doar dacă există client OAuth configurat
+ * (în /admin/integrari sau în env). */
+export async function isGoogleConfigured(): Promise<boolean> {
+  const g = await getIntegration('google');
+  return Boolean(g.clientId.value && g.clientSecret.value);
 }
 
 function b64url(buf: Buffer): string {

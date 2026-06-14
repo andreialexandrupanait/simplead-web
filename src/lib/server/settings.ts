@@ -12,6 +12,10 @@ import { serverEnv } from './env';
 export const INTEGRATIONS = {
   stripe: {
     label: 'Stripe',
+    group: 'Plăți & facturare',
+    desc: 'Plăți online: pachete și abonamente. Necesar pentru checkout.',
+    docs: 'https://dashboard.stripe.com/apikeys',
+    testable: true,
     fields: {
       secretKey: { key: 'integration.stripe.secret_key', env: 'STRIPE_SECRET_KEY', secret: true },
       webhookSecret: {
@@ -23,6 +27,10 @@ export const INTEGRATIONS = {
   },
   smartbill: {
     label: 'SmartBill',
+    group: 'Plăți & facturare',
+    desc: 'Facturare automată la fiecare plată. e-Factura e gestionată de SmartBill.',
+    docs: 'https://cloud.smartbill.ro',
+    testable: true,
     fields: {
       email: { key: 'integration.smartbill.email', env: 'SMARTBILL_EMAIL', secret: false },
       token: { key: 'integration.smartbill.token', env: 'SMARTBILL_TOKEN', secret: true },
@@ -38,6 +46,10 @@ export const INTEGRATIONS = {
   },
   postmark: {
     label: 'Postmark',
+    group: 'Email',
+    desc: 'Trimiterea emailurilor: formular de contact, confirmări de comandă, resetare parolă.',
+    docs: 'https://account.postmarkapp.com/servers',
+    testable: true,
     fields: {
       serverToken: {
         key: 'integration.postmark.server_token',
@@ -51,10 +63,43 @@ export const INTEGRATIONS = {
       },
     },
   },
+  email: {
+    label: 'Email contact',
+    group: 'Email',
+    desc: 'Adresa unde ajung mesajele din formulare (contact, tichete, cereri de ofertă).',
+    testable: false,
+    fields: {
+      toEmail: { key: 'integration.email.to', env: 'CONTACT_TO_EMAIL', secret: false },
+    },
+  },
   slack: {
     label: 'Slack',
+    group: 'Notificări',
+    desc: 'Notificări instant pe Slack: lead nou, comandă nouă, tichet nou.',
+    docs: 'https://api.slack.com/messaging/webhooks',
+    testable: true,
     fields: {
       webhookUrl: { key: 'integration.slack.webhook_url', env: 'SLACK_WEBHOOK_URL', secret: true },
+    },
+  },
+  google: {
+    label: 'Login Google',
+    group: 'Autentificare',
+    desc: 'Buton „Continuă cu Google" pe pagina de admin. Acces doar pentru conturile din domeniul permis.',
+    docs: 'https://console.cloud.google.com/apis/credentials',
+    testable: true,
+    fields: {
+      clientId: { key: 'integration.google.client_id', env: 'GOOGLE_CLIENT_ID', secret: false },
+      clientSecret: {
+        key: 'integration.google.client_secret',
+        env: 'GOOGLE_CLIENT_SECRET',
+        secret: true,
+      },
+      allowedDomain: {
+        key: 'integration.google.allowed_domain',
+        env: 'GOOGLE_ALLOWED_DOMAIN',
+        secret: false,
+      },
     },
   },
 } as const;
@@ -212,4 +257,10 @@ export async function getMaskedIntegration<I extends IntegrationName>(
 /** Golește cache-ul (folosit în teste / după salvări în alt proces). */
 export function clearSettingsCache(): void {
   cache.clear();
+}
+
+/** Adresa unde ajung mesajele din formulare: DB (admin) → env → fallback. */
+export async function getContactToEmail(fallback: string): Promise<string> {
+  const { toEmail } = await getIntegration('email');
+  return toEmail.value || fallback;
 }

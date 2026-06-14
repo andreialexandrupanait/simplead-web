@@ -1,9 +1,7 @@
-import { beforeAll, describe, expect, it } from 'vitest';
-import { getAllowedDomain, isAllowedProfile } from '@lib/server/oauth-google';
+import { describe, expect, it } from 'vitest';
+import { isAllowedProfile } from '@lib/server/oauth-google';
 
-beforeAll(() => {
-  delete process.env.GOOGLE_ALLOWED_DOMAIN; // folosim default-ul
-});
+const DOMAIN = 'simplead.ro';
 
 const profile = (over: Partial<Parameters<typeof isAllowedProfile>[0]> = {}) => ({
   sub: '1',
@@ -13,23 +11,21 @@ const profile = (over: Partial<Parameters<typeof isAllowedProfile>[0]> = {}) => 
 });
 
 describe('Google OAuth — control acces pe domeniu', () => {
-  it('domeniul default e simplead.ro', () => {
-    expect(getAllowedDomain()).toBe('simplead.ro');
-  });
-
   it('acceptă un cont @simplead.ro verificat', () => {
-    expect(isAllowedProfile(profile())).toBe(true);
+    expect(isAllowedProfile(profile(), DOMAIN)).toBe(true);
   });
 
   it('acceptă pe baza claim-ului hd chiar dacă emailul are alt sufix', () => {
-    expect(isAllowedProfile(profile({ email: 'x@altceva.com', hd: 'simplead.ro' }))).toBe(true);
+    expect(isAllowedProfile(profile({ email: 'x@altceva.com', hd: 'simplead.ro' }), DOMAIN)).toBe(
+      true,
+    );
   });
 
   it('respinge alt domeniu', () => {
-    expect(isAllowedProfile(profile({ email: 'x@gmail.com' }))).toBe(false);
+    expect(isAllowedProfile(profile({ email: 'x@gmail.com' }), DOMAIN)).toBe(false);
   });
 
   it('respinge emailul neverificat', () => {
-    expect(isAllowedProfile(profile({ emailVerified: false }))).toBe(false);
+    expect(isAllowedProfile(profile({ emailVerified: false }), DOMAIN)).toBe(false);
   });
 });

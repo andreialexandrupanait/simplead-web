@@ -5,7 +5,7 @@ import { getDb } from '../../lib/server/db';
 import { leads } from '../../lib/server/schema';
 import { sendEmail } from '../../lib/server/email';
 import { notifySlack } from '../../lib/server/slack';
-import { serverEnv } from '../../lib/server/env';
+import { getContactToEmail } from '../../lib/server/settings';
 
 // Rută on-demand (POST la runtime). În dev e servită live de dev server;
 // la build, adaptorul node o împachetează ca funcție on-demand.
@@ -57,7 +57,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   // 2) Email către noi (Postmark sau simulare pe consolă, fără token).
-  const to = serverEnv('CONTACT_TO_EMAIL') || site.contact.email;
+  const to = await getContactToEmail(site.contact.email);
   const subject = `[Simplead] Cerere nouă${service ? `: ${service}` : ''} - ${name}`;
   const text = [
     `Nume: ${lastName}`,

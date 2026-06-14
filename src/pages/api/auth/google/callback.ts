@@ -1,14 +1,10 @@
 import type { APIRoute } from 'astro';
-import {
-  REMEMBER_TTL_S,
-  createSessionToken,
-  isGoogleConfigured,
-  setSessionCookie,
-} from '../../../../lib/server/auth';
+import { REMEMBER_TTL_S, createSessionToken, setSessionCookie } from '../../../../lib/server/auth';
 import {
   OAUTH_STATE_COOKIE,
   exchangeCode,
   fetchUserinfo,
+  getGoogleConfig,
   getRedirectUri,
   isAllowedProfile,
 } from '../../../../lib/server/oauth-google';
@@ -18,7 +14,9 @@ export const prerender = false;
 
 /** Callback Google: verifică `state`, schimbă codul, validează domeniul, loghează. */
 export const GET: APIRoute = async ({ url, cookies, request, redirect }) => {
-  if (!isGoogleConfigured()) return redirect('/admin/login?error=google-disabled', 302);
+  const cfg = await getGoogleConfig();
+  if (!cfg.clientId || !cfg.clientSecret)
+    return redirect('/admin/login?error=google-disabled', 302);
 
   const stateCookie = cookies.get(OAUTH_STATE_COOKIE)?.value;
   cookies.delete(OAUTH_STATE_COOKIE, { path: '/' });
@@ -32,12 +30,14 @@ export const GET: APIRoute = async ({ url, cookies, request, redirect }) => {
   }
 
   const redirectUri = getRedirectUri(request.url);
-  const accessToken = await exchangeCode(code, redirectUri);
+  const accessToken = await exchangeCode(code, redirectUri, cfg);
   if (!accessToken) return redirect('/admin/login?error=google', 302);
 
   const profile = await fetchUserinfo(accessToken);
   if (!profile) return redirect('/admin/login?error=google', 302);
-  if (!isAllowedProfile(profile)) return redirect('/admin/login?error=google-domain', 302);
+  if (!isAllowedProfile(profile, cfg.allowedDomain)) {
+    return redirect('/admin/login?error=google-domain', 302);
+  }
 
   const user = await upsertGoogleAdmin({
     email: profile.email,

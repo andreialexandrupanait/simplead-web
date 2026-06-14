@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getIntegration, type IntegrationName } from '../../../../lib/server/settings';
+import { serverEnv } from '../../../../lib/server/env';
 
 export const prerender = false;
 
@@ -72,11 +73,25 @@ async function testSlack(): Promise<TestResult> {
   return { ok: true, detail: 'Mesaj de test trimis pe Slack.' };
 }
 
-const TESTS: Record<IntegrationName, () => Promise<TestResult>> = {
+async function testGoogle(): Promise<TestResult> {
+  const { clientId, clientSecret, allowedDomain } = await getIntegration('google');
+  if (!clientId.value || !clientSecret.value) {
+    return { ok: false, detail: 'Client ID și/sau Client secret lipsesc.' };
+  }
+  const domain = allowedDomain.value || 'simplead.ro';
+  const base = serverEnv('SITE_URL') || 'https://simplead.ro';
+  return {
+    ok: true,
+    detail: `Configurat pentru domeniul @${domain}. Verifică în Google Cloud redirect URI: ${base.replace(/\/$/, '')}/api/auth/google/callback`,
+  };
+}
+
+const TESTS: Partial<Record<IntegrationName, () => Promise<TestResult>>> = {
   stripe: testStripe,
   smartbill: testSmartbill,
   postmark: testPostmark,
   slack: testSlack,
+  google: testGoogle,
 };
 
 export const POST: APIRoute = async ({ request }) => {
