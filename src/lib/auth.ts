@@ -37,6 +37,9 @@ function createAuth() {
       enabled: true,
       minPasswordLength: 10,
       requireEmailVerification: false,
+      // Înregistrare publică OFF by default (PUBLIC_SIGNUP=true o activează).
+      // Nu afectează crearea de către admin (createUser) sau bootstrap-ul.
+      disableSignUp: serverEnv('PUBLIC_SIGNUP') !== 'true',
       sendResetPassword: async ({ user, url }) => {
         await sendEmail({
           to: user.email,

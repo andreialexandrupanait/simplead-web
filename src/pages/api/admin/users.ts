@@ -75,14 +75,24 @@ export const POST: APIRoute = async ({ request }) => {
           headers: request.headers,
           body: { email: body.email, name: body.name ?? '', password, role: body.role as AppRole },
         });
+        // Invitație: trimitem un link de setare a parolei (userul își alege parola).
+        let invited = false;
+        try {
+          await auth.api.requestPasswordReset({
+            body: { email: body.email, redirectTo: '/admin/reset-parola' },
+          });
+          invited = true;
+        } catch (err) {
+          console.warn('[admin/users] invitația prin email a eșuat:', err);
+        }
         await logAudit({
           ...base,
           action: 'user.create',
           targetEmail: body.email,
-          meta: { role: body.role },
+          meta: { role: body.role, invited },
         });
-        // Parola generată e întoarsă o singură dată (adminul o transmite userului).
-        return json({ ok: true, password });
+        // Întoarcem și parola temporară (fallback dacă emailul nu pleacă).
+        return json({ ok: true, invited, password });
       }
 
       case 'set-role': {

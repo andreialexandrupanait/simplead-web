@@ -1,0 +1,21 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import AccountSettings from '../../components/react/AccountSettings.tsx';
+
+export const prerender = false;
+
+// Middleware-ul a verificat deja că e staff autentificat.
+const me = Astro.locals.user;
+if (!me) return Astro.redirect('/admin/login');
+---
+
+<AdminLayout title="Contul meu">
+  <div class="admin-page-head">
+    <div>
+      <h1>Contul meu</h1>
+      <p class="admin-sub">Profil, parolă și sesiunile active.</p>
+    </div>
+  </div>
+
+  <AccountSettings client:load name={me.name ?? ''} email={me.email} />
+</AdminLayout>

@@ -17,10 +17,12 @@ interface ImportMetaEnv {
   readonly ADMIN_EMAIL?: string;
   readonly ADMIN_PASSWORD?: string;
   readonly ADMIN_PASSWORD_HASH?: string;
-  // Nume opțional pentru adminul de bootstrap (folosit de scripts/seed-admin.mjs).
+  // Nume opțional pentru adminul de bootstrap (POST /api/auth/setup).
   readonly ADMIN_NAME?: string;
   // Parolă pentru bootstrap-ul primului admin via POST /api/auth/setup (altfel se generează).
   readonly ADMIN_SETUP_PASSWORD?: string;
+  // Înregistrare publică (default OFF). 'true' = activează signup-ul public.
+  readonly PUBLIC_SIGNUP?: string;
   // Better Auth: secret de semnare (fallback pe SESSION_SECRET) + URL de bază (fallback pe SITE_URL).
   readonly BETTER_AUTH_SECRET?: string;
   readonly BETTER_AUTH_URL?: string;

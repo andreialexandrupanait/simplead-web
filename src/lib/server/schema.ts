@@ -69,42 +69,6 @@ export const ticketPriority = pgEnum('ticket_priority', [
 ]);
 
 /**
- * Conturi de administrator. Bootstrap-ul (primul admin) vine din variabilele de
- * mediu `ADMIN_EMAIL`/`ADMIN_PASSWORD_HASH` (vezi `scripts/seed-admin.mjs`);
- * ulterior se gestionează din /admin/utilizatori. `passwordHash` poate fi NULL
- * pentru conturi doar-Google; `googleSub` se completează la prima logare Google.
- */
-export const adminUsers = pgTable('admin_users', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  email: text('email').notNull().unique(),
-  name: text('name').notNull().default(''),
-  // Hash scrypt (`scrypt:salt:hash`) sau NULL dacă e cont doar-Google.
-  passwordHash: text('password_hash'),
-  // `sub` Google (id-ul stabil al contului), setat la prima logare cu Google.
-  googleSub: text('google_sub').unique(),
-  // 'active' | 'disabled' (text liber, validat în cod, ca alte coloane de stare).
-  status: text('status').$type<'active' | 'disabled'>().notNull().default('active'),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-  lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
-});
-
-/**
- * Token-uri de resetare a parolei: stocăm DOAR hash-ul SHA-256 al token-ului
- * (plaintext-ul ajunge doar în linkul din email), single-use, expirare scurtă.
- */
-export const passwordResetTokens = pgTable('password_reset_tokens', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => adminUsers.id, { onDelete: 'cascade' }),
-  tokenHash: text('token_hash').notNull().unique(),
-  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
-  usedAt: timestamp('used_at', { withTimezone: true }),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
-
-/**
  * Setări cheie/valoare. Cheile sunt namespaced (ex. `integration.stripe.secret_key`).
  * Valorile secrete sunt criptate AES-256-GCM (blob `v1:...`) și marcate `encrypted`.
  */

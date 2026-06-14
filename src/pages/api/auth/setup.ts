@@ -17,9 +17,9 @@ function json(data: unknown, status = 200): Response {
 
 /**
  * Bootstrap primul admin din variabilele de mediu. Self-locking: funcționează
- * DOAR când nu există niciun user (deci nu poate fi abuzat după inițializare).
- * Citește ADMIN_EMAIL + ADMIN_NAME; parola din ADMIN_SETUP_PASSWORD/ADMIN_PASSWORD
- * sau una generată (întoarsă o singură dată + logată pe server).
+ * DOAR când nu există niciun user. Creează userul programatic prin `$context`
+ * (funcționează chiar dacă înregistrarea publică e dezactivată), apoi îl ridică
+ * la rol `admin`. Parola din ADMIN_SETUP_PASSWORD/ADMIN_PASSWORD sau una generată.
  */
 export const POST: APIRoute = async () => {
   const db = getDb();
@@ -40,8 +40,20 @@ export const POST: APIRoute = async () => {
   }
 
   try {
-    await getAuth().api.signUpEmail({ body: { email, password, name } });
-    await db.update(user).set({ role: 'admin', emailVerified: true }).where(eq(user.email, email));
+    const ctx = await getAuth().$context;
+    const created = await ctx.internalAdapter.createUser({
+      email,
+      name,
+      emailVerified: true,
+    });
+    const hashed = await ctx.password.hash(password);
+    await ctx.internalAdapter.createAccount({
+      userId: created.id,
+      providerId: 'credential',
+      accountId: created.id,
+      password: hashed,
+    });
+    await db.update(user).set({ role: 'admin' }).where(eq(user.id, created.id));
   } catch (err) {
     console.error('[auth/setup] eșec:', err);
     return json({ ok: false, error: 'Crearea adminului a eșuat.' }, 500);
