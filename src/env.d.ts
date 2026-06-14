@@ -17,6 +17,12 @@ interface ImportMetaEnv {
   readonly ADMIN_EMAIL?: string;
   readonly ADMIN_PASSWORD?: string;
   readonly ADMIN_PASSWORD_HASH?: string;
+  // Nume opțional pentru adminul de bootstrap (folosit de scripts/seed-admin.mjs).
+  readonly ADMIN_NAME?: string;
+  // Login cu Google (OAuth). Lipsă = butonul „Continuă cu Google" e ascuns.
+  readonly GOOGLE_CLIENT_ID?: string;
+  readonly GOOGLE_CLIENT_SECRET?: string;
+  readonly GOOGLE_ALLOWED_DOMAIN?: string;
   // Fallback-uri env pentru integrări (valorile principale se setează în /admin/integrari).
   readonly POSTMARK_SERVER_TOKEN?: string;
   readonly POSTMARK_FROM_EMAIL?: string;

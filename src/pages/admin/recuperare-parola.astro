@@ -1,0 +1,114 @@
+---
+import AuthLayout from '../../layouts/AuthLayout.astro';
+import AuthAside from '../../components/ui/AuthAside.astro';
+import Logo from '../../components/ui/Logo.astro';
+import { createResetToken } from '../../lib/server/auth';
+import { findAdminByEmail } from '../../lib/server/admin-users';
+import { createRateLimiter } from '../../lib/server/rate-limit';
+import { sendEmail } from '../../lib/server/email';
+import { serverEnv } from '../../lib/server/env';
+
+export const prerender = false;
+
+// Rate-limit: 5 cereri / oră / IP (în memorie, per proces).
+const forgotLimiter = createRateLimiter({ windowMs: 60 * 60 * 1000, max: 5 });
+
+let sent = false;
+let error: string | null = null;
+
+if (Astro.request.method === 'POST') {
+  let ip = 'unknown';
+  try {
+    ip = Astro.clientAddress;
+  } catch {
+    /* indisponibil în unele contexte */
+  }
+
+  if (!forgotLimiter.allow(ip)) {
+    error = 'Prea multe cereri. Încearcă din nou peste o oră.';
+  } else {
+    const form = await Astro.request.formData();
+    const email = String(form.get('email') ?? '')
+      .trim()
+      .toLowerCase();
+
+    // Trimitem linkul DOAR dacă există un cont activ, dar răspundem identic
+    // indiferent (anti-enumerare): nu dezvăluim ce emailuri sunt înregistrate.
+    const user = email ? await findAdminByEmail(email) : null;
+    if (user && user.status === 'active') {
+      const token = await createResetToken(user.id);
+      if (token) {
+        const base = (serverEnv('SITE_URL') || new URL(Astro.request.url).origin).replace(
+          /\/$/,
+          '',
+        );
+        const link = `${base}/admin/reset-parola?token=${token}`;
+        await sendEmail({
+          to: user.email,
+          subject: 'Resetare parolă — Admin Simplead',
+          text: `Salut,\n\nAi cerut resetarea parolei pentru contul de administrare Simplead.\nDeschide linkul de mai jos ca să setezi o parolă nouă (expiră în 1 oră):\n\n${link}\n\nDacă nu tu ai cerut asta, ignoră acest email — parola rămâne neschimbată.\n\n— Simplead`,
+        });
+      }
+    }
+    sent = true;
+  }
+}
+---
+
+<AuthLayout title="Recuperare parolă">
+  <div class="auth-shell">
+    <AuthAside
+      title="Ai uitat parola?"
+      text="Îți trimitem un link de resetare pe email. În câteva minute ești din nou în cont."
+    />
+    <main class="auth-main">
+      <div class="auth-form-wrap">
+        <div class="auth-brand">
+          <Logo height={30} />
+        </div>
+
+        {
+          sent ? (
+            <>
+              <h1 class="auth-h1">Verifică-ți emailul</h1>
+              <p class="auth-sub">
+                Dacă există un cont cu adresa introdusă, ți-am trimis un link de resetare. Linkul
+                expiră în 1 oră.
+              </p>
+              <div class="auth-foot">
+                <a href="/admin/login">← Înapoi la autentificare</a>
+              </div>
+            </>
+          ) : (
+            <>
+              <h1 class="auth-h1">Recuperare parolă</h1>
+              <p class="auth-sub">
+                Introdu adresa de email a contului și îți trimitem un link de resetare.
+              </p>
+              {error && <div class="auth-banner auth-banner--error">{error}</div>}
+              <form method="post">
+                <label class="auth-field">
+                  <span>Email</span>
+                  <input
+                    class="auth-input"
+                    type="email"
+                    name="email"
+                    required
+                    autocomplete="username"
+                    placeholder="tu@simplead.ro"
+                  />
+                </label>
+                <button type="submit" class="auth-btn">
+                  Trimite linkul de resetare
+                </button>
+              </form>
+              <div class="auth-foot">
+                <a href="/admin/login">← Înapoi la autentificare</a>
+              </div>
+            </>
+          )
+        }
+      </div>
+    </main>
+  </div>
+</AuthLayout>

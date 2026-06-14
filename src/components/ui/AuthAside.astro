@@ -1,0 +1,26 @@
+---
+/**
+ * Panoul static din stânga paginilor de autentificare secundare (recuperare /
+ * reset parolă). Folosește aceleași clase ca .auth-carousel, dar fără carusel.
+ */
+interface Props {
+  img?: string;
+  title?: string;
+  text?: string;
+}
+const {
+  img = '/auth/slide-1.jpg',
+  title = 'Administrare Simplead',
+  text = 'Zona din care îți gestionezi site-ul: conținut, comenzi, lead-uri și mai mult.',
+} = Astro.props;
+---
+
+<aside class="auth-aside">
+  <div class="auth-carousel">
+    <div class="auth-slide is-active" style={`background-image:url('${img}')`}></div>
+    <div class="auth-caption">
+      <h2>{title}</h2>
+      <p>{text}</p>
+    </div>
+  </div>
+</aside>

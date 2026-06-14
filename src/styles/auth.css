@@ -1,0 +1,338 @@
+/*
+ * Stiluri pentru paginile de autentificare (login, recuperare, reset).
+ * Split-screen: carusel cu imagine în stânga (~50%), formular în dreapta.
+ * Pe tokenii din global.css. Folosit prin AuthLayout.astro.
+ */
+
+.auth-body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--canvas);
+}
+
+.auth-shell {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+/* ---------- Panoul stânga: carusel cu imagine ---------- */
+.auth-aside {
+  position: relative;
+  padding: 16px;
+}
+.auth-carousel {
+  position: relative;
+  height: 100%;
+  min-height: 480px;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--ink) 0%, var(--ink-soft) 60%, #0a2a6b 100%);
+}
+.auth-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 0.8s var(--ease);
+}
+.auth-slide.is-active {
+  opacity: 1;
+}
+/* văl gradient ca textul să fie lizibil peste poză */
+.auth-carousel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(3, 13, 74, 0.05) 30%, rgba(3, 13, 74, 0.78) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+.auth-caption {
+  position: absolute;
+  left: clamp(24px, 3vw, 44px);
+  bottom: clamp(72px, 8vw, 96px);
+  right: clamp(24px, 3vw, 44px);
+  z-index: 2;
+  color: #fff;
+}
+.auth-caption h2 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.auth-caption p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 38ch;
+}
+
+/* controale carusel jos-stânga */
+.auth-carousel__controls {
+  position: absolute;
+  left: clamp(24px, 3vw, 44px);
+  bottom: clamp(22px, 2.4vw, 34px);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.auth-cbtn {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition:
+    background 0.2s var(--ease),
+    transform 0.2s var(--ease);
+}
+.auth-cbtn:hover {
+  background: rgba(255, 255, 255, 0.24);
+  transform: translateY(-1px);
+}
+.auth-cbtn svg {
+  width: 16px;
+  height: 16px;
+}
+.auth-counter {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  min-width: 42px;
+  text-align: center;
+}
+
+/* ---------- Panoul dreapta: formularul ---------- */
+.auth-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(32px, 5vw, 64px);
+}
+.auth-form-wrap {
+  width: 100%;
+  max-width: 380px;
+}
+.auth-brand {
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+.auth-h1 {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 2.6vw, 2rem);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.auth-sub {
+  margin: 0 0 28px;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.auth-field {
+  display: block;
+  margin-bottom: 18px;
+}
+.auth-field > span {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.auth-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 15px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: #fff;
+  transition:
+    border-color 0.18s var(--ease),
+    box-shadow 0.18s var(--ease);
+}
+.auth-input:focus {
+  outline: none;
+  border-color: var(--electric);
+  box-shadow: 0 0 0 3px rgba(0, 119, 252, 0.14);
+}
+
+.auth-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 4px 0 22px;
+}
+.auth-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+}
+.auth-check input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--electric);
+  cursor: pointer;
+}
+.auth-link {
+  font-size: 0.9rem;
+  color: var(--electric);
+  text-decoration: none;
+  font-weight: 500;
+}
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+.auth-btn {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 20px;
+  border: none;
+  border-radius: var(--r-md);
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition:
+    filter 0.18s var(--ease),
+    transform 0.18s var(--ease);
+}
+.auth-btn:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 22px 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.auth-btn--google {
+  width: 100%;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 13px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.98rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    border-color 0.18s var(--ease),
+    box-shadow 0.18s var(--ease);
+}
+.auth-btn--google:hover {
+  border-color: rgba(0, 119, 252, 0.4);
+  box-shadow: var(--sh-sm);
+}
+.auth-btn--google svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* bannere de stare */
+.auth-banner {
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  font-size: 0.92rem;
+  margin-bottom: 18px;
+}
+.auth-banner--error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+.auth-banner--ok {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+}
+.auth-banner--warn {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+.auth-banner code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+.auth-foot {
+  margin-top: 26px;
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-align: center;
+}
+.auth-foot a {
+  color: var(--electric);
+  text-decoration: none;
+  font-weight: 500;
+}
+.auth-foot a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Responsive: sub 900px ascundem caruselul ---------- */
+@media (max-width: 900px) {
+  .auth-shell {
+    grid-template-columns: 1fr;
+  }
+  .auth-aside {
+    display: none;
+  }
+  .auth-main {
+    min-height: 100vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-slide {
+    transition: none;
+  }
+}

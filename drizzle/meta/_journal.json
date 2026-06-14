@@ -71,6 +71,13 @@
       "when": 1781383772493,
       "tag": "0009_messy_mantis",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1781457081410,
+      "tag": "0010_square_tomas",
+      "breakpoints": true
     }
   ]
 }

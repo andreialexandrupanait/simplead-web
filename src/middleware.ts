@@ -29,8 +29,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   if (!isAdminPath) return next();
 
+  // Pagini admin accesibile fără sesiune (login + recuperare parolă).
   const isLoginPage = pathname === '/admin/login';
-  if (!context.locals.isAdmin && !isLoginPage) {
+  const isPublicAdmin =
+    isLoginPage || pathname === '/admin/recuperare-parola' || pathname === '/admin/reset-parola';
+
+  if (!context.locals.isAdmin && !isPublicAdmin) {
     return context.redirect(`/admin/login?next=${encodeURIComponent(pathname)}`, 302);
   }
   if (context.locals.isAdmin && isLoginPage) {

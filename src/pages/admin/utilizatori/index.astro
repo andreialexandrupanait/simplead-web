@@ -1,0 +1,264 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import EmptyState from '../../../components/admin/EmptyState.astro';
+import { getDb } from '../../../lib/server/db';
+import {
+  countActiveAdmins,
+  createAdmin,
+  deleteAdmin,
+  findAdminByEmail,
+  findAdminById,
+  listAdmins,
+  setAdminStatus,
+} from '../../../lib/server/admin-users';
+import { createResetToken, getSessionPayload, SESSION_COOKIE } from '../../../lib/server/auth';
+import { sendEmail } from '../../../lib/server/email';
+import { serverEnv } from '../../../lib/server/env';
+import { setFlash } from '../../../lib/server/flash';
+
+export const prerender = false;
+
+const db = getDb();
+
+const me = getSessionPayload(Astro.cookies.get(SESSION_COOKIE)?.value);
+
+const baseUrl = (serverEnv('SITE_URL') || new URL(Astro.request.url).origin).replace(/\/$/, '');
+
+async function sendResetLink(userId: string, email: string): Promise<boolean> {
+  const token = await createResetToken(userId);
+  if (!token) return false;
+  const link = `${baseUrl}/admin/reset-parola?token=${token}`;
+  await sendEmail({
+    to: email,
+    subject: 'Acces administrare Simplead — setează-ți parola',
+    text: `Salut,\n\nAi primit acces în administrarea Simplead. Deschide linkul de mai jos ca să-ți setezi parola (expiră în 1 oră):\n\n${link}\n\nDacă nu te așteptai la acest email, ignoră-l.\n\n— Simplead`,
+  });
+  return true;
+}
+
+if (Astro.request.method === 'POST' && db) {
+  const form = await Astro.request.formData();
+  const action = String(form.get('action') ?? '');
+
+  if (action === 'create') {
+    const email = String(form.get('email') ?? '')
+      .trim()
+      .toLowerCase();
+    const name = String(form.get('name') ?? '').trim();
+    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      setFlash(Astro.cookies, { kind: 'error', msg: 'Email invalid.' });
+    } else if (await findAdminByEmail(email)) {
+      setFlash(Astro.cookies, { kind: 'error', msg: 'Există deja un admin cu acest email.' });
+    } else {
+      const user = await createAdmin({ email, name, passwordHash: null });
+      if (user) {
+        const linkSent = await sendResetLink(user.id, user.email);
+        setFlash(Astro.cookies, {
+          kind: 'ok',
+          msg: linkSent
+            ? `Admin creat. I-am trimis ${email} un link de setare a parolei.`
+            : 'Admin creat, dar trimiterea linkului a eșuat. Trimite-l manual din listă.',
+        });
+      } else {
+        setFlash(Astro.cookies, { kind: 'error', msg: 'Crearea adminului a eșuat.' });
+      }
+    }
+    return Astro.redirect('/admin/utilizatori', 303);
+  }
+
+  if (action === 'send-reset') {
+    const id = String(form.get('id') ?? '');
+    const user = await findAdminById(id);
+    if (user) {
+      const ok = await sendResetLink(user.id, user.email);
+      setFlash(Astro.cookies, {
+        kind: ok ? 'ok' : 'error',
+        msg: ok ? `Link de resetare trimis către ${user.email}.` : 'Trimiterea a eșuat.',
+      });
+    }
+    return Astro.redirect('/admin/utilizatori', 303);
+  }
+
+  if (action === 'toggle-status') {
+    const id = String(form.get('id') ?? '');
+    const user = await findAdminById(id);
+    if (user) {
+      const next = user.status === 'active' ? 'disabled' : 'active';
+      // Anti-lockout: nu dezactiva ultimul admin activ.
+      if (next === 'disabled' && (await countActiveAdmins(id)) === 0) {
+        setFlash(Astro.cookies, {
+          kind: 'error',
+          msg: 'Nu poți dezactiva ultimul admin activ.',
+        });
+      } else {
+        await setAdminStatus(id, next);
+        setFlash(Astro.cookies, {
+          kind: 'ok',
+          msg: next === 'disabled' ? 'Admin dezactivat.' : 'Admin reactivat.',
+        });
+      }
+    }
+    return Astro.redirect('/admin/utilizatori', 303);
+  }
+
+  if (action === 'delete') {
+    const id = String(form.get('id') ?? '');
+    const user = await findAdminById(id);
+    if (user) {
+      // Anti-lockout: nu șterge dacă ar rămâne zero admini activi.
+      if ((await countActiveAdmins(id)) === 0) {
+        setFlash(Astro.cookies, {
+          kind: 'error',
+          msg: 'Nu poți șterge ultimul admin activ.',
+        });
+      } else {
+        await deleteAdmin(id);
+        setFlash(Astro.cookies, { kind: 'ok', msg: 'Admin șters.' });
+      }
+    }
+    return Astro.redirect('/admin/utilizatori', 303);
+  }
+}
+
+const admins = db ? await listAdmins() : [];
+const dateFmt = new Intl.DateTimeFormat('ro-RO', { dateStyle: 'medium', timeStyle: 'short' });
+---
+
+<AdminLayout title="Utilizatori">
+  <div class="admin-page-head">
+    <div>
+      <h1>Utilizatori</h1>
+      <p class="admin-sub">Conturile care au acces în administrare.</p>
+    </div>
+  </div>
+
+  {
+    !db && (
+      <div class="admin-banner admin-banner--warn">
+        <strong>Fără bază de date.</strong> Gestiunea utilizatorilor are nevoie de o conexiune la
+        Postgres. Momentan se folosește contul de admin din variabilele de mediu.
+      </div>
+    )
+  }
+
+  {
+    db && (
+      <>
+        <div class="admin-card" style="margin-bottom:20px">
+          <h2 style="margin:0 0 4px;font-size:1.05rem">Adaugă un admin</h2>
+          <p class="admin-sub" style="margin:0 0 16px">
+            Îi trimitem pe email un link de setare a parolei. Poate intra și cu Google (cont
+            @simplead.ro).
+          </p>
+          <form method="post" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+            <input type="hidden" name="action" value="create" />
+            <label class="admin-field" style="flex:1;min-width:220px">
+              <span>Email</span>
+              <input
+                class="admin-input"
+                type="email"
+                name="email"
+                required
+                placeholder="coleg@simplead.ro"
+              />
+            </label>
+            <label class="admin-field" style="flex:1;min-width:180px">
+              <span>Nume (opțional)</span>
+              <input class="admin-input" type="text" name="name" placeholder="Nume Prenume" />
+            </label>
+            <button type="submit" class="admin-btn">
+              Adaugă și trimite invitația
+            </button>
+          </form>
+        </div>
+
+        <div class="admin-card admin-card--flush">
+          {admins.length === 0 ? (
+            <EmptyState
+              title="Niciun admin în baza de date"
+              hint="Rulează `pnpm seed:admin` ca să imporți contul din variabilele de mediu, apoi adaugă colegi de aici."
+            />
+          ) : (
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Cont</th>
+                    <th>Metodă</th>
+                    <th>Status</th>
+                    <th>Ultima logare</th>
+                    <th style="text-align:right">Acțiuni</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {admins.map((u) => (
+                    <tr>
+                      <td>
+                        <strong>{u.name || u.email}</strong>
+                        {u.name && (
+                          <>
+                            <br />
+                            <span style="color:var(--muted);font-size:0.85rem">{u.email}</span>
+                          </>
+                        )}
+                        {me?.sub === u.id && (
+                          <span style="color:var(--electric);font-size:0.78rem"> (tu)</span>
+                        )}
+                      </td>
+                      <td style="font-size:0.88rem;color:var(--muted)">
+                        {u.passwordHash ? 'Parolă' : '—'}
+                        {u.googleSub ? (u.passwordHash ? ' + Google' : 'Google') : ''}
+                      </td>
+                      <td>
+                        <span
+                          style={`font-size:0.82rem;font-weight:600;color:${u.status === 'active' ? 'var(--electric)' : 'var(--muted)'}`}
+                        >
+                          {u.status === 'active' ? 'Activ' : 'Dezactivat'}
+                        </span>
+                      </td>
+                      <td style="white-space:nowrap;font-size:0.88rem;color:var(--muted)">
+                        {u.lastLoginAt ? dateFmt.format(u.lastLoginAt) : 'Niciodată'}
+                      </td>
+                      <td>
+                        <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">
+                          <form method="post">
+                            <input type="hidden" name="action" value="send-reset" />
+                            <input type="hidden" name="id" value={u.id} />
+                            <button type="submit" class="admin-btn admin-btn--ghost admin-btn--sm">
+                              Trimite reset
+                            </button>
+                          </form>
+                          <form method="post">
+                            <input type="hidden" name="action" value="toggle-status" />
+                            <input type="hidden" name="id" value={u.id} />
+                            <button type="submit" class="admin-btn admin-btn--ghost admin-btn--sm">
+                              {u.status === 'active' ? 'Dezactivează' : 'Reactivează'}
+                            </button>
+                          </form>
+                          <form
+                            method="post"
+                            onsubmit="return confirm('Sigur ștergi acest admin?')"
+                          >
+                            <input type="hidden" name="action" value="delete" />
+                            <input type="hidden" name="id" value={u.id} />
+                            <button
+                              type="submit"
+                              class="admin-btn admin-btn--ghost admin-btn--sm"
+                              style="color:#b91c1c"
+                            >
+                              Șterge
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </>
+    )
+  }
+</AdminLayout>

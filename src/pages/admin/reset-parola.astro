@@ -1,0 +1,106 @@
+---
+import AuthLayout from '../../layouts/AuthLayout.astro';
+import AuthAside from '../../components/ui/AuthAside.astro';
+import Logo from '../../components/ui/Logo.astro';
+import { consumeResetToken } from '../../lib/server/auth';
+import { setAdminPassword } from '../../lib/server/admin-users';
+import { scryptHash } from '../../lib/server/crypto';
+
+export const prerender = false;
+
+let error: string | null = null;
+// Token-ul din URL (GET) sau din formular (POST). NU îl consumăm la GET.
+let token = Astro.url.searchParams.get('token') ?? '';
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  token = String(form.get('token') ?? '');
+  const password = String(form.get('password') ?? '');
+  const confirm = String(form.get('confirm') ?? '');
+
+  if (password.length < 10) {
+    error = 'Parola trebuie să aibă cel puțin 10 caractere.';
+  } else if (password !== confirm) {
+    error = 'Parolele nu coincid.';
+  } else {
+    const userId = await consumeResetToken(token);
+    if (!userId) {
+      error = 'Linkul de resetare e invalid sau a expirat. Cere unul nou.';
+    } else {
+      const ok = await setAdminPassword(userId, scryptHash(password));
+      if (ok) {
+        return Astro.redirect('/admin/login?reset=ok', 303);
+      }
+      error = 'Nu am putut salva parola. Încearcă din nou.';
+    }
+  }
+}
+
+const hasToken = Boolean(token);
+---
+
+<AuthLayout title="Setează o parolă nouă">
+  <div class="auth-shell">
+    <AuthAside
+      title="Setează o parolă nouă"
+      text="Alege o parolă puternică, de cel puțin 10 caractere. Apoi te poți autentifica imediat."
+    />
+    <main class="auth-main">
+      <div class="auth-form-wrap">
+        <div class="auth-brand">
+          <Logo height={30} />
+        </div>
+        <h1 class="auth-h1">Parolă nouă</h1>
+
+        {
+          !hasToken ? (
+            <>
+              <p class="auth-sub">Link invalid. Cere un link nou de resetare.</p>
+              <div class="auth-foot">
+                <a href="/admin/recuperare-parola">Cere un link de resetare</a>
+              </div>
+            </>
+          ) : (
+            <>
+              <p class="auth-sub">Introdu noua parolă pentru contul tău.</p>
+              {error && <div class="auth-banner auth-banner--error">{error}</div>}
+              <form method="post">
+                <input type="hidden" name="token" value={token} />
+                <label class="auth-field">
+                  <span>Parolă nouă</span>
+                  <input
+                    class="auth-input"
+                    type="password"
+                    name="password"
+                    required
+                    minlength="10"
+                    autocomplete="new-password"
+                    placeholder="cel puțin 10 caractere"
+                  />
+                </label>
+                <label class="auth-field">
+                  <span>Confirmă parola</span>
+                  <input
+                    class="auth-input"
+                    type="password"
+                    name="confirm"
+                    required
+                    minlength="10"
+                    autocomplete="new-password"
+                    placeholder="repetă parola"
+                  />
+                </label>
+                <button type="submit" class="auth-btn">
+                  Salvează parola
+                </button>
+              </form>
+              <div class="auth-foot">
+                <a href="/admin/login">← Înapoi la autentificare</a>
+              </div>
+            </>
+          )
+        }
+      </div>
+    </main>
+  </div>
+</AuthLayout>

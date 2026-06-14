@@ -1,10 +1,13 @@
 ---
-import AdminLayout from '../../layouts/AdminLayout.astro';
+import AuthLayout from '../../layouts/AuthLayout.astro';
+import Logo from '../../components/ui/Logo.astro';
 import {
+  REMEMBER_TTL_S,
   checkLoginRateLimit,
   clearFailedLogins,
   createSessionToken,
   isAdminConfigured,
+  isGoogleConfigured,
   recordFailedLogin,
   setSessionCookie,
   verifyAdminCredentials,
@@ -13,7 +16,26 @@ import {
 export const prerender = false;
 
 const configured = isAdminConfigured();
+const googleOn = isGoogleConfigured();
 let error: string | null = null;
+
+// Erori venite prin redirect (ex. de la fluxul Google).
+const queryErrors: Record<string, string> = {
+  google: 'Autentificarea cu Google a eșuat. Încearcă din nou.',
+  'google-state': 'Sesiunea Google a expirat. Încearcă din nou.',
+  'google-domain': 'Folosește un cont Google din domeniul @simplead.ro.',
+  'google-account': 'Contul Google nu are acces în administrare.',
+  'google-disabled': 'Autentificarea cu Google nu e configurată.',
+  session: 'Sesiunea nu a putut fi creată. Verifică SESSION_SECRET.',
+};
+const qe = Astro.url.searchParams.get('error');
+if (qe && queryErrors[qe]) error = queryErrors[qe];
+
+// Mesaj de succes după resetarea parolei.
+const notice =
+  Astro.url.searchParams.get('reset') === 'ok'
+    ? 'Parola a fost schimbată. Intră cu noua parolă.'
+    : null;
 
 if (Astro.request.method === 'POST' && configured) {
   let ip = 'unknown';
@@ -29,12 +51,18 @@ if (Astro.request.method === 'POST' && configured) {
     const form = await Astro.request.formData();
     const email = String(form.get('email') ?? '');
     const password = String(form.get('password') ?? '');
+    const remember = form.get('remember') === 'on';
 
-    if (verifyAdminCredentials(email, password)) {
+    const cred = await verifyAdminCredentials(email, password);
+    if (cred) {
       clearFailedLogins(ip);
-      const token = createSessionToken();
+      const token = createSessionToken({
+        sub: cred.sub,
+        email: cred.email,
+        ttlS: remember ? REMEMBER_TTL_S : undefined,
+      });
       if (token) {
-        setSessionCookie(Astro.cookies, token);
+        setSessionCookie(Astro.cookies, token, remember ? { maxAge: REMEMBER_TTL_S } : {});
         const next = Astro.url.searchParams.get('next');
         return Astro.redirect(next && next.startsWith('/admin') ? next : '/admin', 303);
       }
@@ -45,60 +73,219 @@ if (Astro.request.method === 'POST' && configured) {
     }
   }
 }
+
+// Slide-urile caruselului. Imaginile se pun în public/auth/ (slide-1.jpg…);
+// dacă lipsesc, se vede gradientul de fundal din auth.css.
+const slides = [
+  {
+    img: '/auth/slide-1.jpg',
+    title: 'Grafică & marketing, dintr-un loc',
+    text: 'Site, identitate vizuală și campanii — gândite să aducă rezultate, nu doar să arate bine.',
+  },
+  {
+    img: '/auth/slide-2.jpg',
+    title: 'Decizii pe date, nu pe ghicite',
+    text: 'Analiză, neuromarketing și măsurători la fiecare pas. Știi mereu unde suntem și de ce.',
+  },
+  {
+    img: '/auth/slide-3.jpg',
+    title: 'Transparent, de la cap la coadă',
+    text: 'Update-uri regulate și un proces clar. Nicio surpriză, doar muncă și rezultate.',
+  },
+  {
+    img: '/auth/slide-4.jpg',
+    title: 'Rămânem alături după lansare',
+    text: 'Mentenanță, optimizare și suport. Pentru noi treaba se termină când se văd rezultatele.',
+  },
+];
 ---
 
-<AdminLayout title="Autentificare" bare>
-  <div class="login-wrap">
-    <div class="admin-card">
-      <h1>Autentificare</h1>
-      <p class="admin-sub">Zona de administrare Simplead.</p>
+<AuthLayout title="Autentificare">
+  <div class="auth-shell">
+    <aside class="auth-aside">
+      <div class="auth-carousel" id="authCarousel" aria-label="Galerie Simplead">
+        {
+          slides.map((s, i) => (
+            <div
+              class:list={['auth-slide', i === 0 && 'is-active']}
+              data-i={i}
+              data-title={s.title}
+              data-text={s.text}
+              style={`background-image:url('${s.img}')`}
+            />
+          ))
+        }
+        <div class="auth-caption">
+          <h2 id="authCapTitle">{slides[0].title}</h2>
+          <p id="authCapText">{slides[0].text}</p>
+        </div>
+        <div class="auth-carousel__controls">
+          <button class="auth-cbtn" id="authPause" type="button" aria-label="Pauză/redă">
+            <svg viewBox="0 0 24 24" fill="currentColor" id="authPauseIcon">
+              <rect x="6" y="5" width="4" height="14" rx="1"></rect>
+              <rect x="14" y="5" width="4" height="14" rx="1"></rect>
+            </svg>
+          </button>
+          <span class="auth-counter" id="authCounter">1 / {slides.length}</span>
+          <button class="auth-cbtn" id="authPrev" type="button" aria-label="Slide anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m15 18-6-6 6-6"></path>
+            </svg>
+          </button>
+          <button class="auth-cbtn" id="authNext" type="button" aria-label="Slide următor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
 
-      {
-        !configured ? (
-          <div class="admin-banner admin-banner--warn">
-            <strong>Admin neconfigurat.</strong> Setează variabilele de mediu
-            <code>SESSION_SECRET</code>, <code>ADMIN_EMAIL</code> și
-            <code>ADMIN_PASSWORD_HASH</code> (generate cu <code>pnpm gen:key --password "..."</code>
-            ), apoi repornește aplicația.
-          </div>
-        ) : (
-          <>
-            {error && <div class="admin-banner admin-banner--error">{error}</div>}
-            <form method="post">
-              <label class="admin-field">
-                <span>Email</span>
-                <input
-                  class="admin-input"
-                  type="email"
-                  name="email"
-                  required
-                  autocomplete="username"
-                />
-              </label>
-              <label class="admin-field">
-                <span>Parolă</span>
-                <input
-                  class="admin-input"
-                  type="password"
-                  name="password"
-                  required
-                  autocomplete="current-password"
-                />
-              </label>
-              <button type="submit" class="admin-btn">
-                Intră
-              </button>
-            </form>
-          </>
-        )
-      }
-    </div>
+    <main class="auth-main">
+      <div class="auth-form-wrap">
+        <div class="auth-brand">
+          <Logo height={30} />
+        </div>
+        <h1 class="auth-h1">Bine ai venit</h1>
+        <p class="auth-sub">Introdu datele de logare ca să intri în administrare.</p>
+
+        {
+          !configured ? (
+            <div class="auth-banner auth-banner--warn">
+              <strong>Admin neconfigurat.</strong> Setează <code>SESSION_SECRET</code>,{' '}
+              <code>ADMIN_EMAIL</code> și <code>ADMIN_PASSWORD_HASH</code> (generate cu{' '}
+              <code>pnpm gen:key --password "..."</code>), apoi repornește aplicația.
+            </div>
+          ) : (
+            <>
+              {notice && <div class="auth-banner auth-banner--ok">{notice}</div>}
+              {error && <div class="auth-banner auth-banner--error">{error}</div>}
+              <form method="post">
+                <label class="auth-field">
+                  <span>Email</span>
+                  <input
+                    class="auth-input"
+                    type="email"
+                    name="email"
+                    required
+                    autocomplete="username"
+                    placeholder="tu@simplead.ro"
+                  />
+                </label>
+                <label class="auth-field">
+                  <span>Parolă</span>
+                  <input
+                    class="auth-input"
+                    type="password"
+                    name="password"
+                    required
+                    autocomplete="current-password"
+                    placeholder="••••••••"
+                  />
+                </label>
+                <div class="auth-row">
+                  <label class="auth-check">
+                    <input type="checkbox" name="remember" />
+                    Ține-mă minte
+                  </label>
+                  <a class="auth-link" href="/admin/recuperare-parola">
+                    Ai uitat parola?
+                  </a>
+                </div>
+                <button type="submit" class="auth-btn">
+                  Intră în cont
+                </button>
+              </form>
+
+              {googleOn && (
+                <>
+                  <div class="auth-divider">sau</div>
+                  <a class="auth-btn--google" href="/api/auth/google/start">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        fill="#4285F4"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1Z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23Z"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84Z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38Z"
+                      />
+                    </svg>
+                    Continuă cu Google
+                  </a>
+                </>
+              )}
+            </>
+          )
+        }
+      </div>
+    </main>
   </div>
-</AdminLayout>
+</AuthLayout>
 
-<style>
-  .login-wrap {
-    max-width: 420px;
-    margin: 8vh auto 0;
+<script>
+  // Carusel: autoplay (6s), prev/next, pauză. Respectă prefers-reduced-motion.
+  const root = document.getElementById('authCarousel');
+  if (root) {
+    const slides = Array.from(root.querySelectorAll<HTMLElement>('.auth-slide'));
+    const capTitle = document.getElementById('authCapTitle');
+    const capText = document.getElementById('authCapText');
+    const counter = document.getElementById('authCounter');
+    const pauseBtn = document.getElementById('authPause');
+    const pauseIcon = document.getElementById('authPauseIcon');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Titlul/subtitlul fiecărui slide sunt în data-* pe elementele .auth-slide.
+    const captions = slides.map((s) => ({
+      title: s.dataset.title ?? '',
+      text: s.dataset.text ?? '',
+    }));
+
+    let i = 0;
+    let timer: ReturnType<typeof setInterval> | undefined;
+    let paused = reduce;
+
+    const PLAY =
+      '<rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect>';
+    const RESUME = '<path d="M7 5v14l11-7L7 5Z"></path>';
+
+    const show = (n: number) => {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, k) => s.classList.toggle('is-active', k === i));
+      if (counter) counter.textContent = `${i + 1} / ${slides.length}`;
+      if (capTitle) capTitle.textContent = captions[i].title;
+      if (capText) capText.textContent = captions[i].text;
+    };
+
+    const start = () => {
+      clearInterval(timer);
+      if (paused) return;
+      timer = setInterval(() => show(i + 1), 6000);
+    };
+
+    document.getElementById('authNext')?.addEventListener('click', () => {
+      show(i + 1);
+      start();
+    });
+    document.getElementById('authPrev')?.addEventListener('click', () => {
+      show(i - 1);
+      start();
+    });
+    pauseBtn?.addEventListener('click', () => {
+      paused = !paused;
+      if (pauseIcon) pauseIcon.innerHTML = paused ? RESUME : PLAY;
+      start();
+    });
+
+    if (reduce && pauseIcon) pauseIcon.innerHTML = RESUME;
+    start();
   }
-</style>
+</script>
