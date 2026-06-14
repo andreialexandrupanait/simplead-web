@@ -34,7 +34,22 @@ const current = await getPublicSettings();
   {saveError && <div class="admin-banner admin-banner--error">{saveError}</div>}
 
   <form method="post" style="max-width:560px">
-    <div class="admin-card">
+    <div
+      class="admin-card"
+      style={`border-color:${current.maintenanceMode ? 'var(--signal, #f5d93f)' : ''}`}
+    >
+      <h2>Mentenanță site</h2>
+      <label class="admin-field admin-check" style="align-self:start">
+        <input type="checkbox" name="maintenanceMode" value="1" checked={current.maintenanceMode} />
+        <span style="margin:0">Pune tot site-ul în mentenanță</span>
+      </label>
+      <p class="admin-hint" style="margin-top:8px">
+        Bifat: vizitatorii văd un ecran „în mentenanță" (503) pe toate paginile principale. Tu,
+        logat în admin, vezi site-ul normal, cu un banner de avertizare. Adminul rămâne accesibil.
+      </p>
+    </div>
+
+    <div class="admin-card" style="margin-top:20px">
       <h2>Telefon</h2>
       <label class="admin-field admin-check" style="align-self:start">
         <input type="checkbox" name="showPhone" value="1" checked={current.showPhone} />

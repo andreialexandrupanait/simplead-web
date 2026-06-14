@@ -25,6 +25,7 @@ export interface PublicSettings {
   whatsappNumber: string; // doar cifre (E.164 fără +), '' = neconfigurat
   hiddenHomeSections: string[]; // cheile secțiunilor de homepage ascunse
   constructionPages: string[]; // căile paginilor marcate „în construcție"
+  maintenanceMode: boolean; // tot site-ul în mentenanță (vizitatorii văd 503)
 }
 
 const KEYS = {
@@ -32,6 +33,7 @@ const KEYS = {
   whatsappNumber: 'site.whatsapp_number',
   hiddenHomeSections: 'site.hidden_home_sections',
   constructionPages: 'site.construction_pages',
+  maintenanceMode: 'site.maintenance_mode',
 } as const;
 
 const DEFAULTS: PublicSettings = {
@@ -40,6 +42,7 @@ const DEFAULTS: PublicSettings = {
   // Implicit: „Studii de caz" și „Ce spun clienții" sunt ascunse până sunt gata.
   hiddenHomeSections: ['case-studies', 'testimonials'],
   constructionPages: [],
+  maintenanceMode: false,
 };
 
 const TTL_MS = 60_000;
@@ -79,6 +82,7 @@ export async function getPublicSettings(): Promise<PublicSettings> {
       const map = new Map(rows.map((r) => [r.key, r.value]));
       value.showPhone = map.get(KEYS.showPhone) === 'true';
       value.whatsappNumber = (map.get(KEYS.whatsappNumber) ?? '').replace(/[^\d]/g, '');
+      value.maintenanceMode = map.get(KEYS.maintenanceMode) === 'true';
       // Cheie prezentă = setare salvată din admin (poate fi listă goală).
       // Cheie absentă = niciodată salvată → folosim default-ul.
       if (map.has(KEYS.hiddenHomeSections)) {
@@ -100,6 +104,7 @@ export async function savePublicSettings(input: {
   whatsappNumber: string;
   hiddenHomeSections: string[];
   constructionPages: string[];
+  maintenanceMode: boolean;
 }): Promise<SavePublicResult> {
   const db = getDb();
   if (!db) {
@@ -112,6 +117,7 @@ export async function savePublicSettings(input: {
     { key: KEYS.whatsappNumber, value: input.whatsappNumber.replace(/[^\d]/g, '') },
     { key: KEYS.hiddenHomeSections, value: JSON.stringify(hidden) },
     { key: KEYS.constructionPages, value: JSON.stringify(construction) },
+    { key: KEYS.maintenanceMode, value: input.maintenanceMode ? 'true' : 'false' },
   ];
   try {
     for (const p of pairs) {

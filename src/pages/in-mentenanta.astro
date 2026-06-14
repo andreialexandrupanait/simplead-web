@@ -1,0 +1,113 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Button from '@components/ui/Button.astro';
+
+export const prerender = false;
+
+// Servită prin rewrite din middleware când tot site-ul e în mentenanță.
+Astro.response.status = 503;
+Astro.response.headers.set('Retry-After', '3600');
+---
+
+<BaseLayout title="În mentenanță" noindex>
+  <section class="mt">
+    <div class="site-container mt__inner">
+      <span class="mt__ic" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6a1.4 1.4 0 0 0 2 2l6-6a4 4 0 0 0 5.4-5.4l-2.6 2.6-2-2 2.6-2.6Z"
+          ></path>
+          <path d="m14 14 4.5 4.5a1.4 1.4 0 0 0 2-2L16 12"></path>
+        </svg>
+      </span>
+      <p class="mt__eyebrow">În mentenanță</p>
+      <h1 class="mt__title">Revenim în câteva momente.</h1>
+      <p class="mt__sub">
+        Facem niște îmbunătățiri la site. Reîncarcă pagina în scurt timp. Dacă ai ceva urgent,
+        scrie-ne direct și îți răspundem.
+      </p>
+      <div class="mt__cta">
+        <Button href="/contact" size="lg" withArrow>Scrie-ne</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .mt {
+    position: relative;
+    background: var(--canvas);
+    padding-block: clamp(80px, 14vw, 180px);
+    overflow: hidden;
+  }
+  .mt::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0, 119, 252, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 119, 252, 0.06) 1px, transparent 1px);
+    background-size: 54px 54px;
+    -webkit-mask-image: radial-gradient(70% 70% at 50% 30%, #000, transparent 75%);
+    mask-image: radial-gradient(70% 70% at 50% 30%, #000, transparent 75%);
+    pointer-events: none;
+  }
+  .mt__inner {
+    position: relative;
+    max-width: 620px;
+    margin-inline: auto;
+    text-align: center;
+  }
+  .mt__ic {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: var(--r-md);
+    background: var(--signal);
+    color: var(--ink);
+    box-shadow: var(--sh-md);
+  }
+  .mt__ic svg {
+    width: 32px;
+    height: 32px;
+  }
+  .mt__eyebrow {
+    margin-top: 24px;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.74rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--electric);
+  }
+  .mt__title {
+    margin-top: 12px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 4.6vw, 3.2rem);
+    line-height: 1.07;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .mt__sub {
+    margin: 18px auto 0;
+    max-width: 46ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .mt__cta {
+    margin-top: 32px;
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+</style>

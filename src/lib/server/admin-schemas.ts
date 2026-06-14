@@ -275,6 +275,7 @@ export interface SiteSettingsFormData {
   whatsappNumber: string;
   hiddenHomeSections: string[];
   constructionPages: string[];
+  maintenanceMode: boolean;
 }
 
 export function parseSiteSettingsForm(form: FormData): SiteSettingsFormData {
@@ -290,7 +291,8 @@ export function parseSiteSettingsForm(form: FormData): SiteSettingsFormData {
   const constructionPages = TOGGLEABLE_PAGES.filter((p) => form.get(`construction.${p.path}`)).map(
     (p) => p.path,
   );
-  return { ...base, hiddenHomeSections, constructionPages };
+  const maintenanceMode = Boolean(form.get('maintenanceMode'));
+  return { ...base, hiddenHomeSections, constructionPages, maintenanceMode };
 }
 
 /** Validare pentru formularul de proiecte de portofoliu din admin. */

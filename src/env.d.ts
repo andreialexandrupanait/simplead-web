@@ -46,5 +46,7 @@ declare namespace App {
     isAdmin: boolean;
     /** Pagina curentă e marcată „în construcție" (pentru bannerul de admin). */
     pageUnderConstruction?: boolean;
+    /** Tot site-ul e în mentenanță (pentru bannerul de admin). */
+    siteMaintenance?: boolean;
   }
 }

@@ -29,12 +29,24 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const token = context.cookies.get(SESSION_COOKIE)?.value;
   context.locals.isAdmin = verifySessionToken(token);
 
-  // „În construcție": pe paginile marcate din /admin/setari, vizitatorii văd un
-  // ecran dedicat (rewrite, URL-ul rămâne), iar adminul logat vede pagina reală.
-  // Citim setările doar când calea e una togglabilă (evităm un read DB inutil).
-  if (!isAdminPath && PAGE_PATHS.includes(normalizePath(pathname))) {
-    const { constructionPages } = await getPublicSettings();
-    if (constructionPages.includes(normalizePath(pathname))) {
+  // Gate-uri publice: mentenanță pe tot site-ul + „în construcție" per pagină.
+  // Vizitatorii văd un ecran dedicat (rewrite, URL-ul rămâne); adminul logat
+  // vede conținutul real (cu banner). Nu se aplică pe /admin, /api, ecranele de
+  // gate sau fișiere (.xml, .png, robots…). Cache de 60s în getPublicSettings.
+  const norm = normalizePath(pathname);
+  const isGateScreen = norm === '/in-mentenanta' || norm === '/in-constructie';
+  const isAsset = /\.[^/]+$/.test(pathname);
+  if (!isAdminPath && !pathname.startsWith('/api') && !isGateScreen && !isAsset) {
+    const pub = await getPublicSettings();
+    // 1) Mentenanță pe tot site-ul (toate paginile SSR).
+    if (pub.maintenanceMode) {
+      context.locals.siteMaintenance = true;
+      if (!context.locals.isAdmin) {
+        return context.rewrite('/in-mentenanta');
+      }
+    }
+    // 2) Pagină marcată „în construcție".
+    if (PAGE_PATHS.includes(norm) && pub.constructionPages.includes(norm)) {
       context.locals.pageUnderConstruction = true;
       if (!context.locals.isAdmin) {
         return context.rewrite('/in-constructie');

@@ -167,6 +167,20 @@ const jsonLd = {
     <Navbar transparent={transparentNav} overDark={navOverDark} activePath={activePath} />
     <main id="main">
       {
+        Astro.locals.isAdmin && Astro.locals.siteMaintenance && (
+          <div
+            style="position:sticky;top:0;z-index:201;background:var(--ink);color:#fff;text-align:center;padding:9px 16px;font-size:0.85rem;font-weight:600;font-family:var(--font-body)"
+          >
+            Site-ul e în mentenanță. Îl vezi doar tu (admin); vizitatorii văd ecranul de mentenanță.
+            Schimbi din{' '}
+            <a href="/admin/setari" style="color:var(--signal);text-decoration:underline">
+              Setări
+            </a>
+            .
+          </div>
+        )
+      }
+      {
         Astro.locals.pageUnderConstruction && Astro.locals.isAdmin && (
           <div
             style="position:sticky;top:0;z-index:200;background:var(--signal);color:var(--ink);text-align:center;padding:9px 16px;font-size:0.85rem;font-weight:600;font-family:var(--font-body)"
