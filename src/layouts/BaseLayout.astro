@@ -166,6 +166,20 @@ const jsonLd = {
     }
     <Navbar transparent={transparentNav} overDark={navOverDark} activePath={activePath} />
     <main id="main">
+      {
+        Astro.locals.pageUnderConstruction && Astro.locals.isAdmin && (
+          <div
+            style="position:sticky;top:0;z-index:200;background:var(--signal);color:var(--ink);text-align:center;padding:9px 16px;font-size:0.85rem;font-weight:600;font-family:var(--font-body)"
+          >
+            Pagina e marcată „în construcție". O vezi doar tu (admin); vizitatorii văd ecranul de
+            construcție. Schimbi din{' '}
+            <a href="/admin/setari" style="color:var(--ink);text-decoration:underline">
+              Setări
+            </a>
+            .
+          </div>
+        )
+      }
       <slot />
     </main>
     <Footer />

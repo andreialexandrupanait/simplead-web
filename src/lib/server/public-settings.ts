@@ -2,6 +2,15 @@ import { inArray } from 'drizzle-orm';
 import { getDb } from './db';
 import { settings } from './schema';
 import { site } from '@data/site';
+import {
+  HOME_SECTIONS,
+  TOGGLEABLE_PAGES,
+  SECTION_KEYS,
+  PAGE_PATHS,
+  normalizePath,
+} from '@data/sections';
+
+export { HOME_SECTIONS, TOGGLEABLE_PAGES, normalizePath };
 
 /**
  * Setări publice editabile din /admin/setari (peste tabela `settings`, separat
@@ -14,14 +23,24 @@ import { site } from '@data/site';
 export interface PublicSettings {
   showPhone: boolean;
   whatsappNumber: string; // doar cifre (E.164 fără +), '' = neconfigurat
+  hiddenHomeSections: string[]; // cheile secțiunilor de homepage ascunse
+  constructionPages: string[]; // căile paginilor marcate „în construcție"
 }
 
 const KEYS = {
   showPhone: 'site.show_phone',
   whatsappNumber: 'site.whatsapp_number',
+  hiddenHomeSections: 'site.hidden_home_sections',
+  constructionPages: 'site.construction_pages',
 } as const;
 
-const DEFAULTS: PublicSettings = { showPhone: false, whatsappNumber: '' };
+const DEFAULTS: PublicSettings = {
+  showPhone: false,
+  whatsappNumber: '',
+  // Implicit: „Studii de caz" și „Ce spun clienții" sunt ascunse până sunt gata.
+  hiddenHomeSections: ['case-studies', 'testimonials'],
+  constructionPages: [],
+};
 
 const TTL_MS = 60_000;
 let cache: { at: number; value: PublicSettings } | null = null;
@@ -30,10 +49,26 @@ export function bustPublicSettingsCache(): void {
   cache = null;
 }
 
+/** Parsează un JSON-array de string-uri din DB, păstrând doar valorile permise. */
+function parseList(raw: string | undefined, allowed: string[]): string[] {
+  if (!raw) return [];
+  try {
+    const v = JSON.parse(raw);
+    if (!Array.isArray(v)) return [];
+    return v.filter((x): x is string => typeof x === 'string' && allowed.includes(x));
+  } catch {
+    return [];
+  }
+}
+
 export async function getPublicSettings(): Promise<PublicSettings> {
   if (cache && Date.now() - cache.at < TTL_MS) return cache.value;
 
-  const value: PublicSettings = { ...DEFAULTS };
+  const value: PublicSettings = {
+    ...DEFAULTS,
+    hiddenHomeSections: [...DEFAULTS.hiddenHomeSections],
+    constructionPages: [...DEFAULTS.constructionPages],
+  };
   const db = getDb();
   if (db) {
     try {
@@ -44,6 +79,12 @@ export async function getPublicSettings(): Promise<PublicSettings> {
       const map = new Map(rows.map((r) => [r.key, r.value]));
       value.showPhone = map.get(KEYS.showPhone) === 'true';
       value.whatsappNumber = (map.get(KEYS.whatsappNumber) ?? '').replace(/[^\d]/g, '');
+      // Cheie prezentă = setare salvată din admin (poate fi listă goală).
+      // Cheie absentă = niciodată salvată → folosim default-ul.
+      if (map.has(KEYS.hiddenHomeSections)) {
+        value.hiddenHomeSections = parseList(map.get(KEYS.hiddenHomeSections), SECTION_KEYS);
+      }
+      value.constructionPages = parseList(map.get(KEYS.constructionPages), PAGE_PATHS);
     } catch (err) {
       console.warn('[public-settings] Citirea a eșuat, folosim default-uri:', err);
     }
@@ -57,14 +98,20 @@ export type SavePublicResult = { ok: true } | { ok: false; error: string };
 export async function savePublicSettings(input: {
   showPhone: boolean;
   whatsappNumber: string;
+  hiddenHomeSections: string[];
+  constructionPages: string[];
 }): Promise<SavePublicResult> {
   const db = getDb();
   if (!db) {
     return { ok: false, error: 'Baza de date nu e configurată (DATABASE_URL lipsește).' };
   }
+  const hidden = input.hiddenHomeSections.filter((s) => SECTION_KEYS.includes(s));
+  const construction = input.constructionPages.filter((p) => PAGE_PATHS.includes(p));
   const pairs: { key: string; value: string }[] = [
     { key: KEYS.showPhone, value: input.showPhone ? 'true' : 'false' },
     { key: KEYS.whatsappNumber, value: input.whatsappNumber.replace(/[^\d]/g, '') },
+    { key: KEYS.hiddenHomeSections, value: JSON.stringify(hidden) },
+    { key: KEYS.constructionPages, value: JSON.stringify(construction) },
   ];
   try {
     for (const p of pairs) {

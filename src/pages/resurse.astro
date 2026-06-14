@@ -4,6 +4,8 @@ import PageHeader from '@components/sections/PageHeader.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
 import { resources } from '@data/resources';
 
+export const prerender = false;
+
 const origin = 'https://simplead.ro';
 const schema = {
   '@type': 'ItemList',

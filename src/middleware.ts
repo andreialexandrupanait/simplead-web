@@ -1,5 +1,7 @@
 import { defineMiddleware } from 'astro:middleware';
 import { SESSION_COOKIE, verifySessionToken } from './lib/server/auth';
+import { getPublicSettings } from './lib/server/public-settings';
+import { PAGE_PATHS, normalizePath } from './data/sections';
 
 /**
  * Protejează /admin/* și /api/admin/*. Toate paginile admin sunt
@@ -26,6 +28,19 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   const token = context.cookies.get(SESSION_COOKIE)?.value;
   context.locals.isAdmin = verifySessionToken(token);
+
+  // „În construcție": pe paginile marcate din /admin/setari, vizitatorii văd un
+  // ecran dedicat (rewrite, URL-ul rămâne), iar adminul logat vede pagina reală.
+  // Citim setările doar când calea e una togglabilă (evităm un read DB inutil).
+  if (!isAdminPath && PAGE_PATHS.includes(normalizePath(pathname))) {
+    const { constructionPages } = await getPublicSettings();
+    if (constructionPages.includes(normalizePath(pathname))) {
+      context.locals.pageUnderConstruction = true;
+      if (!context.locals.isAdmin) {
+        return context.rewrite('/in-constructie');
+      }
+    }
+  }
 
   if (!isAdminPath) return next();
 

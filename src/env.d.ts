@@ -44,5 +44,7 @@ interface ImportMeta {
 declare namespace App {
   interface Locals {
     isAdmin: boolean;
+    /** Pagina curentă e marcată „în construcție" (pentru bannerul de admin). */
+    pageUnderConstruction?: boolean;
   }
 }

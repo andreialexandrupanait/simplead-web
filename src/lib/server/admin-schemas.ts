@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { FeatureGroup } from '../../data/packages-fallback';
+import { HOME_SECTIONS, TOGGLEABLE_PAGES } from '../../data/sections';
 
 const slugSchema = z
   .string()
@@ -268,13 +269,28 @@ export const siteSettingsFormSchema = z.object({
     .max(20)
     .transform((s) => s.replace(/[^\d]/g, '')),
 });
-export type SiteSettingsFormData = z.infer<typeof siteSettingsFormSchema>;
+
+export interface SiteSettingsFormData {
+  showPhone: boolean;
+  whatsappNumber: string;
+  hiddenHomeSections: string[];
+  constructionPages: string[];
+}
 
 export function parseSiteSettingsForm(form: FormData): SiteSettingsFormData {
-  return siteSettingsFormSchema.parse({
+  const base = siteSettingsFormSchema.parse({
     showPhone: form.get('showPhone') ? 'true' : '',
     whatsappNumber: String(form.get('whatsappNumber') ?? ''),
   });
+  // Checkbox bifat pe secțiune = vizibilă; nebifat = ascunsă.
+  const hiddenHomeSections = HOME_SECTIONS.filter((s) => !form.get(`section.${s.key}`)).map(
+    (s) => s.key,
+  );
+  // Checkbox bifat pe pagină = marcată „în construcție".
+  const constructionPages = TOGGLEABLE_PAGES.filter((p) => form.get(`construction.${p.path}`)).map(
+    (p) => p.path,
+  );
+  return { ...base, hiddenHomeSections, constructionPages };
 }
 
 /** Validare pentru formularul de proiecte de portofoliu din admin. */

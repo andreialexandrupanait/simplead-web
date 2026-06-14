@@ -2,6 +2,7 @@
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import { setFlash } from '../../lib/server/flash';
 import { getPublicSettings, savePublicSettings } from '../../lib/server/public-settings';
+import { HOME_SECTIONS, TOGGLEABLE_PAGES } from '../../data/sections';
 import { parseSiteSettingsForm } from '../../lib/server/admin-schemas';
 
 export const prerender = false;
@@ -69,6 +70,50 @@ const current = await getPublicSettings();
           pe pagina Contact și în hero-uri (când telefonul e ascuns).
         </small>
       </label>
+    </div>
+
+    <div class="admin-card" style="margin-top:20px">
+      <h2>Secțiuni homepage</h2>
+      <p class="admin-hint" style="margin-bottom:14px">
+        Bifat = secțiunea apare pe homepage. Debifat = ascunsă pentru vizitatori (o poți reactiva
+        oricând când e gata).
+      </p>
+      {
+        HOME_SECTIONS.map((s) => (
+          <label class="admin-field admin-check" style="align-self:start;margin-bottom:10px">
+            <input
+              type="checkbox"
+              name={`section.${s.key}`}
+              value="1"
+              checked={!current.hiddenHomeSections.includes(s.key)}
+            />
+            <span style="margin:0">{s.label}</span>
+          </label>
+        ))
+      }
+    </div>
+
+    <div class="admin-card" style="margin-top:20px">
+      <h2>Pagini „în construcție"</h2>
+      <p class="admin-hint" style="margin-bottom:14px">
+        Bifat = pagina arată un ecran „în construcție" vizitatorilor. Tu (logat în admin) vezi
+        oricum pagina reală, ca să poți lucra la ea.
+      </p>
+      {
+        TOGGLEABLE_PAGES.map((p) => (
+          <label class="admin-field admin-check" style="align-self:start;margin-bottom:10px">
+            <input
+              type="checkbox"
+              name={`construction.${p.path}`}
+              value="1"
+              checked={current.constructionPages.includes(p.path)}
+            />
+            <span style="margin:0">
+              {p.label} <small style="color:var(--muted)">{p.path}</small>
+            </span>
+          </label>
+        ))
+      }
     </div>
 
     <div class="admin-savebar">

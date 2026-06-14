@@ -3,6 +3,8 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import PageHeader from '@components/sections/PageHeader.astro';
 import ContactSection from '@components/sections/ContactSection.astro';
 
+export const prerender = false;
+
 const calLink = import.meta.env.CALCOM_LINK;
 ---
 
