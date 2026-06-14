@@ -10,6 +10,11 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 
+// Tabelele Better Auth (user/session/account/verification + câmpuri plugin admin),
+// generate cu `@better-auth/cli generate`. Re-exportate aici ca drizzle-kit și
+// clientul `getDb()` să le includă în schemă.
+export * from './auth-schema';
+
 // 'fix-service' = lucrare punctuală la preț fix (vândabilă prin același checkout
 // ca pachetele), distinctă de serviciile-pilon ('service') și de mentenanță.
 export const packageKind = pgEnum('package_kind', [

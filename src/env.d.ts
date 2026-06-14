@@ -19,6 +19,11 @@ interface ImportMetaEnv {
   readonly ADMIN_PASSWORD_HASH?: string;
   // Nume opțional pentru adminul de bootstrap (folosit de scripts/seed-admin.mjs).
   readonly ADMIN_NAME?: string;
+  // Parolă pentru bootstrap-ul primului admin via POST /api/auth/setup (altfel se generează).
+  readonly ADMIN_SETUP_PASSWORD?: string;
+  // Better Auth: secret de semnare (fallback pe SESSION_SECRET) + URL de bază (fallback pe SITE_URL).
+  readonly BETTER_AUTH_SECRET?: string;
+  readonly BETTER_AUTH_URL?: string;
   // Login cu Google (OAuth). Lipsă = butonul „Continuă cu Google" e ascuns.
   readonly GOOGLE_CLIENT_ID?: string;
   readonly GOOGLE_CLIENT_SECRET?: string;
