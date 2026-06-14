@@ -5,6 +5,7 @@ import { getDb } from './server/db';
 import { serverEnv } from './server/env';
 import { sendEmail } from './server/email';
 import * as authSchema from './server/auth-schema';
+import { ac, roles } from './permissions';
 
 /**
  * Instanța Better Auth (server). Sesiuni în DB (revocabile), email+parolă +
@@ -74,5 +75,5 @@ export const auth = betterAuth({
     useSecureCookies: import.meta.env.PROD,
   },
 
-  plugins: [admin()],
+  plugins: [admin({ ac, roles, defaultRole: 'client', adminRoles: ['admin'] })],
 });
