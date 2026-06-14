@@ -1,33 +1,39 @@
 import { defineMiddleware } from 'astro:middleware';
-import { SESSION_COOKIE, verifySessionToken } from './lib/server/auth';
+import { getAuth } from './lib/auth';
+import { isStaffUser, type SessionUser } from './lib/server/authz';
 import { getPublicSettings } from './lib/server/public-settings';
 import { PAGE_PATHS, normalizePath } from './data/sections';
 
 /**
- * Protejează /admin/* și /api/admin/*. Toate paginile admin sunt
- * `prerender = false`, deci middleware-ul rulează doar la cerere pentru ele;
- * pentru restul site-ului (static) trece direct mai departe.
+ * Protejează /admin/* și /api/admin/* cu sesiunea Better Auth (în DB, revocabilă).
+ * Toate paginile admin sunt `prerender = false`, deci middleware-ul rulează doar
+ * la cerere pentru ele; pentru restul site-ului (static) trece direct mai departe.
  *
- * `locals.isAdmin` se calculează pentru ORICE rută on-demand (un HMAC ieftin),
- * ca paginile publice din DB (blog/portofoliu) să poată arăta draft-uri
- * adminului logat la `?preview=1`.
+ * `locals.user` + `locals.isAdmin` (staff) se calculează pentru ORICE rută
+ * on-demand, ca paginile publice din DB (blog/portofoliu) să poată arăta
+ * draft-uri adminului logat la `?preview=1`. Sesiunea e ieftină (cookieCache).
  */
 export const onRequest = defineMiddleware(async (context, next) => {
   const { pathname } = context.url;
 
-  // Paginile prerandate nu au un request real la build: a le citi cookie-urile
-  // (`context.cookies` → `request.headers`) declanșează avertismentul Astro
-  // „Astro.request.headers was used” și n-ar avea sens. Nu există admin logat
-  // într-o pagină statică, deci isAdmin = false și trecem mai departe.
+  // Paginile prerandate nu au un request real la build; nu există admin logat.
   if (context.isPrerendered) {
+    context.locals.user = null;
     context.locals.isAdmin = false;
     return next();
   }
 
-  const isAdminPath = pathname.startsWith('/admin') || pathname.startsWith('/api/admin');
+  let user: SessionUser | null = null;
+  try {
+    const session = await getAuth().api.getSession({ headers: context.request.headers });
+    user = (session?.user as SessionUser | undefined) ?? null;
+  } catch (err) {
+    console.warn('[middleware] getSession a eșuat:', err);
+  }
+  context.locals.user = user;
+  context.locals.isAdmin = isStaffUser(user);
 
-  const token = context.cookies.get(SESSION_COOKIE)?.value;
-  context.locals.isAdmin = verifySessionToken(token);
+  const isAdminPath = pathname.startsWith('/admin') || pathname.startsWith('/api/admin');
 
   // Gate-uri publice: mentenanță pe tot site-ul + „în construcție" per pagină.
   // Vizitatorii văd un ecran dedicat (rewrite, URL-ul rămâne); adminul logat
@@ -38,14 +44,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const isAsset = /\.[^/]+$/.test(pathname);
   if (!isAdminPath && !pathname.startsWith('/api') && !isGateScreen && !isAsset) {
     const pub = await getPublicSettings();
-    // 1) Mentenanță pe tot site-ul (toate paginile SSR).
     if (pub.maintenanceMode) {
       context.locals.siteMaintenance = true;
       if (!context.locals.isAdmin) {
         return context.rewrite('/in-mentenanta');
       }
     }
-    // 2) Pagină marcată „în construcție".
     if (PAGE_PATHS.includes(norm) && pub.constructionPages.includes(norm)) {
       context.locals.pageUnderConstruction = true;
       if (!context.locals.isAdmin) {

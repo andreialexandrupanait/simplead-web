@@ -8,72 +8,85 @@ import * as authSchema from './server/auth-schema';
 import { ac, roles } from './permissions';
 
 /**
- * Instanța Better Auth (server). Sesiuni în DB (revocabile), email+parolă +
- * Google, peste Postgres-ul existent prin adapterul Drizzle. Emailurile trec
- * prin `sendEmail` (Postmark). Provider-ul Google e citit din env la pornire
+ * Instanța Better Auth (server), inițializată LAZY. Sesiuni în DB (revocabile),
+ * email+parolă + Google, peste Postgres-ul existent prin adapterul Drizzle.
+ * Emailurile trec prin `sendEmail` (Postmark). Provider-ul Google e citit din env
  * (schimbarea credențialelor cere restart).
  *
- * Better Auth are nevoie de DB: în dev `.env` și în prod containerul setează
- * mereu `DATABASE_URL`. Modulul e importat doar de cod server (rute /api/auth,
- * middleware), niciodată de pagini prerandate.
+ * De ce lazy: middleware-ul rulează la build pentru paginile prerandate, iar
+ * build-ul prod nu are `DATABASE_URL`. Dacă am crea instanța la nivel de modul,
+ * importul middleware-ului ar arunca la build. Cu `getAuth()` instanța se naște
+ * doar la runtime (primul request), când `DATABASE_URL` există.
  */
-const db = getDb();
-if (!db) {
-  throw new Error('[auth] DATABASE_URL este necesar pentru Better Auth.');
+function createAuth() {
+  const db = getDb();
+  if (!db) {
+    throw new Error('[auth] DATABASE_URL este necesar pentru Better Auth.');
+  }
+
+  const googleClientId = serverEnv('GOOGLE_CLIENT_ID');
+  const googleClientSecret = serverEnv('GOOGLE_CLIENT_SECRET');
+
+  return betterAuth({
+    appName: 'Simplead Admin',
+    baseURL: serverEnv('BETTER_AUTH_URL') || serverEnv('SITE_URL') || 'http://localhost:4321',
+    secret: serverEnv('BETTER_AUTH_SECRET') || serverEnv('SESSION_SECRET'),
+    database: drizzleAdapter(db, { provider: 'pg', schema: authSchema }),
+
+    emailAndPassword: {
+      enabled: true,
+      minPasswordLength: 10,
+      requireEmailVerification: false,
+      sendResetPassword: async ({ user, url }) => {
+        await sendEmail({
+          to: user.email,
+          subject: 'Resetare parolă — Admin Simplead',
+          text: `Salut,\n\nAi cerut resetarea parolei pentru contul tău Simplead.\nDeschide linkul de mai jos ca să setezi o parolă nouă:\n\n${url}\n\nDacă nu tu ai cerut asta, ignoră acest email.\n\n— Simplead`,
+        });
+      },
+    },
+
+    emailVerification: {
+      sendOnSignUp: false,
+      sendVerificationEmail: async ({ user, url }) => {
+        await sendEmail({
+          to: user.email,
+          subject: 'Confirmă adresa de email — Simplead',
+          text: `Salut,\n\nConfirmă adresa de email pentru contul Simplead deschizând linkul:\n\n${url}\n\nDacă nu tu ai creat contul, ignoră acest email.\n\n— Simplead`,
+        });
+      },
+    },
+
+    session: {
+      expiresIn: 60 * 60 * 24 * 7, // 7 zile
+      updateAge: 60 * 60 * 24, // reîmprospătează zilnic
+      cookieCache: { enabled: true, maxAge: 5 * 60 },
+    },
+
+    account: {
+      accountLinking: { enabled: true, trustedProviders: ['google'] },
+    },
+
+    socialProviders:
+      googleClientId && googleClientSecret
+        ? { google: { clientId: googleClientId, clientSecret: googleClientSecret } }
+        : {},
+
+    advanced: {
+      cookiePrefix: 'simplead',
+      useSecureCookies: import.meta.env.PROD,
+    },
+
+    plugins: [admin({ ac, roles, defaultRole: 'client', adminRoles: ['admin'] })],
+  });
 }
 
-const googleClientId = serverEnv('GOOGLE_CLIENT_ID');
-const googleClientSecret = serverEnv('GOOGLE_CLIENT_SECRET');
+let _auth: ReturnType<typeof createAuth> | undefined;
 
-export const auth = betterAuth({
-  appName: 'Simplead Admin',
-  baseURL: serverEnv('BETTER_AUTH_URL') || serverEnv('SITE_URL') || 'http://localhost:4321',
-  secret: serverEnv('BETTER_AUTH_SECRET') || serverEnv('SESSION_SECRET'),
-  database: drizzleAdapter(db, { provider: 'pg', schema: authSchema }),
+/** Instanța Better Auth, memoizată (creată lazy la primul apel runtime). */
+export function getAuth() {
+  _auth ??= createAuth();
+  return _auth;
+}
 
-  emailAndPassword: {
-    enabled: true,
-    minPasswordLength: 10,
-    requireEmailVerification: false,
-    sendResetPassword: async ({ user, url }) => {
-      await sendEmail({
-        to: user.email,
-        subject: 'Resetare parolă — Admin Simplead',
-        text: `Salut,\n\nAi cerut resetarea parolei pentru contul tău Simplead.\nDeschide linkul de mai jos ca să setezi o parolă nouă:\n\n${url}\n\nDacă nu tu ai cerut asta, ignoră acest email.\n\n— Simplead`,
-      });
-    },
-  },
-
-  emailVerification: {
-    sendOnSignUp: false,
-    sendVerificationEmail: async ({ user, url }) => {
-      await sendEmail({
-        to: user.email,
-        subject: 'Confirmă adresa de email — Simplead',
-        text: `Salut,\n\nConfirmă adresa de email pentru contul Simplead deschizând linkul:\n\n${url}\n\nDacă nu tu ai creat contul, ignoră acest email.\n\n— Simplead`,
-      });
-    },
-  },
-
-  session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 zile
-    updateAge: 60 * 60 * 24, // reîmprospătează zilnic
-    cookieCache: { enabled: true, maxAge: 5 * 60 },
-  },
-
-  account: {
-    accountLinking: { enabled: true, trustedProviders: ['google'] },
-  },
-
-  socialProviders:
-    googleClientId && googleClientSecret
-      ? { google: { clientId: googleClientId, clientSecret: googleClientSecret } }
-      : {},
-
-  advanced: {
-    cookiePrefix: 'simplead',
-    useSecureCookies: import.meta.env.PROD,
-  },
-
-  plugins: [admin({ ac, roles, defaultRole: 'client', adminRoles: ['admin'] })],
-});
+export type Auth = ReturnType<typeof createAuth>;

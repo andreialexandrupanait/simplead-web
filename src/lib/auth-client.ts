@@ -1,6 +1,6 @@
 import { createAuthClient } from 'better-auth/client';
 import { adminClient, inferAdditionalFields } from 'better-auth/client/plugins';
-import type { auth } from './auth';
+import type { Auth } from './auth';
 import { ac, roles } from './permissions';
 
 /**
@@ -9,7 +9,7 @@ import { ac, roles } from './permissions';
  * câmpurilor custom (role/banned etc.) din configul server.
  */
 export const authClient = createAuthClient({
-  plugins: [adminClient({ ac, roles }), inferAdditionalFields<typeof auth>()],
+  plugins: [adminClient({ ac, roles }), inferAdditionalFields<Auth>()],
 });
 
 export const { signIn, signOut, signUp, useSession } = authClient;

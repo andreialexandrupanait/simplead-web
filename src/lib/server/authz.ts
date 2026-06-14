@@ -1,4 +1,4 @@
-import { auth } from '../auth';
+import { getAuth } from '../auth';
 import { roleAllows, type AppRole, type Permission } from '../permissions';
 
 /**
@@ -16,12 +16,12 @@ export type SessionUser = {
 
 /** Sesiunea curentă (sau null) din cookie-urile cererii. */
 export async function getAuthSession(headers: Headers) {
-  return auth.api.getSession({ headers });
+  return getAuth().api.getSession({ headers });
 }
 
 /** Userul curent (sau null). */
 export async function getCurrentUser(headers: Headers): Promise<SessionUser | null> {
-  const session = await auth.api.getSession({ headers });
+  const session = await getAuth().api.getSession({ headers });
   return (session?.user as SessionUser | undefined) ?? null;
 }
 
@@ -40,4 +40,13 @@ export function userCan(user: SessionUser | null, permissions: Permission): bool
 
 export function isRole(user: SessionUser | null, role: AppRole): boolean {
   return user?.role === role;
+}
+
+/** Rolurile cu acces în zona /admin (staff). `client` are zona lui separată. */
+export const STAFF_ROLES: AppRole[] = ['admin', 'editor', 'author'];
+
+/** Poate accesa zona /admin (staff activ, neblocat). */
+export function isStaffUser(user: SessionUser | null): boolean {
+  if (!user || user.banned) return false;
+  return STAFF_ROLES.includes(user.role as AppRole);
 }

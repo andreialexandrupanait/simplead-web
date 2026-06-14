@@ -49,6 +49,8 @@ interface ImportMeta {
 declare namespace App {
   interface Locals {
     isAdmin: boolean;
+    /** Userul Better Auth curent (sau null) — setat de middleware. */
+    user?: import('./lib/server/authz').SessionUser | null;
     /** Pagina curentă e marcată „în construcție" (pentru bannerul de admin). */
     pageUnderConstruction?: boolean;
     /** Tot site-ul e în mentenanță (pentru bannerul de admin). */

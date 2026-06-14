@@ -15,6 +15,22 @@ import {
 // clientul `getDb()` să le includă în schemă.
 export * from './auth-schema';
 
+/**
+ * Jurnal de audit pentru acțiunile sensibile din admin (set-role, ban, delete,
+ * impersonare, create user). `actor*` = cine a făcut, `target*` = asupra cui.
+ * id-urile sunt text (id-urile Better Auth sunt text).
+ */
+export const auditLog = pgTable('audit_log', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  actorId: text('actor_id'),
+  actorEmail: text('actor_email'),
+  action: text('action').notNull(),
+  targetId: text('target_id'),
+  targetEmail: text('target_email'),
+  meta: jsonb('meta').$type<Record<string, unknown>>(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
 // 'fix-service' = lucrare punctuală la preț fix (vândabilă prin același checkout
 // ca pachetele), distinctă de serviciile-pilon ('service') și de mentenanță.
 export const packageKind = pgEnum('package_kind', [

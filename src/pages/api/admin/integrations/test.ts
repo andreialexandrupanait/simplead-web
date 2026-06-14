@@ -82,7 +82,7 @@ async function testGoogle(): Promise<TestResult> {
   const base = serverEnv('SITE_URL') || 'https://simplead.ro';
   return {
     ok: true,
-    detail: `Configurat pentru domeniul @${domain}. Verifică în Google Cloud redirect URI: ${base.replace(/\/$/, '')}/api/auth/google/callback`,
+    detail: `Configurat pentru domeniul @${domain}. Verifică în Google Cloud redirect URI: ${base.replace(/\/$/, '')}/api/auth/callback/google`,
   };
 }
 

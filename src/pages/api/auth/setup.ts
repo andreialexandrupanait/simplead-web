@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { randomBytes } from 'node:crypto';
 import { eq, sql } from 'drizzle-orm';
-import { auth } from '../../../lib/auth';
+import { getAuth } from '../../../lib/auth';
 import { getDb } from '../../../lib/server/db';
 import { user } from '../../../lib/server/auth-schema';
 import { serverEnv } from '../../../lib/server/env';
@@ -40,7 +40,7 @@ export const POST: APIRoute = async () => {
   }
 
   try {
-    await auth.api.signUpEmail({ body: { email, password, name } });
+    await getAuth().api.signUpEmail({ body: { email, password, name } });
     await db.update(user).set({ role: 'admin', emailVerified: true }).where(eq(user.email, email));
   } catch (err) {
     console.error('[auth/setup] eșec:', err);
