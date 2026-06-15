@@ -2,10 +2,8 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import ServiceHubHero from '@components/sections/ServiceHubHero.astro';
 import ServiceHubCards from '@components/sections/ServiceHubCards.astro';
-import Differentiator from '@components/home/Differentiator.astro';
-import ProcessTimeline from '@components/home/ProcessTimeline.astro';
+import ServiceCatalog from '@components/sections/ServiceCatalog.astro';
 import ToolsSection from '@components/home/ToolsSection.astro';
-import Testimonials from '@components/home/Testimonials.astro';
 import FaqSection from '@components/sections/FaqSection.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
 import { servicesFaqs } from '@data/content';
@@ -26,10 +24,8 @@ export const prerender = false;
     sub="Marketing, grafică, web și mentenanță: sub același acoperiș, cu un singur partener. Lucrăm pe obiective clare și validăm fiecare decizie cu date și neuromarketing, nu cu presupuneri. Tu te ocupi de afacere, noi de imaginea și promovarea ei."
   />
   <ServiceHubCards />
-  <Differentiator />
-  <ProcessTimeline />
+  <ServiceCatalog />
   <ToolsSection />
-  <Testimonials />
   <FaqSection
     items={servicesFaqs}
     eyebrow="Întrebări frecvente"

@@ -18,7 +18,6 @@ const {
   intro = 'Un drum clar și transparent: la fiecare pas știi unde suntem, ce urmează și de ce. Fără surprize și fără limbaj de complezență.',
   variant = 'tint',
 } = Astro.props;
-const arrow = '<path d="M7 17L17 7M7 7h10v10"/>';
 const minus = '<path d="M5 12h14"/>';
 const plus = '<path d="M12 5v14M5 12h14"/>';
 ---
@@ -30,20 +29,6 @@ const plus = '<path d="M12 5v14M5 12h14"/>';
         <span class="sec-eyebrow">{eyebrow}</span>
         <h2 class="sec-title">{title}<span class="g">{titleAccent}</span></h2>
         <p>{intro}</p>
-        <div class="btn-cta">
-          <a href="/contact"
-            >Începe acum
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.4"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              set:html={arrow}
-            />
-          </a>
-        </div>
       </div>
       <div class="spp-acc" id="sppAcc" data-reveal>
         {

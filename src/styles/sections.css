@@ -58,19 +58,25 @@
 .sec-eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--blue);
   margin-bottom: 18px;
 }
 .sec-eyebrow::before {
-  display: none;
+  content: '';
+  flex: none;
+  width: 30px;
+  height: 1px;
+  background: linear-gradient(90deg, currentColor, transparent);
 }
-/* delicate directional arrow after the eyebrow â€” brand pattern near titles */
+/* liniuța de accent (tick) e acum înainte; săgeata veche dezactivată */
 .sec-eyebrow::after {
+  display: none;
   content: '';
   flex: none;
   width: 36px;
@@ -106,6 +112,7 @@
   font-size: 18px;
   line-height: 1.6;
   color: var(--ink-soft);
+  text-wrap: balance;
 }
 .section--navy .sec-sub {
   color: rgba(225, 230, 245, 0.72);

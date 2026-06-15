@@ -121,13 +121,22 @@ import { homeCaseStudies } from '@data/content';
   }
   .cs2__eyebrow {
     flex-shrink: 0;
-    padding: 7px 14px;
-    border: 1px solid var(--line);
-    border-radius: var(--r-pill);
-    background: var(--canvas-soft);
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--electric);
+  }
+  .cs2__eyebrow::before {
+    content: '';
+    flex: none;
+    width: 30px;
+    height: 1px;
+    background: linear-gradient(90deg, currentColor, transparent);
   }
   .cs2__rule {
     flex: 1;

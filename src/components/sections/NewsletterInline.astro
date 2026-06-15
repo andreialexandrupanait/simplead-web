@@ -45,13 +45,23 @@ const { source = 'blog-article' } = Astro.props;
     border-radius: var(--r-lg);
   }
   .nl-inline__kicker {
-    font-family: var(--font-display);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono);
     font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.13em;
+    font-weight: 400;
+    letter-spacing: 0.3em;
     text-transform: uppercase;
     color: var(--electric);
     margin: 0 0 8px;
+  }
+  .nl-inline__kicker::before {
+    content: '';
+    flex: none;
+    width: 30px;
+    height: 1px;
+    background: linear-gradient(90deg, currentColor, transparent);
   }
   .nl-inline__title {
     font-family: var(--font-display);

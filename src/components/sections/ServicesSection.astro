@@ -62,8 +62,8 @@ const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).f
     </div>
     <div class="svcx__meta">
       <p class="svcx__lead">
-        Nu reinventăm roata: folosim ce funcționează deja și ajungem la rezultat în cel mai scurt
-        timp. Mai jos ai lista serviciilor pe care ți le putem oferi.
+        Pornim de la ce funcționează deja și ajungem la rezultat în cel mai scurt timp. Mai jos ai
+        lista serviciilor pe care ți le putem oferi.
       </p>
       <div class="svcx__links">
         <a class="link-more" href="/servicii"
@@ -132,14 +132,23 @@ const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).f
     flex-wrap: wrap;
   }
   .svcx__kick {
-    display: inline-block;
-    font-family: var(--font-display);
-    font-size: 0.78rem;
-    font-weight: 500;
-    letter-spacing: 0.14em;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.3em;
     text-transform: uppercase;
     color: var(--electric);
     margin-bottom: 14px;
+  }
+  .svcx__kick::before {
+    content: '';
+    flex: none;
+    width: 30px;
+    height: 1px;
+    background: linear-gradient(90deg, currentColor, transparent);
   }
   .svcx__title {
     margin: 0;

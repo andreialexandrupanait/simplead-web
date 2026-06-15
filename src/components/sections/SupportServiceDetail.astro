@@ -1,0 +1,46 @@
+---
+/**
+ * Pagina de detaliu pentru un serviciu de suport (catalog).
+ * Folosește EXACT componentele paginilor de servicii pilon, ca să fie nativ site-ului.
+ */
+import ServiceHero from './ServiceHero.astro';
+import CapabilitiesGrid from './CapabilitiesGrid.astro';
+import ServiceProcess from './ServiceProcess.astro';
+import FaqSection from './FaqSection.astro';
+import CtaNotch from './CtaNotch.astro';
+import type { SupportService } from '@data/support-services';
+
+interface Props {
+  support: SupportService;
+}
+const { support } = Astro.props;
+---
+
+<ServiceHero
+  title={support.heroTitle}
+  titleAccent={support.heroTitleAccent}
+  sub={support.heroSub}
+  image={support.image}
+  imageAlt={support.title}
+  current={support.title}
+/>
+
+<CapabilitiesGrid
+  items={support.capabilities}
+  eyebrow={support.capHead.eyebrow}
+  title={support.capHead.title}
+  titleAccent={support.capHead.titleAccent}
+  sub={support.capHead.sub}
+/>
+
+<ServiceProcess steps={support.process} />
+
+<FaqSection
+  items={support.faqs}
+  variant="tint"
+  eyebrow="Întrebări frecvente"
+  title="Bine de "
+  titleAccent="știut"
+/>
+
+<CtaNotch title={support.claim} />
