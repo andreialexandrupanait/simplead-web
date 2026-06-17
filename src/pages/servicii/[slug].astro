@@ -6,9 +6,8 @@ import ServiceProcess from '@components/sections/ServiceProcess.astro';
 import ClientCase from '@components/sections/ClientCase.astro';
 import FaqSection from '@components/sections/FaqSection.astro';
 import CtaNotch from '@components/sections/CtaNotch.astro';
-import RelatedServices from '@components/sections/RelatedServices.astro';
 import SupportServiceDetail from '@components/sections/SupportServiceDetail.astro';
-import { services, relatedServices, type ServiceProcessStep } from '@data/services';
+import { services, type ServiceProcessStep } from '@data/services';
 import { supportServices } from '@data/support-services';
 import { processSteps } from '@data/content';
 
@@ -26,7 +25,6 @@ export function getStaticPaths() {
 const { service, support } = Astro.props;
 
 // Pilon: proces specific sau procesul generic (content.ts).
-const others = service ? relatedServices(service.slug) : [];
 const proc: ServiceProcessStep[] = service
   ? (service.process ??
     processSteps.map((p) => ({ n: String(p.n).padStart(2, '0'), title: p.title, body: p.text })))
@@ -87,8 +85,6 @@ const serviceSchema = {
         />
 
         <CtaNotch title={service.claim} />
-
-        <RelatedServices items={others} />
       </>
     ) : (
       <SupportServiceDetail support={support} />

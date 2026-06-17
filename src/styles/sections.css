@@ -25,6 +25,12 @@
   background: var(--navy);
   color: #fff;
 }
+/* Două benzi de aceeași culoare (tint) lipite formează o singură zonă vizual:
+   nu dubla padding-ul la cusătură. Ex.: Proces → FAQ pe paginile de servicii
+   fără case study între ele. Păstrăm padding-ul de jos al primei secțiuni. */
+.section--tint + .section--tint > .container {
+  padding-top: 0;
+}
 .container {
   width: 100%;
   max-width: var(--maxw);

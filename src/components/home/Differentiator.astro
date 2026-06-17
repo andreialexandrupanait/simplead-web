@@ -1,7 +1,6 @@
 ---
-import { site } from '@data/site';
-
-const founderPhoto = '/andrei.jpg';
+// Banda „omul din spate" (avatar + citat fondator) a fost extrasă în
+// @components/home/FounderQuote.astro — refolosibilă, momentan neafișată.
 ---
 
 <section class="diff">
@@ -91,29 +90,6 @@ const founderPhoto = '/andrei.jpg';
       </div>
     </div>
   </div>
-
-  <!-- „Omul din spate" - bandă full-width la baza secțiunii -->
-  <figure class="diff__founder" data-reveal>
-    <div class="site-container diff__founder-inner">
-      <span class="diff__avatar">
-        {
-          founderPhoto ? (
-            <img src={founderPhoto} alt={site.founder} loading="lazy" />
-          ) : (
-            <span>AP</span>
-          )
-        }
-      </span>
-      <blockquote class="diff__founder-quote">
-        „Nu folosesc partea asta ca să sune bine, ci ca să iau decizii mai bune pentru proiectul
-        tău.”
-      </blockquote>
-      <figcaption class="diff__founder-by">
-        <b>{site.founder}</b>
-        <span>Doctor în marketing, cu cercetare în neuromarketing</span>
-      </figcaption>
-    </div>
-  </figure>
 </section>
 
 <style>
@@ -121,7 +97,7 @@ const founderPhoto = '/andrei.jpg';
     position: relative;
     background: var(--ink);
     color: #fff;
-    padding-block: clamp(72px, 10vw, 128px) 0;
+    padding-block: clamp(72px, 10vw, 128px);
     overflow: visible;
   }
   .diff::before {
@@ -432,89 +408,6 @@ const founderPhoto = '/andrei.jpg';
     }
   }
 
-  /* „Omul din spate" - bandă full-width peste tranziția dark → light */
-  .diff__founder {
-    position: relative;
-    z-index: 2;
-    overflow: hidden;
-    margin-top: clamp(64px, 9vw, 110px);
-    margin-bottom: clamp(-76px, -6vw, -50px);
-    padding: 32px 0;
-    background:
-      radial-gradient(90% 180% at 86% 130%, rgba(110, 91, 224, 0.4), transparent 55%),
-      radial-gradient(70% 150% at 8% -30%, rgba(0, 119, 252, 0.2), transparent 55%), #020a3a;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 34px 70px -34px rgba(0, 0, 0, 0.55);
-  }
-  .diff__founder-inner {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    gap: 28px;
-  }
-  .diff__avatar {
-    flex: none;
-    width: 76px;
-    height: 76px;
-    border-radius: 50%;
-    overflow: hidden;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(135deg, var(--electric), var(--cyan));
-    color: #fff;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.4rem;
-    box-shadow: var(--glow-electric);
-  }
-  .diff__avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center 22%;
-  }
-  .diff__founder-quote {
-    flex: 1;
-    margin: 0;
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(1.02rem, 1.5vw, 1.28rem);
-    line-height: 1.4;
-    letter-spacing: -0.01em;
-    color: #fff;
-    text-wrap: pretty;
-  }
-  .diff__founder-by {
-    flex: none;
-    margin-left: clamp(28px, 5vw, 80px);
-    text-align: right;
-  }
-  .diff__founder-by b {
-    display: block;
-    color: #fff;
-    font-size: 0.98rem;
-  }
-  .diff__founder-by span {
-    display: block;
-    margin-top: 2px;
-    font-size: 0.84rem;
-    color: var(--cyan);
-  }
-  @media (max-width: 768px) {
-    .diff__founder-inner {
-      flex-direction: column;
-      text-align: center;
-      gap: 16px;
-    }
-    .diff__founder-quote,
-    .diff__founder-by {
-      text-align: center;
-    }
-    .diff__founder-by {
-      margin-left: 0;
-    }
-  }
   @media (max-width: 900px) {
     .diff__body {
       grid-template-columns: 1fr;
