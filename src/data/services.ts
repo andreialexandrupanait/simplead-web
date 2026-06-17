@@ -335,24 +335,23 @@ export const services: Service[] = [
     icon: 'grafica',
     title: 'Grafică publicitară',
     summary:
-      'Identitate vizuală, materiale de promovare și foto-video care te fac memorabil și coerent.',
+      'Identitate vizuală, materiale de promovare și grafică publicitară care te fac memorabil și coerent.',
     claim: 'Imagine coerentă, care te face memorabil.',
     description:
-      'De la logo și identitate vizuală completă, până la materiale de promovare și conținut foto-video. Totul gândit simplu, dar cu impact și optimizat vizual cu neuromarketing.',
+      'De la identitate vizuală și materiale de promovare, până la print și grafică pentru campanii. Totul gândit simplu, dar cu impact și validat vizual cu neuromarketing.',
     includes: [
-      'Identitate vizuală & branding (logo, brand guide)',
+      'Identitate vizuală & branding (sistem vizual, brand guide)',
       'Grafică publicitară (print, outdoor, social media)',
       'Materiale de prezentare (broșuri, cărți de vizită, prezentări)',
-      'Foto & video (fotograf cu peste 10 ani experiență)',
       'Design validat cu heatmaps și ierarhie vizuală',
     ],
-    tags: ['Branding', 'Print', 'Outdoor', 'Foto-Video'],
+    tags: ['Branding', 'Print', 'Outdoor', 'Neuromarketing'],
     image:
       'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=900&q=78&auto=format&fit=crop',
     heroTitle: 'Imagine coerentă, ',
     heroTitleAccent: 'care te face memorabil',
     heroSub:
-      'De la logo și identitate vizuală completă, până la materiale de promovare și conținut foto-video. Totul gândit simplu, dar cu impact și validat vizual cu neuromarketing.',
+      'De la identitate vizuală și materiale de promovare, până la print și grafică pentru campanii. Totul gândit simplu, dar cu impact și validat vizual cu neuromarketing.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'De la identitate la ',
@@ -363,9 +362,9 @@ export const services: Service[] = [
       {
         title: 'Identitate vizuală & Branding',
         icon: ICON.shapes,
-        desc: 'Un brand coerent, de la logo la regulile de folosire, recognoscibil peste tot.',
+        desc: 'Un brand coerent, de la regulile de folosire la aplicații, recognoscibil peste tot.',
         items: [
-          'Logo & sistem vizual',
+          'Sistem vizual coerent',
           'Brand guide complet',
           'Paletă, tipografie & elemente grafice',
           'Aplicații pe materiale',
@@ -374,23 +373,23 @@ export const services: Service[] = [
       {
         title: 'Grafică publicitară & Print',
         icon: ICON.image,
-        desc: 'Materiale de promovare și prezentare gândite să atragă atenția potrivită.',
+        desc: 'Materiale de promovare gândite să atragă atenția potrivită.',
         items: [
           'Print, outdoor & social media',
-          'Broșuri, cărți de vizită, prezentări',
           'Grafică pentru campanii',
+          'Adaptare coerentă pe canale',
           'Design validat cu heatmaps',
         ],
       },
       {
-        title: 'Foto & Video',
-        icon: ICON.camera,
-        desc: 'Conținut foto-video profesionist, realizat de un fotograf cu peste 10 ani experiență.',
+        title: 'Materiale de prezentare',
+        icon: ICON.layout,
+        desc: 'Materialele cu care te prezinți, coerente între ele și gata de folosit.',
         items: [
-          'Fotografie de produs & brand',
-          'Conținut video pentru social',
-          'Editare & post-producție',
-          'Direcție creativă',
+          'Broșuri, cărți de vizită, prezentări',
+          'Machete pentru print & online',
+          'Layout & punere în pagină',
+          'Design validat cu neuromarketing',
         ],
       },
     ],
@@ -408,7 +407,7 @@ export const services: Service[] = [
       {
         n: '03',
         title: 'Execuție vizuală',
-        body: 'Ducem conceptul în materiale concrete — logo, identitate, grafică de campanie, print sau foto-video — coerente între ele și gata de folosit.',
+        body: 'Ducem conceptul în materiale concrete — identitate vizuală, grafică de campanie, print și materiale de prezentare — coerente între ele și gata de folosit.',
       },
       {
         n: '04',
@@ -433,15 +432,15 @@ export const services: Service[] = [
     },
     faqs: [
       {
-        q: 'Faceți doar logo sau identitate completă?',
+        q: 'Faceți și logo?',
         body: [
-          'Și una, și alta. Putem livra doar logo-ul, dar recomandăm un sistem vizual complet (brand guide) — paletă, tipografie, reguli — ca brandul să arate la fel de bine peste tot, nu doar pe logo.',
+          'Pentru logo lucrăm cu parteneri dedicați. Noi ne ocupăm de identitatea vizuală din jurul lui — sistem vizual, brand guide, paletă, tipografie și aplicații pe materiale — ca brandul să arate coerent peste tot.',
         ],
       },
       {
         q: 'Vă ocupați și de foto-video?',
         body: [
-          'Da. Lucrăm cu un fotograf cu peste 10 ani de experiență: fotografie de produs și de brand, conținut video pentru social media și post-producție.',
+          'Foto-video îl acoperim prin colaboratori, ca să ai tot ce-ți trebuie dintr-un loc. Nu e focusul nostru, dar te punem în legătură cu un fotograf cu experiență când proiectul cere.',
         ],
       },
       {
@@ -467,21 +466,22 @@ export const services: Service[] = [
     summary: 'Conținut și prezență care aduc clienți, nu doar aprecieri. Construite pe date.',
     claim: 'Prezență în social media care aduce clienți, nu doar aprecieri.',
     description:
-      'Administrăm prezența ta în social media cu o strategie clară, conținut coerent și campanii plătite gândite pe conversii, nu pe afișări.',
+      'Administrăm prezența ta în social media cu strategie clară și conținut coerent — focusul nostru e ce postezi, cum arăți și cum răspunzi, nu reclamele plătite. Ads facem doar punctual, când proiectul o cere.',
     includes: [
       'Strategie & calendar editorial',
       'Administrare conturi (Facebook, Instagram, TikTok, YouTube)',
       'Creație de conținut (vizual + copywriting)',
-      'Campanii plătite (Meta Ads, TikTok Ads)',
+      'Community management & interacțiune',
       'Raportare și optimizare',
+      'Campanii plătite doar punctual, la cerere',
     ],
-    tags: ['Strategie', 'Conținut', 'Meta & TikTok Ads', 'Raportare'],
+    tags: ['Strategie', 'Conținut', 'Comunitate', 'Raportare'],
     image:
       'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=900&q=78&auto=format&fit=crop',
     heroTitle: 'Social media care aduce ',
     heroTitleAccent: 'clienți, nu doar aprecieri',
     heroSub:
-      'Prezență coerentă pe canalele unde se află publicul tău, conținut care prinde și campanii plătite gândite pe conversii. Cu măsurare reală, nu cu presupuneri.',
+      'Prezență coerentă pe canalele unde se află publicul tău, conținut care prinde și o comunitate îngrijită — cu măsurare reală, nu presupuneri. Pe partea de ads intervenim doar punctual, la cerere; nu e specialitatea noastră.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'De la conținut la ',
@@ -501,14 +501,14 @@ export const services: Service[] = [
         ],
       },
       {
-        title: 'Campanii plătite',
-        icon: ICON.target,
-        desc: 'Reclame pe Meta și TikTok gândite pe conversii, cu buget controlat.',
+        title: 'Publicare & Comunitate',
+        icon: ICON.support,
+        desc: 'Ținem prezența vie și constantă: publicăm la timp, răspundem, moderăm, menținem tonul.',
         items: [
-          'Meta Ads (Facebook & Instagram)',
-          'TikTok Ads',
-          'Targetare & creative testing',
-          'Optimizare buget & licitare',
+          'Publicare constantă, după un plan',
+          'Răspuns la comentarii & mesaje',
+          'Moderare & ton consecvent',
+          'Comunitate activă, nu doar postări',
         ],
       },
       {
@@ -537,12 +537,12 @@ export const services: Service[] = [
       {
         n: '03',
         title: 'Producție de conținut',
-        body: 'Creăm vizualul și textul, coerente cu brandul, și pregătim eventualele campanii plătite gândite pe conversii, nu pe afișări.',
+        body: 'Creăm vizualul și textul, coerente cu brandul, gata de publicat. Dacă proiectul o cere, pregătim punctual și o campanie plătită — fără să facem din ads centrul colaborării.',
       },
       {
         n: '04',
         title: 'Publicare & comunitate',
-        body: 'Publicăm pe calendar și ținem prezența vie: răspundem, ajustăm și menținem un ton consecvent, ca brandul să fie recognoscibil.',
+        body: 'Publicăm constant, conform planului, și ținem prezența vie: răspundem, ajustăm și menținem un ton consecvent, ca brandul să fie recognoscibil.',
       },
       {
         n: '05',
@@ -574,9 +574,15 @@ export const services: Service[] = [
         ],
       },
       {
+        q: 'Faceți și campanii plătite (ads)?',
+        body: [
+          'Nu e focusul nostru și nici nu ne dăm specialiști în ads. Ne ocupăm de conținut, strategie și comunitate — partea care construiește prezența pe termen lung. Reclame plătite (Meta, TikTok) facem doar punctual, când proiectul o cere.',
+        ],
+      },
+      {
         q: 'Cât costă administrarea de social media?',
         body: [
-          'Depinde de câte canale acoperim, cât de des postăm și de bugetul de campanii. Nu lucrăm cu prețuri de raft: pornim de la o discuție și o ofertă pe obiectivele tale.',
+          'Depinde de câte canale acoperim și cât de des postăm. Nu lucrăm cu prețuri de raft: pornim de la o discuție și o ofertă pe obiectivele tale.',
         ],
       },
     ],
@@ -798,6 +804,19 @@ export const services: Service[] = [
         body: 'Urmărim cum se comportă în timp, prindem din vreme ce nu merge și îmbunătățim pe parcurs. Tu primești un rezumat clar, nu un sistem de care trebuie să ai grijă.',
       },
     ],
+    // Activează secțiunea de dovadă socială pe pagina AI. Conținutul (statistică +
+    // testimoniale) e comun, din src/data/testimonials.ts — câmpurile de mai jos
+    // nu se mai randează momentan.
+    caseStudy: {
+      statBig: '12h',
+      statBigAccent: '/săptămână',
+      statCap: 'recuperate din munca repetitivă după automatizare.',
+      quote: '„Rapoartele și confirmările se trimit singure — nu mai scapă niciun lead."',
+      body: 'Am automatizat preluarea lead-urilor și raportarea săptămânală, cu monitorizare non-stop a site-ului. Oamenii iau deciziile; sistemul duce munca repetitivă, fără uitări.',
+      client: 'Client demo',
+      clientNote: 'de înlocuit cu o recomandare reală',
+      clientLogo: 'AI',
+    },
     faqs: [
       {
         q: 'AI-ul înlocuiește oamenii din echipă?',

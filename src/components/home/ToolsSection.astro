@@ -1,6 +1,6 @@
 ---
 import SectionHeading from '@components/ui/SectionHeading.astro';
-import { toolCategories } from '@data/content';
+import { toolCategories, toolsAiNote } from '@data/content';
 ---
 
 <section class="tools">
@@ -29,6 +29,15 @@ import { toolCategories } from '@data/content';
         ))
       }
     </div>
+
+    {
+      toolsAiNote && (
+        <p class="tools__ainote" data-reveal>
+          <span class="tools__ainote-tag">AI</span>
+          {toolsAiNote}
+        </p>
+      )
+    }
   </div>
 </section>
 
@@ -61,11 +70,13 @@ import { toolCategories } from '@data/content';
   }
   .tools__grid {
     list-style: none;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 12px;
   }
   .tools__tile {
+    flex: 0 1 calc((100% - 24px) / 3);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -94,14 +105,36 @@ import { toolCategories } from '@data/content';
     white-space: nowrap;
   }
 
+  .tools__ainote {
+    margin: 28px auto 0;
+    max-width: 70ch;
+    text-align: center;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--muted, var(--ink-soft));
+  }
+  .tools__ainote-tag {
+    display: inline-block;
+    margin-right: 8px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--electric);
+    background: rgba(0, 119, 252, 0.1);
+    vertical-align: middle;
+  }
+
   @media (max-width: 768px) {
     .tools__cats {
       grid-template-columns: 1fr;
     }
   }
   @media (max-width: 480px) {
-    .tools__grid {
-      grid-template-columns: 1fr 1fr;
+    .tools__tile {
+      flex-basis: calc((100% - 12px) / 2);
     }
   }
 </style>

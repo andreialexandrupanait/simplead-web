@@ -4,7 +4,7 @@
  * Înlocuiește vechiul ToolsSection (.tech-tabs). Partajat de Acasă + hub Servicii.
  * Datele vin din content.ts (toolCategories).
  */
-import { toolCategories } from '@data/content';
+import { toolCategories, toolsAiNote } from '@data/content';
 
 interface Props {
   variant?: 'light' | 'tint';
@@ -12,6 +12,7 @@ interface Props {
   title?: string;
   titleAccent?: string;
   subtitle?: string;
+  aiNote?: string;
 }
 const {
   variant = 'tint',
@@ -19,6 +20,7 @@ const {
   title = 'Lucrăm cu platformele ',
   titleAccent = 'care contează',
   subtitle = 'Instrumente profesionale pentru fiecare etapă: de la design și web, la campanii și analiză.',
+  aiNote = toolsAiNote,
 } = Astro.props;
 ---
 
@@ -56,8 +58,41 @@ const {
         ))
       }
     </div>
+
+    {
+      aiNote && (
+        <p class="tk-ainote" data-reveal>
+          <span class="tk-ainote-tag">AI</span>
+          {aiNote}
+        </p>
+      )
+    }
   </div>
 </section>
+
+<style>
+  .tk-ainote {
+    margin: 36px auto 0;
+    max-width: 72ch;
+    text-align: center;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--muted, var(--ink-soft));
+  }
+  .tk-ainote-tag {
+    display: inline-block;
+    margin-right: 8px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--electric);
+    background: rgba(0, 119, 252, 0.1);
+    vertical-align: middle;
+  }
+</style>
 
 <script>
   const tabs = document.getElementById('tkTabs');

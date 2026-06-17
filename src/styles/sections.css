@@ -3439,6 +3439,48 @@ a.bpill--ondark:hover {
   margin-top: 1px;
 }
 
+/* Variantă rafinată (doar pagina AI): structura inițială (iconiță + titlu pe un
+   rând, apoi descriere), dar fără banda gradient albastră de sus, cu un radius
+   mai mic și un separator de 1px care delimitează antetul + descrierea de lista
+   de beneficii. */
+.cap-grid--refined .cap-card {
+  border-radius: 14px;
+  transition:
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+/* Element de design: „pânză" de puncte (același motiv ca pe site — vezi
+   #contact) concentrată în colțul dreapta-sus, estompată radial spre interior.
+   Refolosim pseudo-elementul fostei benzi albastre. */
+.cap-grid--refined .cap-card::before {
+  content: '';
+  inset: 0 0 auto auto;
+  width: 190px;
+  height: 160px;
+  background: none;
+  background-image: radial-gradient(rgba(3, 13, 74, 0.16) 1.4px, transparent 1.4px);
+  background-size: 15px 15px;
+  -webkit-mask-image: radial-gradient(90% 90% at 100% 0%, #000 10%, transparent 78%);
+  mask-image: radial-gradient(90% 90% at 100% 0%, #000 10%, transparent 78%);
+  pointer-events: none;
+}
+/* Hover: accent pe contur + pânza prinde albastrul, umbră abia perceptibilă.
+   Fără ridicare (translateY) — doar contur + umbră. */
+.cap-grid--refined .cap-card:hover {
+  border-color: var(--blue);
+  box-shadow: 0 12px 26px -20px rgba(3, 13, 74, 0.28);
+}
+.cap-grid--refined .cap-card:hover::before {
+  background-image: radial-gradient(rgba(0, 119, 252, 0.32) 1.4px, transparent 1.4px);
+}
+.cap-grid--refined .cap-desc {
+  margin-bottom: 22px;
+}
+.cap-grid--refined .cap-list {
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
+}
+
 /* process two-col + accordion */
 .spp-grid {
   display: grid;
@@ -3598,10 +3640,66 @@ a.bpill--ondark:hover {
   font-weight: 600;
 }
 .cs-case {
+  position: relative;
+  overflow: hidden;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 24px;
   padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+/* touch unicat: ghilimea mare decorativă + „pânza" de puncte în colț */
+.cs-case__mark {
+  position: absolute;
+  top: 10px;
+  left: 30px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 120px;
+  line-height: 1;
+  color: var(--blue);
+  opacity: 0.1;
+  pointer-events: none;
+  user-select: none;
+}
+.cs-case::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto auto;
+  width: 220px;
+  height: 180px;
+  background-image: radial-gradient(rgba(3, 13, 74, 0.13) 1.4px, transparent 1.4px);
+  background-size: 16px 16px;
+  -webkit-mask-image: radial-gradient(90% 90% at 100% 0%, #000 6%, transparent 76%);
+  mask-image: radial-gradient(90% 90% at 100% 0%, #000 6%, transparent 76%);
+  pointer-events: none;
+}
+/* slider orizontal: scroll cu mouse-ul (drag), snap pe câte un testimonial */
+.cs-track {
+  position: relative;
+  z-index: 1;
+  list-style: none;
+  margin: 0;
+  display: flex;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  cursor: grab;
+}
+.cs-track::-webkit-scrollbar {
+  display: none;
+}
+.cs-track.is-drag {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+}
+.cs-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
   display: flex;
   flex-direction: column;
 }
@@ -3620,6 +3718,8 @@ a.bpill--ondark:hover {
   color: var(--ink-soft);
 }
 .cs-foot {
+  position: relative;
+  z-index: 1;
   margin-top: auto;
   padding-top: 28px;
   display: flex;
@@ -3627,15 +3727,24 @@ a.bpill--ondark:hover {
   justify-content: space-between;
   gap: 20px;
 }
+.cs-count {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+}
 .cs-who {
   display: flex;
   align-items: center;
   gap: 14px;
+  margin-top: 26px;
 }
-.cs-who .lg {
-  width: 50px;
-  height: 50px;
+.cs-who__lg {
+  width: 54px;
+  height: 54px;
   border-radius: 12px;
+  border: 1px solid var(--line);
+  flex: none;
 }
 .cs-who b {
   display: block;
@@ -4644,11 +4753,12 @@ a.bpill--ondark:hover {
 }
 .tk-grid {
   display: none;
-  grid-template-columns: repeat(6, 1fr);
+  flex-wrap: wrap;
+  justify-content: center;
   gap: var(--sp-5);
 }
 .tk-grid.on {
-  display: grid;
+  display: flex;
   animation: fadeUp 0.4s var(--ease);
 }
 .tk-item {
@@ -4656,6 +4766,7 @@ a.bpill--ondark:hover {
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  width: 124px;
 }
 .tk-hex {
   width: 96px;

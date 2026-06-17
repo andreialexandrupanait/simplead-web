@@ -9,8 +9,17 @@ interface Props {
   titleAccent: string;
   sub: string;
   variant?: 'light' | 'tint';
+  cardVariant?: 'default' | 'refined';
 }
-const { items, eyebrow, title, titleAccent, sub, variant = 'light' } = Astro.props;
+const {
+  items,
+  eyebrow,
+  title,
+  titleAccent,
+  sub,
+  variant = 'light',
+  cardVariant = 'default',
+} = Astro.props;
 const check = '<path d="M20 6L9 17l-5-5"/>';
 ---
 
@@ -21,7 +30,10 @@ const check = '<path d="M20 6L9 17l-5-5"/>';
       <h2 class="sec-title">{title}<span class="g">{titleAccent}</span></h2>
       {sub && <p class="sec-sub">{sub}</p>}
     </div>
-    <div class="cap-grid" data-reveal-stagger>
+    <div
+      class:list={['cap-grid', cardVariant === 'refined' && 'cap-grid--refined']}
+      data-reveal-stagger
+    >
       {
         items.map((cap) => (
           <div class="cap-card">

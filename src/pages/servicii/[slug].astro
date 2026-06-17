@@ -70,11 +70,12 @@ const serviceSchema = {
           title={service.capHead.title}
           titleAccent={service.capHead.titleAccent}
           sub={service.capHead.sub}
+          cardVariant="refined"
         />
 
         <ServiceProcess steps={proc} />
 
-        {service.caseStudy && <ClientCase caseStudy={service.caseStudy} />}
+        {service.caseStudy && <ClientCase />}
 
         <FaqSection
           items={service.faqs}

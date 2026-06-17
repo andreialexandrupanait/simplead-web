@@ -1,12 +1,14 @@
 ---
-/** Caz client / dovadă socială (cs-grid) pe pagina de detaliu serviciu. */
-import type { ServiceCaseStudy } from '@data/services';
+/** Caz client / dovadă socială (cs-grid) pe pagina de detaliu serviciu.
+ *  Structura: coloană navy cu statistică (per serviciu) + card testimonial.
+ *  Cardul e un slider orizontal peste lista comună de testimoniale: scroll cu
+ *  mouse-ul (drag), săgeți funcționale și contor. */
+import { testimonials, caseStat } from '@data/testimonials';
 
 interface Props {
-  caseStudy: ServiceCaseStudy;
   variant?: 'light' | 'tint';
 }
-const { caseStudy: cs, variant = 'light' } = Astro.props;
+const { variant = 'light' } = Astro.props;
 const star =
   '<path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 7.1-1.01L12 2z"/>';
 const prev = '<path d="M15 18l-6-6 6-6"/>';
@@ -17,8 +19,8 @@ const next = '<path d="M9 6l6 6-6 6"/>';
   <div class="container">
     <div class="cs-grid" data-reveal>
       <div class="cs-stat">
-        <div class="big">{cs.statBig}{' '}<span class="g">{cs.statBigAccent}</span></div>
-        <p class="cap">{cs.statCap}</p>
+        <div class="big">{caseStat.statBig}{' '}<span class="g">{caseStat.statBigAccent}</span></div>
+        <p class="cap">{caseStat.statCap}</p>
         <div class="stars">
           {
             Array.from({ length: 5 }).map(() => (
@@ -30,20 +32,35 @@ const next = '<path d="M9 6l6 6-6 6"/>';
           Recenzii reale de la clienți · <a href="/portofoliu">Vezi recomandările</a>
         </p>
       </div>
+
       <div class="cs-case">
-        <p class="qt">{cs.quote}</p>
-        <p class="body">{cs.body}</p>
+        <span class="cs-case__mark" aria-hidden="true">“</span>
+        <ul class="cs-track" aria-roledescription="carusel" aria-label="Recomandări clienți">
+          {
+            testimonials.map((t, i) => (
+              <li
+                class="cs-slide"
+                role="group"
+                aria-roledescription="recomandare"
+                aria-label={`${i + 1} din ${testimonials.length}`}
+              >
+                <p class="qt">{t.quote}</p>
+                <p class="body">{t.body}</p>
+                <div class="cs-who">
+                  <span class="cl-word cs-who__lg">{t.clientLogo}</span>
+                  <span>
+                    <b>{t.client}</b>
+                    <small>{t.clientNote}</small>
+                  </span>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
         <div class="cs-foot">
-          <div class="cs-who">
-            <span
-              class="cl-word"
-              style="width:54px;height:54px;border-radius:12px;border:1px solid var(--line);font-size:15px;flex:none;"
-              >{cs.clientLogo}</span
-            >
-            <span><b>{cs.client}</b><small>{cs.clientNote}</small></span>
-          </div>
+          <p class="cs-count"><span data-cs-index>1</span> / {testimonials.length}</p>
           <div class="cs-arrows">
-            <button aria-label="Anterior" type="button"
+            <button data-dir="prev" aria-label="Recomandarea anterioară" type="button" disabled
               ><svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -54,7 +71,7 @@ const next = '<path d="M9 6l6 6-6 6"/>';
                 set:html={prev}
               /></button
             >
-            <button aria-label="Următor" type="button"
+            <button data-dir="next" aria-label="Recomandarea următoare" type="button"
               ><svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -71,3 +88,63 @@ const next = '<path d="M9 6l6 6-6 6"/>';
     </div>
   </div>
 </section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('.cs-case');
+  const track = root?.querySelector<HTMLElement>('.cs-track');
+  if (root && track) {
+    const prevBtn = root.querySelector<HTMLButtonElement>('[data-dir="prev"]');
+    const nextBtn = root.querySelector<HTMLButtonElement>('[data-dir="next"]');
+    const idxEl = root.querySelector<HTMLElement>('[data-cs-index]');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const behavior: ScrollBehavior = reduce ? 'auto' : 'smooth';
+    const step = () => track.clientWidth;
+
+    const sync = () => {
+      const i = Math.round(track.scrollLeft / Math.max(1, step()));
+      if (idxEl) idxEl.textContent = String(i + 1);
+      const max = track.scrollWidth - track.clientWidth - 2;
+      if (prevBtn) prevBtn.disabled = track.scrollLeft <= 2;
+      if (nextBtn) nextBtn.disabled = track.scrollLeft >= max;
+    };
+
+    prevBtn?.addEventListener('click', () => track.scrollBy({ left: -step(), behavior }));
+    nextBtn?.addEventListener('click', () => track.scrollBy({ left: step(), behavior }));
+    track.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+
+    // drag-to-scroll cu mouse-ul
+    let down = false;
+    let startX = 0;
+    let startLeft = 0;
+    let moved = false;
+    track.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      down = true;
+      moved = false;
+      startX = e.clientX;
+      startLeft = track.scrollLeft;
+      track.setPointerCapture(e.pointerId);
+    });
+    track.addEventListener('pointermove', (e) => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (!moved && Math.abs(dx) > 5) {
+        moved = true;
+        track.classList.add('is-drag');
+      }
+      if (moved) track.scrollLeft = startLeft - dx;
+    });
+    const release = (e: PointerEvent) => {
+      if (!down) return;
+      down = false;
+      track.classList.remove('is-drag');
+      try {
+        track.releasePointerCapture(e.pointerId);
+      } catch {}
+    };
+    track.addEventListener('pointerup', release);
+    track.addEventListener('pointercancel', release);
+  }
+</script>

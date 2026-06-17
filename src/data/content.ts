@@ -132,8 +132,8 @@ export const toolCategories: ToolCategory[] = [
       { name: 'Photoshop', logo: '/tools/photoshop.svg' },
       { name: 'Illustrator', logo: '/tools/illustrator.svg' },
       { name: 'InDesign', logo: '/tools/indesign.svg' },
-      { name: 'After Effects', logo: '/tools/aftereffects.svg' },
       { name: 'Premiere Pro', logo: '/tools/premiere.svg' },
+      { name: 'CorelDRAW', logo: 'https://cdn.simpleicons.org/coreldraw' },
     ],
   },
   {
@@ -142,34 +142,57 @@ export const toolCategories: ToolCategory[] = [
       { name: 'WordPress', logo: 'https://cdn.simpleicons.org/wordpress' },
       { name: 'WooCommerce', logo: 'https://cdn.simpleicons.org/woocommerce' },
       { name: 'Elementor', logo: 'https://cdn.simpleicons.org/elementor' },
-      { name: 'HTML / CSS', logo: 'https://cdn.simpleicons.org/html5' },
-      { name: 'PHP', logo: 'https://cdn.simpleicons.org/php' },
-      { name: 'Webflow', logo: 'https://cdn.simpleicons.org/webflow' },
     ],
   },
   {
-    label: 'Marketing & Ads',
+    label: 'Marketing',
     tools: [
-      { name: 'Meta Ads', logo: 'https://cdn.simpleicons.org/meta' },
       { name: 'Google Ads', logo: 'https://cdn.simpleicons.org/googleads' },
-      { name: 'TikTok Ads', logo: 'https://cdn.simpleicons.org/tiktok' },
-      { name: 'Mailchimp', logo: 'https://cdn.simpleicons.org/mailchimp' },
-      { name: 'Canva', logo: '/tools/canva.svg' },
-      { name: 'CapCut', logo: '/tools/capcut.svg' },
+      { name: 'Search Console', logo: 'https://cdn.simpleicons.org/googlesearchconsole' },
+      { name: 'Tag Manager', logo: 'https://cdn.simpleicons.org/googletagmanager' },
+      { name: 'Google Analytics 4', logo: 'https://cdn.simpleicons.org/googleanalytics' },
+      { name: 'MailerLite', logo: '/tools/mailerlite.svg' },
     ],
   },
   {
-    label: 'Analiză & Neuromarketing',
+    label: 'Frontend',
     tools: [
-      { name: 'Google Analytics', logo: 'https://cdn.simpleicons.org/googleanalytics' },
-      { name: 'Search Console', logo: 'https://cdn.simpleicons.org/googlesearchconsole' },
-      { name: 'Hotjar', logo: 'https://cdn.simpleicons.org/hotjar' },
-      { name: 'Looker Studio', logo: 'https://cdn.simpleicons.org/looker' },
-      { name: 'Meta Pixel', logo: 'https://cdn.simpleicons.org/meta' },
-      { name: 'Tag Manager', logo: 'https://cdn.simpleicons.org/googletagmanager' },
+      { name: 'React', logo: 'https://cdn.simpleicons.org/react' },
+      { name: 'Vue.js', logo: 'https://cdn.simpleicons.org/vuedotjs' },
+      { name: 'Next.js', logo: 'https://cdn.simpleicons.org/nextdotjs' },
+      { name: 'TypeScript', logo: 'https://cdn.simpleicons.org/typescript' },
+      { name: 'Tailwind CSS', logo: 'https://cdn.simpleicons.org/tailwindcss' },
+    ],
+  },
+  {
+    label: 'Backend',
+    tools: [
+      { name: 'Node.js', logo: 'https://cdn.simpleicons.org/nodedotjs' },
+      { name: 'PHP', logo: 'https://cdn.simpleicons.org/php' },
+      { name: 'Laravel', logo: 'https://cdn.simpleicons.org/laravel' },
+      { name: 'Python', logo: 'https://cdn.simpleicons.org/python' },
+    ],
+  },
+  {
+    label: 'Bază de date',
+    tools: [
+      { name: 'MySQL', logo: 'https://cdn.simpleicons.org/mysql' },
+      { name: 'PostgreSQL', logo: 'https://cdn.simpleicons.org/postgresql' },
+      { name: 'Redis', logo: 'https://cdn.simpleicons.org/redis' },
+    ],
+  },
+  {
+    label: 'AI',
+    tools: [
+      { name: 'Claude', logo: 'https://cdn.simpleicons.org/claude' },
+      { name: 'OpenAI', logo: '/tools/openai.svg' },
     ],
   },
 ];
+
+/** Notă onestă afișată la secțiunea de unelte: dezvoltarea e făcută în mare parte cu AI. */
+export const toolsAiNote =
+  'Cea mai mare parte din dezvoltare — frontend, backend, baze de date — o construim asistat de AI. Fără vrăjeală: îl folosim acolo unde ne face mai rapizi și mai buni.';
 
 /** Întrebări frecvente (FAQ). `body` paragrafe; `list` listă opțională. */
 export interface Faq {

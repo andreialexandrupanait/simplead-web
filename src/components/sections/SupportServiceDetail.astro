@@ -6,6 +6,7 @@
 import ServiceHero from './ServiceHero.astro';
 import CapabilitiesGrid from './CapabilitiesGrid.astro';
 import ServiceProcess from './ServiceProcess.astro';
+import ClientCase from './ClientCase.astro';
 import FaqSection from './FaqSection.astro';
 import CtaNotch from './CtaNotch.astro';
 import type { SupportService } from '@data/support-services';
@@ -31,9 +32,12 @@ const { support } = Astro.props;
   title={support.capHead.title}
   titleAccent={support.capHead.titleAccent}
   sub={support.capHead.sub}
+  cardVariant="refined"
 />
 
 <ServiceProcess steps={support.process} />
+
+<ClientCase />
 
 <FaqSection
   items={support.faqs}
