@@ -1,10 +1,12 @@
 ---
 /**
- * Buton oblic (skew -10deg): semnătura vizuală Simplead, păstrată din vechiul
- * design dar pe paleta nouă FLAT (fără gradient mov).
- *  - primary : fundal electric, text alb, glow electric→cyan la hover
- *  - outline : 1px contur, fundal transparent (CTA secundar / low-commitment)
- *  - yellow  : accent signal (rar)
+ * Buton Simplead — identitate proprie (NU mai e parallelogramul skew, ca să nu
+ * semene cu thecon.ro). Două semnături:
+ *  - primary / yellow : DEPTH — corp dreptunghiular (colțuri drepte) care „se
+ *    apasă” fizic într-o bază de dedesubt (hover ridică, click coboară).
+ *  - outline          : KEYLINE · DUO — dreptunghi curat cu două linii care se
+ *    desfac din centru sus & jos la hover (secundar rafinat).
+ * API neschimbat: variant / size / onDark / withArrow.
  */
 interface Props {
   href: string;
@@ -28,6 +30,9 @@ const {
   rel,
   target,
 } = Astro.props;
+
+// Doar variantele „solide” au baza fizică de dedesubt.
+const hasBase = variant === 'primary' || variant === 'yellow';
 ---
 
 <a
@@ -36,45 +41,44 @@ const {
   target={target}
   class:list={['btn', `btn--${variant}`, `btn--${size}`, onDark && 'btn--on-dark', className]}
 >
-  <span class="btn__inner">
-    <slot />
-    {
-      withArrow && (
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.3"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="btn__arrow"
-          aria-hidden="true"
-        >
-          <path d="M5 12h14M13 6l6 6-6 6" />
-        </svg>
-      )
-    }
+  {hasBase && <span class="btn__base" aria-hidden="true" />}
+  <span class="btn__face">
+    <span class="btn__inner">
+      <slot />
+      {
+        withArrow && (
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="btn__arrow"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        )
+      }
+    </span>
   </span>
 </a>
 
 <style>
   .btn {
+    position: relative;
     display: inline-block;
-    transform: skew(-10deg);
-    border-radius: var(--r-xs);
-    border: 1px solid transparent;
-    transition:
-      transform 0.18s var(--ease-snap),
-      box-shadow 0.25s var(--ease-snap),
-      background-color 0.18s var(--ease-snap),
-      color 0.18s var(--ease-snap),
-      border-color 0.18s var(--ease-snap);
+    text-decoration: none;
+  }
+  .btn__face {
+    position: relative;
+    display: inline-block;
   }
   .btn__inner {
     display: inline-flex;
     align-items: center;
     gap: 9px;
-    transform: skew(10deg);
     font-family: var(--font-body);
     font-weight: 700;
     line-height: 1;
@@ -82,60 +86,120 @@ const {
     letter-spacing: 0.04em;
   }
 
-  /* Mărimi (padding pe ancoră, ca skew-ul să prindă tot) */
-  .btn--md {
+  /* Mărimi (padding pe inner) */
+  .btn--md .btn__inner {
     padding: 13px 24px;
     font-size: 0.86rem;
   }
-  .btn--lg {
+  .btn--lg .btn__inner {
     padding: 16px 30px;
     font-size: 0.92rem;
   }
 
-  /* Primar: electric flat */
-  .btn--primary {
-    background: var(--electric);
-    color: #fff;
-    box-shadow: var(--glow-electric);
+  /* ============================================================
+     DEPTH · NOTCH — primary & yellow
+     ============================================================ */
+  .btn--primary,
+  .btn--yellow {
+    margin-bottom: 6px;
   }
-  .btn--primary:hover {
-    transform: skew(-10deg) translateY(-2px);
-    box-shadow: var(--glow-electric);
+  .btn--primary .btn__base,
+  .btn--primary .btn__face,
+  .btn--yellow .btn__base,
+  .btn--yellow .btn__face {
+    border-radius: 2px;
+  }
+  .btn--primary .btn__base,
+  .btn--yellow .btn__base {
+    position: absolute;
+    inset: 0;
+    transform: translateY(6px);
+    z-index: 0;
+  }
+  .btn--primary .btn__face,
+  .btn--yellow .btn__face {
+    z-index: 1;
+    transition: transform 0.1s var(--ease-snap);
+  }
+  .btn--primary:hover .btn__face,
+  .btn--yellow:hover .btn__face {
+    transform: translateY(3px);
+  }
+  .btn--primary:active .btn__face,
+  .btn--yellow:active .btn__face {
+    transform: translateY(6px);
   }
 
-  /* Secundar: outline (low-commitment) */
-  .btn--outline {
+  /* Primary: electric face, bază albastră închisă */
+  .btn--primary .btn__face {
+    background: var(--electric);
+    color: #fff;
+  }
+  .btn--primary .btn__base {
+    background: #0a3bd0;
+  }
+
+  /* Yellow: accent signal, bază galben închis */
+  .btn--yellow .btn__face {
+    background: var(--signal);
+    color: var(--ink);
+  }
+  .btn--yellow .btn__base {
+    background: #cdaf1c;
+  }
+
+  /* ============================================================
+     KEYLINE · DUO — outline (secundar)
+     ============================================================ */
+  .btn--outline .btn__face {
+    border-radius: 2px;
     background: transparent;
     color: var(--ink);
-    border-color: var(--ink);
+    box-shadow: inset 0 0 0 1.5px var(--line);
+    transition: color 0.18s var(--ease-snap);
   }
-  .btn--outline:hover {
-    transform: skew(-10deg) translateY(-2px);
-    background: var(--canvas-soft);
-    border-color: var(--electric);
+  .btn--outline .btn__face::before,
+  .btn--outline .btn__face::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2.5px;
+    background: var(--electric);
+    transform: scaleX(0);
+    transition: transform 0.32s var(--ease-snap);
+    z-index: 2;
+  }
+  .btn--outline .btn__face::before {
+    top: 0;
+  }
+  .btn--outline .btn__face::after {
+    bottom: 0;
+  }
+  .btn--outline:hover .btn__face {
     color: var(--electric);
   }
-  .btn--outline.btn--on-dark {
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.35);
+  .btn--outline:hover .btn__face::before,
+  .btn--outline:hover .btn__face::after {
+    transform: scaleX(1);
   }
-  .btn--outline.btn--on-dark:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: var(--cyan);
+
+  /* Outline pe fundal dark */
+  .btn--outline.btn--on-dark .btn__face {
+    color: #fff;
+    box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.24);
+  }
+  .btn--outline.btn--on-dark .btn__face::before,
+  .btn--outline.btn--on-dark .btn__face::after {
+    background: var(--cyan);
+  }
+  .btn--outline.btn--on-dark:hover .btn__face {
     color: var(--cyan);
   }
 
-  /* Accent rar: signal */
-  .btn--yellow {
-    background: var(--signal);
-    color: var(--ink);
-    box-shadow: 0 14px 30px -14px rgba(245, 217, 63, 0.6);
-  }
-  .btn--yellow:hover {
-    transform: skew(-10deg) translateY(-2px);
-    box-shadow: 0 14px 30px -14px rgba(245, 217, 63, 0.6);
-  }
-
+  /* ============================================================
+     Săgeată
+     ============================================================ */
   .btn__arrow {
     width: 17px;
     height: 17px;
@@ -147,10 +211,10 @@ const {
 
   /* Pe mobil: padding mai mic ca 2 butoane să încapă unul lângă altul. */
   @media (max-width: 480px) {
-    .btn--md {
+    .btn--md .btn__inner {
       padding: 12px 16px;
     }
-    .btn--lg {
+    .btn--lg .btn__inner {
       padding: 14px 18px;
       font-size: 0.88rem;
     }
@@ -161,12 +225,17 @@ const {
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .btn,
-    .btn__arrow {
+    .btn__face,
+    .btn__arrow,
+    .btn--outline .btn__face::before,
+    .btn--outline .btn__face::after {
       transition: none;
     }
-    .btn:hover {
-      transform: skew(-10deg);
+    .btn--primary:hover .btn__face,
+    .btn--yellow:hover .btn__face,
+    .btn--primary:active .btn__face,
+    .btn--yellow:active .btn__face {
+      transform: none;
     }
   }
 </style>
