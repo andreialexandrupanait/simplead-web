@@ -5,10 +5,9 @@ import CtaSection from '@components/sections/CtaSection.astro';
 import FaqSection from '@components/sections/FaqSection.astro';
 import PackageFeatures from '@components/sections/PackageFeatures.astro';
 import ServiceIcon from '@components/ui/ServiceIcon.astro';
-import type { ServiceIcon as ServiceIconName } from '@data/services';
 import { getPublicPackages, formatPrice, canBuy } from '@/lib/server/packages';
 import { getIntegration } from '@/lib/server/settings';
-import { hourlyRates, hourlyRatesIntro } from '@/data/pricing';
+import { hourlyRates, hourlyRatesIntro, pricingSections } from '@/data/pricing';
 import { packagesFaqs } from '@data/content';
 
 // On-demand: pachetele vin din DB (editabile din admin, fără rebuild).
@@ -24,7 +23,6 @@ if (!fromDb) {
 const stripeReady = fromDb && Boolean((await getIntegration('stripe')).secretKey.value);
 const canceled = Astro.url.searchParams.get('canceled') === '1';
 
-const bySort = (a: { sort: number }, b: { sort: number }) => a.sort - b.sort;
 const services = items.filter((p) => p.kind === 'service');
 // Ordinea cerută explicit, independent de `sort` din DB: Redesign, Prezentare, Magazin.
 const WEB_ORDER = ['ux-ui-redesign', 'site-prezentare', 'magazin-online'];
@@ -33,22 +31,12 @@ const webRank = (p: { slug: string; sort: number }) => {
   return i === -1 ? 100 + p.sort : i;
 };
 const web = services.filter((p) => p.category === 'web').sort((a, b) => webRank(a) - webRank(b));
-const graphics = services.filter((p) => p.category === 'grafica-marketing');
-// Servicii fără grupare: le arătăm tot în secțiunea grafică & marketing.
-const graphicsRest = services.filter(
-  (p) => p.category !== 'web' && p.category !== 'grafica-marketing',
-);
-const graphicsAll = [...graphics, ...graphicsRest].sort(bySort);
 // Cardul „dominant": cel din mijloc când sunt exact 3 (Prezentare).
 const featuredWebIdx = web.length === 3 ? 1 : -1;
 const maintenance = items.filter((p) => p.kind === 'maintenance');
 const addons = items.filter((p) => p.kind === 'addon');
 
 const contactHref = (name: string) => `/contact?service=${encodeURIComponent(name)}`;
-
-// Icon pe cardurile grafică (map pe slug; fallback `grafica` pt. pachete noi din admin).
-const graphicsIcon = (slug: string): ServiceIconName =>
-  slug === 'strategie-marketing' ? 'marketing' : 'grafica';
 
 const metaDescription =
   'Pachete clare pentru site-uri, identitate vizuală și grafică, plus abonamente lunare de mentenanță. Știi de la început ce primești și de unde pornește prețul.';
@@ -63,9 +51,9 @@ const metaDescription =
   <PageHeader
     crumb={[{ label: 'Acasă', href: '/' }, { label: 'Pachete' }]}
     eyebrow="Pachete și prețuri"
-    title="Pachete clare, fără surprize"
+    title="Prețuri clare, fără surprize"
     accent="fără surprize"
-    subtitle="Prețuri clare și abonamente lunare. Știi de la început ce primești și cât plătești."
+    subtitle="Știi de la început ce primești și cât plătești. Pentru proiecte mai complexe pornim de la o discuție, nu de la un deviz standard."
   />
 
   {
@@ -214,47 +202,51 @@ const metaDescription =
     )
   }
 
-  {/* 3. Grafică & marketing */}
+  {/* 3. Secțiuni de prețuri: grafică, social media, consultanță, AI (statice). */}
   {
-    graphicsAll.length > 0 && (
-      <section class="pk-sec" id="grafica">
-        <div class="pk-wrap">
-          <header class="pk-head pk-head--center" data-reveal>
-            <span class="pk-eyebrow">Grafică & marketing</span>
-            <h2 class="pk-h2">
-              Identitate, vizualuri și <em>strategie</em>
-            </h2>
-            <p class="pk-lead">
-              De la identitatea vizuală și materialele grafice până la strategia de marketing — tot
-              ce ține de imaginea brandului tău, cu preț fix.
-            </p>
-          </header>
-          <div class="pk-grid3">
-            {graphicsAll.map((pkg) => (
-              <article class="pk-card pk-card--gfx">
-                <span class="pk-card-icon">
-                  <ServiceIcon icon={graphicsIcon(pkg.slug)} />
-                </span>
-                <div class="pk-card-head">
-                  <h3>{pkg.name}</h3>
-                  <span class="pk-card-price">{formatPrice(pkg)}</span>
-                </div>
-                <p class="pk-card-desc">{pkg.description}</p>
-                <PackageFeatures
-                  features={pkg.features}
-                  featureGroups={pkg.featureGroups}
-                  variant="sm"
-                />
-                {pkg.note && <p class="pk-note">{pkg.note}</p>}
-                <a class="pk-link" href={contactHref(pkg.name)}>
-                  Cere ofertă →
-                </a>
-              </article>
-            ))}
+    pricingSections.map((sec, idx) => {
+      const [before, after] = sec.title.split(sec.accent);
+      return (
+        <section class:list={['pk-sec', idx % 2 === 1 && 'pk-sec--soft']} id={sec.id}>
+          <div class="pk-wrap">
+            <header class="pk-head pk-head--center" data-reveal>
+              <span class="pk-eyebrow">{sec.eyebrow}</span>
+              <h2 class="pk-h2">
+                {before}
+                <em>{sec.accent}</em>
+                {after}
+              </h2>
+              <p class="pk-lead">{sec.sub}</p>
+            </header>
+            <div class="pk-grid3">
+              {sec.cards.map((c) => (
+                <article class="pk-card pk-card--gfx">
+                  <span class="pk-card-icon">
+                    <ServiceIcon icon={sec.icon} />
+                  </span>
+                  <h3 class="pk-pcard-name">{c.name}</h3>
+                  <span class="pk-pcard-price">{c.price}</span>
+                  <p class="pk-card-desc">{c.desc}</p>
+                  {c.features && (
+                    <ul class="pk-feats">
+                      {c.features.map((f) => (
+                        <li>{f}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {c.note && <p class="pk-note">{c.note}</p>}
+                </article>
+              ))}
+            </div>
+            <div class="pk-sec-cta">
+              <a class="pk-btn pk-btn--fill" href={sec.ctaHref}>
+                <span>{sec.ctaLabel} →</span>
+              </a>
+            </div>
           </div>
-        </div>
-      </section>
-    )
+        </section>
+      );
+    })
   }
 
   {/* 4. Tarife orare */}
@@ -291,10 +283,10 @@ const metaDescription =
   <FaqSection items={packagesFaqs} variant="tint" />
 
   <CtaSection
-    title="Nu știi ce pachet ți se potrivește?"
-    subtitle="Scrie-ne: îți răspundem cu o recomandare concretă, nu cu un call de vânzări."
+    title="Nu știi ce ți se potrivește?"
+    subtitle="Scrie-ne și îți răspundem cu o recomandare concretă, nu cu un call de vânzări."
     href="/contact"
-    cta="Scrie-ne"
+    cta="Hai să vorbim"
   />
 </BaseLayout>
 
@@ -699,6 +691,57 @@ const metaDescription =
   }
   .pk-link:hover {
     color: #1184ff;
+  }
+
+  /* ============ Carduri preț statice (grafică / social / consultanță / AI) ============ */
+  .pk-pcard-name {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.18rem;
+    line-height: 1.2;
+    color: var(--ink);
+  }
+  .pk-pcard-price {
+    display: block;
+    margin: 8px 0 12px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.45rem;
+    color: var(--electric);
+  }
+  .pk-feats {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .pk-feats li {
+    position: relative;
+    padding-left: 22px;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .pk-feats li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 0.52em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--electric);
+    transform: translateY(-50%);
+  }
+  .pk-sec-cta {
+    display: flex;
+    justify-content: center;
+    margin-top: clamp(24px, 3vw, 36px);
+  }
+  .pk-sec-cta .pk-btn {
+    width: auto;
+    padding-inline: 32px;
   }
 
   /* ============ Mentenanță ============ */

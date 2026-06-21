@@ -3,7 +3,7 @@ import Logo from '@components/ui/Logo.astro';
 import Button from '@components/ui/Button.astro';
 import MobileMenu from '@components/react/MobileMenu';
 import ServiceIcon from '@components/ui/ServiceIcon.astro';
-import { mainNav, servicesNav, megaQuickLinks, megaPromo } from '@data/nav';
+import { mainNav, servicesNav, supportNavItem, megaSupportLinks, megaPromo } from '@data/nav';
 import { site } from '@data/site';
 import { useTranslations, localeFromPath } from '@i18n/index';
 
@@ -54,7 +54,7 @@ const isActive = (href: string) =>
                 </svg>
               </a>
               <div class="mega" role="menu">
-                <div class="site-container mega__inner">
+                <div class="site-container mega__inner mega__inner--svc">
                   <div class="mega__zone mega__zone--services">
                     <span class="mega__label">Servicii</span>
                     <div class="mega__grid">
@@ -73,9 +73,9 @@ const isActive = (href: string) =>
                   </div>
 
                   <div class="mega__zone mega__zone--links">
-                    <span class="mega__label">Utile</span>
-                    <ul class="mega__quick">
-                      {megaQuickLinks.map((l) => (
+                    <span class="mega__label">Suport tehnic</span>
+                    <ul class="mega__quick mega__quick--bullet">
+                      {megaSupportLinks.map((l) => (
                         <li>
                           <a href={l.href} role="menuitem">
                             {l.label}
@@ -83,6 +83,20 @@ const isActive = (href: string) =>
                         </li>
                       ))}
                     </ul>
+                    <a class="mega__quick-all" href={supportNavItem.href} role="menuitem">
+                      Vezi toată pagina
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                      </svg>
+                    </a>
                   </div>
 
                   <a class="mega__promo" href={megaPromo.ctaHref} role="menuitem">
@@ -261,7 +275,7 @@ const isActive = (href: string) =>
       <MobileMenu
         client:load
         items={mainNav}
-        services={servicesNav}
+        services={[...servicesNav, supportNavItem]}
         ctaLabel={t.nav.cta}
         ctaHref="/contact"
         activePath={activePath}
@@ -388,11 +402,14 @@ const isActive = (href: string) =>
     position: absolute;
     top: 100%;
     left: 50%;
-    width: calc(100% - 80px);
-    max-width: var(--maxw);
+    /* Aliniat cu containerul general: marginile panoului cad pe logo (stânga) și
+       butonul de CTA (dreapta), exact ca .site-container (maxw minus gutter). */
+    width: calc(100% - 2 * var(--gutter));
+    max-width: calc(var(--maxw) - 2 * var(--gutter));
     background: var(--canvas);
     border: 1px solid var(--line);
-    border-radius: var(--r-lg);
+    /* Fără colțuri rotunjite sus: panoul „coboară" din navbar. */
+    border-radius: 0 0 var(--r-lg) var(--r-lg);
     box-shadow: var(--sh-lg);
     overflow: hidden;
     opacity: 0;
@@ -490,6 +507,50 @@ const isActive = (href: string) =>
     font-size: 0.8rem;
     line-height: 1.45;
     color: var(--muted);
+  }
+
+  /* Mega Servicii: 6 servicii pe 2 coloane + strip Suport tehnic, plus panoul promo.
+     Padding interior redus față de restul mega-meniurilor. */
+  .mega__inner--svc {
+    grid-template-columns: 1.5fr 0.62fr 0.85fr;
+    padding: 22px 28px;
+  }
+  /* Bara de jos (email) aliniată cu padding-ul redus al conținutului. */
+  .mega__inner--svc + .mega__footwrap .mega__foot {
+    padding-inline: 28px;
+  }
+  /* Coloana „Suport tehnic": listă cu bulină turquoise + link „Vezi toată pagina". */
+  .mega__quick.mega__quick--bullet a {
+    position: relative;
+    padding: 7px 0 7px 18px;
+  }
+  .mega__quick--bullet a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    transform: translateY(-50%);
+  }
+  .mega__quick-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--electric);
+  }
+  .mega__quick-all svg {
+    width: 15px;
+    height: 15px;
+    transition: transform 0.2s var(--ease-snap);
+  }
+  .mega__quick-all:hover svg {
+    transform: translateX(3px);
   }
 
   /* Coloana din mijloc: linkuri utile, cu divider. */

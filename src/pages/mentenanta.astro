@@ -2,10 +2,10 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import ServiceHero from '@components/sections/ServiceHero.astro';
 import AppShowcase from '@components/sections/AppShowcase.astro';
-import ClientCase from '@components/sections/ClientCase.astro';
+import ProjectsGrid from '@components/sections/ProjectsGrid.astro';
 import CtaNotch from '@components/sections/CtaNotch.astro';
 import FaqSection from '@components/sections/FaqSection.astro';
-import { generalFaqs, appTopics } from '@data/content';
+import { mentenantaFaqs, appTopics } from '@data/content';
 import { getService } from '@data/services';
 import {
   maintenanceBase as basePackages,
@@ -24,7 +24,7 @@ const metaDescription =
 const appFaqs = appTopics.flatMap((t) => t.faqs);
 const faqSchema = {
   '@type': 'FAQPage',
-  mainEntity: [...appFaqs, ...generalFaqs].map((f) => ({
+  mainEntity: [...appFaqs, ...mentenantaFaqs].map((f) => ({
     '@type': 'Question',
     name: f.q,
     acceptedAnswer: { '@type': 'Answer', text: f.body.join(' ') },
@@ -148,23 +148,22 @@ const faqSchema = {
     </div>
   </section>
 
-  {
-    mnt?.caseStudy && (
-      <div class="mnt-case">
-        <ClientCase variant="light" />
-      </div>
-    )
-  }
+  <ProjectsGrid
+    service="mentenanta"
+    title="Site-uri pe care le ținem live chiar acum"
+    showLive
+    variant="light"
+  />
 
   <FaqSection
-    items={generalFaqs}
+    items={mentenantaFaqs}
     variant="tint"
     eyebrow="Întrebări frecvente"
     title="Ai "
     titleAccent="întrebări?"
   />
 
-  {mnt && <CtaNotch title="Tu te ocupi de afacere, noi de partea tehnică." />}
+  {mnt && <CtaNotch title="Tu te ocupi de afacere. Noi ne ocupăm de site." subtitle="" />}
 </BaseLayout>
 
 <style>

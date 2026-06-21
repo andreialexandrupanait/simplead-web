@@ -19,6 +19,15 @@ export const mainNav: NavItem[] = [
   { label: 'Portofoliu', href: '/portofoliu' },
   { label: 'Despre', href: '/despre' },
   { label: 'Blog', href: '/blog' },
+  { label: 'Contact', href: '/contact' },
+];
+
+/**
+ * Navigarea din footer: identică cu meniul principal, plus „Resurse" — scos din
+ * header, dar păstrat în footer (lângă celelalte linkuri de navigare).
+ */
+export const footerNav: NavItem[] = [
+  ...mainNav.slice(0, -1),
   { label: 'Resurse', href: '/resurse' },
   { label: 'Contact', href: '/contact' },
 ];
@@ -66,7 +75,22 @@ export const servicesNav: NavServiceItem[] = [
   },
 ];
 
-export const footerServices: NavItem[] = servicesNav.map(({ label, href }) => ({ label, href }));
+/**
+ * Link suplimentar către pagina de suport tehnic. Apare ca al 7-lea element în
+ * mega-meniul Servicii (randat separat) și în meniul mobil. `icon` e cerut de
+ * tip, dar nu e folosit la randare — Suport tehnic are propria iconiță.
+ */
+export const supportNavItem: NavServiceItem = {
+  label: 'Suport tehnic',
+  href: '/suport',
+  icon: 'mentenanta',
+  desc: 'WordPress, SSL, DNS, securitate, email și quick fix — fără să deschizi un proiect întreg.',
+};
+
+export const footerServices: NavItem[] = [
+  ...servicesNav.map(({ label, href }) => ({ label, href })),
+  { label: 'Suport tehnic', href: '/suport' },
+];
 
 export const footerLegal: NavItem[] = [
   { label: 'Întrebări frecvente', href: '/intrebari-frecvente' },
@@ -75,19 +99,17 @@ export const footerLegal: NavItem[] = [
   { label: 'Politica de cookies', href: '/cookies' },
 ];
 
-/** Linkurile „Utile" din coloana secundară a mega-meniului Servicii. */
-export const megaQuickLinks: NavItem[] = [
-  { label: 'Pachete & prețuri', href: '/pachete' },
-  { label: 'Servicii rapide (preț fix)', href: '/servicii-rapide' },
-  { label: 'Instrumente gratuite', href: '/instrumente' },
-  { label: 'Cere suport', href: '/suport' },
-  { label: 'Calculator mentenanță', href: '/mentenanta#calc' },
-  { label: 'Portofoliu', href: '/portofoliu' },
-  { label: 'Resurse', href: '/resurse' },
-  { label: 'Întrebări frecvente', href: '/intrebari-frecvente' },
+/**
+ * Coloana „Suport tehnic" din mega-meniul Servicii: cele mai importante servicii
+ * de pe pagina /suport, listate cu liniuță. Fiecare duce la pagina de detaliu.
+ */
+export const megaSupportLinks: NavItem[] = [
+  { label: 'Suport WordPress', href: '/servicii/wordpress-support' },
+  { label: 'Migrare site', href: '/servicii/migrare-site' },
+  { label: 'Suport Cloudflare', href: '/servicii/cloudflare-support' },
 ];
 
-/** Panoul promo din dreapta mega-meniului. Schimbi de aici ce promovezi. */
+/** Panoul promo din dreapta mega-meniului Servicii. Schimbi de aici ce promovezi. */
 export const megaPromo = {
   eyebrow: 'Mentenanță website',
   title: 'Site-ul tău, monitorizat non-stop',

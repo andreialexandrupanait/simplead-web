@@ -1,0 +1,289 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHeader from '@components/sections/PageHeader.astro';
+import { ticketCategories, ticketPriorities, ticketCategoryValues } from '@lib/ticket-schema';
+
+export const prerender = false;
+
+// Preumplere din URL: ?pachet=slug (din /servicii-rapide) și ?categorie=valoare.
+const packageSlug = Astro.url.searchParams.get('pachet')?.trim() ?? '';
+const rawCategory = Astro.url.searchParams.get('categorie')?.trim() ?? '';
+const presetCategory = (ticketCategoryValues as readonly string[]).includes(rawCategory)
+  ? rawCategory
+  : '';
+
+const metaDescription =
+  'Ai o problemă pe site? Trimite-ne un tichet de suport: site picat, email în spam, viteză, securitate sau migrare. Îți răspundem cu o soluție și un preț clar.';
+---
+
+<BaseLayout
+  title="Cere suport"
+  description={metaDescription}
+  transparentNav={true}
+  navOverDark={true}
+>
+  <PageHeader
+    crumb={[
+      { label: 'Acasă', href: '/' },
+      { label: 'Suport tehnic', href: '/suport' },
+      { label: 'Cere suport' },
+    ]}
+    eyebrow="Suport tehnic"
+    title="Spune-ne ce nu merge"
+    accent="ce nu merge"
+    subtitle="Descrie pe scurt problema. Îți răspundem cu o soluție și un preț clar, fără abonament obligatoriu."
+  />
+
+  <section class="sup-sec">
+    <div class="sup-wrap">
+      <form id="sup-form" class="sup-form" novalidate>
+        {packageSlug && <input type="hidden" name="packageSlug" value={packageSlug} />}
+
+        <div class="sup-row">
+          <label class="sup-field">
+            <span>Nume *</span>
+            <input type="text" name="name" required minlength="2" autocomplete="name" />
+          </label>
+          <label class="sup-field">
+            <span>Email *</span>
+            <input type="email" name="email" required autocomplete="email" />
+          </label>
+        </div>
+
+        <div class="sup-row">
+          <label class="sup-field">
+            <span>Telefon</span>
+            <input type="tel" name="phone" autocomplete="tel" />
+          </label>
+          <label class="sup-field">
+            <span>Firmă (opțional)</span>
+            <input type="text" name="company" autocomplete="organization" />
+          </label>
+        </div>
+
+        <div class="sup-row">
+          <label class="sup-field">
+            <span>Categorie</span>
+            <select name="category">
+              {
+                ticketCategories.map((c) => (
+                  <option value={c.value} selected={presetCategory === c.value}>
+                    {c.label}
+                  </option>
+                ))
+              }
+            </select>
+          </label>
+          <label class="sup-field">
+            <span>Prioritate</span>
+            <select name="priority">
+              {
+                ticketPriorities.map((p) => (
+                  <option value={p.value} selected={p.value === 'normala'}>
+                    {p.label}
+                  </option>
+                ))
+              }
+            </select>
+          </label>
+        </div>
+
+        <label class="sup-field">
+          <span>Adresa site-ului (opțional)</span>
+          <input type="text" name="siteUrl" placeholder="ex: exemplu.ro" />
+        </label>
+
+        <label class="sup-field">
+          <span>Descrie problema *</span>
+          <textarea
+            name="message"
+            required
+            minlength="10"
+            rows="6"
+            placeholder="Ce se întâmplă, de când, ce ai încercat…"></textarea>
+        </label>
+
+        <label class="sup-consent">
+          <input type="checkbox" name="consent" required />
+          <span>
+            Sunt de acord cu prelucrarea datelor conform
+            <a href="/confidentialitate">politicii de confidențialitate</a>.
+          </span>
+        </label>
+
+        {/* Honeypot anti-spam: ascuns, trebuie să rămână gol. */}
+        <input
+          type="text"
+          name="website"
+          tabindex="-1"
+          autocomplete="off"
+          class="sup-hp"
+          aria-hidden="true"
+        />
+
+        <button type="submit" class="sup-btn">Trimite tichetul</button>
+        <p id="sup-msg" class="sup-msg" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const form = document.getElementById('sup-form') as HTMLFormElement | null;
+  const msg = document.getElementById('sup-msg');
+  if (form && msg) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+      const fd = new FormData(form);
+      const payload = {
+        name: String(fd.get('name') ?? ''),
+        email: String(fd.get('email') ?? ''),
+        phone: String(fd.get('phone') ?? ''),
+        company: String(fd.get('company') ?? ''),
+        category: String(fd.get('category') ?? 'altele'),
+        siteUrl: String(fd.get('siteUrl') ?? ''),
+        priority: String(fd.get('priority') ?? 'normala'),
+        message: String(fd.get('message') ?? ''),
+        packageSlug: String(fd.get('packageSlug') ?? ''),
+        consent: fd.get('consent') === 'on',
+        website: String(fd.get('website') ?? ''),
+      };
+
+      msg.textContent = '';
+      msg.className = 'sup-msg';
+      btn.disabled = true;
+      btn.textContent = 'Se trimite…';
+
+      try {
+        const res = await fetch('/api/ticket', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.ok) {
+          form.reset();
+          msg.textContent = 'Gata! Am primit tichetul și revenim cât de curând.';
+          msg.classList.add('sup-msg--ok');
+        } else {
+          msg.textContent = data.error || 'Ceva n-a mers. Încearcă din nou.';
+          msg.classList.add('sup-msg--err');
+        }
+      } catch {
+        msg.textContent = 'Conexiune întreruptă. Încearcă din nou.';
+        msg.classList.add('sup-msg--err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Trimite tichetul';
+      }
+    });
+  }
+</script>
+
+<style>
+  .sup-sec {
+    background: var(--canvas);
+    padding-block: clamp(40px, 6vw, 80px);
+  }
+  .sup-wrap {
+    max-width: 720px;
+    margin-inline: auto;
+    padding-inline: var(--gutter, 24px);
+  }
+  .sup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .sup-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 620px) {
+    .sup-row {
+      grid-template-columns: 1fr;
+    }
+  }
+  .sup-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .sup-field > span {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .sup-field input,
+  .sup-field select,
+  .sup-field textarea {
+    width: 100%;
+    padding: 11px 13px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    background: var(--canvas);
+    color: var(--ink);
+    font: inherit;
+    transition: border-color 0.16s var(--ease-snap);
+  }
+  .sup-field input:focus,
+  .sup-field select:focus,
+  .sup-field textarea:focus {
+    outline: none;
+    border-color: var(--electric);
+  }
+  .sup-field textarea {
+    resize: vertical;
+  }
+  .sup-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .sup-consent input {
+    margin-top: 3px;
+  }
+  .sup-consent a {
+    color: var(--electric);
+  }
+  .sup-hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .sup-btn {
+    align-self: flex-start;
+    padding: 13px 28px;
+    border-radius: var(--r-sm);
+    background: var(--electric);
+    color: var(--ink);
+    font-weight: 700;
+    border: 1px solid var(--electric);
+    cursor: pointer;
+    transition: filter 0.16s var(--ease-snap);
+  }
+  .sup-btn:hover {
+    filter: brightness(0.95);
+  }
+  .sup-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  .sup-msg {
+    margin: 0;
+    font-size: 0.92rem;
+  }
+  .sup-msg--ok {
+    color: #0a7d4a;
+  }
+  .sup-msg--err {
+    color: #c0392b;
+  }
+</style>

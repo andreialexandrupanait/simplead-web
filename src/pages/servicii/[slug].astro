@@ -1,15 +1,20 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import ServiceHero from '@components/sections/ServiceHero.astro';
+import ForWhom from '@components/sections/ForWhom.astro';
 import CapabilitiesGrid from '@components/sections/CapabilitiesGrid.astro';
+import PriceAnchor from '@components/sections/PriceAnchor.astro';
 import ServiceProcess from '@components/sections/ServiceProcess.astro';
-import ClientCase from '@components/sections/ClientCase.astro';
+import ProjectsGrid from '@components/sections/ProjectsGrid.astro';
+import WhySimplead from '@components/sections/WhySimplead.astro';
 import FaqSection from '@components/sections/FaqSection.astro';
+import RelatedServices from '@components/sections/RelatedServices.astro';
 import CtaNotch from '@components/sections/CtaNotch.astro';
 import SupportServiceDetail from '@components/sections/SupportServiceDetail.astro';
-import { services, type ServiceProcessStep } from '@data/services';
+import { services, servicesByKeys, type ServiceProcessStep } from '@data/services';
 import { supportServices } from '@data/support-services';
 import { processSteps } from '@data/content';
+import { getServiceAnchor } from '@data/pricing';
 
 export function getStaticPaths() {
   // Piloni: „mentenanta-website" are pagină dedicată la /mentenanta (vezi redirect-ul
@@ -32,6 +37,10 @@ const proc: ServiceProcessStep[] = service
 
 const pageTitle = `${service ? service.title : support.title} · Servicii`;
 const pageDesc = service ? service.summary : support.cardSummary;
+
+// Ancoră de preț (S4) + servicii înrudite (S9) — doar pentru paginile pilon.
+const anchor = service ? getServiceAnchor(service.key) : null;
+const related = service ? servicesByKeys(service.related ?? []) : [];
 
 const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
 const serviceSchema = {
@@ -62,7 +71,12 @@ const serviceSchema = {
           image={service.image}
           imageAlt={service.title}
           current={service.title}
+          primaryCtaHref={`/contact?service=${encodeURIComponent(service.title)}`}
+          secondaryCtaLabel="Vezi pachete și prețuri"
+          secondaryCtaHref={anchor?.anchor}
         />
+
+        {service.forWhom && <ForWhom items={service.forWhom} />}
 
         <CapabilitiesGrid
           items={service.capabilities}
@@ -71,11 +85,23 @@ const serviceSchema = {
           titleAccent={service.capHead.titleAccent}
           sub={service.capHead.sub}
           cardVariant="refined"
+          variant="tint"
         />
+
+        {anchor && (
+          <PriceAnchor
+            anchor={anchor.anchor}
+            tiers={anchor.tiers}
+            note={anchor.note}
+            variant="light"
+          />
+        )}
 
         <ServiceProcess steps={proc} />
 
-        {service.caseStudy && <ClientCase />}
+        <ProjectsGrid service={service.key} variant="light" />
+
+        <WhySimplead variant="light" />
 
         <FaqSection
           items={service.faqs}
@@ -85,7 +111,9 @@ const serviceSchema = {
           titleAccent="clienții noștri"
         />
 
-        <CtaNotch title={service.claim} />
+        {related.length > 0 && <RelatedServices items={related} variant="light" />}
+
+        <CtaNotch title={service.claim} subtitle="" />
       </>
     ) : (
       <SupportServiceDetail support={support} />

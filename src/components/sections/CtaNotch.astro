@@ -21,7 +21,7 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
 <section class="ctan">
   <div class="site-container ctan__inner" data-reveal>
     <h2 class="ctan__title" set:html={title} />
-    <p class="ctan__sub">{subtitle}</p>
+    {subtitle && <p class="ctan__sub">{subtitle}</p>}
     <div class="ctan__actions">
       <Button href="/contact" size="lg" withArrow>{ctaLabel}</Button>
       {

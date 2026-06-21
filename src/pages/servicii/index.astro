@@ -2,8 +2,6 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import ServiceHubHero from '@components/sections/ServiceHubHero.astro';
 import ServiceHubCards from '@components/sections/ServiceHubCards.astro';
-import ServiceCatalog from '@components/sections/ServiceCatalog.astro';
-import ToolsSection from '@components/home/ToolsSection.astro';
 import FaqSection from '@components/sections/FaqSection.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
 import { servicesFaqs } from '@data/content';
@@ -21,11 +19,40 @@ export const prerender = false;
     eyebrow="Servicii"
     title="Tot ce-ți trebuie ca să fii "
     titleAccent="remarcat și să vinzi"
-    sub="Marketing, grafică, web și mentenanță: sub același acoperiș, cu un singur partener. Lucrăm pe obiective clare și validăm fiecare decizie cu date și neuromarketing, nu cu presupuneri. Tu te ocupi de afacere, noi de imaginea și promovarea ei."
+    sub="Marketing, grafică, web și mentenanță sub același acoperiș, cu un singur partener. Doi oameni și colaboratori specializați: destul cât să acoperim tot, suficient de puțini cât să tratăm fiecare proiect serios."
   />
   <ServiceHubCards />
-  <ServiceCatalog />
-  <ToolsSection />
+
+  {/* Card simplu către pagina de suport tehnic (înlocuiește catalogul tehnic). */}
+  <section class="section section--tint">
+    <div class="container">
+      <div class="svc-support" data-reveal>
+        <div class="svc-support__text">
+          <span class="sec-eyebrow">Suport tehnic</span>
+          <h3 class="svc-support__title">Ai o problemă tehnică punctuală?</h3>
+          <p class="svc-support__desc">
+            WordPress căzut, SSL expirat, DNS greșit, email în spam sau vrei să muți site-ul fără
+            downtime. Le rezolvăm fără să deschizi un proiect întreg.
+          </p>
+        </div>
+        <a class="svc-support__cta" href="/suport">
+          Vezi ce acoperim
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <FaqSection
     items={servicesFaqs}
     eyebrow="Întrebări frecvente"
@@ -34,3 +61,61 @@ export const prerender = false;
   />
   <CtaSection href="/contact" />
 </BaseLayout>
+
+<style>
+  .svc-support {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+    padding: clamp(28px, 4vw, 44px);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: var(--sh-sm);
+  }
+  .svc-support__text {
+    flex: 1 1 420px;
+    min-width: 0;
+  }
+  .svc-support__title {
+    margin-top: 10px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .svc-support__desc {
+    margin-top: 12px;
+    max-width: 60ch;
+    font-size: 1.02rem;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  .svc-support__cta {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 14px 26px;
+    border-radius: var(--r-sm);
+    background: var(--electric);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: var(--glow-electric);
+    transition: filter 0.18s var(--ease-snap);
+  }
+  .svc-support__cta:hover {
+    filter: brightness(1.06);
+  }
+  .svc-support__cta svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s var(--ease-snap);
+  }
+  .svc-support__cta:hover svg {
+    transform: translateX(3px);
+  }
+</style>

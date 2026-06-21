@@ -29,7 +29,8 @@ export const TOGGLEABLE_PAGES = [
   { path: '/mentenanta', label: 'Mentenanță' },
   { path: '/servicii-rapide', label: 'Servicii rapide' },
   { path: '/instrumente', label: 'Instrumente' },
-  { path: '/suport', label: 'Suport' },
+  { path: '/suport', label: 'Suport tehnic' },
+  { path: '/cere-suport', label: 'Cere suport' },
 ] as const;
 
 export const SECTION_KEYS: string[] = HOME_SECTIONS.map((s) => s.key);

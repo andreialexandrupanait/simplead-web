@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 /**
  * Schema partajată pentru tichetele de suport: validare client (formularul
- * /suport) și server (/api/ticket). Categoriile și prioritățile sunt text liber
+ * /cere-suport) și server (/api/ticket). Categoriile și prioritățile sunt text liber
  * validat aici — o categorie nouă = o linie aici, fără migrație.
  */
 
@@ -11,7 +11,7 @@ export const ticketCategories = [
   { value: 'email-spam', label: 'Email ajunge în spam' },
   { value: 'optimizare-viteza', label: 'Optimizare viteză' },
   { value: 'securitate-malware', label: 'Securitate / malware' },
-  { value: 'migrare', label: 'Migrare site / hosting' },
+  { value: 'migrare', label: 'Migrare site' },
   { value: 'altele', label: 'Altele' },
 ] as const;
 

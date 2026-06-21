@@ -59,8 +59,8 @@ export type SupportCategoryId = 'web-hosting' | 'securitate-email' | 'suport-rap
 export const supportCategories: { id: SupportCategoryId; label: string; sub: string }[] = [
   {
     id: 'web-hosting',
-    label: 'Web & Hosting',
-    sub: 'Site-ul tău, serverul și tot ce ține de el, ținute în picioare.',
+    label: 'Site & Web',
+    sub: 'Site-ul tău reparat, mutat și construit — fără bătăi de cap tehnice.',
   },
   {
     id: 'securitate-email',
@@ -93,7 +93,8 @@ export const SUPPORT_ICON: Record<SupportIconKey, string> = {
   refresh: '<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
   spark:
     '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18"/>',
-  shield: '<path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
+  shield:
+    '<path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
   mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
   bolt: '<path d="M13 2L4.5 13H11l-1 9 8.5-11H12z"/>',
   wrench:
@@ -127,13 +128,21 @@ export const supportServices: SupportService[] = [
         title: 'Reparare & depanare',
         icon: SUPPORT_ICON.support,
         desc: 'Când ceva s-a stricat, găsim cauza și o reparăm.',
-        items: ['Ecran alb și erori fatale', 'Conflicte de plugin sau temă', 'Erori 500 și pagini căzute'],
+        items: [
+          'Ecran alb și erori fatale',
+          'Conflicte de plugin sau temă',
+          'Erori 500 și pagini căzute',
+        ],
       },
       {
         title: 'Întreținere & securitate',
         icon: SUPPORT_ICON.shield,
         desc: 'Ținem site-ul actualizat, salvat și protejat.',
-        items: ['Update-uri de WordPress, teme și plugin-uri', 'Backup și restore', 'Curățare după hack'],
+        items: [
+          'Update-uri de WordPress, teme și plugin-uri',
+          'Backup și restore',
+          'Curățare după hack',
+        ],
       },
       {
         title: 'WooCommerce & funcționalități',
@@ -184,81 +193,6 @@ export const supportServices: SupportService[] = [
       },
     ],
     claim: 'Suport WordPress când ai nevoie de el.',
-  },
-  {
-    slug: 'hosting-support',
-    category: 'web-hosting',
-    title: 'Suport hosting',
-    cardSummary:
-      'Server, SSL, DNS și certificate configurate și reparate, fără să te lupți tu cu panoul de control.',
-    icon: 'server',
-    image: IMG('photo-1518770660439-4636190af475'),
-    heroTitle: 'Suport hosting, ',
-    heroTitleAccent: 'pus la punct.',
-    heroSub:
-      'Serverul, SSL-ul, DNS-ul și certificatele pot fi un labirint. Le configurăm și le reparăm noi, ca site-ul tău să stea în picioare și să se încarce repede.',
-    capHead: {
-      eyebrow: 'Ce acoperim',
-      title: 'Hosting-ul tău, ',
-      titleAccent: 'în ordine',
-      sub: 'De la certificate și DNS până la performanță și email, ne ocupăm de partea de server.',
-    },
-    capabilities: [
-      {
-        title: 'Server & performanță',
-        icon: SUPPORT_ICON.server,
-        desc: 'Site-ul stă în picioare și se încarcă repede.',
-        items: ['Configurări de server', 'Optimizare viteză', 'Resurse și încărcare'],
-      },
-      {
-        title: 'SSL & domenii',
-        icon: SUPPORT_ICON.shield,
-        desc: 'Certificate, domenii și DNS puse corect.',
-        items: ['Certificate SSL', 'DNS și domenii', 'Subdomenii și redirecturi'],
-      },
-      {
-        title: 'Email pe domeniu',
-        icon: SUPPORT_ICON.mail,
-        desc: 'Emailul de business ajunge unde trebuie.',
-        items: ['MX, SPF, DKIM', 'Căsuțe și alias-uri', 'Probleme de livrare'],
-      },
-    ],
-    process: [
-      {
-        n: '01',
-        title: 'Ne spui ce și unde',
-        body: 'Domeniul, hosting-ul și ce nu merge. Ne dai accesul la panoul de control sau la registrar.',
-      },
-      {
-        n: '02',
-        title: 'Configurăm și reparăm',
-        body: 'Punem la punct SSL, DNS, email sau performanța, cu grijă să nu pice nimic în timpul lucrului.',
-      },
-      {
-        n: '03',
-        title: 'Verificăm că totul merge',
-        body: 'Testăm de pe mai multe părți și îți lăsăm pe scurt ce am schimbat și de ce.',
-      },
-    ],
-    faqs: [
-      {
-        q: 'Lucrați cu orice hosting?',
-        body: [
-          'În marea majoritate a cazurilor, da: cPanel, Plesk sau panouri custom, plus registrarii uzuali de domenii.',
-        ],
-      },
-      {
-        q: 'Puteți muta site-ul fără să cadă?',
-        body: [
-          'Da. Pregătim mutarea pe staging și facem schimbarea live abia după ce am verificat că totul funcționează.',
-        ],
-      },
-      {
-        q: 'Rezolvați și problemele de email pe domeniu?',
-        body: ['Da, configurăm înregistrările (MX, SPF, DKIM) ca emailul de business să ajungă unde trebuie.'],
-      },
-    ],
-    claim: 'Hosting pus la punct, fără bătaie de cap.',
   },
   {
     slug: 'migrare-site',
@@ -330,7 +264,9 @@ export const supportServices: SupportService[] = [
       },
       {
         q: 'Site-ul rămâne jos în timpul mutării?',
-        body: ['Nu. Pregătim totul în paralel și schimbăm live abia la final, ca vizitatorii să nu simtă mutarea.'],
+        body: [
+          'Nu. Pregătim totul în paralel și schimbăm live abia la final, ca vizitatorii să nu simtă mutarea.',
+        ],
       },
     ],
     claim: 'Mutăm site-ul, tu nu pierzi nimic.',
@@ -405,7 +341,9 @@ export const supportServices: SupportService[] = [
       },
       {
         q: 'Pot actualiza singur site-ul după?',
-        body: ['Da. Îți predăm un site curat și îți arătăm cum modifici conținutul fără să strici nimic.'],
+        body: [
+          'Da. Îți predăm un site curat și îți arătăm cum modifici conținutul fără să strici nimic.',
+        ],
       },
     ],
     claim: 'Un site rapid, gata mai repede.',
@@ -475,7 +413,9 @@ export const supportServices: SupportService[] = [
       },
       {
         q: 'Cloudflare chiar face site-ul mai rapid?',
-        body: ['Da, configurat corect: cache și CDN apropie conținutul de vizitatori și descarcă serverul tău.'],
+        body: [
+          'Da, configurat corect: cache și CDN apropie conținutul de vizitatori și descarcă serverul tău.',
+        ],
       },
       {
         q: 'Mă ajutați și dacă sunt sub atac acum?',
@@ -554,7 +494,9 @@ export const supportServices: SupportService[] = [
       },
       {
         q: 'Merge și dacă trimit din mai multe locuri?',
-        body: ['Da, aliniem toate serviciile (workspace, newsletter, facturare) ca să treacă autentificarea.'],
+        body: [
+          'Da, aliniem toate serviciile (workspace, newsletter, facturare) ca să treacă autentificarea.',
+        ],
       },
     ],
     claim: 'Emailuri în inbox, domeniu protejat.',
@@ -693,15 +635,21 @@ export const supportServices: SupportService[] = [
     faqs: [
       {
         q: 'Cât durează o sesiune Quick Fix?',
-        body: ['E o sesiune scurtă, pe o singură problemă. Dacă treaba e mai mare, îți spunem din start.'],
+        body: [
+          'E o sesiune scurtă, pe o singură problemă. Dacă treaba e mai mare, îți spunem din start.',
+        ],
       },
       {
         q: 'Ce se întâmplă dacă problema cere mai mult?',
-        body: ['Îți spunem clar ce presupune și cât, fără surprize. Decizi tu dacă mergem mai departe.'],
+        body: [
+          'Îți spunem clar ce presupune și cât, fără surprize. Decizi tu dacă mergem mai departe.',
+        ],
       },
       {
         q: 'Lucrați pe orice site?',
-        body: ['Pentru fix-uri punctuale lucrăm și pe site-uri făcute de altcineva, cât timp avem acces.'],
+        body: [
+          'Pentru fix-uri punctuale lucrăm și pe site-uri făcute de altcineva, cât timp avem acces.',
+        ],
       },
     ],
     claim: 'O problemă, o sesiune, rezolvat.',

@@ -1,0 +1,237 @@
+---
+/**
+ * S6 — Grila de proiecte (dovadă vie). Filtrează proiectele cu `display:true` care
+ * au tag-ul serviciului; dacă nu există niciunul, secțiunea NU se randează.
+ * Fiecare domeniu = un card separat, link extern. Vizual: logo real (sau favicon).
+ */
+import { clientsForService, type ServiceKey } from '@data/clients';
+
+interface Props {
+  service: ServiceKey;
+  title?: string;
+  /** Indicator „● live" pulsatoriu (folosit pe /mentenanta — site-uri monitorizate acum). */
+  showLive?: boolean;
+  variant?: 'light' | 'tint';
+}
+const {
+  service,
+  title = 'Proiecte la care lucrăm',
+  showLive = false,
+  variant = 'tint',
+} = Astro.props;
+
+const items = clientsForService(service);
+const favicon = (domain: string) => `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+const goIcon = '<path d="M7 17L17 7M9 7h8v8"/>';
+---
+
+{
+  items.length > 0 && (
+    <section class:list={['section', `section--${variant}`, 'pj-sec']}>
+      <div class="container">
+        <div class="sec-head center" data-reveal>
+          <span class="sec-eyebrow" style="display:inline-flex;justify-content:center;">
+            Dovadă vie
+          </span>
+          <h2 class="sec-title">{title}</h2>
+          <p class="sec-sub">
+            <b>{items.length} de site-uri</b>, fiecare cu pagina lui live
+            {showLive ? ', monitorizate non-stop' : ''}. Dă click pe oricare.
+          </p>
+        </div>
+        <div class="pj-grid" data-reveal>
+          {items.map((c) => (
+            <a class="pj-card" href={c.url} target="_blank" rel="noopener noreferrer">
+              <span class="pj-top">
+                {showLive && (
+                  <span class="pj-live" aria-label="Monitorizat live">
+                    <span class="pj-dot" /> live
+                  </span>
+                )}
+                <span class="pj-go" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    set:html={goIcon}
+                  />
+                </span>
+              </span>
+              <span class:list={['pj-thumb', c.dark && 'pj-thumb--dark']}>
+                <img
+                  class={c.logo ? 'pj-logo' : 'pj-fav'}
+                  src={c.logo ?? favicon(c.domain)}
+                  alt={`Logo ${c.name}`}
+                  loading="lazy"
+                  onerror={`this.onerror=null;this.src='${favicon(c.domain)}';this.className='pj-fav'`}
+                />
+              </span>
+              <span class="pj-name">{c.name}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .pj-sec .sec-sub b {
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .pj-grid {
+    margin-top: clamp(26px, 3vw, 40px);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 16px;
+  }
+  @media (max-width: 520px) {
+    .pj-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+  }
+  .pj-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+    padding: 16px 18px 20px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: var(--sh-sm);
+    isolation: isolate;
+    overflow: hidden;
+    transition:
+      transform 0.2s var(--ease-snap),
+      box-shadow 0.25s ease,
+      border-color 0.2s ease;
+  }
+  /* Glow discret de brand care apare la hover (scoate cardul din „banal"). */
+  .pj-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(
+      120% 90% at 50% -10%,
+      color-mix(in srgb, var(--electric) 12%, transparent),
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .pj-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sh-lg);
+    border-color: color-mix(in srgb, var(--electric) 45%, var(--line));
+  }
+  .pj-card:hover::before {
+    opacity: 1;
+  }
+  .pj-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 18px;
+  }
+  .pj-go {
+    margin-left: auto;
+    display: inline-flex;
+    color: var(--electric);
+    opacity: 0;
+    transform: translate(-3px, 3px);
+    transition:
+      opacity 0.2s var(--ease-snap),
+      transform 0.2s var(--ease-snap);
+  }
+  .pj-go svg {
+    width: 16px;
+    height: 16px;
+  }
+  .pj-card:hover .pj-go {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  .pj-thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 46px;
+    margin: 6px 0 10px;
+    padding-inline: 6px;
+  }
+  /* Logo alb/deschis: fundal închis ca să fie vizibil. */
+  .pj-thumb--dark {
+    background: var(--ink);
+    border-radius: var(--r-sm);
+    padding: 6px 14px;
+  }
+  /* Înălțime fixă, identică pentru toate logo-urile; lățimea variază. Culoare reală. */
+  .pj-logo {
+    height: 30px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+  }
+  .pj-fav {
+    height: 30px;
+    width: 30px;
+    object-fit: contain;
+    border-radius: var(--r-xs);
+  }
+  .pj-name {
+    font-size: 0.84rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--muted);
+    transition: color 0.2s ease;
+  }
+  .pj-card:hover .pj-name {
+    color: var(--ink);
+  }
+
+  /* Indicator live cu puls. */
+  .pj-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #0a7d4a;
+  }
+  .pj-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #16a34a;
+    animation: pj-pulse 2s ease-out infinite;
+  }
+  @keyframes pj-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.45);
+    }
+    70% {
+      box-shadow: 0 0 0 6px rgba(22, 163, 74, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pj-dot {
+      animation: none;
+    }
+  }
+</style>

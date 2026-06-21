@@ -132,7 +132,7 @@ export const leads = pgTable('leads', {
 /**
  * Tichete de suport: intake structurat (categorie, URL site, prioritate),
  * separat de lead-urile din formularul de contact. Sursă unică pentru pagina
- * publică /suport și pentru gestionarea din /admin/tichete.
+ * publică /cere-suport și pentru gestionarea din /admin/tichete.
  */
 export const tickets = pgTable('tickets', {
   id: uuid('id').primaryKey().defaultRandom(),

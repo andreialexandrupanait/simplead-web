@@ -277,7 +277,7 @@ export const generalFaqs: Faq[] = [
   {
     q: 'Oferiți găzduire & înregistrare domeniu?',
     body: [
-      'Ne concentrăm pe design/dezvoltare, dar te ajutăm să alegi hosting și să înregistrezi domeniul; le putem gestiona noi.',
+      'Găzduirea nu e la noi — lucrăm cu un partener de hosting de încredere și te ajutăm să alegi soluția și domeniul potrivite. Le plătești direct la furnizor, fără marjă de la noi; noi ne ocupăm de site.',
     ],
   },
   {
@@ -311,33 +311,33 @@ export const generalFaqs: Faq[] = [
 /** FAQ specific paginii /pachete (timeline, hosting, redesign, tehnologii, taxe). */
 export const packagesFaqs: Faq[] = [
   {
-    q: 'Cât durează, de la start la lansare?',
+    q: 'Sunt costuri ascunse?',
     body: [
-      'Un site de prezentare e gata în 2-4 săptămâni. Dacă vorbim de o platformă cu funcții pe comandă, integrări și panou de administrare, socotește între 2 și 6 luni, depinde cât de complex e ce ai în cap.',
+      'Nu. Prețul agreat e cel pe care îl plătești. Simplead nu e plătitor de TVA, prețurile sunt finale.',
     ],
   },
   {
-    q: 'Vă ocupați și de găzduire și de mentenanță?',
+    q: 'Cât durează de la start la lansare?',
     body: [
-      'Da. Ne ocupăm de găzduire, mentenanță lunară, securitate și actualizări, plus suport când apare ceva. După ce site-ul e live rămânem alături de tine, nu îți dăm fișierele și succes.',
+      'Un site de prezentare e gata în 2–4 săptămâni. Un magazin online sau o platformă mai complexă poate lua 4–8 săptămâni. Îți dăm un termen clar după ce discutăm.',
+    ],
+  },
+  {
+    q: 'Vă ocupați și de găzduire?',
+    body: [
+      'Nu, găzduirea nu e la noi: lucrăm cu un partener de hosting de încredere și te ajutăm să alegi soluția potrivită. O plătești direct la furnizor, fără marjă de la noi — noi ne ocupăm de site și de partea tehnică.',
     ],
   },
   {
     q: 'Puteți reface un site pe care îl am deja?',
     body: [
-      'Sigur. Refacem din temelii un site care arată sau merge prost și migrăm de pe WordPress, Joomla sau alt CMS spre ceva modern și rapid. Ce funcționează deja păstrăm.',
+      'Da. Redesign complet sau optimizare, îți spunem onest ce are sens după ce ne uităm la ce ai acum.',
     ],
   },
   {
-    q: 'Cu ce lucrați, mai exact?',
+    q: 'Pot combina serviciile?',
     body: [
-      'Depinde de proiect. La interfață mergem pe React, Next.js sau Vue, iar în spate pe Node.js, Python sau PHP/Laravel. Alegem ce se potrivește treabei tale, nu te punem să te pliezi pe o tehnologie anume.',
-    ],
-  },
-  {
-    q: 'Sunt costuri ascunse?',
-    body: [
-      'Nu. Prețul din pachet e cel pe care îl plătești, fără surprize la final. Simplead nu e plătitor de TVA.',
+      'Da, și de obicei e mai eficient. Web, mentenanță și grafică la același partener înseamnă coerență: fără trei furnizori care nu știu unul de altul.',
     ],
   },
 ];
@@ -681,33 +681,99 @@ export const svcHubStats: HubStat[] = [
 /** FAQ specific paginii hub /servicii (diferit de FAQ-ul de pe Acasă). */
 export const servicesFaqs: Faq[] = [
   {
-    q: 'Pot lua un singur serviciu sau trebuie pachetul întreg?',
+    q: 'Pot lua un singur serviciu sau trebuie să iau tot?',
     body: [
-      'Cum vrei tu. Poți începe cu un singur lucru — doar site-ul sau doar social media — și adăugăm restul când ai nevoie. Avantajul e că, fiind un singur partener, totul rămâne coerent.',
+      'Cum ai nevoie. Poți începe cu un singur lucru și adăugăm restul când are sens. Nu lucrăm cu pachete rigide impuse.',
+    ],
+  },
+  {
+    q: 'Cât costă o colaborare?',
+    body: [
+      'Găsești prețurile de start pe pagina Pachete. Pentru proiecte mai complexe pornim de la o discuție și îți dăm o ofertă concretă, nu un deviz standard trimis automat.',
     ],
   },
   {
     q: 'Ce înseamnă „pe date și neuromarketing"?',
     body: [
-      'Înseamnă că nu mergem pe „mie îmi place". Testăm deciziile cu instrumente de neuromarketing (atenție vizuală, heatmaps) și le validăm cu date reale din Analytics și tracking de conversii, înainte și după lansare.',
+      'Înseamnă că nu mergem pe „mie îmi place". Testăm cu instrumente de neuromarketing: atenție vizuală, heatmaps și date reale din Analytics. Bugetul tău ajunge acolo unde chiar contează.',
     ],
   },
   {
-    q: 'Cât costă o colaborare cu Simplead?',
+    q: 'Lucrați și cu afaceri mici?',
     body: [
-      'Depinde de obiective și de amploarea proiectului — de aceea pornim mereu de la o discuție și o ofertă pe obiective, nu de la un preț de raft. Spune-ne ce ai nevoie și primești o propunere clară.',
+      'Da, exact pentru ele există Simplead. Instrumente și metodă de agenție mare, la scara unui partener care te cunoaște pe tine.',
     ],
   },
   {
-    q: 'În cât timp se văd primele rezultate?',
+    q: 'Oferiți și suport tehnic punctual, fără proiect?',
     body: [
-      'Depinde de serviciu: un site se vede în câteva săptămâni, o campanie dă primele semnale în câteva zile, iar brandingul construiește pe termen lung. La prima discuție îți dăm așteptări realiste, nu promisiuni.',
+      'Da. WordPress, SSL, DNS, securitate, email, migrare și quick fix. Găsești tot pe pagina Suport tehnic.',
+    ],
+  },
+];
+
+/**
+ * „De ce Simplead" (S7) — bloc comun de diferențiatori, afișat pe toate paginile
+ * de serviciu. `icon` = inner SVG (viewBox 0 0 24 24, stroke).
+ */
+export interface WhyItem {
+  icon: string;
+  title: string;
+  body: string;
+}
+export const whySimplead: WhyItem[] = [
+  {
+    icon: '<path d="M3 12h4l3 8 4-16 3 8h4"/>',
+    title: 'Pornim de la date, nu de la „mie îmi place"',
+    body: 'Andrei are un doctorat în marketing și verifică deciziile cu eye-tracking și heatmaps (expoze.app) înainte ca ceva să ajungă public. Așa știm de ce funcționează, nu doar că arată bine.',
+  },
+  {
+    icon: '<path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
+    title: 'Avem un ochi care nu doarme',
+    body: 'Aplicația noastră, SimpleAd Manager, urmărește non-stop uptime, securitate, viteză și backup. De cele mai multe ori prindem problema înainte s-o vezi tu sau clienții tăi.',
+  },
+  {
+    icon: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+    title: 'Un singur om de încredere, pentru tot',
+    body: 'Web, grafică, mentenanță și social — toate la aceeași echipă. Nu mai alergi între trei furnizori care nu vorbesc între ei și nu pierzi nimic pe drum.',
+  },
+  {
+    icon: '<path d="M20 6L9 17l-5-5"/>',
+    title: 'Îți spunem și când nu-ți trebuie',
+    body: 'Dacă un site merită reparat, nu reconstruit, îți zicem. Dacă undeva nu ai nevoie de noi, la fel. Fără costuri ascunse — și fără TVA, prețul e prețul.',
+  },
+];
+
+/** FAQ specific paginii /mentenanta (înlocuiește FAQ-ul generic de jos). */
+export const mentenantaFaqs: Faq[] = [
+  {
+    q: 'Oferiți mentenanță web lunară?',
+    body: [
+      'Da. Pachete cu actualizări de platformă și module, backup-uri regulate, monitorizare de securitate și uptime, plus timp de intervenție inclus. Tu pe afacere, noi pe partea tehnică.',
     ],
   },
   {
-    q: 'Lucrați și cu afaceri mici sau la început de drum?',
+    q: 'Ce monitorizați, mai exact?',
     body: [
-      'Da, exact pentru ele există Simplead. Îți dăm instrumentele cu care concurezi de la egal la egal cu jucătorii mari, fără bătăi de cap și fără limbaj corporatist.',
+      'Disponibilitate (uptime) și certificat SSL, securitate și actualizări, backup-uri, viteză și Core Web Vitals, plus DNS și protecția emailului — totul prin SimpleAd Manager, cu alerte în timp real.',
+    ],
+  },
+  {
+    q: 'Datele și backup-urile mele sunt în siguranță?',
+    body: [
+      'Da. Backup-urile sunt copiate în mai multe locuri, iar comunicarea dintre aplicație și site e semnată și protejată. Le putem restaura rapid la nevoie.',
+    ],
+  },
+  {
+    q: 'Ce se întâmplă dacă pică sau e infectat site-ul?',
+    body: [
+      'Suntem anunțați automat și intervenim. Cu backup-urile regulate readucem rapid site-ul la o versiune funcțională și curată.',
+    ],
+  },
+  {
+    q: 'Cât costă?',
+    body: [
+      'Standard 75€/lună, Premium 120€/lună, plus add-on-uri opționale. Calculează-ți pachetul exact cu ajutorul calculatorului de mai sus. Simplead nu e plătitor de TVA — prețurile sunt finale.',
     ],
   },
 ];

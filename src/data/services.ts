@@ -11,6 +11,9 @@ import type { Faq } from './content';
 
 export type ServiceIcon = 'marketing' | 'grafica' | 'web' | 'mentenanta' | 'social' | 'ai';
 
+/** Cheie scurtă de serviciu — leagă pagina de prețuri (serviceAnchors) și de clienți (LogoWall). */
+export type ServiceKey = 'mentenanta' | 'ux-ui' | 'grafica' | 'social-media' | 'consultanta' | 'ai';
+
 /** O capabilitate (card) pe pagina de detaliu serviciu. `icon` = markup SVG intern. */
 export interface ServiceCapability {
   title: string;
@@ -38,9 +41,23 @@ export interface ServiceCaseStudy {
   clientLogo: string;
 }
 
+/** S2 „Pentru cine" — un card: problemă + consecința ei („Te costă") + iconiță. */
+export interface ForWhomItem {
+  /** Inner SVG path (viewBox 0 0 24 24, stroke). */
+  icon: string;
+  problem: string;
+  cost: string;
+}
+
 export interface Service {
   slug: string;
   icon: ServiceIcon;
+  /** Cheie scurtă (preț + clienți + cross-link). */
+  key: ServiceKey;
+  /** S2 „Pentru cine" — 3 situații de auto-identificare (paginile pilon). */
+  forWhom?: ForWhomItem[];
+  /** S9 „Servicii înrudite" — cheile celor 3 servicii cross-link. */
+  related?: ServiceKey[];
   title: string;
   /** Sumar scurt (cardul de pe Acasă / hub). */
   summary: string;
@@ -97,10 +114,11 @@ export const services: Service[] = [
   {
     slug: 'mentenanta-website',
     icon: 'mentenanta',
+    key: 'mentenanta',
     title: 'Mentenanță website',
     summary:
       'Tu te ocupi de afacere, eu de partea tehnică: actualizări, securitate, backup și monitorizare continuă.',
-    claim: 'Tu te ocupi de afacere, eu de partea tehnică.',
+    claim: 'Tu te ocupi de afacere. Noi ne ocupăm de site.',
     description:
       'Site-ul tău rămâne rapid, sigur și actualizat, fără bătăi de cap. Îl monitorizez continuu, îl actualizez și îl optimizez, ca tu să te concentrezi pe ce contează.',
     includes: [
@@ -200,10 +218,29 @@ export const services: Service[] = [
   {
     slug: 'ux-ui-web-design',
     icon: 'web',
+    key: 'ux-ui',
+    forWhom: [
+      {
+        icon: ICON.bolt,
+        problem: 'Ai un site vechi și lent, care te trage în jos.',
+        cost: 'Vizitatori care pleacă în câteva secunde și bani aruncați pe promovare.',
+      },
+      {
+        icon: ICON.cog,
+        problem: 'E greu de modificat singur, depinzi de altcineva pentru orice.',
+        cost: 'Timp pierdut și o factură la fiecare schimbare mică.',
+      },
+      {
+        icon: ICON.chart,
+        problem: 'Arată bine, dar nu aduce clienți.',
+        cost: 'Trafic irosit și vânzări care ajung direct la concurență.',
+      },
+    ],
+    related: ['mentenanta', 'grafica', 'consultanta'],
     title: 'UX/UI & web design',
     summary:
       'Site-uri și magazine online rapide, clare și gândite să transforme vizitatorii în clienți.',
-    claim: 'Site-uri care transformă vizitatori în clienți.',
+    claim: 'Site-uri care transformă vizitatori în clienți. Hai să construim unul împreună.',
     description:
       'Realizăm site-uri de prezentare și magazine online rapide, clare și ușor de administrat. Frumoase pentru oameni, prietenoase cu Google și validate cu principii de neuromarketing.',
     includes: [
@@ -315,6 +352,12 @@ export const services: Service[] = [
         ],
       },
       {
+        q: 'Cât costă?',
+        body: [
+          'Un redesign pornește de la 900€, un site de prezentare nou de la 1.500€, iar un magazin online de la 2.500€. Prețul exact îl stabilim după ce înțelegem ce ai nevoie. Vezi toate pachetele pe pagina Pachete.',
+        ],
+      },
+      {
         q: 'Site-ul iese optimizat pentru Google?',
         body: [
           'Da. Pleacă la drum cu SEO de bază pus la punct — structură, viteză, versiune de mobil, meta — iar dacă vrei, continuăm cu o strategie SEO dedicată.',
@@ -333,10 +376,29 @@ export const services: Service[] = [
   {
     slug: 'grafica-publicitara',
     icon: 'grafica',
+    key: 'grafica',
+    forWhom: [
+      {
+        icon: ICON.shapes,
+        problem: 'Brandul tău arată diferit pe fiecare canal.',
+        cost: 'Pari neîngrijit și greu de ținut minte de către clienți.',
+      },
+      {
+        icon: ICON.image,
+        problem: 'Materialele sunt făcute „de oricine", fără o linie clară.',
+        cost: 'Mesaje slabe și o imagine care nu inspiră încredere.',
+      },
+      {
+        icon: ICON.target,
+        problem: 'Ai nevoie de o identitate coerentă, care te face memorabil.',
+        cost: 'Fără ea, te confunzi cu zeci de concurenți la fel.',
+      },
+    ],
+    related: ['ux-ui', 'social-media', 'consultanta'],
     title: 'Grafică publicitară',
     summary:
       'Identitate vizuală, materiale de promovare și grafică publicitară care te fac memorabil și coerent.',
-    claim: 'Imagine coerentă, care te face memorabil.',
+    claim: 'Imagine coerentă, care te face memorabil. Pornim de la o discuție.',
     description:
       'De la identitate vizuală și materiale de promovare, până la print și grafică pentru campanii. Totul gândit simplu, dar cu impact și validat vizual cu neuromarketing.',
     includes: [
@@ -455,6 +517,12 @@ export const services: Service[] = [
           'Da. Le predăm în formatele potrivite fiecărui canal — print (CMYK, rezoluție corectă) și online (web/social) — gata de pus în folosință.',
         ],
       },
+      {
+        q: 'Cât costă?',
+        body: [
+          'Un set de materiale grafice (5 vizualuri) pornește de la 175€, o identitate vizuală completă de la 700€, iar grafica recurentă de la 150€/lună. Vezi toate pachetele pe pagina Pachete.',
+        ],
+      },
     ],
   },
 
@@ -462,18 +530,36 @@ export const services: Service[] = [
   {
     slug: 'social-media',
     icon: 'social',
+    key: 'social-media',
+    forWhom: [
+      {
+        icon: ICON.megaphone,
+        problem: 'Postezi haotic, fără un plan în spate.',
+        cost: 'Efort irosit pe conținut care nu duce nicăieri.',
+      },
+      {
+        icon: ICON.support,
+        problem: 'Ai o prezență „moartă", fără reacție din partea publicului.',
+        cost: 'Un cont care nu-ți aduce nici clienți, nici încredere.',
+      },
+      {
+        icon: ICON.chart,
+        problem: 'Nu știi ce conținut îți aduce de fapt clienți.',
+        cost: 'Bani și timp investiți în postări la întâmplare.',
+      },
+    ],
+    related: ['grafica', 'consultanta', 'ux-ui'],
     title: 'Social media',
     summary: 'Conținut și prezență care aduc clienți, nu doar aprecieri. Construite pe date.',
-    claim: 'Prezență în social media care aduce clienți, nu doar aprecieri.',
+    claim: 'Prezență constantă, conținut care prinde. Hai să discutăm despre canalele tale.',
     description:
-      'Administrăm prezența ta în social media cu strategie clară și conținut coerent — focusul nostru e ce postezi, cum arăți și cum răspunzi, nu reclamele plătite. Ads facem doar punctual, când proiectul o cere.',
+      'Administrăm prezența ta în social media cu strategie clară și conținut coerent: ce postezi, cum arăți și cum răspunzi. Construim o prezență care ține pe termen lung, pe canalele unde se află publicul tău.',
     includes: [
       'Strategie & calendar editorial',
       'Administrare conturi (Facebook, Instagram, TikTok, YouTube)',
       'Creație de conținut (vizual + copywriting)',
       'Community management & interacțiune',
       'Raportare și optimizare',
-      'Campanii plătite doar punctual, la cerere',
     ],
     tags: ['Strategie', 'Conținut', 'Comunitate', 'Raportare'],
     image:
@@ -481,7 +567,7 @@ export const services: Service[] = [
     heroTitle: 'Social media care aduce ',
     heroTitleAccent: 'clienți, nu doar aprecieri',
     heroSub:
-      'Prezență coerentă pe canalele unde se află publicul tău, conținut care prinde și o comunitate îngrijită — cu măsurare reală, nu presupuneri. Pe partea de ads intervenim doar punctual, la cerere; nu e specialitatea noastră.',
+      'Prezență coerentă pe canalele unde se află publicul tău, conținut care prinde și o comunitate îngrijită — cu măsurare reală, nu presupuneri.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'De la conținut la ',
@@ -537,7 +623,7 @@ export const services: Service[] = [
       {
         n: '03',
         title: 'Producție de conținut',
-        body: 'Creăm vizualul și textul, coerente cu brandul, gata de publicat. Dacă proiectul o cere, pregătim punctual și o campanie plătită — fără să facem din ads centrul colaborării.',
+        body: 'Creăm vizualul și textul, coerente cu brandul, gata de publicat pe un calendar editorial clar, fără să postăm de dragul de a posta.',
       },
       {
         n: '04',
@@ -574,15 +660,15 @@ export const services: Service[] = [
         ],
       },
       {
-        q: 'Faceți și campanii plătite (ads)?',
+        q: 'Câte postări includeți pe lună?',
         body: [
-          'Nu e focusul nostru și nici nu ne dăm specialiști în ads. Ne ocupăm de conținut, strategie și comunitate — partea care construiește prezența pe termen lung. Reclame plătite (Meta, TikTok) facem doar punctual, când proiectul o cere.',
+          'Pachetul de bază (2 canale) include 8–12 postări pe lună, iar cel complet (3 canale + rapoarte) 16–20. Calendarul editorial îl stabilim împreună, pe obiectivele tale.',
         ],
       },
       {
         q: 'Cât costă administrarea de social media?',
         body: [
-          'Depinde de câte canale acoperim și cât de des postăm. Nu lucrăm cu prețuri de raft: pornim de la o discuție și o ofertă pe obiectivele tale.',
+          'Pornește de la 250€/lună pentru 2 canale și de la 450€/lună pentru 3 canale cu raportare. Vezi toate pachetele pe pagina Pachete.',
         ],
       },
     ],
@@ -592,10 +678,29 @@ export const services: Service[] = [
   {
     slug: 'consultanta-marketing',
     icon: 'marketing',
+    key: 'consultanta',
+    forWhom: [
+      {
+        icon: ICON.chart,
+        problem: 'Dai bani pe marketing fără să știi ce funcționează.',
+        cost: 'Buget ars pe canale care nu-ți aduc nimic înapoi.',
+      },
+      {
+        icon: ICON.brain,
+        problem: 'Iei decizii pe instinct, nu pe date.',
+        cost: 'Greșeli scumpe pe care le-ai fi putut evita.',
+      },
+      {
+        icon: ICON.target,
+        problem: 'Vrei un plan clar, nu execuție haotică.',
+        cost: 'Fără direcție, fiecare lună pornește de la zero.',
+      },
+    ],
+    related: ['ux-ui', 'social-media', 'grafica'],
     title: 'Consultanță de marketing',
     summary:
       'Decizii pe date și neuromarketing, nu pe presupuneri. Studio condus de un doctor în marketing.',
-    claim: 'Marketing fundamentat pe cercetare, nu pe noroc.',
+    claim: 'Marketing pe date, nu pe presupuneri. Pornim cu un audit.',
     description:
       'Te ajutăm să iei deciziile de marketing potrivite, validate cu date și neuromarketing. Strategie, analiză a atenției vizuale (eye-tracking & heatmaps) și un plan clar de creștere.',
     includes: [
@@ -709,6 +814,12 @@ export const services: Service[] = [
           'Pentru orice afacere care vrea să crească cu decizii informate, de la firme mici la organizații mai mari. Pornim de la obiectivele tale, nu de la un șablon aplicat la toți.',
         ],
       },
+      {
+        q: 'Cât costă?',
+        body: [
+          'Un audit + strategie pornește de la 400€, iar un retainer lunar de la 300€/lună. Vezi toate pachetele pe pagina Pachete.',
+        ],
+      },
     ],
   },
 
@@ -716,10 +827,29 @@ export const services: Service[] = [
   {
     slug: 'ai-pentru-business',
     icon: 'ai',
+    key: 'ai',
+    forWhom: [
+      {
+        icon: ICON.refresh,
+        problem: 'Faci aceleași sarcini manuale în fiecare săptămână.',
+        cost: 'Ore pierdute pe muncă pe care o poate face un sistem.',
+      },
+      {
+        icon: ICON.bolt,
+        problem: 'Uiți de follow-up-uri și de pașii repetitivi.',
+        cost: 'Lead-uri scăpate și clienți care nu mai revin.',
+      },
+      {
+        icon: ICON.cog,
+        problem: 'Vrei timp înapoi, fără să angajezi pe cineva nou.',
+        cost: 'Crești cu costuri fixe în loc de automatizări.',
+      },
+    ],
+    related: ['mentenanta', 'consultanta', 'ux-ui'],
     title: 'AI pentru business',
     summary:
       'Automatizări, monitorizare și conținut asistate de AI: acolo unde îți cumpără timp, nu unde dă bine pe hârtie.',
-    claim: 'AI folosit cu cap: economisești timp și bani.',
+    claim: 'Timp câștigat în fiecare săptămână. Hai să vedem ce automatizăm la tine.',
     description:
       'Nu vindem „AI" ca slogan. Ne uităm la procesele tale, găsim munca repetitivă care îți mănâncă timpul și o automatizăm: lead-uri, rapoarte, monitorizare, prime versiuni de conținut. Deciziile și relația cu clienții rămân la oameni.',
     includes: [
@@ -833,7 +963,13 @@ export const services: Service[] = [
       {
         q: 'Cât costă un proiect de AI pentru business?',
         body: [
-          'Depinde de procesele pe care le automatizăm și de cât de adânc se integrează cu uneltele tale. Nu lucrăm cu prețuri de raft: pornim de la o discuție și o ofertă pe obiective.',
+          'Un setup de automatizări pornește de la 500€, iar mentenanța automatizărilor de la 75€/lună. Prețul exact depinde de procese și de integrări. Vezi toate pachetele pe pagina Pachete.',
+        ],
+      },
+      {
+        q: 'Cât timp economisesc, de fapt?',
+        body: [
+          'Depinde de cât de repetitive sunt sarcinile, dar clienții recuperează de obicei câteva ore bune pe săptămână din munca de rutină. La audit îți spunem realist ce se poate automatiza la tine.',
         ],
       },
     ],
@@ -847,4 +983,9 @@ export function getService(slug: string): Service | undefined {
 /** Celelalte servicii (pentru secțiunea „Alte servicii"). */
 export function relatedServices(slug: string): Service[] {
   return services.filter((s) => s.slug !== slug);
+}
+
+/** Serviciile corespunzătoare unor chei, în ordinea cheilor (pentru cross-link S9). */
+export function servicesByKeys(keys: ServiceKey[]): Service[] {
+  return keys.map((k) => services.find((s) => s.key === k)).filter((s): s is Service => Boolean(s));
 }

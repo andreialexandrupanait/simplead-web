@@ -28,7 +28,7 @@ const fixIcon = (slug: string): ServiceIconName => {
 };
 
 // „Cere ofertă" pe o lucrare → tichet de suport, cu lucrarea preselectată.
-const supportHref = (slug: string) => `/suport?pachet=${encodeURIComponent(slug)}`;
+const supportHref = (slug: string) => `/cere-suport?pachet=${encodeURIComponent(slug)}`;
 
 const metaDescription =
   'Lucrări punctuale la preț fix: optimizare viteză, configurare email profesional, securizare și scanare malware, migrare site, setup Cloudflare. Știi prețul de la început.';
@@ -86,7 +86,7 @@ const metaDescription =
             ))}
           </div>
           <p class="sr-foot">
-            Nu găsești ce-ți trebuie? <a href="/suport">Spune-ne ce ai nevoie</a> și îți dăm un
+            Nu găsești ce-ți trebuie? <a href="/cere-suport">Spune-ne ce ai nevoie</a> și îți dăm un
             preț.
           </p>
         </div>

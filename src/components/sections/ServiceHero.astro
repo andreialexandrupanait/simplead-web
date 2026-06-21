@@ -11,8 +11,23 @@ interface Props {
   image: string;
   imageAlt?: string;
   current: string;
+  /** CTA primar (default „Solicită ofertă" → /contact). */
+  primaryCtaHref?: string;
+  /** CTA secundar opțional (ex. „Vezi pachete și prețuri" → /pachete#ancoră). */
+  secondaryCtaLabel?: string;
+  secondaryCtaHref?: string;
 }
-const { title, titleAccent, sub, image, imageAlt = '', current } = Astro.props;
+const {
+  title,
+  titleAccent,
+  sub,
+  image,
+  imageAlt = '',
+  current,
+  primaryCtaHref = '/contact',
+  secondaryCtaLabel,
+  secondaryCtaHref,
+} = Astro.props;
 const chev = '<path d="M9 6l6 6-6 6"/>';
 const direct = getDirectContact(await getPublicSettings());
 const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPath;
@@ -47,7 +62,14 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
       <h1 class="svc-hero__title">{title}<span class="accent">{titleAccent}</span></h1>
       <p class="svc-hero__sub">{sub}</p>
       <div class="svc-hero__actions">
-        <Button href="/contact" size="lg" withArrow>Solicită ofertă</Button>
+        <Button href={primaryCtaHref} size="lg" withArrow>Solicită ofertă</Button>
+        {
+          secondaryCtaLabel && secondaryCtaHref && (
+            <Button href={secondaryCtaHref} size="lg" variant="outline" onDark>
+              {secondaryCtaLabel}
+            </Button>
+          )
+        }
         {
           direct && (
             <a

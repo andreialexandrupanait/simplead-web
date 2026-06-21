@@ -1,0 +1,95 @@
+---
+/** S7 — „De ce Simplead": diferențiatori reali, comuni tuturor paginilor de serviciu. */
+import { whySimplead, type WhyItem } from '@data/content';
+
+interface Props {
+  items?: WhyItem[];
+  variant?: 'light' | 'tint';
+}
+const { items = whySimplead, variant = 'light' } = Astro.props;
+---
+
+<section class:list={['section', `section--${variant}`]}>
+  <div class="container">
+    <div class="sec-head center" data-reveal>
+      <span class="sec-eyebrow" style="display:inline-flex;justify-content:center;"
+        >De ce Simplead</span
+      >
+      <h2 class="sec-title">Lucruri pe care alții <span class="g">nu ți le spun</span></h2>
+    </div>
+    <div class="why-grid" data-reveal-stagger>
+      {
+        items.map((w) => (
+          <div class="why-card">
+            <span class="why-ic">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                set:html={w.icon}
+              />
+            </span>
+            <h3>{w.title}</h3>
+            <p>{w.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .why-grid {
+    margin-top: clamp(24px, 3vw, 38px);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+  }
+  .why-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 26px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: var(--sh-sm);
+    transition:
+      transform 0.2s var(--ease-snap),
+      box-shadow 0.25s ease;
+  }
+  .why-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--sh-md);
+  }
+  .why-ic {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: var(--r-sm);
+    background: var(--canvas-soft);
+    color: var(--electric);
+  }
+  .why-ic svg {
+    width: 23px;
+    height: 23px;
+  }
+  .why-card h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.12rem;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+  .why-card p {
+    margin: 0;
+    font-size: 0.94rem;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+</style>

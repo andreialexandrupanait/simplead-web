@@ -1,285 +1,441 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import PageHeader from '@components/sections/PageHeader.astro';
-import { ticketCategories, ticketPriorities, ticketCategoryValues } from '@lib/ticket-schema';
+import FaqSection from '@components/sections/FaqSection.astro';
+import CtaSection from '@components/sections/CtaSection.astro';
+import Button from '@components/ui/Button.astro';
+import { SUPPORT_ICON, type SupportIconKey } from '@data/support-services';
+import type { Faq } from '@data/content';
 
 export const prerender = false;
 
-// Preumplere din URL: ?pachet=slug (din /servicii-rapide) și ?categorie=valoare.
-const packageSlug = Astro.url.searchParams.get('pachet')?.trim() ?? '';
-const rawCategory = Astro.url.searchParams.get('categorie')?.trim() ?? '';
-const presetCategory = (ticketCategoryValues as readonly string[]).includes(rawCategory)
-  ? rawCategory
-  : '';
+const CONTACT = '/contact?service=Suport+tehnic';
+
+interface SupportItem {
+  slug: string;
+  icon: SupportIconKey;
+  title: string;
+  desc: string;
+  bullets?: string[];
+}
+interface SupportGroup {
+  title: string;
+  accent: string;
+  intro: string;
+  items: SupportItem[];
+}
+
+const groups: SupportGroup[] = [
+  {
+    title: 'Site-ul ',
+    accent: 'tău',
+    intro: 'Îl reparăm, îl mutăm și îl construim rapid — partea tehnică o ținem noi.',
+    items: [
+      {
+        slug: 'wordpress-support',
+        icon: 'support',
+        title: 'Suport WordPress',
+        desc: 'Diagnosticăm și reparăm: ecran alb, erori fatale, conflicte de plugin sau temă, WooCommerce stricat. Facem și update-uri și backup, sau le preluăm în mentenanță lunară dacă vrei să nu mai ajungi în situații de urgență.',
+        bullets: [
+          'Ecran alb și erori fatale',
+          'Conflicte plugin sau temă',
+          'WooCommerce și checkout',
+          'Update-uri și securitate',
+        ],
+      },
+      {
+        slug: 'migrare-site',
+        icon: 'refresh',
+        title: 'Migrare site',
+        desc: 'Mutăm tot: fișiere, bază de date, emailuri, redirecturi, fără downtime și fără să pierzi poziții în Google.',
+        bullets: [
+          'Pregătire pe staging',
+          'Testare înainte de live',
+          'Schimbare DNS controlată',
+          'Redirecturi 301 pentru SEO',
+        ],
+      },
+      {
+        slug: 'site-astro-ai',
+        icon: 'spark',
+        title: 'Site-uri Astro cu AI',
+        desc: 'Site static rapid construit pe Astro, ideal pentru prezentare, landing sau blog. Costuri de rulare minime, viteză maximă, livrat mai repede cu AI în flux.',
+      },
+    ],
+  },
+  {
+    title: 'Securitate și ',
+    accent: 'email',
+    intro: 'Domeniu protejat, emailuri în inbox, site rapid și sigur.',
+    items: [
+      {
+        slug: 'cloudflare-support',
+        icon: 'shield',
+        title: 'Suport Cloudflare',
+        desc: 'DNS, SSL, cache, reguli firewall și protecție anti-DDoS configurate corect, fără să blochezi traficul real.',
+        bullets: [
+          'Cache și CDN',
+          'Firewall, WAF și anti-bot',
+          'DNS și SSL',
+          'Optimizare performanță',
+        ],
+      },
+      {
+        slug: 'dmarc',
+        icon: 'mail',
+        title: 'Configurare și monitorizare DMARC',
+        desc: 'SPF, DKIM și DMARC setate ca emailurile tale să ajungă în inbox și monitorizăm cine trimite în numele domeniului tău.',
+        bullets: [
+          'Configurare SPF, DKIM, DMARC',
+          'Aliniere servicii: newsletter, facturare, workspace',
+          'Monitorizare rapoarte DMARC',
+          'Protecție anti-spoofing',
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Intervenții ',
+    accent: 'rapide',
+    intro: 'Când arde sau când e o singură treabă de rezolvat, intervenim pe loc.',
+    items: [
+      {
+        slug: 'suport-urgenta',
+        icon: 'bolt',
+        title: 'Suport de urgență',
+        desc: 'Site-ul e jos sau ceva critic s-a stricat. Intervenim cât de repede putem: oprim focul și te repunem online.',
+        bullets: [
+          'Site căzut sau hack',
+          'Erori critice și restore din backup',
+          'Checkout sau email de comandă stricat',
+          'DNS și SSL urgent',
+        ],
+      },
+      {
+        slug: 'quick-fix',
+        icon: 'wrench',
+        title: 'Sesiune Quick Fix',
+        desc: 'O singură problemă, o singură sesiune. Dacă cere mai mult, îți spunem din start, fără să facturăm timp pierdut.',
+        bullets: [
+          'Modificări mici și bug-uri izolate',
+          'Setări și configurări punctuale',
+          'Verificare rapidă sau a doua opinie',
+        ],
+      },
+    ],
+  },
+];
+
+const rates: { label: string; amount: string }[] = [
+  { label: 'Intervenții tehnice web', amount: '50€/h' },
+  { label: 'Tracking, analytics, configurări', amount: '25€/h' },
+];
+
+const supportFaqs: Faq[] = [
+  {
+    q: 'Cât de repede interveniți?',
+    body: [
+      'Pentru urgențe, cât de repede putem în programul de lucru. Scrie-ne contextul și îți dăm imediat un timp realist, nu o fereastră de 48h.',
+    ],
+  },
+  {
+    q: 'Lucrați pe site-uri pe care nu le-ați construit voi?',
+    body: ['Da, pentru orice intervenție tehnică intrăm și pe site-uri construite de altcineva.'],
+  },
+  {
+    q: 'Ce acces aveți nevoie?',
+    body: [
+      'Depinde de problemă. De obicei admin WordPress, acces hosting (cPanel sau Plesk) ori FTP/SFTP. Îți spunem exact ce ne trebuie după ce ne descrii situația.',
+    ],
+  },
+  {
+    q: 'Ce se întâmplă dacă nu se rezolvă în sesiune?',
+    body: [
+      'Îți spunem clar ce cere și cât costă să mergem mai departe. Nu facturăm timp dacă n-am rezolvat nimic util.',
+    ],
+  },
+];
 
 const metaDescription =
-  'Ai o problemă pe site? Trimite-ne un tichet de suport: site picat, email în spam, viteză, securitate sau migrare. Îți răspundem cu o soluție și un preț clar.';
+  'Probleme tehnice rezolvate la oră, fără proiect întreg: WordPress, SSL, DNS, migrare, securitate, email și urgențe. Intervenim rapid, transparent, și pe site-uri construite de altcineva.';
+const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
 ---
 
 <BaseLayout
-  title="Cere suport"
+  title="Suport tehnic"
   description={metaDescription}
   transparentNav={true}
   navOverDark={true}
 >
   <PageHeader
-    crumb={[{ label: 'Acasă', href: '/' }, { label: 'Suport' }]}
+    crumb={[{ label: 'Acasă', href: '/' }, { label: 'Suport tehnic' }]}
     eyebrow="Suport tehnic"
-    title="Spune-ne ce nu merge"
-    accent="ce nu merge"
-    subtitle="Descrie pe scurt problema. Îți răspundem cu o soluție și un preț clar, fără abonament obligatoriu."
+    title="Probleme tehnice rezolvate, fără să deschizi un proiect întreg"
+    accent="fără să deschizi un proiect întreg"
+    subtitle="WordPress căzut, SSL expirat, DNS greșit, email în spam sau site de mutat. Intervenim rapid și transparent, la oră. Lucrăm și pe site-uri construite de altcineva."
   />
 
-  <section class="sup-sec">
-    <div class="sup-wrap">
-      <form id="sup-form" class="sup-form" novalidate>
-        {packageSlug && <input type="hidden" name="packageSlug" value={packageSlug} />}
-
-        <div class="sup-row">
-          <label class="sup-field">
-            <span>Nume *</span>
-            <input type="text" name="name" required minlength="2" autocomplete="name" />
-          </label>
-          <label class="sup-field">
-            <span>Email *</span>
-            <input type="email" name="email" required autocomplete="email" />
-          </label>
-        </div>
-
-        <div class="sup-row">
-          <label class="sup-field">
-            <span>Telefon</span>
-            <input type="tel" name="phone" autocomplete="tel" />
-          </label>
-          <label class="sup-field">
-            <span>Firmă (opțional)</span>
-            <input type="text" name="company" autocomplete="organization" />
-          </label>
-        </div>
-
-        <div class="sup-row">
-          <label class="sup-field">
-            <span>Categorie</span>
-            <select name="category">
-              {
-                ticketCategories.map((c) => (
-                  <option value={c.value} selected={presetCategory === c.value}>
-                    {c.label}
-                  </option>
-                ))
-              }
-            </select>
-          </label>
-          <label class="sup-field">
-            <span>Prioritate</span>
-            <select name="priority">
-              {
-                ticketPriorities.map((p) => (
-                  <option value={p.value} selected={p.value === 'normala'}>
-                    {p.label}
-                  </option>
-                ))
-              }
-            </select>
-          </label>
-        </div>
-
-        <label class="sup-field">
-          <span>Adresa site-ului (opțional)</span>
-          <input type="text" name="siteUrl" placeholder="ex: exemplu.ro" />
-        </label>
-
-        <label class="sup-field">
-          <span>Descrie problema *</span>
-          <textarea
-            name="message"
-            required
-            minlength="10"
-            rows="6"
-            placeholder="Ce se întâmplă, de când, ce ai încercat…"></textarea>
-        </label>
-
-        <label class="sup-consent">
-          <input type="checkbox" name="consent" required />
-          <span>
-            Sunt de acord cu prelucrarea datelor conform
-            <a href="/confidentialitate">politicii de confidențialitate</a>.
-          </span>
-        </label>
-
-        {/* Honeypot anti-spam: ascuns, trebuie să rămână gol. */}
-        <input
-          type="text"
-          name="website"
-          tabindex="-1"
-          autocomplete="off"
-          class="sup-hp"
-          aria-hidden="true"
-        />
-
-        <button type="submit" class="sup-btn">Trimite tichetul</button>
-        <p id="sup-msg" class="sup-msg" role="status" aria-live="polite"></p>
-      </form>
+  <section class="sup-intro">
+    <div class="sup-intro__inner container">
+      <Button href={CONTACT} size="lg" withArrow>Descrie-ne problema</Button>
+      <a class="sup-intro__alt" href="/cere-suport">Sau trimite-ne un tichet →</a>
     </div>
   </section>
+
+  {
+    groups.map((g) => (
+      <section class="section section--light sup-grp">
+        <div class="container">
+          <div class="sec-head" data-reveal>
+            <h2 class="sec-title">
+              {g.title}
+              <span class="g">{g.accent}</span>
+            </h2>
+            <p class="sec-sub">{g.intro}</p>
+          </div>
+          <div class="sup-grid">
+            {g.items.map((s) => (
+              <a class="sup-card" href={`/servicii/${s.slug}`}>
+                <span class="sup-card__ic">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    set:html={SUPPORT_ICON[s.icon]}
+                  />
+                </span>
+                <h3>{s.title}</h3>
+                <p class="sup-card__desc">{s.desc}</p>
+                {s.bullets && (
+                  <ul class="sup-card__list">
+                    {s.bullets.map((b) => (
+                      <li>{b}</li>
+                    ))}
+                  </ul>
+                )}
+                <span class="sup-card__more">
+                  Vezi detalii
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    set:html={arrowR}
+                  />
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  <section class="section section--tint sup-rate-sec">
+    <div class="container">
+      <div class="sec-head center" data-reveal>
+        <span class="sec-eyebrow" style="display:inline-flex;justify-content:center;">Tarif</span>
+        <h2 class="sec-title">Plătești <span class="g">la oră</span>, fără surprize</h2>
+      </div>
+      <ul class="sup-rates">
+        {
+          rates.map((r) => (
+            <li>
+              <span class="sup-rate-label">{r.label}</span>
+              <span class="sup-rate-val">{r.amount}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="sup-rate-note">Fără oră minimă ascunsă. Estimarea o primești înainte să începem.</p>
+    </div>
+  </section>
+
+  <FaqSection
+    items={supportFaqs}
+    variant="light"
+    eyebrow="Întrebări frecvente"
+    title="Ce vor să știe "
+    titleAccent="clienții noștri"
+  />
+
+  <CtaSection
+    kicker="Hai să rezolvăm"
+    title="Ai o problemă tehnică acum?"
+    subtitle="Descrie-ne pe scurt situația și îți răspundem în aceeași zi lucrătoare."
+    href={CONTACT}
+    cta="Solicită ajutor tehnic"
+    secondaryHref="/cere-suport"
+    secondaryLabel="Trimite un tichet"
+  />
 </BaseLayout>
 
-<script>
-  const form = document.getElementById('sup-form') as HTMLFormElement | null;
-  const msg = document.getElementById('sup-msg');
-  if (form && msg) {
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
-      const fd = new FormData(form);
-      const payload = {
-        name: String(fd.get('name') ?? ''),
-        email: String(fd.get('email') ?? ''),
-        phone: String(fd.get('phone') ?? ''),
-        company: String(fd.get('company') ?? ''),
-        category: String(fd.get('category') ?? 'altele'),
-        siteUrl: String(fd.get('siteUrl') ?? ''),
-        priority: String(fd.get('priority') ?? 'normala'),
-        message: String(fd.get('message') ?? ''),
-        packageSlug: String(fd.get('packageSlug') ?? ''),
-        consent: fd.get('consent') === 'on',
-        website: String(fd.get('website') ?? ''),
-      };
-
-      msg.textContent = '';
-      msg.className = 'sup-msg';
-      btn.disabled = true;
-      btn.textContent = 'Se trimite…';
-
-      try {
-        const res = await fetch('/api/ticket', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        const data = await res.json().catch(() => ({}));
-        if (res.ok && data.ok) {
-          form.reset();
-          msg.textContent = 'Gata! Am primit tichetul și revenim cât de curând.';
-          msg.classList.add('sup-msg--ok');
-        } else {
-          msg.textContent = data.error || 'Ceva n-a mers. Încearcă din nou.';
-          msg.classList.add('sup-msg--err');
-        }
-      } catch {
-        msg.textContent = 'Conexiune întreruptă. Încearcă din nou.';
-        msg.classList.add('sup-msg--err');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Trimite tichetul';
-      }
-    });
-  }
-</script>
-
 <style>
-  .sup-sec {
+  .sup-intro {
     background: var(--canvas);
-    padding-block: clamp(40px, 6vw, 80px);
+    padding-block: clamp(28px, 4vw, 44px);
   }
-  .sup-wrap {
-    max-width: 720px;
-    margin-inline: auto;
-    padding-inline: var(--gutter, 24px);
-  }
-  .sup-form {
+  .sup-intro__inner {
     display: flex;
-    flex-direction: column;
-    gap: 18px;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
   }
-  .sup-row {
+  .sup-intro__alt {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--electric);
+  }
+
+  .sup-grp {
+    padding-block: clamp(34px, 4.5vw, 56px);
+  }
+  .sup-grp .sec-head {
+    margin-bottom: clamp(24px, 3vw, 36px);
+  }
+  .sup-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 18px;
   }
-  @media (max-width: 620px) {
-    .sup-row {
+  @media (max-width: 700px) {
+    .sup-grid {
       grid-template-columns: 1fr;
     }
   }
-  .sup-field {
+  .sup-card {
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    padding: 26px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    transition:
+      transform 0.2s var(--ease-snap, ease),
+      box-shadow 0.25s ease,
+      border-color 0.2s ease;
   }
-  .sup-field > span {
+  .sup-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--sh-lg);
+    border-color: color-mix(in srgb, var(--electric) 40%, var(--line));
+  }
+  .sup-card__ic {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: var(--r-sm);
+    background: var(--canvas-soft);
+    color: var(--electric);
+  }
+  .sup-card__ic svg {
+    width: 23px;
+    height: 23px;
+  }
+  .sup-card h3 {
+    margin-top: 16px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--ink);
+  }
+  .sup-card__desc {
+    margin-top: 10px;
+    font-size: 0.94rem;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  .sup-card__list {
+    margin-top: 14px;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+  }
+  .sup-card__list li {
+    position: relative;
+    padding-left: 24px;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .sup-card__list li::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 0.5em;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--electric);
+    transform: translateY(-50%);
+  }
+  .sup-card__more {
+    margin-top: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-weight: 700;
     font-size: 0.88rem;
+    color: var(--electric);
+  }
+  .sup-card__more svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s var(--ease-snap, ease);
+  }
+  .sup-card:hover .sup-card__more svg {
+    transform: translateX(3px);
+  }
+
+  /* Tarif */
+  .sup-rates {
+    list-style: none;
+    margin: clamp(24px, 3vw, 34px) auto 0;
+    padding: 0;
+    max-width: 540px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    box-shadow: var(--sh-sm);
+  }
+  .sup-rates li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .sup-rates li:last-child {
+    border-bottom: 0;
+  }
+  .sup-rate-label {
     font-weight: 600;
     color: var(--ink);
   }
-  .sup-field input,
-  .sup-field select,
-  .sup-field textarea {
-    width: 100%;
-    padding: 11px 13px;
-    border: 1px solid var(--line);
-    border-radius: var(--r-sm);
-    background: var(--canvas);
-    color: var(--ink);
-    font: inherit;
-    transition: border-color 0.16s var(--ease-snap);
-  }
-  .sup-field input:focus,
-  .sup-field select:focus,
-  .sup-field textarea:focus {
-    outline: none;
-    border-color: var(--electric);
-  }
-  .sup-field textarea {
-    resize: vertical;
-  }
-  .sup-consent {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 0.9rem;
-    color: var(--muted);
-    line-height: 1.5;
-  }
-  .sup-consent input {
-    margin-top: 3px;
-  }
-  .sup-consent a {
-    color: var(--electric);
-  }
-  .sup-hp {
-    position: absolute;
-    left: -9999px;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-  }
-  .sup-btn {
-    align-self: flex-start;
-    padding: 13px 28px;
-    border-radius: var(--r-sm);
-    background: var(--electric);
-    color: var(--ink);
+  .sup-rate-val {
+    font-family: var(--font-display);
     font-weight: 700;
-    border: 1px solid var(--electric);
-    cursor: pointer;
-    transition: filter 0.16s var(--ease-snap);
+    font-size: 1.5rem;
+    color: var(--electric);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
   }
-  .sup-btn:hover {
-    filter: brightness(0.95);
-  }
-  .sup-btn:disabled {
-    opacity: 0.6;
-    cursor: default;
-  }
-  .sup-msg {
-    margin: 0;
+  .sup-rate-note {
+    margin: 16px auto 0;
+    max-width: 540px;
+    text-align: center;
     font-size: 0.92rem;
-  }
-  .sup-msg--ok {
-    color: #0a7d4a;
-  }
-  .sup-msg--err {
-    color: #c0392b;
+    color: var(--muted);
   }
 </style>

@@ -1,84 +1,76 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import PageHeader from '@components/sections/PageHeader.astro';
-import ValuesSection from '@components/sections/ValuesSection.astro';
-import ToolsTabs from '@components/sections/ToolsTabs.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
 
 export const prerender = false;
 
 const metaDescription =
-  'Simplead: marketing și design care nu se bazează pe noroc. Condus de Andrei Panait, doctor în marketing la Universitatea „Dunărea de Jos" Galați.';
-const brain =
-  '<path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2z"/><path d="M9 22h6"/>';
-const cap = '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.7 3 6 3s6-2 6-3v-5"/>';
+  'Simplead e un studio mic de grafică și marketing digital condus de Andrei Panait, doctor în marketing. Lucrăm pe date și neuromarketing, cu colaboratori activați la nevoie.';
 ---
 
 <BaseLayout title="Despre" description={metaDescription} transparentNav={true} navOverDark={true}>
   <PageHeader
     crumb={[{ label: 'Acasă', href: '/' }, { label: 'Despre' }]}
     eyebrow="Despre noi"
-    title="Marketing și design care nu se bazează pe noroc"
-    accent="nu se bazează pe noroc"
-    subtitle="Simplead s-a născut dintr-o frustrare: prea multe afaceri bune rămân nevăzute din cauza unui design slab sau a unui marketing făcut „după ureche”. Noi facem lucrurile altfel: simplu, dar fundamentat."
+    title="Doi oameni, proiecte tratate serios."
+    accent="tratate serios."
+    subtitle="Simplead e un studio mic de grafică și marketing digital condus de Andrei Panait împreună cu un partener și o rețea de colaboratori specializați, activați în funcție de ce cere fiecare proiect. Nu suntem o agenție cu zeci de oameni. Și tocmai de-aia funcționează."
   />
 
+  {/* Cum gândim */}
+  <section class="section section--light ab-sec">
+    <div class="ab-narrow container">
+      <span class="sec-eyebrow">Cum gândim</span>
+      <h2 class="sec-title">Mai puțin noroc, <span class="g">mai multă metodă.</span></h2>
+      <div class="ab-body">
+        <p>
+          Cel mai frecvent motiv pentru care un site sau o campanie nu funcționează nu e bugetul mic
+          sau piața grea. E că deciziile au fost luate pe instinct, pe tendințe sau pe „mi-a plăcut
+          mie".
+        </p>
+        <p>
+          Noi pornim de altundeva. Andrei are un doctorat în marketing și lucrează cu instrumente de
+          neuromarketing: eye-tracking și heatmaps prin expoze.app, ca să vadă unde se duce atenția
+          oamenilor înainte ca un material să fie publicat, nu după.
+        </p>
+        <p>
+          Asta nu înseamnă că ignorăm estetica în favoarea graficelor. Înseamnă că, atunci când un
+          design arată bine și funcționează, știm de ce.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* Cum lucrăm + echipa */}
   {
     /* TODO: înlocuiește monogramul lui Gabriel cu fotografia reală + nume complet când sunt disponibile. */
   }
-  <section class="section section--light team-section">
+  <section class="section section--tint team-section">
     <div class="container">
       <div class="about2">
-        <!-- Stânga: povestea (clasă .about-body = dimensiuni & spațiere ca pe live) -->
         <div class="about-body about2__story" data-reveal>
-          <span class="sec-eyebrow">Povestea</span>
+          <span class="sec-eyebrow">Cum lucrăm</span>
           <h2 class="sec-title">
-            Aceeași rigoare din cercetare, <span class="g">în fiecare proiect</span>
+            Suficient de mici cât să-ți pese de proiect.
+            <span class="g">Suficient de capabili cât să-l ducem la capăt.</span>
           </h2>
           <p>
-            La conducerea studioului e Andrei Alexandru Panait, doctor în marketing la Universitatea
-            „Dunărea de Jos" din Galați, cu cercetare în marketing digital și neuromarketing.
-            Aceeași rigoare pe care o aplicăm în cercetare o aducem în fiecare proiect: testăm,
-            măsurăm și optimizăm, în loc să presupunem.
+            Suntem doi oameni care lucrează direct pe proiectele clienților, fără să delegăm intern
+            la juniori și fără să dispărem după semnarea contractului. Când proiectul cere ceva
+            specific, fotografie, video sau dev specializat, aducem colaboratori cu care lucrăm deja
+            și în care avem încredere.
           </p>
           <p>
-            Am pornit Simplead dintr-o convingere simplă: marketingul și designul nu trebuie să fie
-            un joc de noroc. Combinăm creativitatea cu cercetarea, ca afacerile mici și mijlocii să
-            concureze de la egal la egal cu cele mari.
+            Asta înseamnă că ai mereu un interlocutor direct, că nu pierzi informație între
+            departamente și că tot ce livrăm a trecut prin aceleași mâini de la brief la final.
           </p>
-          <div class="about-cred">
-            <div class="item">
-              <span class="ic"
-                ><svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.9"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  set:html={cap}
-                /></span
-              >
-              <div><b>Doctor în marketing</b><span>Univ. „Dunărea de Jos", Galați</span></div>
-            </div>
-            <div class="item">
-              <span class="ic"
-                ><svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.9"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  set:html={brain}
-                /></span
-              >
-              <div><b>Neuromarketing</b><span>decizii pe bază de date</span></div>
-            </div>
-          </div>
+          <p>
+            Lucrăm cu afaceri mici și medii din România, dar și cu clienți din afara țării care vor
+            un partener serios și comunicare în engleză.
+          </p>
         </div>
 
-        <!-- Dreapta: echipa -->
         <div class="about2__team" data-reveal>
           <span class="sec-eyebrow">Echipa</span>
           <div class="team">
@@ -104,106 +96,54 @@ const cap = '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.7 3 6
     </div>
   </section>
 
-  <style>
-    /* Stânga = povestea (1.15fr, ~655px, ca pe live); dreapta = echipa, compactă. */
-    .about2 {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 80px;
-      align-items: start;
-    }
-    .about2__team > .sec-eyebrow {
-      display: block;
-      margin-bottom: 22px;
-    }
-    /* Fundal cu grilă fină, estompată (stil Untitled UI). */
-    .team-section {
-      position: relative;
-      overflow: hidden;
-    }
-    .team-section::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      background-image:
-        linear-gradient(rgba(3, 13, 74, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(3, 13, 74, 0.05) 1px, transparent 1px);
-      background-size: 60px 60px;
-      -webkit-mask-image: radial-gradient(80% 58% at 50% 0%, #000 0%, transparent 72%);
-      mask-image: radial-gradient(80% 58% at 50% 0%, #000 0%, transparent 72%);
-      pointer-events: none;
-    }
-    .team-section .container {
-      position: relative;
-      z-index: 1;
-    }
-    .team {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-    }
-    .team-card {
-      text-align: left;
-    }
-    .team-photo {
-      aspect-ratio: 4 / 5;
-      border-radius: var(--r-md);
-      overflow: hidden;
-    }
-    .team-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center 16%;
-    }
-    .team-photo--mono {
-      display: grid;
-      place-items: center;
-    }
-    .team-photo--mono span {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: clamp(3rem, 7vw, 4.5rem);
-      color: var(--electric);
-    }
-    .team-card b {
-      display: block;
-      margin-top: 13px;
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 0.96rem;
-      line-height: 1.25;
-      color: var(--ink);
-    }
-    .team-role {
-      display: block;
-      margin-top: 2px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--electric);
-    }
-    .team-bio {
-      margin-top: 9px;
-      font-size: 0.84rem;
-      line-height: 1.5;
-      color: var(--muted);
-    }
-    @media (max-width: 900px) {
-      .about2 {
-        grid-template-columns: 1fr;
-        gap: 44px;
-      }
-    }
-    @media (max-width: 480px) {
-      .team {
-        grid-template-columns: 1fr;
-        max-width: 280px;
-      }
-    }
-  </style>
+  {/* Ce aducem în plus */}
+  <section class="section section--light ab-sec">
+    <div class="ab-narrow container">
+      <span class="sec-eyebrow">Ce aducem în plus</span>
+      <h2 class="sec-title">Neuromarketingul nu e un <span class="g">buzzword la noi.</span></h2>
+      <div class="ab-body">
+        <p>
+          Există o diferență între a spune că folosești neuromarketing și a-l folosi efectiv. Noi
+          facem al doilea.
+        </p>
+        <p>
+          Prin expoze.app rulăm teste predictive de eye-tracking pe materialele clienților: reclame,
+          pagini web, postări. Vedem cu date unde se duce atenția, ce e ignorat și ce trebuie mutat.
+          E o unealtă concretă, nu o metodologie de prezentat în pitch.
+        </p>
+        <p>
+          Andrei predă și în mediul academic, ceea ce înseamnă că e la curent cu cercetarea reală,
+          nu cu articolele de marketing de pe LinkedIn.
+        </p>
+      </div>
+    </div>
+  </section>
 
-  {/* Punct de autoritate: parteneriate de durată + parteneri care trimit proiecte. */}
+  {/* Cu cine am lucrat */}
+  <section class="section section--tint ab-sec">
+    <div class="ab-narrow container">
+      <span class="sec-eyebrow">Cu cine am lucrat</span>
+      <h2 class="sec-title">
+        Afaceri locale, instituții, <span class="g">proiecte internaționale.</span>
+      </h2>
+      <div class="ab-body">
+        <p>
+          Am lucrat cu afaceri mici la început de drum și cu instituții de dimensiuni mai mari: FEAA
+          Galați, Universitatea „Dunărea de Jos", clienți din sectorul medical, turism și servicii.
+          Fiecare proiect a primit același nivel de atenție, indiferent de buget.
+        </p>
+      </div>
+      <figure class="ab-quote">
+        <blockquote>„Simply professional. Trustworthy, honest and creative.”</blockquote>
+        <figcaption>
+          <b>Bogdan Drăgan</b>
+          <span>FEAA Galați</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  {/* Parteneri de încredere (conținut real păstrat) */}
   <section class="section trust">
     <span class="trust__glow" aria-hidden="true"></span>
     <div class="container">
@@ -269,143 +209,317 @@ const cap = '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.7 3 6
     </div>
   </section>
 
-  <style>
-    /* Versiune dark (navy + glow de brand) */
-    .trust {
-      position: relative;
-      overflow: hidden;
-      background: var(--ink);
-      color: #fff;
-    }
-    .trust__glow {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(60% 120% at 88% 120%, rgba(110, 91, 224, 0.34), transparent 55%),
-        radial-gradient(55% 130% at 6% -20%, rgba(0, 119, 252, 0.22), transparent 55%);
-    }
-    .trust .container {
-      position: relative;
-      z-index: 1;
-    }
-    .trust .sec-eyebrow {
-      color: var(--cyan);
-    }
-    .trust__grid {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 56px;
-      align-items: center;
-    }
-    .trust__title {
-      margin-top: 14px;
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: clamp(1.7rem, 2.8vw, 2.4rem);
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      color: #fff;
-    }
-    .trust__title .g {
-      color: var(--cyan);
-    }
-    .trust__sub {
-      margin-top: 18px;
-      max-width: 54ch;
-      font-size: 1.0625rem;
-      line-height: 1.6;
-      color: var(--muted-dark);
-    }
-    .trust__sub b {
-      color: #fff;
-      font-weight: 700;
-    }
-    .trust__stats {
-      margin-top: 30px;
-      display: flex;
+  {/* Ce credem */}
+  <section class="section section--light ab-sec">
+    <div class="ab-narrow container">
+      <span class="sec-eyebrow">Ce credem</span>
+      <h2 class="sec-title">Câteva lucruri în care <span class="g">credem ferm.</span></h2>
+      <div class="ab-body">
+        <p>
+          Că un client care înțelege ce primește e un client mai bun. Că onestitatea la început,
+          inclusiv „asta nu e specialitatea noastră", costă mai puțin decât o dezamăgire la final.
+          Că un proiect mic tratat serios face mai mult decât un proiect mare tratat ca număr de
+          factură.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CtaSection
+    kicker="Hai să începem"
+    title="Vrei să lucrăm împreună?"
+    subtitle="Spune-ne în câteva cuvinte cu ce te putem ajuta. Îți răspundem noi, oameni, la fiecare mesaj."
+    href="/contact"
+    cta="Hai să discutăm"
+    secondaryHref="/portofoliu"
+    secondaryLabel="Vezi portofoliu"
+  />
+</BaseLayout>
+
+<style>
+  /* ===== Secțiuni de tip „prose" (text aerisit, lățime de citit) ===== */
+  .ab-narrow {
+    max-width: 760px;
+  }
+  .ab-sec .sec-title {
+    margin-top: 8px;
+  }
+  .ab-body {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .ab-body p {
+    font-size: 1.06rem;
+    line-height: 1.65;
+    color: var(--muted);
+  }
+
+  /* ===== Citat (Cu cine am lucrat) ===== */
+  .ab-quote {
+    margin: clamp(28px, 4vw, 40px) 0 0;
+    padding: 28px 30px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--electric);
+    border-radius: var(--r-md);
+    box-shadow: var(--sh-sm);
+    max-width: 760px;
+  }
+  .ab-quote blockquote {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .ab-quote figcaption {
+    margin-top: 16px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .ab-quote figcaption b {
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .ab-quote figcaption span {
+    font-size: 0.9rem;
+    color: var(--electric);
+    font-weight: 600;
+  }
+
+  /* ===== Echipa (Cum lucrăm) ===== */
+  .about2 {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .about2__story .sec-title {
+    margin-top: 8px;
+    margin-bottom: 20px;
+  }
+  .about2__story p {
+    font-size: 1.04rem;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .about2__team > .sec-eyebrow {
+    display: block;
+    margin-bottom: 22px;
+  }
+  .team-section {
+    position: relative;
+    overflow: hidden;
+  }
+  .team-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image:
+      linear-gradient(rgba(3, 13, 74, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(3, 13, 74, 0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+    -webkit-mask-image: radial-gradient(80% 58% at 50% 0%, #000 0%, transparent 72%);
+    mask-image: radial-gradient(80% 58% at 50% 0%, #000 0%, transparent 72%);
+    pointer-events: none;
+  }
+  .team-section .container {
+    position: relative;
+    z-index: 1;
+  }
+  .team {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .team-card {
+    text-align: left;
+  }
+  .team-photo {
+    aspect-ratio: 4 / 5;
+    border-radius: var(--r-md);
+    overflow: hidden;
+  }
+  .team-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 16%;
+  }
+  .team-photo--mono {
+    display: grid;
+    place-items: center;
+  }
+  .team-photo--mono span {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(3rem, 7vw, 4.5rem);
+    color: var(--electric);
+  }
+  .team-card b {
+    display: block;
+    margin-top: 13px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.96rem;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+  .team-role {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--electric);
+  }
+  .team-bio {
+    margin-top: 9px;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  @media (max-width: 900px) {
+    .about2 {
+      grid-template-columns: 1fr;
       gap: 44px;
     }
-    .trust__stats div b {
-      display: block;
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 2.4rem;
-      line-height: 1;
-      color: var(--cyan);
+  }
+  @media (max-width: 480px) {
+    .team {
+      grid-template-columns: 1fr;
+      max-width: 280px;
     }
-    .trust__stats div span {
-      display: block;
-      margin-top: 6px;
-      font-size: 0.9rem;
-      line-height: 1.4;
-      color: var(--muted-dark);
-    }
-    .trust__partners {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .trust__label {
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted-dark);
-    }
-    .trust__card {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding: 22px 24px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: var(--r-lg);
-      transition:
-        border-color 0.2s var(--ease-snap),
-        transform 0.2s var(--ease-snap),
-        background 0.2s var(--ease-snap);
-    }
-    .trust__card:hover {
-      border-color: var(--cyan);
-      background: rgba(255, 255, 255, 0.08);
-      transform: translateY(-3px);
-    }
-    .trust__card b {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 1.15rem;
-      color: #fff;
-    }
-    .trust__card span {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--cyan);
-    }
-    .trust__card span svg {
-      width: 15px;
-      height: 15px;
-    }
+  }
 
-    @media (max-width: 768px) {
-      .trust__grid {
-        grid-template-columns: 1fr;
-        gap: 36px;
-      }
+  /* ===== Parteneri (dark) ===== */
+  .trust {
+    position: relative;
+    overflow: hidden;
+    background: var(--ink);
+    color: #fff;
+  }
+  .trust__glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(60% 120% at 88% 120%, rgba(110, 91, 224, 0.34), transparent 55%),
+      radial-gradient(55% 130% at 6% -20%, rgba(0, 119, 252, 0.22), transparent 55%);
+  }
+  .trust .container {
+    position: relative;
+    z-index: 1;
+  }
+  .trust .sec-eyebrow {
+    color: var(--cyan);
+  }
+  .trust__grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .trust__title {
+    margin-top: 14px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.7rem, 2.8vw, 2.4rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+  .trust__title .g {
+    color: var(--cyan);
+  }
+  .trust__sub {
+    margin-top: 18px;
+    max-width: 54ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--muted-dark);
+  }
+  .trust__sub b {
+    color: #fff;
+    font-weight: 700;
+  }
+  .trust__stats {
+    margin-top: 30px;
+    display: flex;
+    gap: 44px;
+  }
+  .trust__stats div b {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 2.4rem;
+    line-height: 1;
+    color: var(--cyan);
+  }
+  .trust__stats div span {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: var(--muted-dark);
+  }
+  .trust__partners {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .trust__label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted-dark);
+  }
+  .trust__card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 22px 24px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--r-lg);
+    transition:
+      border-color 0.2s var(--ease-snap),
+      transform 0.2s var(--ease-snap),
+      background 0.2s var(--ease-snap);
+  }
+  .trust__card:hover {
+    border-color: var(--cyan);
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-3px);
+  }
+  .trust__card b {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: #fff;
+  }
+  .trust__card span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--cyan);
+  }
+  .trust__card span svg {
+    width: 15px;
+    height: 15px;
+  }
+  @media (max-width: 768px) {
+    .trust__grid {
+      grid-template-columns: 1fr;
+      gap: 36px;
     }
-  </style>
-
-  <ValuesSection variant="light" />
-
-  <ToolsTabs
-    variant="tint"
-    eyebrow="Cu ce lucrăm"
-    title="Uneltele potrivite, "
-    titleAccent="pentru fiecare etapă"
-  />
-
-  <CtaSection href="/contact" />
-</BaseLayout>
+  }
+</style>
