@@ -107,14 +107,15 @@
   margin: 0;
   text-wrap: balance;
 }
+/* Titlurile de secțiune sunt solide (fără cuvinte colorate) — accentul gradient
+   rămâne doar pe hero-uri. Așa evităm efectul de „mozaic" cu prea multe accente. */
 .sec-title .g {
-  background: var(--grad-text);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: inherit;
 }
 .sec-sub {
-  margin-top: 18px;
+  margin-top: 10px;
   font-size: 18px;
   line-height: 1.6;
   color: var(--ink-soft);
@@ -1517,11 +1518,12 @@ img.pf-shot {
   transition: max-height 0.35s ease;
 }
 .faq-a-inner {
-  background: #dceafe;
+  background: transparent;
   border: none;
-  border-radius: var(--r-md);
-  padding: 26px 30px;
-  margin: 0 0 22px;
+  border-left: 2px solid var(--electric);
+  border-radius: 0;
+  padding: 2px 0 2px 24px;
+  margin: 0 0 24px;
 }
 .faq-a-body p {
   margin: 0 0 14px;
@@ -1933,7 +1935,7 @@ img.pf-shot {
     grid-template-columns: 1fr;
   }
   .faq-a-inner {
-    padding: 22px;
+    padding: 2px 0 2px 20px;
   }
   .cform {
     padding: 28px;
@@ -3445,9 +3447,17 @@ a.bpill--ondark:hover {
    de beneficii. */
 .cap-grid--refined .cap-card {
   border-radius: 14px;
+  box-shadow: var(--sh-sm);
   transition:
     box-shadow 0.22s ease,
     border-color 0.22s ease;
+}
+/* Icon-tile cu mai multă prezență (vizibil și pe fundal alb). */
+.cap-grid--refined .cap-ic {
+  background: var(--grad);
+}
+.cap-grid--refined .cap-ic svg {
+  color: #fff;
 }
 /* Element de design: „pânză" de puncte (același motiv ca pe site — vezi
    #contact) concentrată în colțul dreapta-sus, estompată radial spre interior.
@@ -3575,6 +3585,13 @@ a.bpill--ondark:hover {
   font-size: 15.5px;
   line-height: 1.6;
   color: var(--ink-soft);
+}
+/* Reduced-motion: acordeoanele se deschid/închid instant. */
+@media (prefers-reduced-motion: reduce) {
+  .spp-a,
+  .faq-a {
+    transition: none;
+  }
 }
 
 /* case-study / social proof */

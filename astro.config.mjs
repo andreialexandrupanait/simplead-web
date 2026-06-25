@@ -15,6 +15,11 @@ const isDev = process.argv.includes('dev');
 // https://astro.build/config
 export default defineConfig({
   site: SITE_URL,
+  // Randare on-demand (SSR) ca default: tot site-ul trece prin middleware, deci
+  // mentenanța + gate-ul „în construcție" acoperă ORICE pagină publică (inclusiv
+  // cele viitoare), nu doar cele care declară explicit `prerender = false`.
+  // Aplicația rulează oricum pe serverul node (api/admin/DB).
+  output: 'server',
   // i18n nativ: română implicit (fără prefix), engleză pregătită pentru mai târziu.
   i18n: {
     defaultLocale: 'ro',

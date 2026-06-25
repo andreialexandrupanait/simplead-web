@@ -1,5 +1,5 @@
 ---
-/** Proces serviciu (spp-grid): intro + acordeon (spp-acc). */
+/** Proces serviciu: timeline vertical cu linia care se umple la scroll (distinct de FAQ). */
 import type { ServiceProcessStep } from '@data/services';
 
 interface Props {
@@ -18,75 +18,208 @@ const {
   intro = 'Un drum clar și transparent: la fiecare pas știi unde suntem, ce urmează și de ce. Fără surprize și fără limbaj de complezență.',
   variant = 'tint',
 } = Astro.props;
-const minus = '<path d="M5 12h14"/>';
-const plus = '<path d="M12 5v14M5 12h14"/>';
 ---
 
 <section class:list={['section', `section--${variant}`]}>
   <div class="container">
     <div class="spp-grid">
-      <div class="spp-intro" data-reveal>
+      <div class="spp-intro tl-intro" data-reveal>
         <span class="sec-eyebrow">{eyebrow}</span>
         <h2 class="sec-title">{title}<span class="g">{titleAccent}</span></h2>
         <p>{intro}</p>
       </div>
-      <div class="spp-acc" id="sppAcc" data-reveal>
+      <ol class="tl" id="procTl" data-reveal>
         {
-          steps.map((s, i) => (
-            <div class:list={['spp-item', i === 0 && 'open']}>
-              <button class="spp-q">
-                <span class="pn">{s.n}</span>
-                <span class="pt">{s.title}</span>
-                <span class="pm">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.4"
-                    stroke-linecap="round"
-                    set:html={i === 0 ? minus : plus}
-                  />
-                </span>
-              </button>
-              <div class="spp-a">
-                <p>{s.body}</p>
+          steps.map((s) => (
+            <li class="tl__step">
+              <span class="tl__node">
+                <span class="tl__num">{s.n}</span>
+              </span>
+              <div class="tl__body">
+                <h3 class="tl__title">{s.title}</h3>
+                <p class="tl__text">{s.body}</p>
               </div>
-            </div>
+            </li>
           ))
         }
-      </div>
+      </ol>
     </div>
   </div>
 </section>
 
+<style>
+  /* Intro sticky pe desktop (rămâne lângă timeline-ul care se umple). */
+  .tl-intro {
+    position: sticky;
+    top: calc(var(--nav-h) + 28px);
+  }
+  .tl-intro p {
+    margin: 10px 0 0;
+    font-size: 16px;
+    line-height: 1.62;
+    color: var(--ink-soft);
+  }
+
+  /* Timeline */
+  .tl {
+    --p: 0;
+    --axis: 21px;
+    list-style: none;
+    position: relative;
+    margin: 0;
+    padding: 4px 0;
+  }
+  /* Spina faint (::before) + linia care se umple electric→cyan (::after, scaleY(--p)).
+     Înălțimea = de la centrul primei buline la centrul ultimei (setată din JS prin
+     --spine-top/--spine-len), ca linia să se termine ÎN ultima bulină, nu sub ea. */
+  .tl::before,
+  .tl::after {
+    content: '';
+    position: absolute;
+    left: var(--axis);
+    top: var(--spine-top, 22px);
+    height: var(--spine-len, calc(100% - 44px));
+    width: 2px;
+    border-radius: 2px;
+  }
+  .tl::before {
+    background: var(--line);
+  }
+  .tl::after {
+    background: linear-gradient(180deg, var(--electric), var(--cyan));
+    transform: scaleY(var(--p));
+    transform-origin: top;
+    transition: transform 0.18s linear;
+  }
+
+  .tl__step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 20px;
+    padding-bottom: 36px;
+  }
+  .tl__step:last-child {
+    padding-bottom: 0;
+  }
+
+  .tl__node {
+    position: relative;
+    z-index: 1;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--canvas);
+    border: 2px solid var(--line);
+    color: var(--muted);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    transition:
+      background 0.3s var(--ease-snap),
+      border-color 0.3s var(--ease-snap),
+      color 0.3s var(--ease-snap),
+      box-shadow 0.3s var(--ease-snap);
+  }
+  .tl__step.is-active .tl__node {
+    background: var(--grad);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: var(--glow-cyan);
+  }
+
+  .tl__body {
+    padding-top: 4px;
+  }
+  .tl__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 19px;
+    line-height: 1.25;
+    color: var(--ink);
+    transition: color 0.3s var(--ease-snap);
+  }
+  .tl__step.is-active .tl__title {
+    color: var(--ink);
+  }
+  .tl__text {
+    margin: 8px 0 0;
+    font-size: 15.5px;
+    line-height: 1.62;
+    color: var(--ink-soft);
+    max-width: 52ch;
+  }
+
+  @media (max-width: 1024px) {
+    .tl-intro {
+      position: static;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tl::after,
+    .tl__node,
+    .tl__title {
+      transition: none;
+    }
+  }
+</style>
+
 <script>
-  const acc = document.getElementById('sppAcc');
-  if (acc) {
-    const items = Array.from(acc.querySelectorAll<HTMLElement>('.spp-item'));
-    const minus = '<path d="M5 12h14"/>';
-    const plus = '<path d="M12 5v14M5 12h14"/>';
-    const setH = (it: HTMLElement) => {
-      const a = it.querySelector<HTMLElement>('.spp-a');
-      const open = it.classList.contains('open');
-      if (a) a.style.maxHeight = open ? a.scrollHeight + 'px' : '0px';
-      const ic = it.querySelector<HTMLElement>('.pm svg');
-      if (ic) ic.innerHTML = open ? minus : plus;
+  const tl = document.getElementById('procTl');
+  if (tl) {
+    const steps = Array.from(tl.querySelectorAll<HTMLElement>('.tl__step'));
+    const nodes = Array.from(tl.querySelectorAll<HTMLElement>('.tl__node'));
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Geometrie: spina merge de la centrul primei buline la centrul ultimei.
+    const layout = () => {
+      if (!nodes.length) return;
+      const tlTop = tl.getBoundingClientRect().top;
+      const first = nodes[0].getBoundingClientRect();
+      const last = nodes[nodes.length - 1].getBoundingClientRect();
+      const firstC = first.top + first.height / 2;
+      const lastC = last.top + last.height / 2;
+      tl.style.setProperty('--spine-top', `${firstC - tlTop}px`);
+      tl.style.setProperty('--spine-len', `${Math.max(0, lastC - firstC)}px`);
     };
-    items.forEach((it) => {
-      const q = it.querySelector('.spp-q');
-      q?.addEventListener('click', () => {
-        const was = it.classList.contains('open');
-        items.forEach((o) => {
-          o.classList.remove('open');
-          setH(o);
+
+    if (reduce) {
+      // Static: linie plină, toate nodurile active, fără scroll listener.
+      layout();
+      tl.style.setProperty('--p', '1');
+      steps.forEach((s) => s.classList.add('is-active'));
+    } else {
+      let ticking = false;
+      const update = () => {
+        ticking = false;
+        layout();
+        const horizon = window.innerHeight * 0.62;
+        const centers = nodes.map((n) => {
+          const r = n.getBoundingClientRect();
+          return r.top + r.height / 2;
         });
-        if (!was) {
-          it.classList.add('open');
-          setH(it);
+        const firstC = centers[0];
+        const lastC = centers[centers.length - 1];
+        // Progresul liniei e mapat pe intervalul dintre prima și ultima bulină,
+        // ca umplerea să ajungă exact în ultima bulină când aceasta se activează.
+        const span = Math.max(1, lastC - firstC);
+        const progress = Math.min(1, Math.max(0, (horizon - firstC) / span));
+        tl.style.setProperty('--p', String(progress));
+        steps.forEach((s, i) => s.classList.toggle('is-active', centers[i] <= horizon));
+      };
+      const onScroll = () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
         }
-      });
-    });
-    items.forEach(setH);
-    window.addEventListener('resize', () => items.forEach(setH));
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      update();
+    }
   }
 </script>

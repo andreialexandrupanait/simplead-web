@@ -94,14 +94,12 @@ const t = renderTitle();
   .sh--dark .sh__title {
     color: #fff;
   }
+  /* Accentul rămâne solid (culoarea titlului) — cuvintele colorate doar în hero. */
   .sh__accent {
-    color: var(--electric);
-  }
-  .sh--dark .sh__accent {
-    color: var(--cyan);
+    color: inherit;
   }
   .sh__sub {
-    margin-top: 18px;
+    margin-top: 10px;
     font-size: 1.0625rem;
     line-height: 1.6;
     color: var(--muted);

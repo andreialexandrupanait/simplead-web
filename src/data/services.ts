@@ -7,7 +7,7 @@
  * serviciu, iar FAQ-urile sunt rescrise în vocea Simplead (date/neuromarketing,
  * un singur partener) - nu mai sunt preluate de la terți.
  */
-import type { Faq } from './content';
+import type { Faq, AppTopic } from './content';
 
 export type ServiceIcon = 'marketing' | 'grafica' | 'web' | 'mentenanta' | 'social' | 'ai';
 
@@ -63,6 +63,8 @@ export interface Service {
   summary: string;
   /** Titlu/claim pe pagina dedicată. */
   claim: string;
+  /** A doua linie (mică) sub claim, în CTA-ul paginii. */
+  claimSub: string;
   /** Descriere lungă (pagina dedicată). */
   description: string;
   /** Ce include - listă de bullet-uri. */
@@ -79,6 +81,10 @@ export interface Service {
   capHead: { eyebrow: string; title: string; titleAccent: string; sub: string };
   process?: ServiceProcessStep[];
   caseStudy?: ServiceCaseStudy;
+  /** Teme „în detaliu" (AppShowcase) — opțional, pentru pagini bogate (ex. consultanță). */
+  topics?: AppTopic[];
+  /** Modele de colaborare — carduri (refolosesc shape-ul de capabilitate). Opțional. */
+  engagement?: ServiceCapability[];
   faqs: Faq[];
 }
 
@@ -118,7 +124,8 @@ export const services: Service[] = [
     title: 'Mentenanță website',
     summary:
       'Tu te ocupi de afacere, eu de partea tehnică: actualizări, securitate, backup și monitorizare continuă.',
-    claim: 'Tu te ocupi de afacere. Noi ne ocupăm de site.',
+    claim: 'Tu te ocupi de afacere.',
+    claimSub: 'Noi ne ocupăm de site.',
     description:
       'Site-ul tău rămâne rapid, sigur și actualizat, fără bătăi de cap. Îl monitorizez continuu, îl actualizez și îl optimizez, ca tu să te concentrezi pe ce contează.',
     includes: [
@@ -240,7 +247,8 @@ export const services: Service[] = [
     title: 'UX/UI & web design',
     summary:
       'Site-uri și magazine online rapide, clare și gândite să transforme vizitatorii în clienți.',
-    claim: 'Site-uri care transformă vizitatori în clienți. Hai să construim unul împreună.',
+    claim: 'Site-uri care transformă vizitatori în clienți.',
+    claimSub: 'Hai să construim unul împreună.',
     description:
       'Realizăm site-uri de prezentare și magazine online rapide, clare și ușor de administrat. Frumoase pentru oameni, prietenoase cu Google și validate cu principii de neuromarketing.',
     includes: [
@@ -354,7 +362,7 @@ export const services: Service[] = [
       {
         q: 'Cât costă?',
         body: [
-          'Un redesign pornește de la 900€, un site de prezentare nou de la 1.500€, iar un magazin online de la 2.500€. Prețul exact îl stabilim după ce înțelegem ce ai nevoie. Vezi toate pachetele pe pagina Pachete.',
+          'Depinde de tip — site de prezentare, magazin online sau redesign — și de cât de complex e. Prețul exact îl stabilim după ce înțelegem ce ai nevoie. Vezi pachetele pe pagina Pachete.',
         ],
       },
       {
@@ -398,7 +406,8 @@ export const services: Service[] = [
     title: 'Grafică publicitară',
     summary:
       'Identitate vizuală, materiale de promovare și grafică publicitară care te fac memorabil și coerent.',
-    claim: 'Imagine coerentă, care te face memorabil. Pornim de la o discuție.',
+    claim: 'Imagine coerentă, care te face memorabil.',
+    claimSub: 'Pornim de la o discuție.',
     description:
       'De la identitate vizuală și materiale de promovare, până la print și grafică pentru campanii. Totul gândit simplu, dar cu impact și validat vizual cu neuromarketing.',
     includes: [
@@ -520,7 +529,7 @@ export const services: Service[] = [
       {
         q: 'Cât costă?',
         body: [
-          'Un set de materiale grafice (5 vizualuri) pornește de la 175€, o identitate vizuală completă de la 700€, iar grafica recurentă de la 150€/lună. Vezi toate pachetele pe pagina Pachete.',
+          'Depinde de ce ai nevoie — un set de materiale, o identitate vizuală completă sau grafică recurentă lunară. Îți dăm o estimare concretă după o scurtă discuție. Vezi pachetele pe pagina Pachete.',
         ],
       },
     ],
@@ -551,7 +560,8 @@ export const services: Service[] = [
     related: ['grafica', 'consultanta', 'ux-ui'],
     title: 'Social media',
     summary: 'Conținut și prezență care aduc clienți, nu doar aprecieri. Construite pe date.',
-    claim: 'Prezență constantă, conținut care prinde. Hai să discutăm despre canalele tale.',
+    claim: 'Prezență constantă, conținut care prinde.',
+    claimSub: 'Hai să discutăm despre canalele tale.',
     description:
       'Administrăm prezența ta în social media cu strategie clară și conținut coerent: ce postezi, cum arăți și cum răspunzi. Construim o prezență care ține pe termen lung, pe canalele unde se află publicul tău.',
     includes: [
@@ -668,7 +678,7 @@ export const services: Service[] = [
       {
         q: 'Cât costă administrarea de social media?',
         body: [
-          'Pornește de la 250€/lună pentru 2 canale și de la 450€/lună pentru 3 canale cu raportare. Vezi toate pachetele pe pagina Pachete.',
+          'Depinde de câte canale gestionăm și de cât conținut și raportare îți trebuie. Stabilim pachetul potrivit după o discuție despre obiectivele tale. Vezi pachetele pe pagina Pachete.',
         ],
       },
     ],
@@ -699,14 +709,15 @@ export const services: Service[] = [
     related: ['ux-ui', 'social-media', 'grafica'],
     title: 'Consultanță de marketing',
     summary:
-      'Decizii pe date și neuromarketing, nu pe presupuneri. Studio condus de un doctor în marketing.',
-    claim: 'Marketing pe date, nu pe presupuneri. Pornim cu un audit.',
+      'Decizii pe date și neuromarketing, nu pe presupuneri. Strategie, poziționare și un plan clar de creștere.',
+    claim: 'Marketing pe date, nu pe presupuneri.',
+    claimSub: 'Pornim cu un audit.',
     description:
-      'Te ajutăm să iei deciziile de marketing potrivite, validate cu date și neuromarketing. Strategie, analiză a atenției vizuale (eye-tracking & heatmaps) și un plan clar de creștere.',
+      'Te ajutăm să iei deciziile de marketing potrivite, validate cu date și cu analiza atenției vizuale (neuromarketing). Strategie, poziționare și un plan clar de creștere, pe obiective măsurabile.',
     includes: [
       'Strategie de marketing și de brand',
       'Audit și analiză (Analytics, tracking conversii)',
-      'Neuromarketing: eye-tracking & heatmaps (expoze.app)',
+      'Neuromarketing: analiza atenției vizuale',
       'Poziționare și mesaje',
       'Plan de creștere pe obiective măsurabile',
     ],
@@ -715,8 +726,9 @@ export const services: Service[] = [
       'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=900&q=78&auto=format&fit=crop',
     heroTitle: 'Marketing fundamentat pe ',
     heroTitleAccent: 'cercetare, nu pe noroc',
+    // TODO[de confirmat]: formularea despre pregătirea academică (doctor vs doctorand, cine).
     heroSub:
-      'Validăm fiecare decizie cu date și neuromarketing, inclusiv eye-tracking și heatmaps prin expoze.app. Studio condus de Andrei Panait, doctor în marketing.',
+      'Strategie și decizii validate cu date și cu analiza atenției vizuale (neuromarketing), nu cu presupuneri. Pui bugetul exact acolo unde mișcă acul — cu o echipă care are și pregătire academică în marketing.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'De la presupuneri la ',
@@ -738,9 +750,9 @@ export const services: Service[] = [
       {
         title: 'Neuromarketing & Atenție vizuală',
         icon: ICON.brain,
-        desc: 'Testăm atenția cu eye-tracking și heatmaps prin expoze.app: vedem ce funcționează înainte de lansare.',
+        desc: 'Ne uităm la unde se duce privirea și cum reacționează oamenii la materialele tale, înainte de lansare: decizii pe comportament real, nu pe gust.',
         items: [
-          'Eye-tracking & heatmaps (expoze.app)',
+          'Analiza atenției vizuale',
           'Analiză a ierarhiei vizuale',
           'Optimizare pe principii de neuromarketing',
           'Validare pre-lansare',
@@ -767,7 +779,7 @@ export const services: Service[] = [
       {
         n: '02',
         title: 'Cercetare',
-        body: 'Studiem publicul, concurența și piața. Aici intră partea de neuromarketing — atenție vizuală, heatmaps — și datele din Analytics, ca să lucrăm cu fapte, nu cu impresii.',
+        body: 'Studiem publicul, concurența și piața. Aici intră partea de neuromarketing — analiza atenției vizuale — și datele din Analytics, ca să lucrăm cu fapte, nu cu impresii.',
       },
       {
         n: '03',
@@ -795,11 +807,188 @@ export const services: Service[] = [
       clientNote: 'panaitandrei.ro',
       clientLogo: 'AP',
     },
+    // Secțiunea „Cum lucrăm, în detaliu" (AppShowcase) — miezul concret al paginii.
+    topics: [
+      {
+        id: 'audit',
+        icon: ICON.chart,
+        eyebrow: 'Audit & diagnoză',
+        title: 'Unde ești ',
+        titleAccent: 'acum',
+        intro:
+          'Înainte de orice plan, ne uităm la realitate: ce ai deja, ce aduce rezultate și ce doar consumă buget. Pornim de la date, nu de la impresii.',
+        cards: [
+          {
+            title: 'Audit al prezenței digitale',
+            body: [
+              'Trecem prin site, canale și conținut: ce comunici, cât de clar și unde pierzi oameni pe drum.',
+              'Notăm problemele concrete, în ordinea în care merită rezolvate.',
+            ],
+          },
+          {
+            title: 'Analiza datelor existente',
+            body: [
+              'Ne uităm la trafic, surse, comportament și conversii (Analytics, tracking), ca să vedem ce funcționează cu adevărat, nu ce pare că funcționează.',
+            ],
+          },
+          {
+            title: 'Benchmark față de concurență',
+            body: [
+              'Comparăm poziționarea și mesajele tale cu ale concurenței directe, ca să vedem unde te diferențiezi și unde ești în urmă.',
+            ],
+          },
+        ],
+        faqs: [
+          {
+            q: 'Ce primesc la final?',
+            body: [
+              'Un raport de audit clar, cu problemele prioritizate și primii pași recomandați — pe înțelesul tău, fără jargon.',
+            ],
+          },
+        ],
+      },
+      {
+        id: 'public',
+        icon: ICON.brain,
+        eyebrow: 'Cercetare & public',
+        title: 'Cui te ',
+        titleAccent: 'adresezi',
+        intro:
+          'Marketingul bun pleacă de la oameni reali, nu de la „toată lumea". Definim cui vorbești, ce nevoi are și ce îl oprește să cumpere.',
+        cards: [
+          {
+            title: 'Segmente și nevoi',
+            body: [
+              'Construim profilul publicului tău: cine e, ce caută, ce obiecții are și ce l-ar convinge să aleagă tocmai pe tine.',
+            ],
+          },
+          {
+            title: 'Atenția vizuală (neuromarketing)',
+            body: [
+              'Ne uităm la unde se duce privirea pe materialele tale cheie și cum reacționează oamenii, ca mesajul important să se vadă primul — nu să se piardă.',
+            ],
+          },
+          {
+            title: 'Concurență și piață',
+            body: [
+              'Analizăm ce fac alții și unde e loc de diferențiere, ca să nu te pierzi în zgomot.',
+            ],
+          },
+        ],
+        faqs: [
+          {
+            q: 'E nevoie să am deja date despre clienți?',
+            body: [
+              'Nu neapărat. Lucrăm cu ce ai; unde lipsesc datele, le strângem prin cercetare și analiză.',
+            ],
+          },
+        ],
+      },
+      {
+        id: 'strategie',
+        icon: ICON.target,
+        eyebrow: 'Strategie & poziționare',
+        title: 'Planul, pe ',
+        titleAccent: 'obiective',
+        intro:
+          'Transformăm concluziile într-o direcție clară: ce spui, cui, pe ce canale și cu ce rezultat țintești. Fără execuție haotică.',
+        cards: [
+          {
+            title: 'Poziționare și mesaje',
+            body: [
+              'Stabilim cum te diferențiezi și traducem asta în mesaje pe care publicul tău le înțelege și le ține minte.',
+            ],
+          },
+          {
+            title: 'Canale și calendar',
+            body: [
+              'Alegem canalele care chiar îți aduc rezultate, cu un calendar realist și priorități clare — nu „să fim peste tot".',
+            ],
+          },
+          {
+            title: 'Obiective măsurabile (KPI)',
+            body: [
+              'Fixăm de la început ce urmărim și cum arată succesul, ca să nu mergem pe simțite.',
+            ],
+          },
+        ],
+        faqs: [
+          {
+            q: 'Strategia e doar un document sau ne și ajutați?',
+            body: [
+              'Primești un document de strategie clar — și, dacă vrei, mergem mai departe împreună cu execuția. Tu alegi.',
+            ],
+          },
+        ],
+      },
+      {
+        id: 'masurare',
+        icon: ICON.refresh,
+        eyebrow: 'Măsurare & optimizare',
+        title: 'Ținem ',
+        titleAccent: 'scorul',
+        intro:
+          'Marketingul bun nu e o singură decizie, ci o serie de decizii corectate la timp. Măsurăm, învățăm și ajustăm.',
+        cards: [
+          {
+            title: 'Tracking corect',
+            body: [
+              'Punem la punct urmărirea conversiilor și a evenimentelor importante, ca cifrele pe care le vezi să fie reale și de încredere.',
+            ],
+          },
+          {
+            title: 'Dashboard și rapoarte',
+            body: [
+              'Aduni metricile care contează într-un singur loc, cu rapoarte pe înțelesul tău — nu tablouri pline de cifre fără sens.',
+            ],
+          },
+          {
+            title: 'Optimizare continuă',
+            body: [
+              'Revedem periodic rezultatele și ajustăm direcția, ca bugetul să meargă tot mai bine în timp.',
+            ],
+          },
+        ],
+        faqs: [
+          {
+            q: 'Cât de des vedem rezultatele?',
+            body: [
+              'La retainer lunar primești un review lunar cu ce s-a întâmplat și ce ajustăm. La proiectele punctuale stabilim un moment de recalibrare.',
+            ],
+          },
+        ],
+      },
+    ],
+    // Modele de colaborare (carduri ca la capabilități). Fără prețuri în pagină.
+    engagement: [
+      {
+        title: 'Audit + strategie (punctual)',
+        icon: ICON.target,
+        desc: 'Un proiect cu început și final: diagnoză completă, strategie și un plan prioritizat pe care îl aplici singur sau împreună cu noi.',
+        items: [
+          'Audit complet',
+          'Cercetare public & concurență',
+          'Strategie pe canale',
+          'Plan de execuție prioritizat',
+        ],
+      },
+      {
+        title: 'Retainer lunar (continuu)',
+        icon: ICON.refresh,
+        desc: 'Un partener de marketing pe termen lung, care ține mâna pe puls: review lunar, recomandări și optimizare continuă.',
+        items: [
+          'Review lunar al datelor',
+          'Recomandări prioritizate',
+          'Optimizare continuă',
+          'Acces direct pentru întrebări',
+        ],
+      },
+    ],
     faqs: [
       {
         q: 'Ce înseamnă „marketing pe neuromarketing"?',
         body: [
-          'Înseamnă că validăm deciziile înainte și după lansare: analizăm atenția vizuală (eye-tracking, heatmaps prin expoze.app) și ne uităm la date reale din Analytics. Așa pui bugetul acolo unde chiar mișcă acul.',
+          'Înseamnă că validăm deciziile înainte și după lansare: analizăm unde se duce atenția pe materialele tale (analiza atenției vizuale) și ne uităm la date reale din Analytics. Așa pui bugetul acolo unde chiar mișcă acul.',
         ],
       },
       {
@@ -815,9 +1004,21 @@ export const services: Service[] = [
         ],
       },
       {
+        q: 'Cât durează un audit?',
+        body: [
+          'De obicei 1–2 săptămâni, în funcție de cât de mult ai deja pus la punct și de câte canale analizăm. [de confirmat]',
+        ],
+      },
+      {
+        q: 'Cu ce rămân după colaborare?',
+        body: [
+          'Cu livrabile concrete pe care le poți folosi: raportul de audit, documentul de strategie, planul pe canale și, unde e cazul, dashboard-ul de măsurare — nu doar o discuție.',
+        ],
+      },
+      {
         q: 'Cât costă?',
         body: [
-          'Un audit + strategie pornește de la 400€, iar un retainer lunar de la 300€/lună. Vezi toate pachetele pe pagina Pachete.',
+          'Depinde dacă vrei un audit + strategie punctual sau un retainer lunar continuu. Îți dăm o estimare după ce înțelegem unde ești și ce vrei să obții. Vezi pachetele pe pagina Pachete.',
         ],
       },
     ],
@@ -849,7 +1050,8 @@ export const services: Service[] = [
     title: 'AI pentru business',
     summary:
       'Automatizări, monitorizare și conținut asistate de AI: acolo unde îți cumpără timp, nu unde dă bine pe hârtie.',
-    claim: 'Timp câștigat în fiecare săptămână. Hai să vedem ce automatizăm la tine.',
+    claim: 'Timp câștigat în fiecare săptămână.',
+    claimSub: 'Hai să vedem ce automatizăm la tine.',
     description:
       'Nu vindem „AI" ca slogan. Ne uităm la procesele tale, găsim munca repetitivă care îți mănâncă timpul și o automatizăm: lead-uri, rapoarte, monitorizare, prime versiuni de conținut. Deciziile și relația cu clienții rămân la oameni.',
     includes: [
@@ -963,7 +1165,7 @@ export const services: Service[] = [
       {
         q: 'Cât costă un proiect de AI pentru business?',
         body: [
-          'Un setup de automatizări pornește de la 500€, iar mentenanța automatizărilor de la 75€/lună. Prețul exact depinde de procese și de integrări. Vezi toate pachetele pe pagina Pachete.',
+          'Depinde de procesele pe care le automatizăm și de integrările necesare. După ce le mapăm împreună, îți dăm un preț exact. Vezi pachetele pe pagina Pachete.',
         ],
       },
       {

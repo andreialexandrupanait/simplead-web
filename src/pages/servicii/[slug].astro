@@ -3,31 +3,30 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import ServiceHero from '@components/sections/ServiceHero.astro';
 import ForWhom from '@components/sections/ForWhom.astro';
 import CapabilitiesGrid from '@components/sections/CapabilitiesGrid.astro';
-import PriceAnchor from '@components/sections/PriceAnchor.astro';
+import AppShowcase from '@components/sections/AppShowcase.astro';
 import ServiceProcess from '@components/sections/ServiceProcess.astro';
 import ProjectsGrid from '@components/sections/ProjectsGrid.astro';
 import WhySimplead from '@components/sections/WhySimplead.astro';
 import FaqSection from '@components/sections/FaqSection.astro';
-import RelatedServices from '@components/sections/RelatedServices.astro';
 import CtaNotch from '@components/sections/CtaNotch.astro';
 import SupportServiceDetail from '@components/sections/SupportServiceDetail.astro';
-import { services, servicesByKeys, type ServiceProcessStep } from '@data/services';
+import { getService, type ServiceProcessStep } from '@data/services';
 import { supportServices } from '@data/support-services';
 import { processSteps } from '@data/content';
-import { getServiceAnchor } from '@data/pricing';
+import { clientsForService } from '@data/clients';
 
-export function getStaticPaths() {
-  // Piloni: „mentenanta-website" are pagină dedicată la /mentenanta (vezi redirect-ul
-  // din astro.config.mjs), deci aici nu o generăm.
-  const pillars = services
-    .filter((s) => s.slug !== 'mentenanta-website')
-    .map((s) => ({ params: { slug: s.slug }, props: { service: s } }));
-  // Servicii de suport (catalog) — același URL /servicii/{slug}, alt template.
-  const support = supportServices.map((s) => ({ params: { slug: s.slug }, props: { support: s } }));
-  return [...pillars, ...support];
+// On-demand: ca tot site-ul să treacă prin middleware (mentenanță/construcție).
+// Datele sunt statice (@data/services + @data/support-services), deci doar căutăm
+// după slug. „mentenanta-website" e tratat prin redirect în astro.config.mjs.
+export const prerender = false;
+
+const slug = Astro.params.slug!;
+const service = getService(slug);
+// Serviciu de suport (catalog) — același URL /servicii/{slug}, alt template.
+const support = service ? undefined : supportServices.find((s) => s.slug === slug);
+if (!service && !support) {
+  return Astro.rewrite('/404');
 }
-
-const { service, support } = Astro.props;
 
 // Pilon: proces specific sau procesul generic (content.ts).
 const proc: ServiceProcessStep[] = service
@@ -35,20 +34,26 @@ const proc: ServiceProcessStep[] = service
     processSteps.map((p) => ({ n: String(p.n).padStart(2, '0'), title: p.title, body: p.text })))
   : [];
 
-const pageTitle = `${service ? service.title : support.title} · Servicii`;
-const pageDesc = service ? service.summary : support.cardSummary;
+const pageTitle = `${service ? service.title : support!.title} · Servicii`;
+const pageDesc = service ? service.summary : support!.cardSummary;
 
-// Ancoră de preț (S4) + servicii înrudite (S9) — doar pentru paginile pilon.
-const anchor = service ? getServiceAnchor(service.key) : null;
-const related = service ? servicesByKeys(service.related ?? []) : [];
+// Ritm vizual: ProjectsGrid (light) se randează doar dacă serviciul are proiecte
+// live. Când lipsește, mutăm fundalurile WhySimplead/FAQ ca să păstrăm alternanța
+// tint/light fără două secțiuni identice la rând.
+// Paginile bogate (cu `topics` — ex. consultanță) inserează AppShowcase (care
+// alternează intern) + „Modele de colaborare", deci au propria schemă de fundaluri.
+const hasTopics = !!service?.topics;
+const hasProjects = service ? clientsForService(service.key).length > 0 : false;
+const whyVariant = hasTopics ? 'tint' : hasProjects ? 'tint' : 'light';
+const faqVariant = hasTopics ? 'light' : hasProjects ? 'light' : 'tint';
 
 const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
 const serviceSchema = {
   '@type': 'Service',
-  name: service ? service.title : support.title,
+  name: service ? service.title : support!.title,
   description: pageDesc,
-  serviceType: service ? service.title : support.title,
-  url: `${origin}/servicii/${service ? service.slug : support.slug}`,
+  serviceType: service ? service.title : support!.title,
+  url: `${origin}/servicii/${service ? service.slug : support!.slug}`,
   provider: { '@id': `${origin}#organization` },
   areaServed: { '@type': 'Country', name: 'România' },
 };
@@ -72,8 +77,6 @@ const serviceSchema = {
           imageAlt={service.title}
           current={service.title}
           primaryCtaHref={`/contact?service=${encodeURIComponent(service.title)}`}
-          secondaryCtaLabel="Vezi pachete și prețuri"
-          secondaryCtaHref={anchor?.anchor}
         />
 
         {service.forWhom && <ForWhom items={service.forWhom} />}
@@ -85,38 +88,41 @@ const serviceSchema = {
           titleAccent={service.capHead.titleAccent}
           sub={service.capHead.sub}
           cardVariant="refined"
-          variant="tint"
+          variant="light"
         />
 
-        {anchor && (
-          <PriceAnchor
-            anchor={anchor.anchor}
-            tiers={anchor.tiers}
-            note={anchor.note}
+        {service.topics && <AppShowcase topics={service.topics} variant="tint" />}
+
+        <ServiceProcess steps={proc} />
+
+        {service.engagement && (
+          <CapabilitiesGrid
+            items={service.engagement}
+            eyebrow="Cum lucrăm împreună"
+            title="Modele de "
+            titleAccent="colaborare"
+            sub="Alegi cum lucrăm: un proiect punctual sau un parteneriat lunar. Detalii și pachete pe pagina Pachete."
+            cardVariant="refined"
             variant="light"
           />
         )}
 
-        <ServiceProcess steps={proc} />
-
         <ProjectsGrid service={service.key} variant="light" />
 
-        <WhySimplead variant="light" />
+        <WhySimplead variant={whyVariant} />
 
         <FaqSection
           items={service.faqs}
-          variant="tint"
+          variant={faqVariant}
           eyebrow="FAQ"
           title="Ce vor să știe "
           titleAccent="clienții noștri"
         />
 
-        {related.length > 0 && <RelatedServices items={related} variant="light" />}
-
-        <CtaNotch title={service.claim} subtitle="" />
+        <CtaNotch title={service.claim} subtitle={service.claimSub} />
       </>
     ) : (
-      <SupportServiceDetail support={support} />
+      <SupportServiceDetail support={support!} />
     )
   }
 </BaseLayout>

@@ -39,8 +39,8 @@ const KEYS = {
 const DEFAULTS: PublicSettings = {
   showPhone: false,
   whatsappNumber: '',
-  // Implicit: „Studii de caz" și „Ce spun clienții" sunt ascunse până sunt gata.
-  hiddenHomeSections: ['case-studies', 'testimonials'],
+  // Implicit: „Studii de caz" e ascunsă până e gata. „Ce spun clienții" e activă.
+  hiddenHomeSections: ['case-studies'],
   constructionPages: [],
   maintenanceMode: false,
 };

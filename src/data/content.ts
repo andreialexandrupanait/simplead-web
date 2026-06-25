@@ -511,24 +511,72 @@ export interface Testimonial {
   quote: string;
   author: string;
   company: string;
+  /** Inițiale pentru avatar-monogram (fallback când nu există poză). */
+  monogram?: string;
+  /** Aspectul cardului în grid-ul bento (homepage). */
+  variant?: 'featured' | 'electric' | 'dark';
+  /** URL poză opțional; gol = se folosește monogramul. */
+  photo?: string;
 }
 export const testimonials: Testimonial[] = [
+  // ── Testimoniale REALE (din proiecte existente). ──────────────────────────
   {
     quote:
       'Profesionalism, fairplay, pricepere, asumare: cuvinte ce definesc relația noastră cu Simplead. Suntem la al doilea proiect împreună, datorită implicării active și relaționării impecabile.',
     author: 'Ștefan Chelmu',
     company: 'Blitzstudio',
+    monogram: 'ȘC',
+    variant: 'featured',
   },
   {
     quote:
       'Le-am studiat portofoliul și am remarcat originalitatea și claritatea soluțiilor propuse. Proiectul a decurs conform așteptărilor, iar rezultatul a fost foarte apreciat de compania noastră. I-am recomandat cu mare încredere și altor colegi.',
     author: 'Silviu Costiniuc',
     company: 'Echipamente-medicale.ro',
+    monogram: 'SC',
+    variant: 'featured',
   },
   {
     quote: 'Simply professional. Trustworthy, honest and creative.',
     author: 'Bogdan Drăgan',
     company: 'FEAA Galați',
+    monogram: 'BD',
+    variant: 'electric',
+  },
+  // ⚠️ PLACEHOLDER — testimoniale FICTIVE, de înlocuit cu reale înainte de a le
+  // considera definitive. Nume/companii inventate; păstrate doar pentru a umple
+  // layout-ul bento. Vezi și convenția „de confirmat de Andrei" din homeCaseStudies.
+  {
+    quote:
+      'Comunicare clară de la brief la livrare. Am primit exact ce ne-am dorit, la timp și fără surprize.',
+    author: 'Andreea Marin', // PLACEHOLDER
+    company: 'Verdana Studio', // PLACEHOLDER
+    monogram: 'AM',
+    variant: 'dark',
+  },
+  {
+    quote:
+      'Site-ul nou ne-a adus mai multe cereri de ofertă în prima lună decât tot anul trecut. Recomand fără rezerve.',
+    author: 'Radu Popescu', // PLACEHOLDER
+    company: 'Nordis Construct', // PLACEHOLDER
+    monogram: 'RP',
+    variant: 'dark',
+  },
+  {
+    quote:
+      'Oameni cu care e ușor să lucrezi: ascultă, propun soluții și își respectă termenele.',
+    author: 'Ioana Dumitru', // PLACEHOLDER
+    company: 'Lumea Copiilor', // PLACEHOLDER
+    monogram: 'ID',
+    variant: 'dark',
+  },
+  {
+    quote:
+      'De la rebranding până la mentenanță lunară, ne-au fost alături la fiecare pas. Un partener de încredere.',
+    author: 'Mihai Ionescu', // PLACEHOLDER
+    company: 'Cofetăria Dulce', // PLACEHOLDER
+    monogram: 'MI',
+    variant: 'electric',
   },
 ];
 
@@ -725,17 +773,17 @@ export const whySimplead: WhyItem[] = [
   {
     icon: '<path d="M3 12h4l3 8 4-16 3 8h4"/>',
     title: 'Pornim de la date, nu de la „mie îmi place"',
-    body: 'Andrei are un doctorat în marketing și verifică deciziile cu eye-tracking și heatmaps (expoze.app) înainte ca ceva să ajungă public. Așa știm de ce funcționează, nu doar că arată bine.',
+    body: 'Nu ne bazăm pe gusturi. Ne uităm la cum se comportă oamenii cu adevărat înainte ca ceva să ajungă public — așa știm de ce funcționează, nu doar că arată bine.',
   },
   {
     icon: '<path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
-    title: 'Avem un ochi care nu doarme',
-    body: 'Aplicația noastră, SimpleAd Manager, urmărește non-stop uptime, securitate, viteză și backup. De cele mai multe ori prindem problema înainte s-o vezi tu sau clienții tăi.',
+    title: 'Prindem problema înainte s-o vezi',
+    body: 'Aplicația noastră, SimpleAd Manager, urmărește non-stop uptime, securitate, viteză și backup. De cele mai multe ori intervenim înainte ca tu sau clienții tăi să observați ceva.',
   },
   {
     icon: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
-    title: 'Un singur om de încredere, pentru tot',
-    body: 'Web, grafică, mentenanță și social — toate la aceeași echipă. Nu mai alergi între trei furnizori care nu vorbesc între ei și nu pierzi nimic pe drum.',
+    title: 'Suntem puțini — și asta e intenționat',
+    body: 'Web, grafică, mentenanță și social, toate la aceeași echipă restrânsă. Nu alergi între furnizori care nu vorbesc între ei și nu se pierde nimic pe drum.',
   },
   {
     icon: '<path d="M20 6L9 17l-5-5"/>',

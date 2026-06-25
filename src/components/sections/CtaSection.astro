@@ -12,32 +12,23 @@ interface Props {
   secondaryLabel?: string;
   showSecondary?: boolean;
 }
+// Structură unificată „text mare · text mic · un buton". Câmpurile pentru
+// eyebrow/buton secundar rămân în interfața Props (acceptate, dar neutilizate)
+// ca să nu pice paginile care încă le pasează.
 const {
   title = 'Gata să-ți pui afacerea pe roți?',
   subtitle = 'Hai să discutăm despre proiectul tău. Prima întâlnire e fără obligații.',
   href = '/contact',
   cta = 'Cere o ofertă',
-  kicker = 'Hai să începem',
-  secondaryHref = '/portofoliu',
-  secondaryLabel = 'Vezi portofoliu',
-  showSecondary = true,
 } = Astro.props;
 ---
 
 <section class="cta">
   <div class="site-container cta__inner" data-reveal>
-    <p class="cta__kicker">{kicker}</p>
     <h2 class="cta__title">{title}</h2>
     <p class="cta__sub">{subtitle}</p>
     <div class="cta__actions">
       <Button href={href} size="lg" withArrow>{cta}</Button>
-      {
-        showSecondary && (
-          <Button href={secondaryHref} size="lg" variant="outline" onDark>
-            {secondaryLabel}
-          </Button>
-        )
-      }
     </div>
   </div>
 </section>
@@ -68,26 +59,7 @@ const {
     margin-inline: auto;
     text-align: center;
   }
-  .cta__kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 400;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--cyan);
-  }
-  .cta__kicker::before {
-    content: '';
-    flex: none;
-    width: 30px;
-    height: 1px;
-    background: linear-gradient(90deg, currentColor, transparent);
-  }
   .cta__title {
-    margin-top: 16px;
     font-family: var(--font-display);
     font-weight: 700;
     font-size: clamp(2rem, 4.2vw, 3.2rem);

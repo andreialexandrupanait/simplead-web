@@ -1,25 +1,18 @@
 ---
 import SectionHeading from '@components/ui/SectionHeading.astro';
+import { testimonials, type Testimonial } from '@data/content';
 
-/** Testimoniale reale (preluate din proiectele existente). */
-const items = [
-  {
-    quote:
-      'Profesionalism, fairplay, pricepere, asumare: cuvinte ce definesc relația noastră cu Simplead. Suntem la al doilea proiect împreună, datorită implicării active și relaționării impecabile.',
-    name: 'Ștefan Chelmu',
-    role: 'Blitzstudio',
-  },
-  {
-    quote:
-      'Le-am studiat portofoliul și am remarcat originalitatea și claritatea soluțiilor propuse. Proiectul a decurs conform așteptărilor, iar rezultatul a fost foarte apreciat de compania noastră. I-am recomandat cu mare încredere și altor colegi.',
-    name: 'Silviu Costiniuc',
-    role: 'Echipamente-medicale.ro',
-  },
-  {
-    quote: 'Simply professional. Trustworthy, honest and creative.',
-    name: 'Bogdan Drăgan',
-    role: 'FEAA Galați',
-  },
+/**
+ * Testimoniale în layout „bento" (homepage). Cele 3 reale + câteva placeholder
+ * marcate în @data/content (de înlocuit cu reale). Distribuim manual pe 3
+ * coloane ca să controlăm ierarhia vizuală (carduri featured înalte pe laterale,
+ * carduri întunecate la mijloc), inspirat din designul de referință.
+ */
+const t = testimonials;
+const columns: Testimonial[][] = [
+  [t[0], t[2]].filter(Boolean), // featured înalt + albastru
+  [t[3], t[4], t[5]].filter(Boolean), // 3 carduri întunecate
+  [t[6], t[1]].filter(Boolean), // albastru + featured înalt
 ];
 ---
 
@@ -31,16 +24,33 @@ const items = [
       accent="direct cu noi"
       align="center"
     />
-    <div class="tst__grid" data-reveal-stagger>
+    <div class="tst__grid">
       {
-        items.map((t) => (
-          <figure class="tst__card">
-            <blockquote>„{t.quote}"</blockquote>
-            <figcaption>
-              <span class="tst__name">{t.name}</span>
-              <span class="tst__role">{t.role}</span>
-            </figcaption>
-          </figure>
+        columns.map((col) => (
+          <div class="tst__col">
+            {col.map((item) => (
+              <figure
+                class:list={['tst__card', `tst__card--${item.variant ?? 'dark'}`]}
+                data-reveal
+              >
+                {item.variant === 'featured' && <span class="tst__grid-bg" aria-hidden="true" />}
+                <blockquote>„{item.quote}"</blockquote>
+                <figcaption>
+                  <div class="tst__person">
+                    <span class="tst__name">{item.author}</span>
+                    <span class="tst__role">{item.company}</span>
+                  </div>
+                  <span class="tst__avatar" aria-hidden="true">
+                    {item.photo ? (
+                      <img src={item.photo} alt={item.author} loading="lazy" width="64" height="64" />
+                    ) : (
+                      <span>{item.monogram ?? item.author.slice(0, 2)}</span>
+                    )}
+                  </span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
         ))
       }
     </div>
@@ -58,25 +68,35 @@ const items = [
   .tst__grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    align-items: stretch;
     gap: 20px;
   }
+  .tst__col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  /* Cardul featured (cu grilă) crește ca să dea înălțimile diferite din bento. */
+  .tst__col .tst__card--featured {
+    flex: 1 1 auto;
+  }
+
   .tst__card {
+    position: relative;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 24px;
-    background: var(--canvas-soft);
     border: 1px solid var(--line);
-    border-radius: var(--r-md);
-    padding: 30px;
+    border-radius: var(--r-lg);
+    padding: 28px;
     transition:
       transform 0.22s var(--ease-snap),
-      border-color 0.2s var(--ease-snap),
       box-shadow 0.25s var(--ease-snap);
   }
   .tst__card:hover {
     transform: translateY(-4px);
-    border-color: var(--cyan);
     box-shadow: var(--sh-md);
   }
   @media (prefers-reduced-motion: reduce) {
@@ -87,28 +107,108 @@ const items = [
       transform: none;
     }
   }
+
+  /* Variante de fundal, mapate pe paleta proiectului. */
+  .tst__card--featured {
+    background: var(--canvas);
+    color: var(--ink);
+  }
+  .tst__card--electric {
+    background: var(--electric);
+    border-color: transparent;
+    color: #fff;
+  }
+  .tst__card--dark {
+    background: var(--ink);
+    border-color: var(--ink-soft);
+    color: #fff;
+  }
+
+  /* Grilă subtilă pe cardul featured (reproduce overlay-ul din referință). */
+  .tst__grid-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image:
+      linear-gradient(to right, var(--line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 55% at 50% 0%, #000 60%, transparent 100%);
+    mask-image: radial-gradient(ellipse 80% 55% at 50% 0%, #000 60%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .tst__card blockquote,
+  .tst__card figcaption {
+    position: relative;
+    z-index: 1;
+  }
   .tst__card blockquote {
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: 1.15rem;
-    line-height: 1.4;
+    font-size: 1.0625rem;
+    line-height: 1.45;
     letter-spacing: -0.01em;
-    color: var(--ink);
+  }
+  .tst__card--featured blockquote {
+    font-size: 1.15rem;
+  }
+
+  figcaption {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
   }
   .tst__name {
     display: block;
     font-weight: 700;
-    color: var(--ink);
   }
   .tst__role {
     display: block;
     margin-top: 2px;
     font-size: 0.88rem;
-    color: var(--muted);
+    opacity: 0.72;
   }
+
+  .tst__avatar {
+    flex: none;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--r-md);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+  }
+  .tst__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* Pastilă de avatar contrastantă per variantă. */
+  .tst__card--featured .tst__avatar {
+    background: linear-gradient(135deg, var(--electric), var(--cyan));
+    color: #fff;
+  }
+  .tst__card--electric .tst__avatar {
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+  }
+  .tst__card--dark .tst__avatar {
+    background: var(--ink-soft);
+    color: var(--cyan);
+  }
+
   @media (max-width: 900px) {
     .tst__grid {
       grid-template-columns: 1fr;
+    }
+    .tst__col .tst__card--featured {
+      flex: 0 0 auto;
     }
   }
 </style>
