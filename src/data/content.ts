@@ -3,42 +3,6 @@
  * Cifrele/valorile marcate TODO trebuie confirmate de client.
  */
 
-/** Bara de statistici din hero (4 cifre - valori din design, de confirmat). */
-export interface Stat {
-  value: string;
-  suffix?: string;
-  label: string;
-}
-export const stats: Stat[] = [
-  { value: '5', suffix: '+', label: 'Ani de experiență' }, // TODO: confirmă
-  { value: '120', suffix: '+', label: 'Proiecte finalizate' }, // TODO
-  { value: '60', suffix: '+', label: 'Clienți mulțumiți' }, // TODO
-  { value: '15', suffix: '+', label: 'Parteneri' }, // TODO
-];
-
-/** Pilonii din hero (3 puncte cu bifă). */
-export const heroPillars: string[] = [
-  'Marketing bazat pe date și neuromarketing',
-  'Grafică, web & branding, un singur partener',
-  'Decizii măsurate, nu presupuneri',
-];
-
-/** Serviciile afișate pe orbita din hero (8 noduri, în ordinea din design). */
-export interface OrbitNode {
-  label: string;
-  icon: string; // cheie în setul de iconițe orbitale
-}
-export const orbitNodes: OrbitNode[] = [
-  { label: 'Copywriting', icon: 'pen' },
-  { label: 'Branding', icon: 'globe' },
-  { label: 'Web Design', icon: 'window' },
-  { label: 'Social Media', icon: 'share' },
-  { label: 'SEO', icon: 'search' },
-  { label: 'Ads', icon: 'megaphone' },
-  { label: 'Foto-Video', icon: 'camera' },
-  { label: 'eCommerce', icon: 'cart' },
-];
-
 /** Diferențiator „Nu ghicim. Măsurăm." - cele 3 puncte. */
 export interface Differentiator {
   title: string;

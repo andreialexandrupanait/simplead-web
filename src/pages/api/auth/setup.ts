@@ -59,8 +59,10 @@ export const POST: APIRoute = async () => {
     return json({ ok: false, error: 'Crearea adminului a eșuat.' }, 500);
   }
 
+  // Nu logăm parola în clar (logurile sunt agregate/persistente). O întoarcem o
+  // singură dată, doar către cel care a declanșat bootstrap-ul, în răspunsul HTTP.
   if (generated) {
-    console.info(`[auth/setup] Admin creat: ${email} — parolă generată: ${password}`);
+    console.info(`[auth/setup] Admin creat: ${email} — parolă generată (în răspuns, nu în log).`);
   }
   return json({ ok: true, email, ...(generated ? { password } : {}) });
 };

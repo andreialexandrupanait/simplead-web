@@ -5,7 +5,8 @@ import MobileMenu from '@components/react/MobileMenu';
 import ServiceIcon from '@components/ui/ServiceIcon.astro';
 import { mainNav, servicesNav, supportNavItem, megaSupportLinks, megaPromo } from '@data/nav';
 import { site } from '@data/site';
-import { useTranslations, localeFromPath } from '@i18n/index';
+import { useTranslations, localeFromPath, EN_LIVE } from '@i18n/index';
+import LanguageSwitcher from '@components/ui/LanguageSwitcher.astro';
 
 interface Props {
   /** Navbar-ul stă peste hero (fundal transparent până la scroll). */
@@ -267,6 +268,7 @@ const isActive = (href: string) =>
     </nav>
 
     <div class="nav__cta">
+      {EN_LIVE && <LanguageSwitcher />}
       <Button href="/contact" size="md">{t.nav.cta}</Button>
     </div>
 
@@ -849,6 +851,17 @@ const isActive = (href: string) =>
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
   }
+</script>
+
+<script>
+  // Accesibilitate megameniu: deschis prin :focus-within la navigarea cu Tab;
+  // Escape îl închide (eliberează focusul din panou).
+  document.querySelectorAll<HTMLElement>('.nav__item--has-mega').forEach((item) => {
+    item.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      (document.activeElement as HTMLElement | null)?.blur();
+    });
+  });
 </script>
 
 <script>

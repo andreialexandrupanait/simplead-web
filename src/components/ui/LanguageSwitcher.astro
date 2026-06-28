@@ -1,0 +1,64 @@
+---
+/**
+ * Comutator de limbă RO/EN. Păstrează pagina curentă (ex. /servicii ↔ /en/servicii)
+ * folosind `localizePath`. Locale-ul activ e dedus din URL.
+ */
+import { localeFromPath, localizePath, type Locale } from '@i18n/index';
+
+const path = Astro.url.pathname;
+const current: Locale = localeFromPath(path);
+const opts: { code: Locale; label: string; href: string }[] = [
+  { code: 'ro', label: 'RO', href: localizePath(path, 'ro') },
+  { code: 'en', label: 'EN', href: localizePath(path, 'en') },
+];
+---
+
+<div class="lang" role="group" aria-label="Limbă / Language">
+  {
+    opts.map((o, i) => (
+      <>
+        {i > 0 && <span class="lang__sep" aria-hidden="true">/</span>}
+        <a
+          class:list={['lang__opt', current === o.code && 'is-active']}
+          href={o.href}
+          hreflang={o.code}
+          aria-current={current === o.code ? 'true' : undefined}
+        >
+          {o.label}
+        </a>
+      </>
+    ))
+  }
+</div>
+
+<style>
+  .lang {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .lang__opt {
+    color: var(--muted);
+    text-decoration: none;
+    padding: 2px 4px;
+    border-radius: var(--r-xs);
+    transition: color 0.16s ease;
+  }
+  .lang__opt:hover {
+    color: var(--ink);
+  }
+  .lang__opt.is-active {
+    color: var(--electric);
+  }
+  .lang__sep {
+    color: var(--line);
+  }
+  .lang__opt:focus-visible {
+    outline: 2px solid var(--electric);
+    outline-offset: 2px;
+  }
+</style>

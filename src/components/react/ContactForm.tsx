@@ -60,7 +60,7 @@ export default function ContactForm({ service: serviceProp, onSuccess, flat }: P
 
   if (status === 'success') {
     return (
-      <div className="cf-success">
+      <div className="cf-success" role="status" aria-live="polite">
         <div
           className="svc-ic"
           style={{ margin: '0 auto 18px', width: 56, height: 56 }}
@@ -177,7 +177,7 @@ export default function ContactForm({ service: serviceProp, onSuccess, flat }: P
       )}
 
       {status === 'error' && (
-        <div className="cf-error" style={{ marginBottom: 16 }}>
+        <div className="cf-error" role="alert" style={{ marginBottom: 16 }}>
           {serverError ?? 'Ceva n-a mers. Încearcă din nou sau sună-ne direct.'}
         </div>
       )}

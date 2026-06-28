@@ -6,6 +6,13 @@ export type Locale = 'ro' | 'en';
 export const defaultLocale: Locale = 'ro';
 export const locales: Locale[] = ['ro', 'en'];
 
+/**
+ * Comutator global pentru versiunea EN. Cât timp e `false`, nu se emit linkuri
+ * hreflang/alternate și nu apare comutatorul de limbă (paginile /en pot fi încă
+ * în lucru). Se trece pe `true` când toate paginile EN sunt gata și publicate.
+ */
+export const EN_LIVE = false;
+
 const dictionaries: Record<Locale, UiStrings> = { ro, en };
 
 /** Întoarce dicționarul de stringuri pentru un locale. */
@@ -31,6 +38,19 @@ export function resolveLocale(current: string | undefined): Locale {
  */
 export function localeFromPath(pathname: string): Locale {
   return resolveLocale(pathname.split('/')[1]);
+}
+
+/**
+ * Convertește un pathname în varianta pentru `locale`. RO (implicit) nu are
+ * prefix; EN trăiește sub `/en`. Idempotent: poate primi un path deja prefixat.
+ *   `/servicii`     + 'en' → `/en/servicii`
+ *   `/en/servicii`  + 'ro' → `/servicii`
+ *   `/`             + 'en' → `/en`
+ */
+export function localizePath(pathname: string, locale: Locale): string {
+  const stripped = pathname.replace(/^\/en(?=\/|$)/, '') || '/';
+  if (locale === 'en') return stripped === '/' ? '/en' : `/en${stripped}`;
+  return stripped;
 }
 
 export type { UiStrings };

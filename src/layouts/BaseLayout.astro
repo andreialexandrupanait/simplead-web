@@ -7,7 +7,7 @@ import CookieBanner from '@components/CookieBanner.astro';
 import ScrollTop from '@components/ui/ScrollTop.astro';
 import ContactDrawer from '@components/react/ContactDrawer';
 import { site } from '@data/site';
-import { localeFromPath } from '@i18n/index';
+import { localeFromPath, localizePath, EN_LIVE } from '@i18n/index';
 import { getPublicSettings, whatsappHref } from '@lib/server/public-settings';
 
 interface Props {
@@ -23,6 +23,8 @@ interface Props {
   activePath?: string;
   /** Dezactivează indexarea. */
   noindex?: boolean;
+  /** Tipul OpenGraph (website implicit; „article" pentru blog/portofoliu). */
+  ogType?: 'website' | 'article';
   /** JSON-LD specific paginii (Service, BlogPosting…), adăugat în @graph. */
   schema?: Record<string, unknown> | Record<string, unknown>[];
 }
@@ -35,6 +37,7 @@ const {
   navOverDark = false,
   activePath = Astro.url.pathname,
   noindex = false,
+  ogType = 'website',
   schema,
 } = Astro.props;
 
@@ -43,6 +46,14 @@ const fullTitle = title ? `${title} · ${site.name}` : `${site.name} · Grafică
 const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
 const ogImageUrl = new URL(ogImage, Astro.site ?? Astro.url.origin).href;
+
+// Alternate-uri de limbă (emise doar când versiunea EN e live, ca să nu trimitem
+// crawlerele spre pagini inexistente).
+const altBase = Astro.site ?? Astro.url.origin;
+const roAlt = new URL(localizePath(Astro.url.pathname, 'ro'), altBase).href;
+const enAlt = new URL(localizePath(Astro.url.pathname, 'en'), altBase).href;
+const ogLocale = locale === 'en' ? 'en_US' : 'ro_RO';
+const ogLocaleAlt = locale === 'en' ? 'ro_RO' : 'en_US';
 
 // Setări publice: telefonul apare doar dacă e activat din /admin/setari.
 const pub = await getPublicSettings();
@@ -133,6 +144,15 @@ const jsonLd = {
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
+    {
+      EN_LIVE && (
+        <>
+          <link rel="alternate" hreflang="ro" href={roAlt} />
+          <link rel="alternate" hreflang="en" href={enAlt} />
+          <link rel="alternate" hreflang="x-default" href={roAlt} />
+        </>
+      )
+    }
     <link rel="alternate" type="application/rss+xml" title="Simplead · Blog" href="/rss.xml" />
 
     <!-- Fonturi default site (Google Fonts) -->
@@ -144,13 +164,14 @@ const jsonLd = {
     />
 
     <!-- Open Graph / Twitter -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImageUrl} />
-    <meta property="og:locale" content="ro_RO" />
+    <meta property="og:locale" content={ogLocale} />
+    {EN_LIVE && <meta property="og:locale:alternate" content={ogLocaleAlt} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
@@ -165,6 +186,7 @@ const jsonLd = {
       /* GTM noscript scos intenționat: ar fi rulat fără consimțământ (GDPR).
         Trackerele pornesc doar după acceptul din CookieBanner. */
     }
+    <a href="#main" class="skip-link">Sari la conținut</a>
     <Navbar transparent={transparentNav} overDark={navOverDark} activePath={activePath} />
     <main id="main">
       {
@@ -202,7 +224,7 @@ const jsonLd = {
     <ScrollTop />
 
     <ContactDrawer
-      client:load
+      client:idle
       phone={pub.showPhone ? site.contact.phone : ''}
       phoneHref={pub.showPhone ? site.contact.phoneHref : ''}
       email={site.contact.email}
@@ -275,3 +297,33 @@ const jsonLd = {
     </script>
   </body>
 </html>
+
+<style>
+  /* Skip-link: ascuns vizual, apare la focus de tastatură (accesibilitate). */
+  .skip-link {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 1000;
+    padding: 10px 16px;
+    border-radius: var(--r-sm);
+    background: var(--ink);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transform: translateY(-150%);
+    transition: transform 0.18s var(--ease-snap, ease);
+  }
+  .skip-link:focus-visible {
+    transform: translateY(0);
+    outline: 2px solid var(--electric);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .skip-link {
+      transition: none;
+    }
+  }
+</style>
