@@ -9,7 +9,7 @@ interface Props {
   titleAccent: string;
   sub: string;
 }
-const { eyebrow = 'Servicii', title, titleAccent, sub } = Astro.props;
+const { title, titleAccent, sub } = Astro.props;
 const chev = '<path d="M9 6l6 6-6 6"/>';
 const check = '<path d="M20 6L9 17l-5-5"/>';
 const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
@@ -31,7 +31,6 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
         />
         <span class="cur">Servicii</span>
       </div>
-      <span class="svchub-hero__kicker">{eyebrow}</span>
       <h1 class="svchub-hero__title">{title}<span class="accent">{titleAccent}</span></h1>
       <p class="svchub-hero__sub">{sub}</p>
       <div class="svchub-hero__actions">
@@ -141,25 +140,6 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
   .crumb .cur {
     color: #fff;
     font-weight: 600;
-  }
-  .svchub-hero__kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 400;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--cyan);
-    margin-bottom: 12px;
-  }
-  .svchub-hero__kicker::before {
-    content: '';
-    flex: none;
-    width: 30px;
-    height: 1px;
-    background: linear-gradient(90deg, currentColor, transparent);
   }
   .svchub-hero__title {
     font-family: var(--font-display);

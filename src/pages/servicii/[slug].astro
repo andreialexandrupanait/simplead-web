@@ -41,11 +41,12 @@ const pageDesc = service ? service.summary : support!.cardSummary;
 // live. Când lipsește, mutăm fundalurile WhySimplead/FAQ ca să păstrăm alternanța
 // tint/light fără două secțiuni identice la rând.
 // Paginile bogate (cu `topics` — ex. consultanță) inserează AppShowcase (care
-// alternează intern) + „Modele de colaborare", deci au propria schemă de fundaluri.
+// alternează intern), deci au propria schemă de fundaluri: ServiceProcess (tint)
+// e urmat de WhySimplead light, ca să nu rămână două secțiuni tint lipite.
 const hasTopics = !!service?.topics;
 const hasProjects = service ? clientsForService(service.key).length > 0 : false;
-const whyVariant = hasTopics ? 'tint' : hasProjects ? 'tint' : 'light';
-const faqVariant = hasTopics ? 'light' : hasProjects ? 'light' : 'tint';
+const whyVariant = hasTopics ? 'light' : hasProjects ? 'tint' : 'light';
+const faqVariant = hasTopics ? 'tint' : hasProjects ? 'light' : 'tint';
 
 const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
 const serviceSchema = {

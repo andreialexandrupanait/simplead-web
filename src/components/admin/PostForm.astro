@@ -29,7 +29,7 @@ const hasErrors = Object.keys(errors).length > 0;
   {
     hasErrors && (
       <div class="admin-banner admin-banner--error">
-        Formularul are erori — verifică câmpurile marcate cu roșu.
+        Formularul are erori. Verifică câmpurile marcate cu roșu.
       </div>
     )
   }
@@ -80,7 +80,7 @@ const hasErrors = Object.keys(errors).length > 0;
       <label class="admin-field" style="margin:16px 0 0">
         <span
           >Descriere scurtă <small style="display:inline;color:var(--muted)"
-            >(apare în listă și în Google — max 300 caractere)</small
+            >(apare în listă și în Google, max 300 caractere)</small
           ></span
         >
         <textarea class="admin-textarea" name="description" style="min-height:58px"
@@ -133,7 +133,7 @@ const hasErrors = Object.keys(errors).length > 0;
       <label class="admin-field">
         <span>Categorie</span>
         <select class="admin-select" name="category">
-          <option value="" selected={!values.category}>— fără categorie —</option>
+          <option value="" selected={!values.category}>Fără categorie</option>
           {
             postCategories.map((c) => (
               <option value={c} selected={values.category === c}>
@@ -164,7 +164,7 @@ const hasErrors = Object.keys(errors).length > 0;
         >
       </h2>
       <label class="admin-field">
-        <span>Pe scurt — concluzii cheie</span>
+        <span>Pe scurt · concluzii cheie</span>
         <textarea
           class="admin-textarea"
           name="takeaways"

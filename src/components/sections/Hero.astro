@@ -15,10 +15,6 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
   <div class="hero__inner site-container">
     <!-- LEFT -->
     <div class="hero__text">
-      <div class="eyebrow">
-        Grafică &amp; marketing digital<span class="line"></span>
-      </div>
-
       <h1>Facem lucrurile simple. <span class="grad-text">Și le bazăm pe date.</span></h1>
 
       <p class="sub">
@@ -141,34 +137,6 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
     gap: 32px;
   }
 
-  .eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    color: rgba(233, 238, 250, 0.82);
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-  .eyebrow .line {
-    position: relative;
-    width: 70px;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
-  }
-  .eyebrow .line::after {
-    content: '';
-    position: absolute;
-    right: 14px;
-    top: -3px;
-    width: 7px;
-    height: 7px;
-    border-top: 1px solid rgba(255, 255, 255, 0.55);
-    border-right: 1px solid rgba(255, 255, 255, 0.55);
-    transform: rotate(45deg);
-  }
-
   .hero__text :global(h1) {
     font-family: var(--font-display);
     font-weight: 700;
@@ -229,7 +197,7 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
   .phone__ic {
     width: 52px;
     height: 52px;
-    border-radius: 12px;
+    border-radius: 5px;
     background: var(--color-yellow, #f5d93f);
     display: flex;
     align-items: center;

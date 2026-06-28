@@ -31,8 +31,8 @@ const {
   target,
 } = Astro.props;
 
-// Doar variantele „solide” au baza fizică de dedesubt.
-const hasBase = variant === 'primary' || variant === 'yellow';
+// Doar „yellow” mai are baza fizică de dedesubt (efectul de apăsare). Primary e clasic.
+const hasBase = variant === 'yellow';
 ---
 
 <a
@@ -97,104 +97,103 @@ const hasBase = variant === 'primary' || variant === 'yellow';
   }
 
   /* ============================================================
-     DEPTH · NOTCH — primary & yellow
+     YELLOW — DEPTH · NOTCH (corp care „se apasă")
      ============================================================ */
-  .btn--primary,
   .btn--yellow {
     margin-bottom: 6px;
   }
-  .btn--primary .btn__base,
-  .btn--primary .btn__face,
   .btn--yellow .btn__base,
   .btn--yellow .btn__face {
     border-radius: 2px;
   }
-  .btn--primary .btn__base,
   .btn--yellow .btn__base {
     position: absolute;
     inset: 0;
     transform: translateY(6px);
     z-index: 0;
+    background: #cdaf1c;
   }
-  .btn--primary .btn__face,
   .btn--yellow .btn__face {
     z-index: 1;
+    background: var(--signal);
+    color: var(--ink);
     transition: transform 0.1s var(--ease-snap);
   }
-  .btn--primary:hover .btn__face,
   .btn--yellow:hover .btn__face {
     transform: translateY(3px);
   }
-  .btn--primary:active .btn__face,
   .btn--yellow:active .btn__face {
     transform: translateY(6px);
   }
 
-  /* Primary: electric face, bază albastră închisă */
+  /* ============================================================
+     PRIMARY — buton plin stil Stripe (ridicare la hover + umbră moale)
+     ============================================================ */
   .btn--primary .btn__face {
     background: var(--electric);
     color: #fff;
+    border-radius: var(--r-sm);
+    box-shadow:
+      0 4px 6px rgba(50, 50, 93, 0.11),
+      0 1px 3px rgba(0, 0, 0, 0.08);
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease,
+      background 0.15s ease;
   }
-  .btn--primary .btn__base {
-    background: #0a3bd0;
+  .btn--primary:hover .btn__face {
+    background: #1a86ff;
+    transform: translateY(-1px);
+    box-shadow:
+      0 7px 14px rgba(50, 50, 93, 0.12),
+      0 3px 6px rgba(0, 0, 0, 0.1);
   }
-
-  /* Yellow: accent signal, bază galben închis */
-  .btn--yellow .btn__face {
-    background: var(--signal);
-    color: var(--ink);
-  }
-  .btn--yellow .btn__base {
-    background: #cdaf1c;
+  .btn--primary:active .btn__face {
+    transform: translateY(0);
+    box-shadow:
+      0 2px 4px rgba(50, 50, 93, 0.1),
+      0 1px 2px rgba(0, 0, 0, 0.08);
   }
 
   /* ============================================================
-     KEYLINE · DUO — outline (secundar)
+     OUTLINE — buton secundar stil Stripe (alb, chenar subtil, ridicare)
      ============================================================ */
   .btn--outline .btn__face {
-    border-radius: 2px;
-    background: transparent;
+    border-radius: var(--r-sm);
+    background: #fff;
     color: var(--ink);
-    box-shadow: inset 0 0 0 1.5px var(--line);
-    transition: color 0.18s var(--ease-snap);
-  }
-  .btn--outline .btn__face::before,
-  .btn--outline .btn__face::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 2.5px;
-    background: var(--electric);
-    transform: scaleX(0);
-    transition: transform 0.32s var(--ease-snap);
-    z-index: 2;
-  }
-  .btn--outline .btn__face::before {
-    top: 0;
-  }
-  .btn--outline .btn__face::after {
-    bottom: 0;
+    box-shadow:
+      inset 0 0 0 1px var(--line),
+      0 4px 6px rgba(50, 50, 93, 0.07),
+      0 1px 3px rgba(0, 0, 0, 0.06);
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease,
+      color 0.15s ease;
   }
   .btn--outline:hover .btn__face {
     color: var(--electric);
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 0 0 1px #d7dde6,
+      0 7px 14px rgba(50, 50, 93, 0.1),
+      0 3px 6px rgba(0, 0, 0, 0.08);
   }
-  .btn--outline:hover .btn__face::before,
-  .btn--outline:hover .btn__face::after {
-    transform: scaleX(1);
+  .btn--outline:active .btn__face {
+    transform: translateY(0);
   }
 
-  /* Outline pe fundal dark */
+  /* Secundar pe fundal dark: translucid, text alb */
   .btn--outline.btn--on-dark .btn__face {
+    background: rgba(255, 255, 255, 0.06);
     color: #fff;
-    box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.24);
-  }
-  .btn--outline.btn--on-dark .btn__face::before,
-  .btn--outline.btn--on-dark .btn__face::after {
-    background: var(--cyan);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
   }
   .btn--outline.btn--on-dark:hover .btn__face {
-    color: var(--cyan);
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.34);
   }
 
   /* ============================================================
@@ -226,12 +225,11 @@ const hasBase = variant === 'primary' || variant === 'yellow';
 
   @media (prefers-reduced-motion: reduce) {
     .btn__face,
-    .btn__arrow,
-    .btn--outline .btn__face::before,
-    .btn--outline .btn__face::after {
+    .btn__arrow {
       transition: none;
     }
     .btn--primary:hover .btn__face,
+    .btn--outline:hover .btn__face,
     .btn--yellow:hover .btn__face,
     .btn--primary:active .btn__face,
     .btn--yellow:active .btn__face {

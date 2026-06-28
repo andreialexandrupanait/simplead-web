@@ -1,7 +1,7 @@
 /**
  * Catalog de servicii tehnice/suport (catalogul de pe /servicii, sub piloni).
  * Paginile de detaliu folosesc EXACT șablonul paginilor de servicii pilon
- * (ServiceHero + CapabilitiesGrid + ServiceProcess + FaqSection + CtaNotch),
+ * (ServiceHero + CapabilitiesGrid + ServiceProcess + WhySimplead + FaqSection + CtaNotch),
  * ca să fie 100% native site-ului.
  *
  * ➕ CUM ADAUGI UN SERVICIU NOU:
@@ -60,7 +60,7 @@ export const supportCategories: { id: SupportCategoryId; label: string; sub: str
   {
     id: 'web-hosting',
     label: 'Site & Web',
-    sub: 'Site-ul tău reparat, mutat și construit — fără bătăi de cap tehnice.',
+    sub: 'Site-ul tău reparat, mutat și construit, fără să te lupți cu partea tehnică.',
   },
   {
     id: 'securitate-email',
@@ -114,7 +114,7 @@ export const supportServices: SupportService[] = [
     icon: 'support',
     image: IMG('photo-1551434678-e076c223a692'),
     heroTitle: 'Suport WordPress, ',
-    heroTitleAccent: 'fără bătăi de cap.',
+    heroTitleAccent: 'reparat repede.',
     heroSub:
       'Când WordPress-ul se blochează în cel mai prost moment, intervenim noi: diagnosticăm problema, o reparăm și îți explicăm ce s-a întâmplat. Tu te ții de afacere, noi de site.',
     capHead: {
@@ -155,12 +155,12 @@ export const supportServices: SupportService[] = [
       {
         n: '01',
         title: 'Ne dai contextul și accesul',
-        body: 'Îmi spui domeniul, ce s-a întâmplat și de când, plus accesul de care e nevoie (admin, hosting sau FTP).',
+        body: 'Ne spui domeniul, ce s-a întâmplat și de când, plus accesul de care e nevoie (admin, hosting sau FTP).',
       },
       {
         n: '02',
         title: 'Ne apucăm de rezolvat',
-        body: 'Găsim cauza și o reparăm. Poți urmări pe ecran sau ne lași să lucrăm și revenim când e gata.',
+        body: 'Găsim cauza, o reparăm și testăm tot înainte să-ți dăm de veste că e gata.',
       },
       {
         n: '03',
@@ -216,7 +216,7 @@ export const supportServices: SupportService[] = [
       {
         title: 'Mutare completă',
         icon: SUPPORT_ICON.refresh,
-        desc: 'Tot ce ține de site se mută, nu doar fișierele.',
+        desc: 'Mutăm tot ce ține de site, până la ultimul detaliu.',
         items: ['Fișiere și bază de date', 'Emailuri de pe domeniu', 'Conținut și media'],
       },
       {
@@ -282,7 +282,7 @@ export const supportServices: SupportService[] = [
     heroTitle: 'Site-uri Astro, ',
     heroTitleAccent: 'construite cu AI.',
     heroSub:
-      'Site-uri statice rapide, sigure și ieftine de găzduit, construite pe Astro. Folosim AI în fluxul de lucru ca să ajungem mai repede la rezultat, dar structura și deciziile de design rămân la noi.',
+      'Site-uri statice construite pe Astro: se încarcă instant și sunt ieftine de găzduit. Folosim AI în fluxul de lucru ca să ajungem mai repede la rezultat, dar structura și deciziile de design rămân la noi.',
     capHead: {
       eyebrow: 'Ce acoperim',
       title: 'Un site rapid, ',
@@ -330,7 +330,7 @@ export const supportServices: SupportService[] = [
       {
         q: 'Ce e Astro și de ce un site static?',
         body: [
-          'Astro construiește site-uri statice: pagini gata făcute, foarte rapide, sigure și ieftine de găzduit. Ideal pentru site-uri de prezentare, blog și landing.',
+          'Astro construiește site-uri statice: pagini gata făcute, care se încarcă instant și sunt ieftine de găzduit. Ideal pentru site-uri de prezentare, blog și landing.',
         ],
       },
       {

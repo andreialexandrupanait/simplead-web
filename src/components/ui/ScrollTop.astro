@@ -1,0 +1,134 @@
+---
+/**
+ * Buton „înapoi sus" care e și indicator de progres al derulării:
+ * inelul circular din jurul săgeții se umple pe măsură ce derulezi pagina.
+ * Apare după ce ai derulat puțin; click = scroll lin spre sus.
+ */
+---
+
+<button class="scrolltop" type="button" aria-label="Înapoi sus" title="Înapoi sus" data-scrolltop hidden>
+  <svg class="scrolltop__ring" viewBox="0 0 44 44" aria-hidden="true">
+    <circle class="scrolltop__track" cx="22" cy="22" r="20"></circle>
+    <circle class="scrolltop__bar" cx="22" cy="22" r="20"></circle>
+  </svg>
+  <svg
+    class="scrolltop__arrow"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.4"
+    aria-hidden="true"
+  >
+    <path d="M12 19V5M6 11l6-6 6 6" stroke-linecap="round" stroke-linejoin="round"></path>
+  </svg>
+</button>
+
+<style>
+  .scrolltop {
+    position: fixed;
+    right: clamp(16px, 3vw, 28px);
+    bottom: clamp(16px, 3vw, 28px);
+    z-index: 60;
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: var(--sh-md);
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    transform: translateY(12px) scale(0.9);
+    pointer-events: none;
+    transition:
+      opacity 0.25s var(--ease-snap),
+      transform 0.25s var(--ease-snap),
+      color 0.2s var(--ease-snap),
+      box-shadow 0.2s var(--ease-snap);
+  }
+  .scrolltop.is-visible {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+  .scrolltop:hover {
+    color: var(--electric);
+    box-shadow: var(--sh-lg);
+  }
+  .scrolltop:focus-visible {
+    outline: 2px solid var(--electric);
+    outline-offset: 3px;
+  }
+
+  .scrolltop__ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+  .scrolltop__track {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 2.5;
+  }
+  .scrolltop__bar {
+    fill: none;
+    stroke: var(--electric);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-dasharray: var(--circ, 126);
+    stroke-dashoffset: var(--circ, 126);
+    transition: stroke-dashoffset 0.1s linear;
+  }
+  .scrolltop__arrow {
+    position: relative;
+    width: 19px;
+    height: 19px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scrolltop,
+    .scrolltop__bar {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-scrolltop]');
+  if (btn) {
+    const bar = btn.querySelector<SVGCircleElement>('.scrolltop__bar');
+    const circ = 2 * Math.PI * 20;
+    btn.style.setProperty('--circ', circ.toFixed(1));
+    btn.hidden = false;
+
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const st = window.scrollY || document.documentElement.scrollTop;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = max > 0 ? Math.min(1, st / max) : 0;
+      if (bar) bar.style.strokeDashoffset = (circ * (1 - progress)).toFixed(1);
+      btn.classList.toggle('is-visible', st > 400);
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
+
+    btn.addEventListener('click', () => {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  }
+</script>

@@ -147,7 +147,7 @@ export default function MediaPicker({ onPick, onClose }: Props) {
         <div className="admin-media-grid" style={{ overflowY: 'auto' }}>
           {entries.length === 0 && !busy && (
             <p style={{ color: 'var(--muted)', fontSize: '0.9rem', gridColumn: '1/-1' }}>
-              Nicio imagine încă — încarcă prima.
+              Nicio imagine încă. Încarcă prima.
             </p>
           )}
           {entries.map((e) => (

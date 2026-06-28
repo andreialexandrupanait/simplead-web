@@ -57,7 +57,7 @@ const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
     {
       query && (
         <p class="blog-list__note">
-          Rezultate pentru „{query}" — {items.length} {items.length === 1 ? 'articol' : 'articole'}.{' '}
+          Rezultate pentru „{query}": {items.length} {items.length === 1 ? 'articol' : 'articole'}.{' '}
           <a href="/blog">Resetează</a>
         </p>
       )

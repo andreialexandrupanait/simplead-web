@@ -13,7 +13,6 @@ interface Props {
 }
 
 const {
-  eyebrow,
   title,
   accent,
   subtitle,
@@ -33,13 +32,6 @@ const t = renderTitle();
 ---
 
 <div class:list={['sh', align === 'center' && 'sh--center', onDark && 'sh--dark', className]}>
-  {
-    eyebrow && (
-      <div class="sh__kicker">
-        <span>{eyebrow}</span>
-      </div>
-    )
-  }
   <h2 class="sh__title">
     {t.before}{t.accent && <span class="sh__accent">{t.accent}</span>}{t.after}
   </h2>
@@ -53,34 +45,6 @@ const t = renderTitle();
   .sh--center {
     margin-inline: auto;
     text-align: center;
-  }
-  .sh__kicker {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-    color: var(--electric);
-  }
-  .sh--dark .sh__kicker {
-    color: var(--cyan);
-  }
-  .sh--center .sh__kicker {
-    justify-content: center;
-  }
-  .sh__kicker::before {
-    content: '';
-    flex: none;
-    width: 30px;
-    height: 1px;
-    background: linear-gradient(90deg, currentColor, transparent);
-  }
-  .sh__kicker span {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 400;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: inherit;
   }
   .sh__title {
     font-family: var(--font-display);

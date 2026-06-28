@@ -40,7 +40,7 @@ export const resources: Resource[] = [
     slug: 'checklist-mentenanta',
     title: 'Checklist: mentenanța lunară a site-ului',
     description:
-      'Lista exactă de verificări lunare ca site-ul să rămână rapid, sigur și fără surprize — aceeași pe care o folosim pentru clienții noștri. [confirmă: conținutul final]',
+      'Lista exactă de verificări lunare ca site-ul să rămână rapid, sigur și fără surprize, aceeași pe care o folosim pentru clienții noștri. [confirmă: conținutul final]',
     kind: 'checklist',
     access: 'gated',
     status: 'coming-soon',

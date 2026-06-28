@@ -9,7 +9,6 @@ const { source = 'blog-article' } = Astro.props;
 
 <aside class="nl-inline" data-newsletter-inline>
   <div class="nl-inline__text">
-    <p class="nl-inline__kicker">Newsletter</p>
     <h3 class="nl-inline__title">Idei utile de marketing, o dată pe lună</h3>
     <p class="nl-inline__sub">
       Fără spam. Doar lucruri pe care le poți aplica. Te poți dezabona oricând.
@@ -43,25 +42,6 @@ const { source = 'blog-article' } = Astro.props;
     background: linear-gradient(135deg, #f1f6ff 0%, #f5f7fa 100%);
     border: 1px solid var(--line);
     border-radius: var(--r-lg);
-  }
-  .nl-inline__kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 400;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--electric);
-    margin: 0 0 8px;
-  }
-  .nl-inline__kicker::before {
-    content: '';
-    flex: none;
-    width: 30px;
-    height: 1px;
-    background: linear-gradient(90deg, currentColor, transparent);
   }
   .nl-inline__title {
     font-family: var(--font-display);

@@ -2,11 +2,38 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import PageHeader from '@components/sections/PageHeader.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
+import Button from '@components/ui/Button.astro';
 
 export const prerender = false;
 
 const metaDescription =
   'Simplead e un studio mic de grafică și marketing digital condus de Andrei Panait, doctor în marketing. Lucrăm pe date și neuromarketing, cu colaboratori activați la nevoie.';
+
+// Iconițe (inner SVG, stroke).
+const ICON = {
+  eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  chart: '<path d="M3 3v18h18"/><path d="M7 14l3-4 3 2 4-6"/>',
+  check: '<path d="M20 6L9 17l-5-5"/>',
+  shield: '<path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
+  hand: '<path d="M11 11V6.5a1.5 1.5 0 0 1 3 0V11M14 11V5.5a1.5 1.5 0 0 1 3 0V13a6 6 0 0 1-6 6h-1.5a5 5 0 0 1-3.6-1.5L4 14.5s1-1 2.5-.3L8 15V6.5a1.5 1.5 0 0 1 3 0V11"/>',
+  star: '<path d="M12 3l2.7 5.5 6 .9-4.3 4.2 1 6-5.4-2.8L6.6 19.6l1-6L3.3 9.4l6-.9z"/>',
+};
+
+// Logo-uri reale de clienți/parteneri (descărcate local în public/parteneri).
+const clients = [
+  { src: '/parteneri/feaa-galati.png', name: 'FEAA Galați' },
+  { src: '/parteneri/m1-med-beauty.png', name: 'M1 Med Beauty' },
+  { src: '/parteneri/matematica-interactiva.png', name: 'Matematica Interactivă' },
+  { src: '/parteneri/priority-clinic.png', name: 'Priority Clinic' },
+  { src: '/parteneri/simona-halep.png', name: 'Hotel Simona Halep' },
+  { src: '/parteneri/fastrackids.webp', name: 'FasTrackKids' },
+  { src: '/parteneri/roll-shape.png', name: 'Roll Shape' },
+  { src: '/parteneri/premium-stone.png', name: 'Premium Stone' },
+  { src: '/parteneri/georgiana-ungureanu.png', name: 'Georgiana Ungureanu' },
+  { src: '/parteneri/ichb.png', name: 'ICHB' },
+  { src: '/parteneri/isor.png', name: 'ISOR' },
+  { src: '/parteneri/florin-pasat.png', name: 'Florin Pasat' },
+];
 ---
 
 <BaseLayout title="Despre" description={metaDescription} transparentNav={true} navOverDark={true}>
@@ -19,26 +46,50 @@ const metaDescription =
   />
 
   {/* Cum gândim */}
-  <section class="section section--light ab-sec">
-    <div class="ab-narrow container">
-      <span class="sec-eyebrow">Cum gândim</span>
-      <h2 class="sec-title">Mai puțin noroc, <span class="g">mai multă metodă.</span></h2>
-      <div class="ab-body">
-        <p>
-          Cel mai frecvent motiv pentru care un site sau o campanie nu funcționează nu e bugetul mic
-          sau piața grea. E că deciziile au fost luate pe instinct, pe tendințe sau pe „mi-a plăcut
-          mie".
-        </p>
-        <p>
-          Noi pornim de altundeva. Andrei are un doctorat în marketing și lucrează cu instrumente de
-          neuromarketing: eye-tracking și heatmaps prin expoze.app, ca să vadă unde se duce atenția
-          oamenilor înainte ca un material să fie publicat, nu după.
-        </p>
-        <p>
-          Asta nu înseamnă că ignorăm estetica în favoarea graficelor. Înseamnă că, atunci când un
-          design arată bine și funcționează, știm de ce.
-        </p>
+  <section class="section section--light ab-sec ab-pattern">
+    <div class="container ab-split">
+      <div class="ab-split__copy" data-reveal>
+        <h2 class="sec-title">Mai puțin noroc, <span class="g">mai multă metodă.</span></h2>
+        <div class="ab-body">
+          <p>
+            Cel mai frecvent motiv pentru care un site sau o campanie nu funcționează nu e bugetul
+            mic sau piața grea. E că deciziile au fost luate pe instinct, pe tendințe sau pe „mi-a
+            plăcut mie".
+          </p>
+          <p>
+            Noi pornim de altundeva. Andrei are un doctorat în marketing și lucrează cu instrumente
+            de neuromarketing: eye-tracking și heatmaps prin expoze.app, ca să vadă unde se duce
+            atenția oamenilor înainte ca un material să fie publicat, nu după.
+          </p>
+          <p>
+            Asta nu înseamnă că ignorăm estetica în favoarea graficelor. Înseamnă că, atunci când un
+            design arată bine și funcționează, știm de ce.
+          </p>
+        </div>
       </div>
+
+      <aside class="ab-method" data-reveal>
+        <ul>
+          <li class="ab-method__row">
+            <p class="ab-method__head">Pornim de la cum decid oamenii</p>
+            <p class="ab-method__sub">
+              <span>→</span> Neuroștiința e fundamentul, nu un pas de verificare la final.
+            </p>
+          </li>
+          <li class="ab-method__row">
+            <p class="ab-method__head">Validăm cu date reale</p>
+            <p class="ab-method__sub">
+              <span>→</span> Eye-tracking și heatmaps prin expoze.app, plus Analytics.
+            </p>
+          </li>
+          <li class="ab-method__row">
+            <p class="ab-method__head">Publicăm ce funcționează</p>
+            <p class="ab-method__sub">
+              <span>→</span> Verificăm înainte de lansare, nu după ce s-a cheltuit bugetul.
+            </p>
+          </li>
+        </ul>
+      </aside>
     </div>
   </section>
 
@@ -50,7 +101,6 @@ const metaDescription =
     <div class="container">
       <div class="about2">
         <div class="about-body about2__story" data-reveal>
-          <span class="sec-eyebrow">Cum lucrăm</span>
           <h2 class="sec-title">
             Suficient de mici cât să-ți pese de proiect.
             <span class="g">Suficient de capabili cât să-l ducem la capăt.</span>
@@ -72,7 +122,6 @@ const metaDescription =
         </div>
 
         <div class="about2__team" data-reveal>
-          <span class="sec-eyebrow">Echipa</span>
           <div class="team">
             <article class="team-card">
               <div class="team-photo" style="background:#eef1f8;">
@@ -97,49 +146,70 @@ const metaDescription =
   </section>
 
   {/* Ce aducem în plus */}
-  <section class="section section--light ab-sec">
-    <div class="ab-narrow container">
-      <span class="sec-eyebrow">Ce aducem în plus</span>
-      <h2 class="sec-title">Neuromarketingul nu e un <span class="g">buzzword la noi.</span></h2>
-      <div class="ab-body">
-        <p>
-          Există o diferență între a spune că folosești neuromarketing și a-l folosi efectiv. Noi
-          facem al doilea.
-        </p>
-        <p>
-          Prin expoze.app rulăm teste predictive de eye-tracking pe materialele clienților: reclame,
-          pagini web, postări. Vedem cu date unde se duce atenția, ce e ignorat și ce trebuie mutat.
-          E o unealtă concretă, nu o metodologie de prezentat în pitch.
-        </p>
-        <p>
-          Andrei predă și în mediul academic, ceea ce înseamnă că e la curent cu cercetarea reală,
-          nu cu articolele de marketing de pe LinkedIn.
-        </p>
+  <section class="section section--light ab-sec ab-pattern">
+    <div class="container ab-split ab-split--rev">
+      <div class="ab-split__copy" data-reveal>
+        <h2 class="sec-title">Neuromarketingul nu e un <span class="g">buzzword la noi.</span></h2>
+        <div class="ab-body">
+          <p>
+            Există o diferență între a spune că folosești neuromarketing și a-l folosi efectiv. Noi
+            facem al doilea.
+          </p>
+          <p>
+            Prin expoze.app rulăm teste predictive de eye-tracking pe materialele clienților:
+            reclame, pagini web, postări. Vedem cu date unde se duce atenția, ce e ignorat și ce
+            trebuie mutat. E o unealtă concretă, nu o metodologie de prezentat în pitch.
+          </p>
+          <p>
+            Andrei predă și în mediul academic, ceea ce înseamnă că e la curent cu cercetarea reală,
+            nu cu articolele de marketing de pe LinkedIn.
+          </p>
+        </div>
+        <div class="ab-cta">
+          <Button href="/servicii" variant="primary" size="md" withArrow>Vezi serviciile</Button>
+        </div>
       </div>
+
+      <figure class="ab-shot" data-reveal>
+        <span class="ab-shot__tag">expoze.app · heatmap</span>
+        <img src="/exemplu-heatmap.png" alt="Hartă de atenție (heatmap) peste un material real" width="381" height="383" loading="lazy" />
+        <figcaption>Eye-tracking real: vedem unde se duce atenția, cu date, nu cu presupuneri.</figcaption>
+      </figure>
     </div>
   </section>
 
   {/* Cu cine am lucrat */}
   <section class="section section--tint ab-sec">
-    <div class="ab-narrow container">
-      <span class="sec-eyebrow">Cu cine am lucrat</span>
-      <h2 class="sec-title">
-        Afaceri locale, instituții, <span class="g">proiecte internaționale.</span>
-      </h2>
-      <div class="ab-body">
-        <p>
-          Am lucrat cu afaceri mici la început de drum și cu instituții de dimensiuni mai mari: FEAA
-          Galați, Universitatea „Dunărea de Jos", clienți din sectorul medical, turism și servicii.
-          Fiecare proiect a primit același nivel de atenție, indiferent de buget.
-        </p>
+    <div class="container ab-split">
+      <div class="ab-split__copy" data-reveal>
+        <h2 class="sec-title">
+          Afaceri locale, instituții, <span class="g">proiecte internaționale.</span>
+        </h2>
+        <div class="ab-body">
+          <p>
+            Am lucrat cu afaceri mici la început de drum și cu instituții de dimensiuni mai mari:
+            FEAA Galați, Universitatea „Dunărea de Jos", clienți din sectorul medical, turism și
+            servicii. Fiecare proiect a primit același nivel de atenție, indiferent de buget.
+          </p>
+        </div>
+        <figure class="ab-quote">
+          <blockquote>„Simply professional. Trustworthy, honest and creative.”</blockquote>
+          <figcaption>
+            <b>Bogdan Drăgan</b>
+            <span>FEAA Galați</span>
+          </figcaption>
+        </figure>
       </div>
-      <figure class="ab-quote">
-        <blockquote>„Simply professional. Trustworthy, honest and creative.”</blockquote>
-        <figcaption>
-          <b>Bogdan Drăgan</b>
-          <span>FEAA Galați</span>
-        </figcaption>
-      </figure>
+
+      <div class="ab-logos" data-reveal>
+        {
+          clients.map((c) => (
+            <span class="ab-logo">
+              <img src={c.src} alt={c.name} loading="lazy" />
+            </span>
+          ))
+        }
+      </div>
     </div>
   </section>
 
@@ -149,13 +219,12 @@ const metaDescription =
     <div class="container">
       <div class="trust__grid">
         <div class="trust__copy" data-reveal>
-          <span class="sec-eyebrow">Partener de încredere</span>
           <h2 class="trust__title">
             Colaborări care țin de ani, <span class="g">nu de luni</span>
           </h2>
           <p class="trust__sub">
             Avem clienți pe mentenanță care sunt alături de noi de <b>peste 5 ani</b>. Printre ei,
-            <b>doi parteneri principali</b> ne trimit constant proiecte noi — pentru că rezultatele se
+            <b>doi parteneri principali</b> ne trimit constant proiecte noi, pentru că rezultatele se
             văd în timp.
           </p>
           <div class="trust__stats">
@@ -210,17 +279,27 @@ const metaDescription =
   </section>
 
   {/* Ce credem */}
-  <section class="section section--light ab-sec">
-    <div class="ab-narrow container">
-      <span class="sec-eyebrow">Ce credem</span>
-      <h2 class="sec-title">Câteva lucruri în care <span class="g">credem ferm.</span></h2>
-      <div class="ab-body">
-        <p>
-          Că un client care înțelege ce primește e un client mai bun. Că onestitatea la început,
-          inclusiv „asta nu e specialitatea noastră", costă mai puțin decât o dezamăgire la final.
-          Că un proiect mic tratat serios face mai mult decât un proiect mare tratat ca număr de
-          factură.
-        </p>
+  <section class="section section--light ab-sec ab-pattern ab-beliefs">
+    <div class="container">
+      <h2 class="sec-title center" data-reveal>
+        Câteva lucruri în care <span class="g">credem ferm.</span>
+      </h2>
+      <div class="beliefs" data-reveal-stagger>
+        <article class="belief">
+          <span class="belief__ic" set:html={`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON.eye}</svg>`} />
+          <h3>Un client informat e un client mai bun</h3>
+          <p>Îți explicăm ce primești și de ce, fără jargon. Deciziile bune se iau cu lucrurile pe masă.</p>
+        </article>
+        <article class="belief">
+          <span class="belief__ic" set:html={`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON.shield}</svg>`} />
+          <h3>Onestitatea la început costă mai puțin</h3>
+          <p>Inclusiv un „asta nu e specialitatea noastră" spus din start, în loc de o dezamăgire la final.</p>
+        </article>
+        <article class="belief">
+          <span class="belief__ic" set:html={`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON.star}</svg>`} />
+          <h3>Un proiect mic, tratat serios</h3>
+          <p>Face mai mult decât un proiect mare tratat ca un simplu număr de factură.</p>
+        </article>
       </div>
     </div>
   </section>
@@ -254,6 +333,228 @@ const metaDescription =
     font-size: 1.06rem;
     line-height: 1.65;
     color: var(--muted);
+  }
+
+  /* ===== Layout 2 coloane (text + media) ===== */
+  .ab-split {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: clamp(36px, 5vw, 72px);
+    align-items: start;
+  }
+  .ab-split__copy {
+    min-width: 0;
+  }
+  .ab-cta {
+    margin-top: 28px;
+  }
+  /* secțiunea cu heatmap-ul: imaginea (mai mică) stă în coloana îngustă, ca
+     să nu rămână gol mare în jurul ei. */
+  .ab-split--rev {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  }
+  .ab-split--rev .ab-split__copy {
+    order: 2;
+  }
+
+  /* pattern subtil de fundal (secțiuni light) */
+  .ab-pattern {
+    position: relative;
+    overflow: hidden;
+  }
+  .ab-pattern::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image:
+      linear-gradient(rgba(3, 13, 74, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(3, 13, 74, 0.045) 1px, transparent 1px);
+    background-size: 54px 54px;
+    -webkit-mask-image: radial-gradient(72% 72% at 82% 8%, #000 0%, transparent 68%);
+    mask-image: radial-gradient(72% 72% at 82% 8%, #000 0%, transparent 68%);
+    pointer-events: none;
+  }
+  .ab-pattern > .container {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== Panou „Cum decidem" (stil ForWhom: titlu + → consecință, divider) ===== */
+  .ab-method {
+    padding: 6px 30px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: var(--sh-sm);
+  }
+  .ab-method ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ab-method__row {
+    padding: 22px 0;
+    border-top: 1px solid var(--line);
+  }
+  .ab-method__row:first-child {
+    border-top: 0;
+  }
+  .ab-method__head {
+    margin: 0;
+    font-size: 1.08rem;
+    line-height: 1.4;
+    font-weight: 700;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  .ab-method__sub {
+    margin: 7px 0 0;
+    display: flex;
+    gap: 9px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .ab-method__sub span {
+    flex: none;
+    color: var(--electric);
+    font-weight: 700;
+  }
+
+  /* ===== Heatmap shot ===== */
+  .ab-shot {
+    position: relative;
+    margin: 0;
+    width: 100%;
+    max-width: 420px;
+    justify-self: center;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: var(--glow-electric), var(--sh-lg);
+    overflow: hidden;
+  }
+  .ab-shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .ab-shot__tag {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 2;
+    padding: 6px 12px;
+    border-radius: var(--r-pill);
+    background: var(--ink);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+  }
+  .ab-shot figcaption {
+    padding: 14px 18px;
+    font-size: 0.86rem;
+    line-height: 1.45;
+    color: var(--muted);
+    border-top: 1px solid var(--line);
+  }
+
+  /* ===== Logo-uri clienți ===== */
+  .ab-logos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .ab-logo {
+    display: grid;
+    place-items: center;
+    padding: 22px 16px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    box-shadow: var(--sh-sm);
+    transition:
+      transform 0.2s var(--ease-snap),
+      box-shadow 0.2s var(--ease-snap);
+  }
+  .ab-logo:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--sh-md);
+  }
+  .ab-logo img {
+    height: 32px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+  }
+
+  /* ===== Belief cards ===== */
+  .sec-title.center {
+    text-align: center;
+  }
+  .beliefs {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .belief {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: var(--sh-sm);
+    padding: 28px 26px;
+    text-align: left;
+  }
+  .belief__ic {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: var(--r-sm);
+    background: var(--canvas-soft);
+    color: var(--electric);
+    margin-bottom: 16px;
+  }
+  .belief__ic svg {
+    width: 23px;
+    height: 23px;
+  }
+  .belief h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.08rem;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+  .belief p {
+    margin-top: 10px;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  @media (max-width: 900px) {
+    .ab-split {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+    .ab-split--rev .ab-split__copy {
+      order: 0;
+    }
+    .ab-shot {
+      justify-self: start;
+    }
+    .beliefs {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .ab-logos {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   /* ===== Citat (Cu cine am lucrat) ===== */
@@ -307,10 +608,6 @@ const metaDescription =
     line-height: 1.6;
     color: var(--muted);
     margin-bottom: 14px;
-  }
-  .about2__team > .sec-eyebrow {
-    display: block;
-    margin-bottom: 22px;
   }
   .team-section {
     position: relative;
@@ -415,9 +712,6 @@ const metaDescription =
   .trust .container {
     position: relative;
     z-index: 1;
-  }
-  .trust .sec-eyebrow {
-    color: var(--cyan);
   }
   .trust__grid {
     display: grid;

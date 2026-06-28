@@ -1,94 +1,78 @@
 ---
 import Button from '@components/ui/Button.astro';
-import { getPublicSettings, getDirectContact } from '@lib/server/public-settings';
-import { phoneIconPath, whatsappIconPath } from '@lib/icons';
 
-const direct = getDirectContact(await getPublicSettings());
-const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPath;
+// Parteneri reali — logo-uri descărcate local (public/parteneri).
+const partners = [
+  { src: '/parteneri/marketing-deck.png', name: 'Marketing Deck' },
+  { src: '/parteneri/paul-ardeleanu.png', name: 'Paul Ardeleanu' },
+  { src: '/parteneri/m1-med-beauty.png', name: 'M1 Med Beauty' },
+  { src: '/parteneri/matematica-interactiva.png', name: 'Matematica Interactivă' },
+  { src: '/parteneri/feaa-galati.png', name: 'FEAA Galați' },
+  { src: '/parteneri/simona-halep.png', name: 'Hotel Simona Halep' },
+  { src: '/parteneri/priority-clinic.png', name: 'Priority Clinic' },
+  { src: '/parteneri/fastrackids.webp', name: 'FasTrackKids' },
+];
 ---
 
 <section class="hero">
-  <div class="hero__mesh" aria-hidden="true"></div>
+  <div class="hero__bg" aria-hidden="true"></div>
+  <div class="hero__wash" aria-hidden="true"></div>
+
   <div class="site-container hero__inner">
-    <div class="hero__copy">
-      <p class="kicker">Studio de grafică &amp; marketing digital</p>
-      <h1 class="hero__title">
-        Servicii digitale fundamentate pe <span class="hero__accent">neuroștiință</span>, nu pe
-        noroc.
-      </h1>
-      <p class="hero__sub">
-        Înainte să arate bine, ne asigurăm că funcționează. Validăm fiecare decizie creativă cu
-        neuromarketing și date reale: eye-tracking, heatmaps, Analytics. Grafică, web și marketing
-        livrat de doi oameni dedicați, cu colaboratori specializați pentru ce cere proiectul.
-      </p>
-      <ul class="hero__svcs">
-        <li>Identitate vizuală &amp; Design grafic</li>
-        <li>Dezvoltare web</li>
-        <li>Mentenanță WordPress</li>
-      </ul>
-      <div class="hero__cta">
-        <Button href="/contact" size="lg" withArrow>Cere o ofertă</Button>
-        {
-          direct && (
-            <a
-              class="hero__phone"
-              href={direct.href}
-              {...(direct.kind === 'whatsapp' ? { target: '_blank', rel: 'noopener' } : {})}
-            >
-              <span class="hero__phone-ic">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  set:html={directIcon}
-                  aria-hidden="true"
-                />
-              </span>
-              <span class="hero__phone-txt">
-                <small>{direct.sub}</small>
-                <b>{direct.label}</b>
-              </span>
-            </a>
-          )
-        }
-      </div>
+    <p class="hero__pill">Studio de grafică &amp; marketing digital</p>
+
+    <h1 class="hero__title">
+      Servicii digitale fundamentate pe <span class="hero__accent">neuroștiință</span>, nu pe noroc.
+    </h1>
+
+    <p class="hero__sub">
+      Înainte să arate bine, ne asigurăm că funcționează. Grafică, web și marketing livrate de doi
+      oameni dedicați, cu colaboratori specializați pentru ce cere proiectul.
+    </p>
+
+    <div class="hero__cta">
+      <Button href="/contact" variant="primary" size="lg">Cere o ofertă</Button>
+      <a class="hero__textlink" href="/servicii">Vezi serviciile</a>
     </div>
 
-    <!-- Vizual focal: mockup „research / heatmap" peste o plasă (grid), pur CSS+SVG -->
-    <div class="hero__visual" aria-hidden="true">
-      <div class="mock-wrap">
-        <div class="mock">
-          <div class="mock__bar"><span></span><span></span><span></span></div>
-          <div class="mock__body">
-            <div class="mock__line mock__line--lg"></div>
-            <div class="mock__line"></div>
-            <div class="mock__line mock__line--sm"></div>
-            <div class="mock__kpis">
-              <span><i></i><b></b></span>
-              <span><i></i><b></b></span>
-              <span><i></i><b></b></span>
-            </div>
-            <div class="mock__cta"></div>
-            <div class="mock__chart">
-              <i style="height:42%"></i>
-              <i style="height:68%"></i>
-              <i style="height:54%"></i>
-              <i style="height:88%"></i>
-              <i style="height:62%"></i>
-              <i style="height:80%"></i>
-            </div>
-            <div class="mock__cards"><span></span><span></span><span></span></div>
-            <div class="mock__line"></div>
-            <div class="mock__line mock__line--sm"></div>
-            <svg class="mock__heat" viewBox="0 0 200 200">
-              <circle cx="120" cy="58" r="60" fill="var(--signal)" opacity="0.14"></circle>
-              <circle cx="120" cy="58" r="44" fill="var(--signal)" opacity="0.22"></circle>
-              <circle cx="120" cy="58" r="28" fill="var(--electric)" opacity="0.26"></circle>
-              <circle cx="120" cy="58" r="14" fill="var(--electric)" opacity="0.55"></circle>
-              <circle cx="120" cy="58" r="4.5" fill="var(--electric)"></circle>
-            </svg>
-          </div>
-        </div>
-        <div class="hero__chip"><span class="dot"></span> Eye-tracking · heatmaps</div>
+    <!-- Semnătura: același design, înainte și cu heatmap-ul de atenție -->
+    <div class="hero__show">
+      <figure class="shot">
+        <img src="/exemplu-design.png" alt="Material de design realizat de Simplead" width="383" height="384" />
+        <figcaption>Designul</figcaption>
+      </figure>
+      <span class="hero__arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+      <figure class="shot shot--heat">
+        <img src="/exemplu-heatmap.png" alt="Harta de atenție (heatmap) peste același design" width="381" height="383" />
+        <figcaption>Unde se duce atenția, măsurat</figcaption>
+      </figure>
+    </div>
+
+    <div class="hero__trust">
+      <span class="hero__trust-lbl">Lucrează cu noi</span>
+      <div class="marquee">
+        <ul class="marquee__group">
+          {
+            partners.map((p) => (
+              <li>
+                <img src={p.src} alt={p.name} loading="lazy" />
+              </li>
+            ))
+          }
+        </ul>
+        <ul class="marquee__group" aria-hidden="true">
+          {
+            partners.map((p) => (
+              <li>
+                <img src={p.src} alt="" loading="lazy" />
+              </li>
+            ))
+          }
+        </ul>
       </div>
     </div>
   </div>
@@ -97,325 +81,257 @@ const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPat
 <style>
   .hero {
     position: relative;
-    background: var(--canvas);
-    padding-top: calc(var(--nav-h) + var(--hero-pad-top));
-    padding-bottom: var(--hero-pad-bottom);
     overflow: hidden;
+    background: var(--canvas);
+    padding-top: calc(var(--nav-h) + clamp(24px, 4vw, 52px));
+    padding-bottom: var(--section-pad);
   }
-  /* fade alb pe margini, ca plasa să se estompeze (mai puțin intensă) */
-  .hero::after {
-    content: '';
+  /* pattern discret în fundal, estompat cu gradient + opacitate */
+  .hero__bg {
     position: absolute;
     inset: 0;
-    z-index: 1;
+    z-index: 0;
+    background-image:
+      linear-gradient(to right, rgba(3, 13, 74, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(3, 13, 74, 0.035) 1px, transparent 1px);
+    background-size: 40px 40px;
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.35) 38%, transparent 66%);
+    mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.35) 38%, transparent 66%);
     pointer-events: none;
-    background:
-      linear-gradient(
-        90deg,
-        var(--canvas) 0%,
-        transparent 22%,
-        transparent 72%,
-        var(--canvas) 100%
-      ),
-      linear-gradient(
-        180deg,
-        var(--canvas) 0%,
-        transparent 16%,
-        transparent 80%,
-        var(--canvas) 100%
-      );
   }
+  .hero__wash {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: radial-gradient(56% 42% at 50% -6%, rgba(0, 119, 252, 0.08), transparent 70%);
+    pointer-events: none;
+  }
+
   .hero__inner {
     position: relative;
     z-index: 2;
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1.35fr 1fr;
-    gap: 44px;
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    text-align: center;
   }
+
+  /* pastila „kicker" de brand */
+  .hero__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 24px;
+    padding: 8px 18px;
+    background: #fff;
+    border: var(--border);
+    border-radius: var(--r-pill);
+    box-shadow: var(--sh-sm);
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
+  .hero__pill::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--electric);
+  }
+
   .hero__title {
-    margin-top: 18px;
-    max-width: none;
+    margin: 0;
+    max-width: 30ch;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(2.05rem, 3.8vw, 3.5rem);
-    line-height: 1.12;
-    letter-spacing: -0.025em;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    line-height: 1.06;
+    letter-spacing: -0.03em;
     color: var(--ink);
+    text-wrap: balance;
   }
   .hero__accent {
     color: var(--electric);
   }
   .hero__sub {
-    margin-top: 20px;
-    max-width: 48ch;
-    font-size: 1.0625rem;
+    margin: 22px 0 0;
+    max-width: 75ch;
+    font-size: clamp(1.0625rem, 1.4vw, 1.2rem);
     line-height: 1.55;
     color: var(--muted);
   }
-  .hero__svcs {
-    margin-top: 22px;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .hero__svcs li {
-    position: relative;
-    padding-left: 26px;
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 1rem;
-    color: var(--ink);
-  }
-  .hero__svcs li::before {
-    content: '›';
-    position: absolute;
-    left: 2px;
-    top: -1px;
-    color: var(--electric);
-    font-weight: 400;
-    font-size: 1.1rem;
-    opacity: 0.85;
-  }
+
   .hero__cta {
-    margin-top: 30px;
+    margin-top: 32px;
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 24px;
-  }
-  .hero__phone {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .hero__phone-ic {
-    flex-shrink: 0;
-    width: 58px;
-    height: 58px;
-    border-radius: var(--r-xs);
-    background: var(--signal);
-    display: flex;
-    align-items: center;
     justify-content: center;
-    box-shadow: 0 14px 30px -14px rgba(245, 217, 63, 0.6);
-    transform: skew(-10deg);
-    transition: transform 0.18s var(--ease-snap);
+    align-items: center;
+    gap: 12px 26px;
   }
-  .hero__phone:hover .hero__phone-ic {
-    transform: skew(-10deg) translateY(-2px);
-  }
-  .hero__phone-ic svg {
-    width: 24px;
-    height: 24px;
-    color: var(--ink);
-    transform: skew(10deg);
-  }
-  .hero__phone-txt small {
-    display: block;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 2px;
-  }
-  .hero__phone-txt b {
+  /* link „doar text" cu efectul de subliniere din footer */
+  .hero__textlink {
+    position: relative;
     font-family: var(--font-display);
-    font-size: 1.1rem;
+    font-weight: 600;
+    font-size: 0.98rem;
     color: var(--ink);
+    text-decoration: none;
+    padding: 4px 2px;
   }
-
-  /* ===== Vizual dreapta: plasă + mockup ===== */
-  .hero__visual {
-    position: relative;
-    justify-self: center;
-    width: 100%;
-    max-width: 600px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .mock-wrap {
-    position: relative;
-    width: 100%;
-    max-width: 480px;
-  }
-  /* plasa cu pătrate, ancorată la marginea dreaptă a ecranului (futurist) */
-  .hero__mesh {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: min(58%, 780px);
-    z-index: 0;
-    background-image:
-      linear-gradient(rgba(0, 119, 252, 0.16) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 119, 252, 0.16) 1px, transparent 1px);
-    background-size: 54px 54px;
-    -webkit-mask-image: radial-gradient(72% 86% at 100% 42%, #000 28%, transparent 80%);
-    mask-image: radial-gradient(72% 86% at 100% 42%, #000 28%, transparent 80%);
-    pointer-events: none;
-  }
-  /* noduri pe plasă */
-  .hero__mesh::after {
+  .hero__textlink::after {
     content: '';
     position: absolute;
-    inset: 0;
-    background-image: radial-gradient(var(--cyan) 1.8px, transparent 2.4px);
-    background-size: 54px 54px;
-    opacity: 0.45;
-    -webkit-mask-image: radial-gradient(66% 80% at 100% 42%, #000 24%, transparent 76%);
-    mask-image: radial-gradient(66% 80% at 100% 42%, #000 24%, transparent 76%);
-  }
-  .mock {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: var(--r-lg);
-    box-shadow: var(--glow-cyan), var(--sh-lg);
-    overflow: hidden;
-  }
-  .mock__bar {
-    display: flex;
-    gap: 7px;
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--line);
-  }
-  .mock__bar span {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--line);
-  }
-  .mock__body {
-    position: relative;
-    padding: 32px 28px 40px;
-  }
-  .mock__line {
-    height: 14px;
-    width: 100%;
-    border-radius: 6px;
-    background: var(--canvas-soft);
-    margin-bottom: 14px;
-  }
-  .mock__line--lg {
-    height: 22px;
-    width: 70%;
-    background: var(--ink);
-    opacity: 0.85;
-  }
-  .mock__line--sm {
-    width: 45%;
-  }
-  .mock__cta {
-    margin-top: 18px;
-    height: 38px;
-    width: 140px;
-    border-radius: var(--r-sm);
-    background: var(--electric);
-  }
-  .mock__kpis {
-    display: flex;
-    gap: 10px;
-    margin: 18px 0 4px;
-  }
-  .mock__kpis span {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 12px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: var(--canvas-soft);
-  }
-  .mock__kpis i {
-    width: 58%;
-    height: 7px;
-    border-radius: 4px;
-    background: var(--cyan);
-    opacity: 0.85;
-  }
-  .mock__kpis b {
-    width: 82%;
-    height: 13px;
-    border-radius: 5px;
-    background: var(--ink);
-    opacity: 0.82;
-  }
-  .mock__chart {
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    height: 68px;
-    margin: 18px 0 4px;
-  }
-  .mock__chart i {
-    flex: 1;
-    border-radius: 5px 5px 0 0;
-    background: linear-gradient(180deg, var(--electric), rgba(0, 119, 252, 0.26));
-  }
-  .mock__cards {
-    display: flex;
-    gap: 10px;
-    margin-top: 24px;
-    margin-bottom: 16px;
-  }
-  .mock__cards span {
-    flex: 1;
-    height: 52px;
-    border-radius: 8px;
-    background: var(--canvas-soft);
-    border: 1px solid var(--line);
-  }
-  .mock__heat {
-    position: absolute;
-    top: 4px;
+    left: 0;
     right: 0;
-    width: 190px;
-    height: 190px;
+    bottom: -2px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--electric), var(--cyan));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.24s var(--ease-snap);
   }
-  .hero__chip {
-    position: absolute;
-    bottom: 24px;
-    left: -20px;
-    z-index: 3;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    background: var(--ink);
-    color: #fff;
-    border-radius: var(--r-pill);
-    font-family: var(--font-display);
-    font-size: 0.78rem;
-    letter-spacing: 0.04em;
-    box-shadow: var(--sh-md);
-  }
-  .hero__chip .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--cyan);
-    box-shadow: 0 0 0 4px rgba(0, 224, 198, 0.25);
+  .hero__textlink:hover::after {
+    transform: scaleX(1);
   }
 
-  @media (max-width: 1024px) {
-    .hero {
-      min-height: auto;
+  /* ===== semnătura: design -> heatmap ===== */
+  .hero__show {
+    margin-top: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(16px, 3vw, 40px);
+  }
+  .shot {
+    margin: 0;
+    width: clamp(220px, 30vw, 340px);
+    background: #fff;
+    border: var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--sh-lg);
+    overflow: hidden;
+  }
+  .shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .shot figcaption {
+    padding: 12px 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--muted);
+    border-top: var(--border);
+    text-align: left;
+  }
+  .shot--heat {
+    box-shadow: var(--glow-electric), var(--sh-lg);
+  }
+  .shot--heat figcaption {
+    color: var(--ink);
+  }
+  .hero__arrow {
+    flex: none;
+    color: var(--electric);
+  }
+  .hero__arrow svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  /* ===== lucrează cu noi: logo-uri parteneri ===== */
+  .hero__trust {
+    margin-top: 50px;
+    width: 100%;
+    border-top: var(--border);
+    padding-top: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    text-align: left;
+  }
+  .hero__trust-lbl {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  /* bandă cu derulare continuă (marquee), un singur rând, logo-uri la dim. plină */
+  .marquee {
+    position: relative;
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+  }
+  .marquee__group {
+    list-style: none;
+    flex: none;
+    display: flex;
+    align-items: center;
+    animation: heroMarquee 42s linear infinite;
+  }
+  .marquee:hover .marquee__group {
+    animation-play-state: paused;
+  }
+  .marquee__group li {
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+  }
+  .marquee__group img {
+    height: 34px;
+    width: auto;
+    max-width: 170px;
+    object-fit: contain;
+    filter: grayscale(1);
+    opacity: 0.62;
+    transition:
+      filter 0.22s var(--ease-snap),
+      opacity 0.22s var(--ease-snap);
+  }
+  .marquee__group li:hover img {
+    filter: grayscale(0);
+    opacity: 1;
+  }
+  @keyframes heroMarquee {
+    to {
+      transform: translateX(-100%);
     }
-    .hero__inner {
-      grid-template-columns: 1fr;
-      gap: 44px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      overflow-x: auto;
     }
-    .hero__visual {
-      order: -1;
-      max-width: 340px;
+    .marquee__group {
+      animation: none;
+    }
+    .marquee__group[aria-hidden='true'] {
+      display: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .hero__show {
+      flex-direction: column;
+    }
+    .hero__arrow {
+      transform: rotate(90deg);
+    }
+    .shot {
+      width: min(86vw, 340px);
+    }
+    .marquee__group img {
+      height: 26px;
+    }
+    .marquee__group li {
+      padding: 0 22px;
     }
   }
 </style>

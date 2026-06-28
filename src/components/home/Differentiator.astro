@@ -8,7 +8,6 @@
     <div class="diff__top">
       <div class="diff__body">
         <div class="diff__lead" data-reveal>
-          <p class="diff__eyebrow"><span class="diff__tick"></span>De ce Simplead</p>
           <h2 class="diff__title">
             Designul bun <span>se vede și se măsoară.</span>
           </h2>
@@ -97,7 +96,7 @@
     position: relative;
     background: var(--ink);
     color: #fff;
-    padding-block: clamp(72px, 10vw, 128px);
+    padding-block: var(--section-pad);
     overflow: visible;
   }
   .diff::before {
@@ -118,22 +117,6 @@
   }
 
   /* Header */
-  .diff__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--cyan);
-  }
-  .diff__tick {
-    width: 30px;
-    height: 1px;
-    background: linear-gradient(90deg, var(--cyan), transparent);
-  }
   .diff__title {
     margin-top: 16px;
     font-family: var(--font-display);

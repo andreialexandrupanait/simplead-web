@@ -11,7 +11,7 @@ interface Props {
   subtitle?: string;
   crumb?: Crumb[];
 }
-const { eyebrow, title, accent, subtitle, crumb } = Astro.props;
+const { title, accent, subtitle, crumb } = Astro.props;
 const chev = '<path d="M9 6l6 6-6 6"/>';
 
 function splitTitle() {
@@ -48,7 +48,6 @@ const t = splitTitle();
         </div>
       )
     }
-    {eyebrow && <span class="page-header__kicker">{eyebrow}</span>}
     <h1 class="page-header__title">
       {t.before}{t.accent && <span class="accent">{t.accent}</span>}{t.after}
     </h1>
@@ -86,7 +85,7 @@ const t = splitTitle();
     position: relative;
     z-index: 1;
     padding-top: calc(var(--nav-h) + var(--hero-pad-top));
-    padding-bottom: var(--hero-pad-bottom);
+    padding-bottom: var(--section-pad);
   }
   .crumb {
     display: flex;
@@ -107,25 +106,6 @@ const t = splitTitle();
   .crumb .cur {
     color: #fff;
     font-weight: 600;
-  }
-  .page-header__kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 400;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--cyan);
-    margin-bottom: 14px;
-  }
-  .page-header__kicker::before {
-    content: '';
-    flex: none;
-    width: 30px;
-    height: 1px;
-    background: linear-gradient(90deg, currentColor, transparent);
   }
   .page-header__title {
     max-width: 18ch;

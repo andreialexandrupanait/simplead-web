@@ -11,7 +11,6 @@ import { homeCaseStudies } from '@data/content';
   <div class="site-container" data-reveal>
     <!-- Header -->
     <div class="cs2__head-top">
-      <span class="cs2__eyebrow">Studii de caz</span>
       <span class="cs2__rule" aria-hidden="true"></span>
       <a class="cs2__all" href="/portofoliu">
         Vezi tot portofoliul
@@ -110,7 +109,7 @@ import { homeCaseStudies } from '@data/content';
 <style>
   .cs2 {
     background: var(--canvas);
-    padding-block: clamp(64px, 9vw, 116px);
+    padding-block: var(--section-pad);
   }
 
   /* Header sus: etichetă · linie punctată · buton */
@@ -118,25 +117,6 @@ import { homeCaseStudies } from '@data/content';
     display: flex;
     align-items: center;
     gap: 22px;
-  }
-  .cs2__eyebrow {
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 400;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--electric);
-  }
-  .cs2__eyebrow::before {
-    content: '';
-    flex: none;
-    width: 30px;
-    height: 1px;
-    background: linear-gradient(90deg, currentColor, transparent);
   }
   .cs2__rule {
     flex: 1;

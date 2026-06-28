@@ -16,7 +16,6 @@ interface Props {
 }
 const {
   variant = 'tint',
-  eyebrow = 'Instrumente',
   title = 'Lucrăm cu platformele ',
   titleAccent = 'care contează',
   subtitle = 'Instrumente profesionale pentru fiecare etapă: de la design și web, la campanii și analiză.',
@@ -27,7 +26,6 @@ const {
 <section class:list={['section', `section--${variant}`]}>
   <div class="container">
     <div class="sec-head center" data-reveal>
-      <span class="sec-eyebrow" style="display:inline-flex;justify-content:center;">{eyebrow}</span>
       <h2 class="sec-title">{title}<span class="g">{titleAccent}</span></h2>
       {subtitle && <p class="sec-sub">{subtitle}</p>}
     </div>
@@ -83,7 +81,7 @@ const {
     display: inline-block;
     margin-right: 8px;
     padding: 2px 8px;
-    border-radius: 999px;
+    border-radius: var(--r-pill);
     font-family: var(--font-mono, monospace);
     font-size: 0.68rem;
     font-weight: 600;

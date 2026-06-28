@@ -9,7 +9,6 @@ interface Props {
   sub?: string;
 }
 const {
-  eyebrow = 'Ce facem',
   title = 'Șase direcții, ',
   titleAccent = 'un singur partener',
   sub = 'Simplu de gestionat, ușor de scalat. Le poți lua separat sau ca pachet complet. Le coordonăm noi.',
@@ -21,7 +20,6 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
 <section class="section section--light" id="servicii">
   <div class="container">
     <div class="sec-head center" data-reveal>
-      <span class="sec-eyebrow" style="display:inline-flex;justify-content:center;">{eyebrow}</span>
       <h2 class="sec-title">{title}<span class="g">{titleAccent}</span></h2>
       {sub && <p class="sec-sub">{sub}</p>}
     </div>

@@ -29,18 +29,6 @@ const two = (n: number) => String(n).padStart(2, '0');
         <div class="topic">
           {/* Stânga: intro sticky */}
           <div class="topic__intro" data-reveal>
-            <span class="topic__eyebrow">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.9"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                set:html={topic.icon}
-              />
-              {topic.eyebrow}
-            </span>
             <h2 class="topic__title">
               {topic.title}
               <span class="g">{topic.titleAccent}</span>
@@ -145,22 +133,6 @@ const two = (n: number) => String(n).padStart(2, '0');
   .topic__intro {
     position: sticky;
     top: calc(var(--nav-h) + 32px);
-  }
-  .topic__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 14px 7px 12px;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--electric) 9%, transparent);
-    color: var(--electric);
-    font-size: 0.86rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-  }
-  .topic__eyebrow svg {
-    width: 17px;
-    height: 17px;
   }
   .topic__title {
     margin-top: 20px;

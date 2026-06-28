@@ -57,7 +57,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
       price_data: {
         currency: 'eur',
         unit_amount: amountCents,
-        product_data: { name: `Mentenanță website — ${base.name}`, description: includeDesc },
+        product_data: { name: `Mentenanță website: ${base.name}`, description: includeDesc },
         recurring: { interval: 'month' },
       },
     },

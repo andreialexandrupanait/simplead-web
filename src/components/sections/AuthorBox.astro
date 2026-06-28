@@ -10,7 +10,7 @@ const { author } = Astro.props;
 const isFounder = isFounderName(author);
 const role = isFounder ? site.founderTitle : 'Echipa Simplead';
 const bio = isFounder
-  ? 'Fondator Simplead. Cercetare în neuromarketing — fac branding, web și marketing pe bază de neuroștiință, nu de noroc.'
+  ? 'Fondator Simplead. Cercetare în neuromarketing: fac branding, web și marketing pe bază de neuroștiință, nu de noroc.'
   : 'Scrie pentru Simplead despre branding, marketing digital și design.';
 const avatar = isFounder ? '/andrei.jpg' : null;
 const monogram = author.trim().charAt(0).toUpperCase() || 'S';
@@ -34,7 +34,6 @@ const monogram = author.trim().charAt(0).toUpperCase() || 'S';
     )
   }
   <div class="author-box__body">
-    <p class="author-box__kicker">Scris de</p>
     <p class="author-box__name">
       {author}
       <span class="author-box__role">· {role}</span>
@@ -67,7 +66,7 @@ const monogram = author.trim().charAt(0).toUpperCase() || 'S';
     flex-shrink: 0;
     width: 72px;
     height: 72px;
-    border-radius: var(--r-pill);
+    border-radius: 50%;
     object-fit: cover;
   }
   .author-box__avatar--mono {
@@ -79,15 +78,6 @@ const monogram = author.trim().charAt(0).toUpperCase() || 'S';
     font-weight: 600;
     color: #fff;
     background: var(--ink);
-  }
-  .author-box__kicker {
-    font-family: var(--font-display);
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin: 0 0 4px;
   }
   .author-box__name {
     font-family: var(--font-display);

@@ -54,6 +54,9 @@
   --nav-h: 80px;
   --maxw: 1280px;
 
+  /* Padding vertical UNIFORM pentru toate secțiunile (un singur loc de reglat). */
+  --section-pad: clamp(56px, 7vw, 88px);
+
   /* Spațiere hero unificată, compactă și echilibrată vizual.
      Sus: doar clearance pentru navbar-ul fix + un gol mic (titlul stă aproape de nav).
      Jos: un gol compact, calibrat să pară egal cu cel de sus (navbar-ul e transparent). */
@@ -91,12 +94,14 @@
 
   /* ===== Scale de design ===== */
   /* Radius: geometrie curată (8–12px) */
-  --r-xs: 8px;
-  --r-sm: 10px;
-  --r-md: 12px;
-  --r-lg: 16px;
-  --r-xl: 20px;
-  --r-pill: 999px;
+  --r-xs: 4px;
+  --r-sm: 4px;
+  --r-md: 5px;
+  --r-lg: 6px;
+  --r-xl: 6px;
+  /* „pill" aplatizat la minimum (cerere Andrei) — tag-urile nu mai sunt rotunde.
+     Cercurile reale folosesc border-radius: 50%, nu acest token. */
+  --r-pill: 6px;
   /* Spațiere (bază 4px) */
   --sp-1: 4px;
   --sp-2: 8px;
@@ -286,10 +291,25 @@
 .prose-simplead li {
   margin: 0.35rem 0;
 }
+/* Linkuri de conținut: subliniere subțire la repaus (afordanță), iar la hover
+   se desenează sublinierea gradient ca la footer (fără săgeată, e text inline). */
 .prose-simplead a {
   color: var(--electric);
   text-decoration: underline;
+  text-decoration-color: rgba(0, 119, 252, 0.32);
   text-underline-offset: 3px;
+  background-image: linear-gradient(90deg, var(--electric), var(--cyan));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1.5px;
+  padding-bottom: 2px;
+  transition:
+    background-size 0.24s var(--ease-snap),
+    text-decoration-color 0.18s var(--ease-snap);
+}
+.prose-simplead a:hover {
+  text-decoration-color: transparent;
+  background-size: 100% 1.5px;
 }
 .prose-simplead blockquote {
   border-left: 3px solid var(--electric);

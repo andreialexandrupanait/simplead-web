@@ -203,7 +203,7 @@ const fmtMoney = (cents: number) => `${(cents / 100).toLocaleString('ro-RO')} �
       {
         activity.length === 0 ? (
           <p style="color:var(--muted);font-size:0.92rem">
-            Nimic încă — activitatea apare aici pe măsură ce site-ul lucrează.
+            Nimic încă. Activitatea apare aici pe măsură ce site-ul lucrează.
           </p>
         ) : (
           <ul class="admin-activity">
@@ -248,7 +248,7 @@ const fmtMoney = (cents: number) => `${(cents / 100).toLocaleString('ro-RO')} �
     <h2>Date site</h2>
     <p class="admin-hint">
       Identitatea afișată public vine din cod (<code>src/data/site.ts</code>) și se aplică la
-      următorul deploy — nu se editează de aici.
+      următorul deploy, nu se editează de aici.
     </p>
     <dl class="admin-kv">
       <dt>Nume</dt>

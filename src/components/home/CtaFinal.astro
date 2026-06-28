@@ -19,7 +19,7 @@ import Button from '@components/ui/Button.astro';
     position: relative;
     background: var(--ink);
     color: #fff;
-    padding-block: clamp(80px, 11vw, 140px);
+    padding-block: var(--section-pad);
     overflow: hidden;
   }
   .cta::before {
@@ -39,9 +39,6 @@ import Button from '@components/ui/Button.astro';
     max-width: 880px;
     margin-inline: auto;
     text-align: center;
-  }
-  .kicker--cyan {
-    color: var(--cyan);
   }
   .cta__title {
     margin-top: 16px;

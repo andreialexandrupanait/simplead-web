@@ -52,8 +52,8 @@ if (project.status === 'draft') {
     <div class="container">
       {
         project.status === 'draft' && (
-          <p style="background:#fff7e0;border:1px solid #f5d93f;border-radius:10px;padding:10px 14px;font-size:14px">
-            <strong>Draft</strong> — proiectul nu e public; doar tu îl vezi, prin previzualizare.
+          <p style="background:#fff7e0;border:1px solid #f5d93f;border-radius:5px;padding:10px 14px;font-size:14px">
+            <strong>Draft</strong>: proiectul nu e public; doar tu îl vezi, prin previzualizare.
           </p>
         )
       }
@@ -65,7 +65,7 @@ if (project.status === 'draft') {
         <article class="prose-simplead" set:html={bodyHtml} />
         <aside>
           <div
-            style="background:#f5f7fa;border:1px solid var(--line);border-radius:20px;padding:28px"
+            style="background:#f5f7fa;border:1px solid var(--line);border-radius: var(--r-xl);padding:28px"
           >
             <dl style="display:flex;flex-direction:column;gap:16px;margin:0;font-size:14px">
               <div>

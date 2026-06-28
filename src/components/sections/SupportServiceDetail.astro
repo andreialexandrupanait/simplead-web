@@ -1,12 +1,13 @@
 ---
 /**
  * Pagina de detaliu pentru un serviciu de suport (catalog).
- * Folosește EXACT componentele paginilor de servicii pilon, ca să fie nativ site-ului.
+ * Folosește EXACT șablonul paginilor de servicii pilon, ca să fie nativ site-ului:
+ * ServiceHero + CapabilitiesGrid + ServiceProcess + WhySimplead + FaqSection + CtaNotch.
  */
 import ServiceHero from './ServiceHero.astro';
 import CapabilitiesGrid from './CapabilitiesGrid.astro';
 import ServiceProcess from './ServiceProcess.astro';
-import ClientCase from './ClientCase.astro';
+import WhySimplead from './WhySimplead.astro';
 import FaqSection from './FaqSection.astro';
 import CtaNotch from './CtaNotch.astro';
 import type { SupportService } from '@data/support-services';
@@ -37,7 +38,7 @@ const { support } = Astro.props;
 
 <ServiceProcess steps={support.process} />
 
-<ClientCase />
+<WhySimplead />
 
 <FaqSection
   items={support.faqs}

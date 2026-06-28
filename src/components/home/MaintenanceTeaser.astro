@@ -10,7 +10,6 @@ import Button from '@components/ui/Button.astro';
 <section class="mnt">
   <div class="site-container mnt__inner" data-reveal>
     <div class="mnt__copy">
-      <p class="kicker kicker--cyan">Mentenanță web</p>
       <h2 class="mnt__title">Site-ul tău, monitorizat continuu. Problemele le prindem înainte să le simți tu.</h2>
       <p class="mnt__sub">
         Site-ul tău e monitorizat în permanență de aplicația noastră, SimpleAd Manager. Așa, tu îți
@@ -118,7 +117,7 @@ import Button from '@components/ui/Button.astro';
     position: relative;
     background: var(--ink);
     color: #fff;
-    padding-block: clamp(64px, 9vw, 116px);
+    padding-block: var(--section-pad);
     overflow: hidden;
   }
   .mnt::before {
@@ -198,7 +197,7 @@ import Button from '@components/ui/Button.astro';
     align-self: stretch;
     background: #fff;
     color: #0b1530;
-    border-radius: 16px;
+    border-radius: 6px;
     padding: 16px;
     box-shadow:
       0 30px 70px -28px rgba(0, 0, 0, 0.55),
@@ -320,7 +319,7 @@ import Button from '@components/ui/Button.astro';
     padding: 10px;
     background: #f5f7fa;
     border: 1px solid #eef1f6;
-    border-radius: 10px;
+    border-radius: 5px;
   }
   .app__stat b {
     font-family: var(--font-display);
@@ -379,7 +378,7 @@ import Button from '@components/ui/Button.astro';
     min-width: 18px;
     height: 18px;
     padding: 0 5px;
-    border-radius: 9px;
+    border-radius: 5px;
     background: #ef4444;
     color: #fff;
     font-size: 0.66rem;

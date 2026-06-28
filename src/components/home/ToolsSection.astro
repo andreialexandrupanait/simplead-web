@@ -44,7 +44,7 @@ import { toolCategories, toolsAiNote } from '@data/content';
 <style>
   .tools {
     background: var(--canvas);
-    padding-block: clamp(64px, 9vw, 120px);
+    padding-block: var(--section-pad);
   }
   .tools :global(.sh) {
     margin-bottom: 52px;
@@ -117,7 +117,7 @@ import { toolCategories, toolsAiNote } from '@data/content';
     display: inline-block;
     margin-right: 8px;
     padding: 2px 8px;
-    border-radius: 999px;
+    border-radius: var(--r-pill);
     font-family: var(--font-mono, monospace);
     font-size: 0.66rem;
     font-weight: 600;

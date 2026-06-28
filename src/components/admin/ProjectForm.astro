@@ -74,7 +74,7 @@ const err = (field: string) => errors[field]?.[0];
           {err('summary') && <small class="field-error">{err('summary')}</small>}
         </label>
         <label class="admin-field">
-          <span>Rezultat (apare pe card și în panoul lateral — cifre concrete, dacă există)</span>
+          <span>Rezultat (apare pe card și în panoul lateral: cifre concrete, dacă există)</span>
           <textarea class="admin-textarea" name="result" style="min-height:60px"
             >{values.result}</textarea
           >

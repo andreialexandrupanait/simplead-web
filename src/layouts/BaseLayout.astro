@@ -4,6 +4,7 @@ import Navbar from '@components/Navbar.astro';
 import Footer from '@components/Footer.astro';
 import Analytics from '@components/Analytics.astro';
 import CookieBanner from '@components/CookieBanner.astro';
+import ScrollTop from '@components/ui/ScrollTop.astro';
 import ContactDrawer from '@components/react/ContactDrawer';
 import { site } from '@data/site';
 import { localeFromPath } from '@i18n/index';
@@ -132,7 +133,7 @@ const jsonLd = {
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" type="application/rss+xml" title="Simplead — Blog" href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="Simplead · Blog" href="/rss.xml" />
 
     <!-- Fonturi default site (Google Fonts) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -198,6 +199,7 @@ const jsonLd = {
     </main>
     <Footer />
     <CookieBanner />
+    <ScrollTop />
 
     <ContactDrawer
       client:load

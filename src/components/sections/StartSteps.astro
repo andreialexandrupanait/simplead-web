@@ -11,7 +11,6 @@ interface Props {
 }
 const {
   variant = 'light',
-  eyebrow = 'Cum începem colaborarea',
   title = 'De la „salut" la ',
   titleAccent = 'primul rezultat',
   sub = 'Patru pași simpli, fără bătăi de cap și fără limbaj corporatist.',
@@ -21,7 +20,6 @@ const {
 <section class:list={['section', `section--${variant}`]}>
   <div class="container">
     <div class="sec-head center" data-reveal>
-      <span class="sec-eyebrow" style="display:inline-flex;justify-content:center;">{eyebrow}</span>
       <h2 class="sec-title">{title}<span class="g">{titleAccent}</span></h2>
       {sub && <p class="sec-sub">{sub}</p>}
     </div>

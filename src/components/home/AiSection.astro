@@ -30,7 +30,6 @@ const features = [
   <div class="ai__glow" aria-hidden="true"></div>
   <div class="site-container ai__inner">
     <div class="ai__copy" data-reveal>
-      <p class="ai__eyebrow"><span class="ai__tick"></span>AI pentru business</p>
       <h2 class="ai__title">AI gândit pe <span>afacerea ta</span>.</h2>
       <p class="ai__sub">
         Folosim AI ca să îți eficientizăm procesele, să automatizăm ce te ține pe loc și să
@@ -69,7 +68,7 @@ const features = [
   .ai {
     position: relative;
     background: var(--canvas-soft);
-    padding-block: clamp(64px, 9vw, 120px);
+    padding-block: var(--section-pad);
     overflow: hidden;
     --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', 'Roboto Mono', Menlo, monospace;
   }
@@ -97,22 +96,6 @@ const features = [
   }
 
   /* Right copy */
-  .ai__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--electric);
-  }
-  .ai__tick {
-    width: 28px;
-    height: 1px;
-    background: linear-gradient(90deg, var(--electric), transparent);
-  }
   .ai__title {
     margin-top: 18px;
     font-family: var(--font-display);

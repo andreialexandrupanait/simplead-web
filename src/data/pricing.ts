@@ -6,7 +6,7 @@
 import type { ServiceIcon, ServiceKey } from './services';
 
 export const hourlyRatesIntro =
-  'Pentru lucrări mici sau în afara pachetelor lucrăm la oră, transparent — știi exact cât plătești, fără surprize la final.';
+  'Pentru lucrări mici sau în afara pachetelor lucrăm la oră, transparent: știi exact cât plătești, fără surprize la final.';
 
 export const hourlyRates: { label: string; amount: string; period: string }[] = [
   { label: 'Web development și design', amount: '50€', period: '/oră' },
@@ -97,7 +97,7 @@ export const pricingSections: PricingSection[] = [
         desc: 'Calendar editorial, creație vizuală și text, publicare și răspuns la comentarii.',
         features: [
           'Strategie de conținut pe obiective',
-          '8–12 postări pe lună',
+          '8-12 postări pe lună',
           'Creație vizuală și copywriting',
           'Administrare cont și comunitate',
         ],
@@ -109,7 +109,7 @@ export const pricingSections: PricingSection[] = [
         features: [
           'Tot ce include pachetul de bază',
           'Al 3-lea canal inclus',
-          '16–20 postări pe lună',
+          '16-20 postări pe lună',
           'Raport lunar cu metrici și optimizări',
         ],
       },
@@ -216,7 +216,7 @@ export const serviceAnchors: Record<ServiceKey, ServiceAnchor> = {
   grafica: {
     anchor: '/pachete#grafica',
     tiers: psTiers('grafica'),
-    note: 'Logo-uri nu facem — te punem în legătură cu specialiști dedicați și construim identitatea în jurul lui.',
+    note: 'Logo-uri nu facem. Te punem în legătură cu specialiști dedicați și construim identitatea în jurul lui.',
   },
   'social-media': {
     anchor: '/pachete#social-media',

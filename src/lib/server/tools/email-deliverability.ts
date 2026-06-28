@@ -68,7 +68,7 @@ export async function checkDeliverability(
           id: 'mx',
           label: 'MX (primire email)',
           status: 'fail',
-          detail: 'Fără înregistrări MX — domeniul nu poate primi email.',
+          detail: 'Fără înregistrări MX: domeniul nu poate primi email.',
         },
   );
 
@@ -85,7 +85,7 @@ export async function checkDeliverability(
       id: 'spf',
       label: 'SPF',
       status: 'fail',
-      detail: 'Mai multe înregistrări SPF — invalid. Trebuie să existe una singură.',
+      detail: 'Mai multe înregistrări SPF: invalid. Trebuie să existe una singură.',
     });
   } else if (/[+]all\b/i.test(spf)) {
     checks.push({

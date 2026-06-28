@@ -199,8 +199,8 @@ export default function UsersAdmin({ currentUserId }: { currentUserId: string })
 
         {createdPassword && (
           <div className="admin-banner admin-banner--ok" style={{ marginTop: '12px' }}>
-            User creat. Parolă temporară (o vezi o singură dată): <code>{createdPassword}</code> —
-            transmite-o userului, apoi și-o schimbă din cont.
+            User creat. Parolă temporară (o vezi o singură dată): <code>{createdPassword}</code>.
+            Transmite-o userului, apoi și-o schimbă din cont.
           </div>
         )}
       </div>

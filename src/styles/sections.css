@@ -35,13 +35,10 @@
   width: 100%;
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: 110px var(--gutter);
+  padding: var(--section-pad) var(--gutter);
 }
-@media (max-width: 1024px) {
-  .container {
-    padding: clamp(56px, 9vw, 96px) var(--gutter);
-  }
-}
+/* paddingul vertical e gestionat uniform de --section-pad (clamp responsive),
+   deci nu mai e nevoie de override pe ≤1024px. */
 /* Polish responsive pe telefoane mici: carduri/stat-uri pe 1 coloană. */
 @media (max-width: 560px) {
   .svc-grid {
@@ -61,42 +58,10 @@
   margin: 0 auto;
   text-align: center;
 }
-.sec-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 400;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--blue);
-  margin-bottom: 18px;
-}
-.sec-eyebrow::before {
-  content: '';
-  flex: none;
-  width: 30px;
-  height: 1px;
-  background: linear-gradient(90deg, currentColor, transparent);
-}
-/* liniuța de accent (tick) e acum înainte; săgeata veche dezactivată */
-.sec-eyebrow::after {
-  display: none;
-  content: '';
-  flex: none;
-  width: 36px;
-  height: 8px;
-  margin-left: -1px;
-  background: currentColor;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2036%208'%3E%3Cpath%20d='M0%204h31M27%201l3.5%203-3.5%203'%20fill='none'%20stroke='%23000'%20stroke-width='1.4'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E")
-    no-repeat center / contain;
-  mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2036%208'%3E%3Cpath%20d='M0%204h31M27%201l3.5%203-3.5%203'%20fill='none'%20stroke='%23000'%20stroke-width='1.4'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E")
-    no-repeat center / contain;
-}
-.section--navy .sec-eyebrow {
-  color: var(--purple);
-}
+/* Eyebrow-urile de secțiune (etichetele mici de deasupra titlurilor) au fost
+   eliminate complet din markup (cerere Andrei, iun. 2026). Stilurile lor au
+   fost scoase odată cu ele. Kickerele de hero/identitate rămân pe componentele
+   lor (Hero `.eyebrow`, HomeHero `.kicker`, page-header/svchub-hero). */
 
 .sec-title {
   font-family: var(--font-display);
@@ -169,7 +134,7 @@ img.pf-shot {
   align-items: center;
   gap: 10px;
   padding: 15px 28px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   font-family: var(--font-body);
   font-weight: 600;
   font-size: 15px;
@@ -205,6 +170,7 @@ img.pf-shot {
 }
 
 .link-more {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -220,6 +186,38 @@ img.pf-shot {
   width: 15px;
   height: 15px;
 }
+/* Subliniere gradient „ca la footer" pe TOATE linkurile-CTA text (săgeata o au din
+   SVG). Lista acoperă clasele de link-text din componente; butoanele NU sunt incluse
+   (au padding/fundal/bordură: .pa-link, .svc-support__cta, .cs2__all, .bfeature__cta). */
+.mnt__link,
+.proof__all,
+.mega__quick-all,
+.mega__foot-right {
+  position: relative;
+}
+.link-more::after,
+.mnt__link::after,
+.proof__all::after,
+.mega__quick-all::after,
+.mega__foot-right::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1.5px;
+  background: linear-gradient(90deg, var(--electric), var(--cyan));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.24s var(--ease-snap);
+}
+.link-more:hover::after,
+.mnt__link:hover::after,
+.proof__all:hover::after,
+.mega__quick-all:hover::after,
+.mega__foot-right:hover::after {
+  transform: scaleX(1);
+}
 
 /* ---- SERVICES ---- */
 .svc-grid {
@@ -231,7 +229,7 @@ img.pf-shot {
 .svc-card {
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 22px;
+  border-radius: var(--r-xl);
   padding: 30px 26px 26px;
   display: flex;
   flex-direction: column;
@@ -248,7 +246,7 @@ img.pf-shot {
 .svc-ic {
   width: 56px;
   height: 56px;
-  border-radius: 16px;
+  border-radius: 6px;
   background: var(--grad);
   display: flex;
   align-items: center;
@@ -334,7 +332,7 @@ img.pf-shot {
 .svc2-media {
   position: absolute;
   inset: 0;
-  border-radius: 20px;
+  border-radius: var(--r-xl);
   overflow: hidden;
   /* fluid ogee notch cradling the 40px arrow button: convex fillet (r7)
        flows tangentially into the concave arc (r26 = button 20 + 6px gap) */
@@ -448,7 +446,7 @@ img.pf-shot {
   flex-shrink: 0;
   width: 46px;
   height: 46px;
-  border-radius: 13px;
+  border-radius: 5px;
   background: rgba(0, 119, 252, 0.1);
   color: var(--blue);
   display: flex;
@@ -472,7 +470,7 @@ img.pf-shot {
   margin: 0;
 }
 .diff-visual {
-  border-radius: 26px;
+  border-radius: var(--r-xl);
   aspect-ratio: 4 / 3.4;
 }
 
@@ -534,7 +532,7 @@ img.pf-shot {
   gap: 24px;
 }
 .pf-card {
-  border-radius: 22px;
+  border-radius: var(--r-xl);
   overflow: hidden;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -590,7 +588,7 @@ img.pf-shot {
   color: #fff;
   background: var(--grad);
   padding: 10px 18px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   transform: translateY(12px);
   transition: transform 0.32s var(--ease);
   box-shadow: 0 14px 28px -12px rgba(0, 119, 252, 0.75);
@@ -641,7 +639,7 @@ img.pf-shot {
   align-items: center;
 }
 .about-photo {
-  border-radius: 26px;
+  border-radius: var(--r-xl);
   aspect-ratio: 4 / 5;
 }
 .about-body h2 {
@@ -667,7 +665,7 @@ img.pf-shot {
 .about-cred .item .ic {
   width: 40px;
   height: 40px;
-  border-radius: 11px;
+  border-radius: 5px;
   background: rgba(0, 119, 252, 0.1);
   display: flex;
   align-items: center;
@@ -782,7 +780,7 @@ img.pf-shot {
 }
 .cl-logo {
   height: 84px;
-  border-radius: 16px;
+  border-radius: 6px;
   border: 1px solid var(--line);
   background: #fff;
 }
@@ -809,7 +807,7 @@ img.pf-shot {
   overflow: hidden;
   background:
     radial-gradient(60% 120% at 80% 10%, rgba(236, 192, 254, 0.22), transparent 60%), var(--grad);
-  border-radius: 32px;
+  border-radius: 6px;
   padding: 72px 60px;
   display: flex;
   align-items: center;
@@ -972,9 +970,14 @@ img.pf-shot {
   display: grid;
   grid-template-columns: 1.5fr 1fr 1fr 1.4fr;
   gap: 40px;
-  padding: 80px var(--gutter) 56px;
+  padding: var(--section-pad) var(--gutter);
   max-width: var(--maxw);
   margin: 0 auto;
+}
+/* Spațiu în stânga coloanei „Navigare" (fără a schimba lățimea coloanei de brand:
+   margin-ul pe item nu modifică track-urile `fr`). Resetat la colaps (vezi media). */
+.footer-brand + .footer-acc {
+  margin-left: 40px;
 }
 .footer .brand img {
   height: 36px;
@@ -1052,7 +1055,7 @@ img.pf-shot {
   flex: 1;
   min-width: 0;
   padding: 12px 15px;
-  border-radius: 10px;
+  border-radius: 5px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
@@ -1064,7 +1067,7 @@ img.pf-shot {
 }
 .footer-form button {
   padding: 12px 18px;
-  border-radius: 10px;
+  border-radius: 5px;
   border: none;
   background: var(--grad);
   color: #fff;
@@ -1120,7 +1123,7 @@ img.pf-shot {
   cursor: pointer;
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 6px;
   padding: 20px 18px;
   position: relative;
   overflow: hidden;
@@ -1175,7 +1178,7 @@ img.pf-shot {
   margin-top: 22px;
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 24px;
+  border-radius: var(--r-xl);
   padding: 44px;
   display: grid;
   grid-template-columns: 1.2fr 1fr;
@@ -1239,7 +1242,7 @@ img.pf-shot {
 }
 .proc2-visual {
   align-self: stretch;
-  border-radius: 18px;
+  border-radius: var(--r-xl);
   min-height: 240px;
 }
 
@@ -1261,7 +1264,7 @@ img.pf-shot {
   font-size: 15px;
   font-weight: 600;
   padding: 13px 26px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   border: 1px solid var(--line);
   background: #fff;
   color: var(--ink-soft);
@@ -1297,7 +1300,7 @@ img.pf-shot {
 .tech-tile {
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: var(--r-xl);
   padding: 28px 16px;
   display: flex;
   flex-direction: column;
@@ -1490,7 +1493,7 @@ img.pf-shot {
   flex-shrink: 0;
   width: 38px;
   height: 38px;
-  border-radius: 10px;
+  border-radius: 5px;
   background: #eef1f6;
   color: var(--ink-soft);
   display: flex;
@@ -1656,7 +1659,7 @@ img.pf-shot {
 .cform {
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 24px;
+  border-radius: var(--r-xl);
   padding: 40px;
   box-shadow: 0 30px 60px -40px rgba(3, 13, 74, 0.35);
 }
@@ -1691,7 +1694,7 @@ img.pf-shot {
   color: var(--ink);
   padding: 14px 16px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 5px;
   background: #fff;
   transition:
     border-color 0.18s ease,
@@ -1749,7 +1752,7 @@ img.pf-shot {
   gap: 10px;
   padding: 16px 30px;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: var(--grad);
   color: #fff;
   font-family: var(--font-body);
@@ -1801,6 +1804,9 @@ img.pf-shot {
   }
   .footer-top {
     grid-template-columns: 1fr 1fr;
+  }
+  .footer-brand + .footer-acc {
+    margin-left: 0;
   }
   .footer-contact {
     grid-template-columns: 1fr;
@@ -1879,7 +1885,7 @@ img.pf-shot {
 }
 @media (max-width: 680px) {
   .container {
-    padding: 72px 24px;
+    padding: var(--section-pad) 24px;
   }
   .svc-grid,
   .pf-grid,
@@ -1898,7 +1904,7 @@ img.pf-shot {
   .footer-top {
     grid-template-columns: 1fr;
     gap: 32px;
-    padding: 56px var(--gutter) 40px;
+    padding: var(--section-pad) var(--gutter);
   }
   .footer-bottom {
     padding-block: 24px;
@@ -2034,7 +2040,7 @@ img.pf-shot {
   order: -1;
 }
 .svc-block__media {
-  border-radius: 24px;
+  border-radius: var(--r-xl);
   aspect-ratio: 4 / 3.2;
 }
 .svc-block__tag {
@@ -2051,7 +2057,7 @@ img.pf-shot {
 .svc-block__tag .n {
   width: 30px;
   height: 30px;
-  border-radius: 9px;
+  border-radius: 5px;
   background: var(--grad);
   color: #fff;
   display: flex;
@@ -2105,13 +2111,13 @@ img.pf-shot {
 .value-card {
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 22px;
+  border-radius: var(--r-xl);
   padding: 32px 28px;
 }
 .value-card .vi {
   width: 52px;
   height: 52px;
-  border-radius: 15px;
+  border-radius: 6px;
   background: var(--grad);
   display: flex;
   align-items: center;
@@ -2143,7 +2149,7 @@ img.pf-shot {
 }
 .val-pill {
   padding: 10px 20px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   border: 1px solid var(--line);
   background: #fff;
   font-weight: 600;
@@ -2165,7 +2171,7 @@ img.pf-shot {
   font-size: 14.5px;
   font-weight: 600;
   padding: 11px 22px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   border: 1px solid var(--line);
   background: #fff;
   color: var(--ink-soft);
@@ -2188,7 +2194,7 @@ img.pf-shot {
   gap: 24px;
 }
 .pf-page-card {
-  border-radius: 22px;
+  border-radius: var(--r-xl);
   overflow: hidden;
   border: 1px solid var(--line);
   background: #fff;
@@ -2307,7 +2313,7 @@ img.pf-shot {
   margin-top: 18px;
   background: #fff7e0;
   border: 1px solid var(--signal);
-  border-radius: 10px;
+  border-radius: 5px;
   padding: 10px 14px;
   font-size: 14px;
 }
@@ -2323,7 +2329,7 @@ img.pf-shot {
 .article-meta__avatar {
   width: 36px;
   height: 36px;
-  border-radius: var(--r-pill);
+  border-radius: 50%;
   object-fit: cover;
 }
 .article-meta__avatar--mono {
@@ -3239,7 +3245,7 @@ a.bpill--ondark:hover {
   color: var(--ink);
   padding: 14px 16px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 5px;
   background: #fff
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2357617d' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")
     no-repeat right 16px center;
@@ -3319,7 +3325,7 @@ a.bpill--ondark:hover {
   flex-wrap: wrap;
 }
 .sp-hero__photo {
-  border-radius: 22px;
+  border-radius: var(--r-xl);
   aspect-ratio: 4/3.1;
   box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.6);
 }
@@ -3331,7 +3337,7 @@ a.bpill--ondark:hover {
 .gphone .gic {
   width: 54px;
   height: 54px;
-  border-radius: 14px;
+  border-radius: 6px;
   background: #2ec85f;
   display: flex;
   align-items: center;
@@ -3370,7 +3376,7 @@ a.bpill--ondark:hover {
   position: relative;
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 22px;
+  border-radius: var(--r-xl);
   padding: 32px 28px;
   overflow: hidden;
   transition:
@@ -3398,7 +3404,7 @@ a.bpill--ondark:hover {
 .cap-ic {
   width: 46px;
   height: 46px;
-  border-radius: 13px;
+  border-radius: 5px;
   background: rgba(0, 119, 252, 0.1);
   display: flex;
   align-items: center;
@@ -3446,7 +3452,7 @@ a.bpill--ondark:hover {
    mai mic și un separator de 1px care delimitează antetul + descrierea de lista
    de beneficii. */
 .cap-grid--refined .cap-card {
-  border-radius: 14px;
+  border-radius: 6px;
   box-shadow: var(--sh-sm);
   transition:
     box-shadow 0.22s ease,
@@ -3552,7 +3558,7 @@ a.bpill--ondark:hover {
   flex-shrink: 0;
   width: 34px;
   height: 34px;
-  border-radius: 9px;
+  border-radius: 5px;
   background: #eef1f6;
   color: var(--ink-soft);
   display: flex;
@@ -3605,7 +3611,7 @@ a.bpill--ondark:hover {
 .cs-stat {
   background: var(--navy);
   color: #fff;
-  border-radius: 24px;
+  border-radius: var(--r-xl);
   padding: 40px;
   position: relative;
   overflow: hidden;
@@ -3661,7 +3667,7 @@ a.bpill--ondark:hover {
   overflow: hidden;
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 24px;
+  border-radius: var(--r-xl);
   padding: 40px;
   display: flex;
   flex-direction: column;
@@ -3759,7 +3765,7 @@ a.bpill--ondark:hover {
 .cs-who__lg {
   width: 54px;
   height: 54px;
-  border-radius: 12px;
+  border-radius: 5px;
   border: 1px solid var(--line);
   flex: none;
 }
@@ -3810,7 +3816,7 @@ a.bpill--ondark:hover {
   display: block;
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: var(--r-xl);
   padding: 30px 26px;
   transition:
     transform 0.2s ease,
@@ -3825,7 +3831,7 @@ a.bpill--ondark:hover {
 .rel-card .ri {
   width: 50px;
   height: 50px;
-  border-radius: 14px;
+  border-radius: 6px;
   background: var(--grad);
   display: flex;
   align-items: center;
@@ -4790,7 +4796,7 @@ a.bpill--ondark:hover {
   height: 96px;
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 24px;
+  border-radius: var(--r-xl);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -75,12 +75,11 @@ const metaDescription =
       <section class="pk-sec pk-web" id="web">
         <div class="pk-wrap">
           <header class="pk-head pk-head--center" data-reveal>
-            <span class="pk-eyebrow">Pachete web</span>
             <h2 class="pk-h2">
               Site-uri și <em>magazine online</em>
             </h2>
             <p class="pk-lead">
-              Site de prezentare, magazin online sau redesign, construite în WordPress — rapide,
+              Site de prezentare, magazin online sau redesign, construite în WordPress, rapide,
               sigure și ușor de administrat de tine.
             </p>
           </header>
@@ -127,7 +126,7 @@ const metaDescription =
             </span>
             <p>
               <strong>Ai nevoie de ceva simplu?</strong> Uneori cea mai bună variantă e un site
-              static, construit rapid cu ajutorul AI — fără să plătești pentru complexitate de care
+              static, construit rapid cu ajutorul AI, fără să plătești pentru complexitate de care
               nu ai nevoie. Folosim AI acolo unde chiar ajută și recomandăm mereu soluția potrivită,
               nu cea mai scumpă.
             </p>
@@ -143,7 +142,6 @@ const metaDescription =
       <section class="pk-sec pk-sec--soft" id="mentenanta">
         <div class="pk-wrap">
           <header class="pk-head pk-head--center" data-reveal>
-            <span class="pk-eyebrow">Mentenanță</span>
             <h2 class="pk-h2">
               Întreținem site-ul, <em>lună de lună</em>
             </h2>
@@ -210,7 +208,6 @@ const metaDescription =
         <section class:list={['pk-sec', idx % 2 === 1 && 'pk-sec--soft']} id={sec.id}>
           <div class="pk-wrap">
             <header class="pk-head pk-head--center" data-reveal>
-              <span class="pk-eyebrow">{sec.eyebrow}</span>
               <h2 class="pk-h2">
                 {before}
                 <em>{sec.accent}</em>
@@ -253,7 +250,6 @@ const metaDescription =
   <section class="pk-sec pk-sec--dark" id="tarife">
     <div class="pk-wrap">
       <header class="pk-head pk-head--center" data-reveal>
-        <span class="pk-eyebrow">Tarife orare</span>
         <h2 class="pk-h2">
           Și pentru lucrări <em>punctuale</em>
         </h2>
@@ -291,18 +287,6 @@ const metaDescription =
 </BaseLayout>
 
 <style>
-  /* ============ Etichetă de secțiune (kicker, ca pe restul site-ului) ============ */
-  .pk-eyebrow {
-    display: inline-block;
-    margin-bottom: 16px;
-    font-family: var(--font-display);
-    font-size: 0.78rem;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--electric);
-  }
-
   /* ============ Sistem de secțiuni ============ */
   .pk-sec {
     position: relative;
@@ -315,9 +299,6 @@ const metaDescription =
   /* Secțiune dark (tarife orare) — contrast pe finalul paginii. */
   .pk-sec--dark {
     background: var(--ink);
-  }
-  .pk-sec--dark .pk-eyebrow {
-    color: var(--cyan);
   }
   .pk-sec--dark .pk-h2 {
     color: #fff;
@@ -603,7 +584,7 @@ const metaDescription =
     justify-content: center;
     width: 44px;
     height: 44px;
-    border-radius: 999px;
+    border-radius: 50%;
     color: var(--electric);
     background: color-mix(in srgb, var(--electric) 12%, var(--canvas));
   }

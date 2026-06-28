@@ -203,7 +203,7 @@ export const services: Service[] = [
       {
         q: 'Cum intră AI-ul în mentenanță?',
         body: [
-          'Îl folosim pentru supraveghere non-stop, prinderea din vreme a problemelor și sarcinile repetitive — ca să intervenim mai repede și să prevenim, nu doar să reparăm. Deciziile importante rămân la oameni.',
+          'Îl folosim pentru supraveghere non-stop, prinderea din vreme a problemelor și sarcinile repetitive: ca să intervenim mai repede și să prevenim, nu doar să reparăm. Deciziile importante rămân la oameni.',
         ],
       },
       {
@@ -313,7 +313,7 @@ export const services: Service[] = [
       {
         n: '01',
         title: 'Brief & obiective',
-        body: 'Pornim de la afacerea ta: ce vrei să obții, cui te adresezi și ce trebuie să facă efectiv site-ul. Stabilim împreună structura, conținutul, bugetul și termenele — ca să lucrăm pe obiective, nu pe presupuneri.',
+        body: 'Pornim de la afacerea ta: ce vrei să obții, cui te adresezi și ce trebuie să facă efectiv site-ul. Stabilim împreună structura, conținutul, bugetul și termenele: ca să lucrăm pe obiective, nu pe presupuneri.',
       },
       {
         n: '02',
@@ -323,7 +323,7 @@ export const services: Service[] = [
       {
         n: '03',
         title: 'Design pe brand',
-        body: 'Ducem scheletul într-un design clar, pe identitatea ta, gândit pe conversii și validat cu principii de neuromarketing — nu doar „să arate bine".',
+        body: 'Ducem scheletul într-un design clar, pe identitatea ta, gândit pe conversii și validat cu principii de neuromarketing, nu doar „să arate bine".',
       },
       {
         n: '04',
@@ -362,17 +362,17 @@ export const services: Service[] = [
       {
         q: 'Cât costă?',
         body: [
-          'Depinde de tip — site de prezentare, magazin online sau redesign — și de cât de complex e. Prețul exact îl stabilim după ce înțelegem ce ai nevoie. Vezi pachetele pe pagina Pachete.',
+          'Depinde de tip (site de prezentare, magazin online sau redesign) și de cât de complex e. Prețul exact îl stabilim după ce înțelegem ce ai nevoie. Vezi pachetele pe pagina Pachete.',
         ],
       },
       {
         q: 'Site-ul iese optimizat pentru Google?',
         body: [
-          'Da. Pleacă la drum cu SEO de bază pus la punct — structură, viteză, versiune de mobil, meta — iar dacă vrei, continuăm cu o strategie SEO dedicată.',
+          'Da. Pleacă la drum cu SEO de bază pus la punct (structură, viteză, versiune de mobil, meta), iar dacă vrei, continuăm cu o strategie SEO dedicată.',
         ],
       },
       {
-        q: 'Aveți deja un site — îl puteți reface?',
+        q: 'Aveți deja un site, îl puteți reface?',
         body: [
           'Sigur. Ne uităm la ce ai acum și îți spunem onest dacă merită îmbunătățit sau reconstruit de la zero. Păstrăm ce funcționează și schimbăm ce te ține pe loc.',
         ],
@@ -478,7 +478,7 @@ export const services: Service[] = [
       {
         n: '03',
         title: 'Execuție vizuală',
-        body: 'Ducem conceptul în materiale concrete — identitate vizuală, grafică de campanie, print și materiale de prezentare — coerente între ele și gata de folosit.',
+        body: 'Ducem conceptul în materiale concrete (identitate vizuală, grafică de campanie, print și materiale de prezentare), coerente între ele și gata de folosit.',
       },
       {
         n: '04',
@@ -488,7 +488,7 @@ export const services: Service[] = [
       {
         n: '05',
         title: 'Livrare',
-        body: 'Predăm fișierele în toate formatele de care ai nevoie — print (CMYK, la rezoluția corectă) și online — plus regulile de folosire, ca totul să rămână coerent.',
+        body: 'Predăm fișierele în toate formatele de care ai nevoie: print (CMYK, la rezoluția corectă) și online, plus regulile de folosire, ca totul să rămână coerent.',
       },
     ],
     caseStudy: {
@@ -505,7 +505,7 @@ export const services: Service[] = [
       {
         q: 'Faceți și logo?',
         body: [
-          'Pentru logo lucrăm cu parteneri dedicați. Noi ne ocupăm de identitatea vizuală din jurul lui — sistem vizual, brand guide, paletă, tipografie și aplicații pe materiale — ca brandul să arate coerent peste tot.',
+          'Pentru logo lucrăm cu parteneri dedicați. Noi ne ocupăm de identitatea vizuală din jurul lui (sistem vizual, brand guide, paletă, tipografie și aplicații pe materiale), ca brandul să arate coerent peste tot.',
         ],
       },
       {
@@ -523,13 +523,13 @@ export const services: Service[] = [
       {
         q: 'Primesc materialele și pentru print, și pentru online?',
         body: [
-          'Da. Le predăm în formatele potrivite fiecărui canal — print (CMYK, rezoluție corectă) și online (web/social) — gata de pus în folosință.',
+          'Da. Le predăm în formatele potrivite fiecărui canal: print (CMYK, rezoluție corectă) și online (web/social), gata de pus în folosință.',
         ],
       },
       {
         q: 'Cât costă?',
         body: [
-          'Depinde de ce ai nevoie — un set de materiale, o identitate vizuală completă sau grafică recurentă lunară. Îți dăm o estimare concretă după o scurtă discuție. Vezi pachetele pe pagina Pachete.',
+          'Depinde de ce ai nevoie: un set de materiale, o identitate vizuală completă sau grafică recurentă lunară. Îți dăm o estimare concretă după o scurtă discuție. Vezi pachetele pe pagina Pachete.',
         ],
       },
     ],
@@ -577,7 +577,7 @@ export const services: Service[] = [
     heroTitle: 'Social media care aduce ',
     heroTitleAccent: 'clienți, nu doar aprecieri',
     heroSub:
-      'Prezență coerentă pe canalele unde se află publicul tău, conținut care prinde și o comunitate îngrijită — cu măsurare reală, nu presupuneri.',
+      'Prezență coerentă pe canalele unde se află publicul tău, conținut care prinde și o comunitate îngrijită, cu măsurare reală, nu presupuneri.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'De la conținut la ',
@@ -666,13 +666,13 @@ export const services: Service[] = [
       {
         q: 'Creați conținutul sau doar îl publicați?',
         body: [
-          'Îl creăm — vizual și text — și îl publicăm pe un calendar editorial clar. Dacă ai deja materiale bune, le integrăm în plan.',
+          'Îl creăm (vizual și text) și îl publicăm pe un calendar editorial clar. Dacă ai deja materiale bune, le integrăm în plan.',
         ],
       },
       {
         q: 'Câte postări includeți pe lună?',
         body: [
-          'Pachetul de bază (2 canale) include 8–12 postări pe lună, iar cel complet (3 canale + rapoarte) 16–20. Calendarul editorial îl stabilim împreună, pe obiectivele tale.',
+          'Pachetul de bază (2 canale) include 8-12 postări pe lună, iar cel complet (3 canale + rapoarte) 16-20. Calendarul editorial îl stabilim împreună, pe obiectivele tale.',
         ],
       },
       {
@@ -728,7 +728,7 @@ export const services: Service[] = [
     heroTitleAccent: 'cercetare, nu pe noroc',
     // TODO[de confirmat]: formularea despre pregătirea academică (doctor vs doctorand, cine).
     heroSub:
-      'Strategie și decizii validate cu date și cu analiza atenției vizuale (neuromarketing), nu cu presupuneri. Pui bugetul exact acolo unde mișcă acul — cu o echipă care are și pregătire academică în marketing.',
+      'Strategie și decizii validate cu date și cu analiza atenției vizuale (neuromarketing), nu cu presupuneri. Pui bugetul exact acolo unde mișcă acul, cu o echipă care are și pregătire academică în marketing.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'De la presupuneri la ',
@@ -779,7 +779,7 @@ export const services: Service[] = [
       {
         n: '02',
         title: 'Cercetare',
-        body: 'Studiem publicul, concurența și piața. Aici intră partea de neuromarketing — analiza atenției vizuale — și datele din Analytics, ca să lucrăm cu fapte, nu cu impresii.',
+        body: 'Studiem publicul, concurența și piața. Aici intră partea de neuromarketing (analiza atenției vizuale) și datele din Analytics, ca să lucrăm cu fapte, nu cu impresii.',
       },
       {
         n: '03',
@@ -789,7 +789,7 @@ export const services: Service[] = [
       {
         n: '04',
         title: 'Plan de execuție',
-        body: 'Îți dăm un plan concret, prioritizat, cu pași pe care îi poți urma — singur sau împreună cu noi, dacă vrei și partea de execuție.',
+        body: 'Îți dăm un plan concret, prioritizat, cu pași pe care îi poți urma, singur sau împreună cu noi, dacă vrei și partea de execuție.',
       },
       {
         n: '05',
@@ -842,7 +842,7 @@ export const services: Service[] = [
           {
             q: 'Ce primesc la final?',
             body: [
-              'Un raport de audit clar, cu problemele prioritizate și primii pași recomandați — pe înțelesul tău, fără jargon.',
+              'Un raport de audit clar, cu problemele prioritizate și primii pași recomandați, pe înțelesul tău, fără jargon.',
             ],
           },
         ],
@@ -865,7 +865,7 @@ export const services: Service[] = [
           {
             title: 'Atenția vizuală (neuromarketing)',
             body: [
-              'Ne uităm la unde se duce privirea pe materialele tale cheie și cum reacționează oamenii, ca mesajul important să se vadă primul — nu să se piardă.',
+              'Ne uităm la unde se duce privirea pe materialele tale cheie și cum reacționează oamenii, ca mesajul important să se vadă primul, nu să se piardă.',
             ],
           },
           {
@@ -902,7 +902,7 @@ export const services: Service[] = [
           {
             title: 'Canale și calendar',
             body: [
-              'Alegem canalele care chiar îți aduc rezultate, cu un calendar realist și priorități clare — nu „să fim peste tot".',
+              'Alegem canalele care chiar îți aduc rezultate, cu un calendar realist și priorități clare, nu „să fim peste tot".',
             ],
           },
           {
@@ -916,7 +916,7 @@ export const services: Service[] = [
           {
             q: 'Strategia e doar un document sau ne și ajutați?',
             body: [
-              'Primești un document de strategie clar — și, dacă vrei, mergem mai departe împreună cu execuția. Tu alegi.',
+              'Primești un document de strategie clar. Și, dacă vrei, mergem mai departe împreună cu execuția. Tu alegi.',
             ],
           },
         ],
@@ -939,7 +939,7 @@ export const services: Service[] = [
           {
             title: 'Dashboard și rapoarte',
             body: [
-              'Aduni metricile care contează într-un singur loc, cu rapoarte pe înțelesul tău — nu tablouri pline de cifre fără sens.',
+              'Aduni metricile care contează într-un singur loc, cu rapoarte pe înțelesul tău, nu tablouri pline de cifre fără sens.',
             ],
           },
           {
@@ -959,31 +959,6 @@ export const services: Service[] = [
         ],
       },
     ],
-    // Modele de colaborare (carduri ca la capabilități). Fără prețuri în pagină.
-    engagement: [
-      {
-        title: 'Audit + strategie (punctual)',
-        icon: ICON.target,
-        desc: 'Un proiect cu început și final: diagnoză completă, strategie și un plan prioritizat pe care îl aplici singur sau împreună cu noi.',
-        items: [
-          'Audit complet',
-          'Cercetare public & concurență',
-          'Strategie pe canale',
-          'Plan de execuție prioritizat',
-        ],
-      },
-      {
-        title: 'Retainer lunar (continuu)',
-        icon: ICON.refresh,
-        desc: 'Un partener de marketing pe termen lung, care ține mâna pe puls: review lunar, recomandări și optimizare continuă.',
-        items: [
-          'Review lunar al datelor',
-          'Recomandări prioritizate',
-          'Optimizare continuă',
-          'Acces direct pentru întrebări',
-        ],
-      },
-    ],
     faqs: [
       {
         q: 'Ce înseamnă „marketing pe neuromarketing"?',
@@ -994,7 +969,7 @@ export const services: Service[] = [
       {
         q: 'Faceți doar consultanță sau și execuție?',
         body: [
-          'Cum ai nevoie. Putem livra doar strategia și recomandările, sau să ducem mai departe și execuția — web, grafică, social media — fiind un singur partener pentru tot.',
+          'Cum ai nevoie. Putem livra doar strategia și recomandările, sau să ducem mai departe și execuția (web, grafică, social media), fiind un singur partener pentru tot.',
         ],
       },
       {
@@ -1006,13 +981,13 @@ export const services: Service[] = [
       {
         q: 'Cât durează un audit?',
         body: [
-          'De obicei 1–2 săptămâni, în funcție de cât de mult ai deja pus la punct și de câte canale analizăm. [de confirmat]',
+          'De obicei 1-2 săptămâni, în funcție de cât de mult ai deja pus la punct și de câte canale analizăm. [de confirmat]',
         ],
       },
       {
         q: 'Cu ce rămân după colaborare?',
         body: [
-          'Cu livrabile concrete pe care le poți folosi: raportul de audit, documentul de strategie, planul pe canale și, unde e cazul, dashboard-ul de măsurare — nu doar o discuție.',
+          'Cu livrabile concrete pe care le poți folosi: raportul de audit, documentul de strategie, planul pe canale și, unde e cazul, dashboard-ul de măsurare, nu doar o discuție.',
         ],
       },
       {
@@ -1143,7 +1118,7 @@ export const services: Service[] = [
       statBig: '12h',
       statBigAccent: '/săptămână',
       statCap: 'recuperate din munca repetitivă după automatizare.',
-      quote: '„Rapoartele și confirmările se trimit singure — nu mai scapă niciun lead."',
+      quote: '„Rapoartele și confirmările se trimit singure, nu mai scapă niciun lead."',
       body: 'Am automatizat preluarea lead-urilor și raportarea săptămânală, cu monitorizare non-stop a site-ului. Oamenii iau deciziile; sistemul duce munca repetitivă, fără uitări.',
       client: 'Client demo',
       clientNote: 'de înlocuit cu o recomandare reală',
@@ -1153,7 +1128,7 @@ export const services: Service[] = [
       {
         q: 'AI-ul înlocuiește oamenii din echipă?',
         body: [
-          'Nu — și nici nu îl folosim așa. Preia munca repetitivă: sortat, copiat, supravegheat, prime versiuni. Deciziile, relația cu clienții și verificarea finală rămân la oameni, fiindcă acolo contează contextul pe care doar ei îl au.',
+          'Nu, și nici nu îl folosim așa. Preia munca repetitivă: sortat, copiat, supravegheat, prime versiuni. Deciziile, relația cu clienții și verificarea finală rămân la oameni, fiindcă acolo contează contextul pe care doar ei îl au.',
         ],
       },
       {

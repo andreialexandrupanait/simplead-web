@@ -84,7 +84,7 @@ export const supportNavItem: NavServiceItem = {
   label: 'Suport tehnic',
   href: '/suport',
   icon: 'mentenanta',
-  desc: 'WordPress, SSL, DNS, securitate, email și quick fix — fără să deschizi un proiect întreg.',
+  desc: 'WordPress, SSL, DNS, securitate, email și quick fix, fără să deschizi un proiect întreg.',
 };
 
 export const footerServices: NavItem[] = [

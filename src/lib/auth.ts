@@ -43,8 +43,8 @@ function createAuth() {
       sendResetPassword: async ({ user, url }) => {
         await sendEmail({
           to: user.email,
-          subject: 'Resetare parolă — Admin Simplead',
-          text: `Salut,\n\nAi cerut resetarea parolei pentru contul tău Simplead.\nDeschide linkul de mai jos ca să setezi o parolă nouă:\n\n${url}\n\nDacă nu tu ai cerut asta, ignoră acest email.\n\n— Simplead`,
+          subject: 'Resetare parolă · Admin Simplead',
+          text: `Salut,\n\nAi cerut resetarea parolei pentru contul tău Simplead.\nDeschide linkul de mai jos ca să setezi o parolă nouă:\n\n${url}\n\nDacă nu tu ai cerut asta, ignoră acest email.\n\nSimplead`,
         });
       },
     },
@@ -54,8 +54,8 @@ function createAuth() {
       sendVerificationEmail: async ({ user, url }) => {
         await sendEmail({
           to: user.email,
-          subject: 'Confirmă adresa de email — Simplead',
-          text: `Salut,\n\nConfirmă adresa de email pentru contul Simplead deschizând linkul:\n\n${url}\n\nDacă nu tu ai creat contul, ignoră acest email.\n\n— Simplead`,
+          subject: 'Confirmă adresa de email · Simplead',
+          text: `Salut,\n\nConfirmă adresa de email pentru contul Simplead deschizând linkul:\n\n${url}\n\nDacă nu tu ai creat contul, ignoră acest email.\n\nSimplead`,
         });
       },
     },

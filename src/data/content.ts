@@ -192,7 +192,7 @@ export const toolCategories: ToolCategory[] = [
 
 /** Notă onestă afișată la secțiunea de unelte: dezvoltarea e făcută în mare parte cu AI. */
 export const toolsAiNote =
-  'Cea mai mare parte din dezvoltare — frontend, backend, baze de date — o construim asistat de AI. Fără vrăjeală: îl folosim acolo unde ne face mai rapizi și mai buni.';
+  'Cea mai mare parte din dezvoltare (frontend, backend, baze de date) o construim asistat de AI. Fără vrăjeală: îl folosim acolo unde ne face mai rapizi și mai buni.';
 
 /** Întrebări frecvente (FAQ). `body` paragrafe; `list` listă opțională. */
 export interface Faq {
@@ -277,7 +277,7 @@ export const generalFaqs: Faq[] = [
   {
     q: 'Oferiți găzduire & înregistrare domeniu?',
     body: [
-      'Găzduirea nu e la noi — lucrăm cu un partener de hosting de încredere și te ajutăm să alegi soluția și domeniul potrivite. Le plătești direct la furnizor, fără marjă de la noi; noi ne ocupăm de site.',
+      'Găzduirea nu e la noi: lucrăm cu un partener de hosting de încredere și te ajutăm să alegi soluția și domeniul potrivite. Le plătești direct la furnizor, fără marjă de la noi; noi ne ocupăm de site.',
     ],
   },
   {
@@ -319,13 +319,13 @@ export const packagesFaqs: Faq[] = [
   {
     q: 'Cât durează de la start la lansare?',
     body: [
-      'Un site de prezentare e gata în 2–4 săptămâni. Un magazin online sau o platformă mai complexă poate lua 4–8 săptămâni. Îți dăm un termen clar după ce discutăm.',
+      'Un site de prezentare e gata în 2-4 săptămâni. Un magazin online sau o platformă mai complexă poate lua 4-8 săptămâni. Îți dăm un termen clar după ce discutăm.',
     ],
   },
   {
     q: 'Vă ocupați și de găzduire?',
     body: [
-      'Nu, găzduirea nu e la noi: lucrăm cu un partener de hosting de încredere și te ajutăm să alegi soluția potrivită. O plătești direct la furnizor, fără marjă de la noi — noi ne ocupăm de site și de partea tehnică.',
+      'Nu, găzduirea nu e la noi: lucrăm cu un partener de hosting de încredere și te ajutăm să alegi soluția potrivită. O plătești direct la furnizor, fără marjă de la noi. Noi ne ocupăm de site și de partea tehnică.',
     ],
   },
   {
@@ -773,7 +773,7 @@ export const whySimplead: WhyItem[] = [
   {
     icon: '<path d="M3 12h4l3 8 4-16 3 8h4"/>',
     title: 'Pornim de la date, nu de la „mie îmi place"',
-    body: 'Nu ne bazăm pe gusturi. Ne uităm la cum se comportă oamenii cu adevărat înainte ca ceva să ajungă public — așa știm de ce funcționează, nu doar că arată bine.',
+    body: 'Nu ne bazăm pe gusturi. Ne uităm la cum se comportă oamenii cu adevărat înainte ca ceva să ajungă public. Așa știm de ce funcționează, nu doar că arată bine.',
   },
   {
     icon: '<path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
@@ -782,13 +782,13 @@ export const whySimplead: WhyItem[] = [
   },
   {
     icon: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
-    title: 'Suntem puțini — și asta e intenționat',
+    title: 'Suntem puțini, și asta e intenționat',
     body: 'Web, grafică, mentenanță și social, toate la aceeași echipă restrânsă. Nu alergi între furnizori care nu vorbesc între ei și nu se pierde nimic pe drum.',
   },
   {
     icon: '<path d="M20 6L9 17l-5-5"/>',
     title: 'Îți spunem și când nu-ți trebuie',
-    body: 'Dacă un site merită reparat, nu reconstruit, îți zicem. Dacă undeva nu ai nevoie de noi, la fel. Fără costuri ascunse — și fără TVA, prețul e prețul.',
+    body: 'Dacă un site merită reparat, nu reconstruit, îți zicem. Dacă undeva nu ai nevoie de noi, la fel. Fără costuri ascunse. Și fără TVA, prețul e prețul.',
   },
 ];
 
@@ -803,7 +803,7 @@ export const mentenantaFaqs: Faq[] = [
   {
     q: 'Ce monitorizați, mai exact?',
     body: [
-      'Disponibilitate (uptime) și certificat SSL, securitate și actualizări, backup-uri, viteză și Core Web Vitals, plus DNS și protecția emailului — totul prin SimpleAd Manager, cu alerte în timp real.',
+      'Disponibilitate (uptime) și certificat SSL, securitate și actualizări, backup-uri, viteză și Core Web Vitals, plus DNS și protecția emailului, totul prin SimpleAd Manager, cu alerte în timp real.',
     ],
   },
   {
@@ -821,7 +821,7 @@ export const mentenantaFaqs: Faq[] = [
   {
     q: 'Cât costă?',
     body: [
-      'Standard 75€/lună, Premium 120€/lună, plus add-on-uri opționale. Calculează-ți pachetul exact cu ajutorul calculatorului de mai sus. Simplead nu e plătitor de TVA — prețurile sunt finale.',
+      'Standard 75€/lună, Premium 120€/lună, plus add-on-uri opționale. Calculează-ți pachetul exact cu ajutorul calculatorului de mai sus. Simplead nu e plătitor de TVA: prețurile sunt finale.',
     ],
   },
 ];

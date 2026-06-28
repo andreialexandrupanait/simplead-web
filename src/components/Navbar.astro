@@ -100,7 +100,6 @@ const isActive = (href: string) =>
                   </div>
 
                   <a class="mega__promo" href={megaPromo.ctaHref} role="menuitem">
-                    <span class="mega__promo-eyebrow">{megaPromo.eyebrow}</span>
                     <span class="mega__promo-title">{megaPromo.title}</span>
                     <ul class="mega__promo-bullets">
                       {megaPromo.bullets.map((b) => (
@@ -632,14 +631,6 @@ const isActive = (href: string) =>
   }
   .mega__promo:hover {
     transform: translateY(-2px);
-  }
-  .mega__promo-eyebrow {
-    font-family: var(--font-display);
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--cyan);
   }
   .mega__promo-title {
     font-family: var(--font-display);

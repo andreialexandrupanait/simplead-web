@@ -12,10 +12,9 @@ interface Props {
 }
 const {
   items,
-  eyebrow = 'Pentru cine',
   title = 'Sună ',
   titleAccent = 'cunoscut?',
-  closing = 'Dacă te regăsești în măcar una, ești exact unde trebuie — hai să vedem ce schimbăm.',
+  closing = 'Dacă te regăsești în măcar una, ești exact unde trebuie. Hai să vedem ce schimbăm.',
 } = Astro.props;
 ---
 
@@ -23,7 +22,6 @@ const {
   <div class="fw-wrap">
     <div class="fw2">
       <div class="fw2__intro" data-reveal>
-        <span class="sec-eyebrow">{eyebrow}</span>
         <h2 class="sec-title">{title}<span class="g">{titleAccent}</span></h2>
         {closing && <p class="fw2__lead">{closing}</p>}
       </div>
@@ -48,7 +46,7 @@ const {
 <style>
   /* Padding vertical compact (în loc de cele ~110px din .container). */
   .fw-sec {
-    padding-block: clamp(40px, 5vw, 64px);
+    padding-block: var(--section-pad);
   }
   .fw-wrap {
     width: 100%;
@@ -65,9 +63,6 @@ const {
   .fw2__intro {
     position: sticky;
     top: calc(var(--nav-h) + 28px);
-  }
-  .fw2__intro .sec-eyebrow {
-    display: inline-flex;
   }
   .fw2__lead {
     margin-top: 10px;

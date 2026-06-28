@@ -26,7 +26,6 @@ const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).f
   <div class="svcx__head container" data-reveal>
     <div class="svcx__top">
       <div class="svcx__intro">
-        <span class="svcx__kick">Ce facem</span>
         <h2 class="svcx__title">
           Drumul cel mai simplu<br />spre <span class="g">rezultatul</span> pe care îl vrei.
         </h2>
@@ -117,7 +116,7 @@ const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).f
 <style>
   .svcx {
     --svcx-side: max(40px, calc((100vw - var(--maxw)) / 2 + 40px));
-    padding-bottom: clamp(56px, 8vw, 100px);
+    padding-bottom: var(--section-pad);
     overflow: hidden;
   }
   /* head */
@@ -131,26 +130,7 @@ const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).f
     gap: 24px;
     flex-wrap: wrap;
   }
-  .svcx__kick {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 400;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--electric);
-    margin-bottom: 14px;
-  }
-  .svcx__kick::before {
-    content: '';
-    flex: none;
-    width: 30px;
-    height: 1px;
-    background: linear-gradient(90deg, currentColor, transparent);
-  }
-  .svcx__title {
+      .svcx__title {
     margin: 0;
     max-width: 34ch;
     font-family: var(--font-display);
@@ -266,7 +246,7 @@ const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).f
     outline-offset: 3px;
   }
   .svcx__card:focus-visible {
-    border-radius: 20px;
+    border-radius: var(--r-xl);
   }
   @media (prefers-reduced-motion: reduce) {
     .svcx__track {
@@ -337,7 +317,8 @@ const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).f
       moved = false;
       startX = e.clientX;
       startLeft = track.scrollLeft;
-      track.setPointerCapture(e.pointerId);
+      // NU capturăm aici: pointer capture ar fura click-ul de la link (cardul nu
+      // ar mai naviga). Capturăm doar când chiar începe un drag (vezi pointermove).
     });
     track.addEventListener('pointermove', (e) => {
       if (!down) return;
@@ -345,6 +326,9 @@ const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).f
       if (!moved && Math.abs(dx) > 5) {
         moved = true;
         track.classList.add('is-drag');
+        try {
+          track.setPointerCapture(e.pointerId);
+        } catch {}
       }
       if (moved) track.scrollLeft = startLeft - dx;
     });
