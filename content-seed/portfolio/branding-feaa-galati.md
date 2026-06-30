@@ -4,8 +4,8 @@ client: 'FEAA, Universitatea „Dunărea de Jos" Galați'
 service: 'Marketing'
 summary: 'Campanie integrată de admitere: strategie, creație și media, pentru creșterea numărului de candidați.'
 challenge: 'Atragerea unui număr mai mare de candidați calificați într-o piață educațională competitivă, cu un buget limitat.'
-solution: 'Am construit o strategie pe obiective clare, am produs creații validate cu principii de neuromarketing și am rulat campanii Meta & Google Ads, optimizate săptămânal pe baza datelor.'
-result: 'Creștere semnificativă a interacțiunilor și a cererilor de informații în perioada de admitere. <!-- TODO: cifră reală -->'
+solution: 'Am construit o strategie pe obiective clare, am produs creații pornite de la cum decid oamenii (neuromarketing) și am rulat campanii Meta & Google Ads, optimizate săptămânal pe baza datelor.'
+result: 'O prezență de admitere unitară pe print și online, cu mesaje clare pentru candidați. <!-- TODO: cifră reală, ex. +X% cereri de informații în perioada de admitere -->'
 order: 3
 draft: false
 ---

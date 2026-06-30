@@ -13,7 +13,9 @@ const groups: { id: string; title: string; items: Faq[] }[] = [
   { id: 'servicii', title: 'Despre servicii', items: servicesFaqs },
 ];
 
-const toAnswer = (f: Faq) => [...f.body, ...(f.list ?? [])].join(' ');
+// Scoatem tag-urile HTML (ex. linkul către Simplenet din răspunsuri) ca textul
+// din schema FAQPage să rămână curat pentru SEO.
+const toAnswer = (f: Faq) => [...f.body, ...(f.list ?? [])].join(' ').replace(/<[^>]+>/g, '');
 const origin = 'https://simplead.ro';
 const schema = {
   '@type': 'FAQPage',

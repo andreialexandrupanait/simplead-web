@@ -71,13 +71,13 @@ export const pricingSections: PricingSection[] = [
         features: [
           'Grafică adaptată pe canale',
           'Fișiere pentru print (CMYK) și online',
-          'Validat cu heatmaps',
+          'Gândit pe unde se uită oamenii (heatmaps)',
         ],
       },
       {
         name: 'Grafică recurentă',
         price: 'de la 150€/lună',
-        desc: 'Vizualuri lunare pentru social media sau campanii, coerente cu brandul tău.',
+        desc: 'Vizualuri lunare pentru social media și promovare, coerente cu brandul tău.',
       },
     ],
     ctaLabel: 'Cere ofertă grafică',
@@ -157,7 +157,7 @@ export const pricingSections: PricingSection[] = [
     eyebrow: 'AI pentru business',
     title: 'Automatizări care îți cumpără timp',
     accent: 'cumpără timp',
-    sub: 'Munca repetitivă preluată de sistem. Tu te concentrezi pe ce contează.',
+    sub: 'Munca repetitivă o face sistemul. Tu îți vezi de afacere.',
     icon: 'ai',
     cards: [
       {

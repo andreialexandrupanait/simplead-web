@@ -64,8 +64,8 @@ export const processSteps: ProcessStep[] = [
   {
     n: 4,
     title: 'Acțiune',
-    text: 'Punem totul în mișcare: design, web, campanii. Lucrăm transparent, cu update-uri regulate, ca să știi mereu unde suntem.',
-    bullets: ['Design și producție de conținut', 'Dezvoltare web', 'Lansare campanii'],
+    text: 'Punem totul în mișcare: design, grafică, web. Lucrăm transparent, cu update-uri regulate, ca să știi mereu unde suntem.',
+    bullets: ['Design și producție de conținut', 'Dezvoltare web', 'Grafică și materiale de promovare'],
   },
   {
     n: 5,
@@ -168,11 +168,10 @@ export const faqs: Faq[] = [
   {
     q: 'Ce servicii oferiți, mai exact?',
     body: [
-      'Suntem un singur partener pentru tot ce ține de imaginea și promovarea afacerii tale: de la identitate vizuală, până la campanii și site. Iată ce acoperim:',
+      'Suntem un singur partener pentru tot ce ține de imaginea și promovarea afacerii tale: de la identitate vizuală, până la grafică și site. Iată ce acoperim:',
     ],
     list: [
       'Marketing & social media',
-      'Campanii plătite (Meta & Google Ads)',
       'Identitate vizuală & branding',
       'Grafică publicitară & print',
       'Site-uri & magazine online',
@@ -241,7 +240,7 @@ export const generalFaqs: Faq[] = [
   {
     q: 'Oferiți găzduire & înregistrare domeniu?',
     body: [
-      'Găzduirea nu e la noi: lucrăm cu un partener de hosting de încredere și te ajutăm să alegi soluția și domeniul potrivite. Le plătești direct la furnizor, fără marjă de la noi; noi ne ocupăm de site.',
+      'Găzduirea nu e la noi. Pentru hosting îi recomandăm pe cei de la <a href="https://www.simplenet.ro" target="_blank" rel="noopener">Simplenet</a>, iar la nevoie te ajutăm să alegi și domeniul potrivit. Le plătești direct la ei, fără marjă de la noi; noi ne ocupăm de site.',
     ],
   },
   {
@@ -289,7 +288,7 @@ export const packagesFaqs: Faq[] = [
   {
     q: 'Vă ocupați și de găzduire?',
     body: [
-      'Nu, găzduirea nu e la noi: lucrăm cu un partener de hosting de încredere și te ajutăm să alegi soluția potrivită. O plătești direct la furnizor, fără marjă de la noi. Noi ne ocupăm de site și de partea tehnică.',
+      'Nu, găzduirea nu e la noi. Pentru hosting îi recomandăm pe cei de la <a href="https://www.simplenet.ro" target="_blank" rel="noopener">Simplenet</a>: o plătești direct la ei, fără marjă de la noi. Noi ne ocupăm de site și de partea tehnică.',
     ],
   },
   {
@@ -737,7 +736,7 @@ export const whySimplead: WhyItem[] = [
   {
     icon: '<path d="M3 12h4l3 8 4-16 3 8h4"/>',
     title: 'Pornim de la date, nu de la „mie îmi place"',
-    body: 'Nu ne bazăm pe gusturi. Ne uităm la cum se comportă oamenii cu adevărat înainte ca ceva să ajungă public. Așa știm de ce funcționează, nu doar că arată bine.',
+    body: 'Nu ne bazăm pe gusturi. Ne uităm la cum se comportă oamenii cu adevărat înainte ca ceva să ajungă public. Așa știm de ce funcționează, dincolo de cum arată.',
   },
   {
     icon: '<path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',

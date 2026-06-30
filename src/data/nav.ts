@@ -47,13 +47,13 @@ export const servicesNav: NavServiceItem[] = [
     label: 'UX/UI & web design',
     href: '/servicii/ux-ui-web-design',
     icon: 'web',
-    desc: 'Site-uri și magazine gândite pe conversii și validate prin cercetare.',
+    desc: 'Site-uri și magazine gândite pe conversii, pornind de la cum aleg oamenii.',
   },
   {
     label: 'Grafică publicitară',
     href: '/servicii/grafica-publicitara',
     icon: 'grafica',
-    desc: 'Identitate vizuală și materiale care te fac memorabil și coerent.',
+    desc: 'Identitate vizuală și materiale care te fac ușor de recunoscut, la fel peste tot.',
   },
   {
     label: 'Social media',

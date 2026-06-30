@@ -2,9 +2,9 @@
 title: 'Identitate vizuală completă'
 client: 'Blitzstudio'
 service: 'Branding'
-summary: 'Identitate vizuală completă, coerentă și memorabilă, construită pentru a fi remarcată.'
+summary: 'Identitate vizuală coerentă și ușor de recunoscut.'
 challenge: 'O imagine de brand unitară, care să reflecte profesionalismul studioului și să funcționeze pe toate materialele.'
-solution: 'Logo, sistem vizual și brand guide, plus materialele de promovare, totul gândit simplu, dar cu impact, și validat vizual.'
+solution: 'Logo, sistem vizual și brand guide, plus materialele de promovare, totul gândit simplu, dar fundamentat pe cum se uită oamenii.'
 result: 'Un brand coerent și recognoscibil. Suntem deja la al doilea proiect împreună.'
 order: 1
 draft: false

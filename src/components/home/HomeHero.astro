@@ -26,8 +26,9 @@ const partners = [
     </h1>
 
     <p class="hero__sub">
-      Înainte să arate bine, ne asigurăm că funcționează. Grafică, web și marketing livrate de doi
-      oameni dedicați, cu colaboratori specializați pentru ce cere proiectul.
+      Înainte să arate bine, ne asigurăm că și funcționează: pornim de la cum decid oamenii și de la
+      nevoile tale. Combinăm creativitatea cu cercetarea, ca afacerile mici și mijlocii să concureze
+      de la egal la egal cu cele mari.
     </p>
 
     <div class="hero__cta">
@@ -157,7 +158,8 @@ const partners = [
   }
   .hero__sub {
     margin: 22px 0 0;
-    max-width: 75ch;
+    /* Lățit ca textul aprobat să încapă pe ~2 rânduri pe desktop (pe mobil curge normal). */
+    max-width: 104ch;
     font-size: clamp(1.0625rem, 1.4vw, 1.2rem);
     line-height: 1.55;
     color: var(--muted);

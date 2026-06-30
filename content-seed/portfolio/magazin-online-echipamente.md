@@ -2,7 +2,7 @@
 title: 'Magazin online'
 client: 'Echipamente-medicale.ro'
 service: 'Web Design'
-summary: 'Magazin online clar și rapid, gândit să transforme vizitatorii în clienți.'
+summary: 'Magazin online clar și rapid, unde oamenii găsesc produsul și cumpără.'
 challenge: 'Un catalog complex de produse medicale, prezentat într-un mod ușor de navigat și de cumpărat.'
 solution: 'UX/UI orientat pe conversie, structură de catalog clară, optimizare pentru viteză și mobil, plus SEO de bază la lansare.'
 result: 'Experiență de cumpărare simplificată și o prezență online profesionistă, apreciată de client. <!-- TODO: cifră reală -->'

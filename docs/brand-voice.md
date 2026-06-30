@@ -7,8 +7,8 @@
 ---
 
 ## 1. Vocea
-- Simplead = **studio one-man-show**: Andrei Panait + colaboratori aduși **la nevoie** (foto-video, dezvoltare, ads). NU agenție cu staff permanent.
-- **„eu"** = Andrei. **„noi"** = vocea studioului (Andrei + colaboratori la nevoie) — niciodată impresie de echipă permanentă.
+- Simplead = **studio mic, doi oameni**: **Andrei Panait** (fondator: strategie, web, cercetare) + **Gabriel Tulearca** (grafică, marketing, social media), plus colaboratori aduși **la nevoie** (foto-video, dezvoltare). NU agenție cu staff permanent. (Regulă Andrei, iul. 2026: poziționarea oficială e „doi oameni: Andrei + Gabriel", nu one-man-show.)
+- **„eu"** = Andrei. **„noi"** = vocea studioului (Andrei + Gabriel + colaboratori la nevoie) — niciodată impresie de agenție cu zeci de oameni. Pe pagina **/despre**, persoana I „eu" (Andrei) e permisă în secțiunile personale (poveste, metodă), nu doar în „Omul din spate".
 - Argumentul de vânzare central: **„lucrezi direct cu mine, fără account manager"**. Folosește-l, dar nu-l repeta în fiecare secțiune.
 - Registru: **informal, cald, „tu"**. Ca și cum i-ai explica unui client la o cafea: clar, fără corporatism, fără să te dai mare. (Registrul e bun așa; **problema e execuția**, nu tonul.)
 - **Sistem de persoană (regulă Andrei, iun. 2026):** implicit **„noi"** (vocea studioului) în toate secțiunile. **Persoana I singular „eu"** DOAR când vorbește Andrei personal — adică în „Omul din spate" (și eventual semnături). NU amesteca „eu/mine" prin secțiunile de serviciu/diferențiator/AI/mentenanță — acolo e „noi".

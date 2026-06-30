@@ -39,7 +39,7 @@ const waHref = whatsappHref(pub.whatsappNumber);
         </div>
         <div class="contact-direct">
           {
-            pub.showPhone && (
+            (pub.showPhone || isPage) && (
               <a href={site.contact.phoneHref}>
                 <span class="lbl">Telefon</span>
                 {site.contact.phone}

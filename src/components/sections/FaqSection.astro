@@ -56,7 +56,7 @@ const faqs = items;
               <div class="faq-a-inner">
                 <div class="faq-a-body">
                   {f.body.map((p) => (
-                    <p>{p}</p>
+                    <p set:html={p} />
                   ))}
                   {f.list && (
                     <ul>
@@ -74,6 +74,15 @@ const faqs = items;
     </div>
   </div>
 </section>
+
+<style>
+  /* Linkuri din răspunsuri (injectate prin set:html, deci :global). */
+  .faq-a-body :global(a) {
+    color: var(--electric);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+</style>
 
 <script>
   const list = document.getElementById('faqList');

@@ -123,7 +123,7 @@ export const services: Service[] = [
     key: 'mentenanta',
     title: 'Mentenanță website',
     summary:
-      'Tu te ocupi de afacere, eu de partea tehnică: actualizări, securitate, backup și monitorizare continuă.',
+      'Tu te ocupi de afacere, noi de partea tehnică: actualizări, securitate, backup și monitorizare continuă.',
     claim: 'Tu te ocupi de afacere.',
     claimSub: 'Noi ne ocupăm de site.',
     description:
@@ -246,11 +246,11 @@ export const services: Service[] = [
     related: ['mentenanta', 'grafica', 'consultanta'],
     title: 'UX/UI & web design',
     summary:
-      'Site-uri și magazine online rapide, clare și gândite să transforme vizitatorii în clienți.',
-    claim: 'Site-uri care transformă vizitatori în clienți.',
+      'Site-uri și magazine online rapide, clare, unde oamenii găsesc ce caută și știu ce să apese.',
+    claim: 'Site-uri care chiar îți aduc clienți.',
     claimSub: 'Hai să construim unul împreună.',
     description:
-      'Realizăm site-uri de prezentare și magazine online rapide, clare și ușor de administrat. Frumoase pentru oameni, prietenoase cu Google și validate cu principii de neuromarketing.',
+      'Realizăm site-uri de prezentare și magazine online rapide, clare și ușor de administrat. Frumoase pentru oameni, prietenoase cu Google și pornite de la cum aleg oamenii (neuromarketing).',
     includes: [
       'UX/UI design validat pe atenția vizuală',
       'Site-uri de prezentare (WordPress)',
@@ -261,10 +261,10 @@ export const services: Service[] = [
     tags: ['UX/UI', 'WordPress', 'WooCommerce', 'SEO'],
     image:
       'https://images.unsplash.com/photo-1551434678-e076c223a692?w=900&q=78&auto=format&fit=crop',
-    heroTitle: 'Site-uri și magazine online care ',
-    heroTitleAccent: 'transformă vizitatori în clienți',
+    heroTitle: 'Site-uri și magazine online unde ',
+    heroTitleAccent: 'oamenii găsesc ce caută și cumpără',
     heroSub:
-      'De la site-uri de prezentare la magazine online: construim platforme rapide, clare și ușor de administrat. Frumoase pentru oameni, prietenoase cu Google și gândite pe conversii, nu pe presupuneri.',
+      'De la site-uri de prezentare la magazine online: construim platforme rapide, clare și ușor de administrat. Plac oamenilor, le place și Google, și sunt gândite să aducă clienți.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'De la idee la ',
@@ -275,7 +275,7 @@ export const services: Service[] = [
       {
         title: 'UX/UI Design',
         icon: ICON.layout,
-        desc: 'Structură clară și un design care ghidează vizitatorul exact unde vrei tu, validat cu principii de neuromarketing.',
+        desc: 'Structură clară și un design care ghidează vizitatorul exact unde vrei tu, pornit de la cum se uită și aleg oamenii (neuromarketing).',
         items: [
           'Arhitectură de conținut',
           'Wireframe & prototip',
@@ -313,7 +313,7 @@ export const services: Service[] = [
       {
         n: '01',
         title: 'Brief & obiective',
-        body: 'Pornim de la afacerea ta: ce vrei să obții, cui te adresezi și ce trebuie să facă efectiv site-ul. Stabilim împreună structura, conținutul, bugetul și termenele: ca să lucrăm pe obiective, nu pe presupuneri.',
+        body: 'Pornim de la afacerea ta: ce vrei să obții, cui te adresezi și ce trebuie să facă efectiv site-ul. Stabilim împreună structura, conținutul, bugetul și termenele: ca să lucrăm pe obiective clare.',
       },
       {
         n: '02',
@@ -323,7 +323,7 @@ export const services: Service[] = [
       {
         n: '03',
         title: 'Design pe brand',
-        body: 'Ducem scheletul într-un design clar, pe identitatea ta, gândit pe conversii și validat cu principii de neuromarketing, nu doar „să arate bine".',
+        body: 'Ducem scheletul într-un design clar, pe identitatea ta, gândit pe conversii și pe cum decid oamenii, dincolo de estetică.',
       },
       {
         n: '04',
@@ -398,36 +398,36 @@ export const services: Service[] = [
       },
       {
         icon: ICON.target,
-        problem: 'Ai nevoie de o identitate coerentă, care te face memorabil.',
+        problem: 'Ai nevoie de o identitate coerentă, ușor de recunoscut.',
         cost: 'Fără ea, te confunzi cu zeci de concurenți la fel.',
       },
     ],
     related: ['ux-ui', 'social-media', 'consultanta'],
     title: 'Grafică publicitară',
     summary:
-      'Identitate vizuală, materiale de promovare și grafică publicitară care te fac memorabil și coerent.',
-    claim: 'Imagine coerentă, care te face memorabil.',
+      'Identitate vizuală, materiale de promovare și grafică publicitară care te fac ușor de recunoscut, la fel peste tot.',
+    claim: 'O imagine coerentă, ușor de recunoscut.',
     claimSub: 'Pornim de la o discuție.',
     description:
-      'De la identitate vizuală și materiale de promovare, până la print și grafică pentru campanii. Totul gândit simplu, dar cu impact și validat vizual cu neuromarketing.',
+      'De la identitate vizuală și materiale de promovare, până la print și grafică publicitară. Simplu, dar fundamentat pe cum se uită și decid oamenii.',
     includes: [
       'Identitate vizuală & branding (sistem vizual, brand guide)',
       'Grafică publicitară (print, outdoor, social media)',
       'Materiale de prezentare (broșuri, cărți de vizită, prezentări)',
-      'Design validat cu heatmaps și ierarhie vizuală',
+      'Design pornit de la unde se uită oamenii (heatmaps)',
     ],
     tags: ['Branding', 'Print', 'Outdoor', 'Neuromarketing'],
     image:
       'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=900&q=78&auto=format&fit=crop',
-    heroTitle: 'Imagine coerentă, ',
-    heroTitleAccent: 'care te face memorabil',
+    heroTitle: 'O imagine coerentă, ',
+    heroTitleAccent: 'ușor de recunoscut',
     heroSub:
-      'De la identitate vizuală și materiale de promovare, până la print și grafică pentru campanii. Totul gândit simplu, dar cu impact și validat vizual cu neuromarketing.',
+      'De la identitate vizuală și materiale de promovare, până la print și grafică publicitară. Simplu, dar fundamentat pe cum se uită și decid oamenii.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'De la identitate la ',
       titleAccent: 'materiale care vând',
-      sub: 'Trei zone de lucru care, împreună, îți construiesc o imagine coerentă și memorabilă.',
+      sub: 'Trei zone de lucru care, împreună, îți construiesc o imagine coerentă și ușor de recunoscut.',
     },
     capabilities: [
       {
@@ -447,9 +447,9 @@ export const services: Service[] = [
         desc: 'Materiale de promovare gândite să atragă atenția potrivită.',
         items: [
           'Print, outdoor & social media',
-          'Grafică pentru campanii',
+          'Grafică promoțională',
           'Adaptare coerentă pe canale',
-          'Design validat cu heatmaps',
+          'Layout pornit de la unde se uită oamenii (heatmaps)',
         ],
       },
       {
@@ -460,7 +460,7 @@ export const services: Service[] = [
           'Broșuri, cărți de vizită, prezentări',
           'Machete pentru print & online',
           'Layout & punere în pagină',
-          'Design validat cu neuromarketing',
+          'Punere în pagină gândită pe atenția cititorului',
         ],
       },
     ],
@@ -478,12 +478,12 @@ export const services: Service[] = [
       {
         n: '03',
         title: 'Execuție vizuală',
-        body: 'Ducem conceptul în materiale concrete (identitate vizuală, grafică de campanie, print și materiale de prezentare), coerente între ele și gata de folosit.',
+        body: 'Ducem conceptul în materiale concrete (identitate vizuală, grafică publicitară, print și materiale de prezentare), coerente între ele și gata de folosit.',
       },
       {
         n: '04',
-        title: 'Validare cu neuromarketing',
-        body: 'Verificăm ierarhia vizuală și unde se duce atenția, cu heatmaps și principii de neuromarketing. Așa ne asigurăm că mesajul important se vede primul, nu se pierde.',
+        title: 'Mesaj clar',
+        body: 'Ne asigurăm că materialele transmit exact ce trebuie: aplicăm principii din neuromarketing, ca mesajul important să fie ușor de văzut și de înțeles.',
       },
       {
         n: '05',
@@ -515,9 +515,9 @@ export const services: Service[] = [
         ],
       },
       {
-        q: 'Ce e „design validat cu neuromarketing"?',
+        q: 'Cum folosiți neuromarketingul în design?',
         body: [
-          'Înseamnă că nu ne oprim la „arată bine". Verificăm cu heatmaps și principii de neuromarketing unde se uită oamenii, ca mesajul principal să fie primul observat.',
+          'Pornim de la cum percep și decid oamenii când văd un material și aplicăm principiile astea când îl punem în pagină. Așa mesajul principal e clar și ușor de prins, dincolo de cât de bine arată.',
         ],
       },
       {
@@ -577,7 +577,7 @@ export const services: Service[] = [
     heroTitle: 'Social media care aduce ',
     heroTitleAccent: 'clienți, nu doar aprecieri',
     heroSub:
-      'Prezență coerentă pe canalele unde se află publicul tău, conținut care prinde și o comunitate îngrijită, cu măsurare reală, nu presupuneri.',
+      'Prezență coerentă pe canalele unde se află publicul tău, conținut care prinde și o comunitate îngrijită. Cu măsurare reală, ca să știi ce aduce clienți.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'De la conținut la ',
@@ -610,7 +610,7 @@ export const services: Service[] = [
       {
         title: 'Analiză & Optimizare',
         icon: ICON.chart,
-        desc: 'Măsurăm ce funcționează și ajustăm: decizii pe date, nu pe presupuneri.',
+        desc: 'Măsurăm ce funcționează și ajustăm cu decizii pe date.',
         items: [
           'Tracking conversii & evenimente',
           'Rapoarte clare, pe înțelesul tău',
@@ -633,7 +633,7 @@ export const services: Service[] = [
       {
         n: '03',
         title: 'Producție de conținut',
-        body: 'Creăm vizualul și textul, coerente cu brandul, gata de publicat pe un calendar editorial clar, fără să postăm de dragul de a posta.',
+        body: 'Creăm vizualul și textul, coerente cu brandul, gata de publicat pe calendarul stabilit.',
       },
       {
         n: '04',
@@ -710,10 +710,10 @@ export const services: Service[] = [
     title: 'Consultanță de marketing',
     summary:
       'Decizii pe date și neuromarketing, nu pe presupuneri. Strategie, poziționare și un plan clar de creștere.',
-    claim: 'Marketing pe date, nu pe presupuneri.',
+    claim: 'Marketing pe care te poți baza.',
     claimSub: 'Pornim cu un audit.',
     description:
-      'Te ajutăm să iei deciziile de marketing potrivite, validate cu date și cu analiza atenției vizuale (neuromarketing). Strategie, poziționare și un plan clar de creștere, pe obiective măsurabile.',
+      'Te ajutăm să iei deciziile de marketing potrivite, pornite de la date și de la analiza atenției vizuale (neuromarketing). Strategie, poziționare și un plan clar de creștere, pe obiective măsurabile.',
     includes: [
       'Strategie de marketing și de brand',
       'Audit și analiză (Analytics, tracking conversii)',
@@ -728,7 +728,7 @@ export const services: Service[] = [
     heroTitleAccent: 'cercetare, nu pe noroc',
     // TODO[de confirmat]: formularea despre pregătirea academică (doctor vs doctorand, cine).
     heroSub:
-      'Strategie și decizii validate cu date și cu analiza atenției vizuale (neuromarketing), nu cu presupuneri. Pui bugetul exact acolo unde mișcă acul, cu o echipă care are și pregătire academică în marketing.',
+      'Strategie și decizii pornite de la date și de la cum decid oamenii (neuromarketing). Pui bugetul exact unde mișcă acul, cu cineva care are și pregătire academică în marketing.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'De la presupuneri la ',
@@ -750,12 +750,12 @@ export const services: Service[] = [
       {
         title: 'Neuromarketing & Atenție vizuală',
         icon: ICON.brain,
-        desc: 'Ne uităm la unde se duce privirea și cum reacționează oamenii la materialele tale, înainte de lansare: decizii pe comportament real, nu pe gust.',
+        desc: 'Aplicăm ce știm din neuromarketing despre cum percep și aleg oamenii, ca mesajele și designul tău să comunice clar și să convingă.',
         items: [
           'Analiza atenției vizuale',
           'Analiză a ierarhiei vizuale',
           'Optimizare pe principii de neuromarketing',
-          'Validare pre-lansare',
+          'Recomandări aplicate pe design și mesaj',
         ],
       },
       {
@@ -963,7 +963,7 @@ export const services: Service[] = [
       {
         q: 'Ce înseamnă „marketing pe neuromarketing"?',
         body: [
-          'Înseamnă că validăm deciziile înainte și după lansare: analizăm unde se duce atenția pe materialele tale (analiza atenției vizuale) și ne uităm la date reale din Analytics. Așa pui bugetul acolo unde chiar mișcă acul.',
+          'Înseamnă că pornim de la cum decid oamenii: analizăm unde se duce atenția pe materialele tale (analiza atenției vizuale) și ne uităm la date reale din Analytics. Așa pui bugetul acolo unde chiar mișcă acul.',
         ],
       },
       {
@@ -981,7 +981,7 @@ export const services: Service[] = [
       {
         q: 'Cât durează un audit?',
         body: [
-          'De obicei 1-2 săptămâni, în funcție de cât de mult ai deja pus la punct și de câte canale analizăm. [de confirmat]',
+          'De obicei 1-2 săptămâni, în funcție de cât de mult ai deja pus la punct și de câte canale analizăm.',
         ],
       },
       {
@@ -1036,7 +1036,7 @@ export const services: Service[] = [
       'Integrări cu uneltele pe care le folosești deja',
       'Consultanță onestă: unde merită AI-ul și unde nu',
     ],
-    tags: ['Automatizări', 'Mentenanță AI', 'Conținut', 'Integrări'],
+    tags: ['Automatizări', 'Monitorizare AI', 'Conținut', 'Integrări'],
     image:
       'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=900&q=78&auto=format&fit=crop',
     heroTitle: 'AI pentru business, ',

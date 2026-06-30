@@ -11,8 +11,8 @@ interface Props {
 }
 const {
   title,
-  subtitle = 'De la design și UX până la dezvoltare, lansare și mentenanță: livrăm produse digitale solide, bazate pe date.',
-  ctaLabel = 'Discută cu un expert',
+  subtitle = 'De la design și dezvoltare până la lansare și mentenanță: lucrezi direct cu noi, de la prima discuție.',
+  ctaLabel = 'Hai să vorbim',
 } = Astro.props;
 const direct = getDirectContact(await getPublicSettings());
 const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPath;

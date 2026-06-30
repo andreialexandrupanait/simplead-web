@@ -31,7 +31,7 @@ export const resources: Resource[] = [
     slug: 'ghid-site-care-vinde',
     title: 'Ghid: site-ul care vinde',
     description:
-      'Checklist-ul nostru de conversie: ce trebuie să aibă un site ca să transforme vizitatori în clienți, explicat fără jargon. [confirmă: conținutul final]',
+      'Checklist-ul nostru de conversie: ce trebuie să aibă un site ca să-i facă pe oameni să cumpere, explicat fără jargon. [confirmă: conținutul final]',
     kind: 'ghid',
     access: 'gated',
     status: 'coming-soon',
@@ -40,7 +40,7 @@ export const resources: Resource[] = [
     slug: 'checklist-mentenanta',
     title: 'Checklist: mentenanța lunară a site-ului',
     description:
-      'Lista exactă de verificări lunare ca site-ul să rămână rapid, sigur și fără surprize, aceeași pe care o folosim pentru clienții noștri. [confirmă: conținutul final]',
+      'Lista exactă de verificări lunare ca site-ul să rămână rapid și sigur, fără surprize, aceeași pe care o folosim pentru clienții noștri. [confirmă: conținutul final]',
     kind: 'checklist',
     access: 'gated',
     status: 'coming-soon',
