@@ -1,6 +1,7 @@
 import { getIntegration } from './settings';
 
 const SMARTBILL_API = 'https://ws.smartbill.ro/SBORO/api/invoice';
+const SMARTBILL_PAYMENT_API = 'https://ws.smartbill.ro/SBORO/api/payment';
 
 export type InvoiceInput = {
   clientName: string;
@@ -89,5 +90,58 @@ export async function issueInvoice(input: InvoiceInput): Promise<InvoiceResult> 
   } catch (err) {
     console.error('[smartbill] Emiterea facturii a eșuat:', err);
     return { issued: false, reason: 'Eroare de rețea sau timeout spre SmartBill.' };
+  }
+}
+
+/**
+ * Înregistrează încasarea unei facturi în SmartBill (tip Card — plata e
+ * confirmată de Stripe). Efect: factura apare „încasată" în SmartBill, iar
+ * aplicația internă o preia automat la sync-ul zilnic (regula doar-încasate).
+ * Best-effort, ca emiterea.
+ */
+export async function recordCardPayment(input: {
+  series: string;
+  number: string;
+  clientName: string;
+  amount: number;
+  currency: string;
+}): Promise<boolean> {
+  const smartbill = await getIntegration('smartbill');
+  const email = smartbill.email.value;
+  const token = smartbill.token.value;
+  const cif = smartbill.cif.value;
+  if (!email || !token || !cif) return false;
+
+  const payload = {
+    companyVatCode: cif,
+    type: 'Card',
+    isCash: false,
+    value: input.amount,
+    currency: input.currency,
+    client: { name: input.clientName },
+    invoicesList: [{ seriesName: input.series, number: input.number }],
+  };
+
+  try {
+    const auth = Buffer.from(`${email}:${token}`).toString('base64');
+    const res = await fetch(SMARTBILL_PAYMENT_API, {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${auth}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(15_000),
+    });
+    const body = (await res.json().catch(() => ({}))) as { errorText?: string };
+    if (!res.ok || body.errorText) {
+      console.warn('[smartbill] Înregistrarea încasării a eșuat:', body.errorText || res.status);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('[smartbill] Înregistrarea încasării a eșuat:', err);
+    return false;
   }
 }

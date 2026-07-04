@@ -44,6 +44,17 @@ export const INTEGRATIONS = {
       },
     },
   },
+  erp: {
+    label: 'Aplicația internă (ERP)',
+    group: 'Plăți & facturare',
+    desc: 'Comenzile plătite sunt împinse automat în hub.simplead.ro (client + comandă + notificare Telegram).',
+    docs: 'https://hub.simplead.ro',
+    testable: false,
+    fields: {
+      baseUrl: { key: 'integration.erp.base_url', env: 'ERP_BASE_URL', secret: false },
+      apiToken: { key: 'integration.erp.api_token', env: 'ERP_API_TOKEN', secret: true },
+    },
+  },
   postmark: {
     label: 'Postmark',
     group: 'Email',

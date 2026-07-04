@@ -6,7 +6,8 @@ import { customers, orders, packages } from '../../../lib/server/schema';
 import { getStripe, getStripeWebhookSecret } from '../../../lib/server/stripe';
 import { sendEmail } from '../../../lib/server/email';
 import { notifySlack } from '../../../lib/server/slack';
-import { issueInvoice } from '../../../lib/server/smartbill';
+import { issueInvoice, recordCardPayment } from '../../../lib/server/smartbill';
+import { pushOrderToErp } from '../../../lib/server/erp';
 import { getContactToEmail } from '../../../lib/server/settings';
 import { site } from '../../../data/site';
 
@@ -129,10 +130,39 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
         .update(orders)
         .set({ invoiceSeries: invoice.series, invoiceNumber: invoice.number })
         .where(eq(orders.id, order.id));
+      order = { ...order, invoiceSeries: invoice.series, invoiceNumber: invoice.number };
+      // Plata e confirmată de Stripe → înregistrăm și încasarea (Card) în
+      // SmartBill; astfel factura apare „încasată" și aplicația internă o
+      // preia automat la sync-ul zilnic (regula doar-încasate).
+      void recordCardPayment({
+        series: invoice.series,
+        number: invoice.number,
+        clientName: name || email,
+        amount: order.amountCents / 100,
+        currency,
+      });
     } else {
       console.warn('[stripe-webhook] Factura nu a fost emisă:', invoice.reason);
     }
   }
+
+  // Push în aplicația internă (best-effort, idempotent pe orderId).
+  if (email)
+    void pushOrderToErp({
+    orderId: order.id,
+    packageSlug: pkg?.slug ?? 'necunoscut',
+    packageName,
+    packageKind: pkg?.kind ?? null,
+    packageInterval: pkg?.interval ?? null,
+    amountCents: order.amountCents,
+    currency,
+    customerEmail: email,
+    customerName: name || null,
+    stripeCheckoutSessionId: order.stripeCheckoutSessionId,
+    stripePaymentIntentId: order.stripePaymentIntentId,
+    invoiceSeries: order.invoiceSeries ?? null,
+    invoiceNumber: order.invoiceNumber ?? null,
+  });
 
   // Confirmare către client.
   if (email) {
