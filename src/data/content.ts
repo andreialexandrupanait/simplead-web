@@ -360,20 +360,7 @@ export const appTopics: AppTopic[] = [
         ],
       },
     ],
-    faqs: [
-      {
-        q: 'Cât de repede aflu dacă pică site-ul?',
-        body: [
-          'Verificăm site-ul automat, la intervale scurte. Când ceva nu răspunde cum trebuie, primim alertă imediat și intervenim, de cele mai multe ori înainte să observi tu sau clienții tăi.',
-        ],
-      },
-      {
-        q: 'Ce monitorizează exact SimpleAd Manager?',
-        body: [
-          'Disponibilitatea (uptime) și certificatul SSL, starea de securitate, actualizările disponibile, backup-urile, viteza și Core Web Vitals, audit SEO periodic, plus DNS și protecția email. Practic, toată sănătatea tehnică a site-ului într-un singur loc.',
-        ],
-      },
-    ],
+    faqs: [],
   },
   {
     id: 'securitate',
@@ -382,7 +369,7 @@ export const appTopics: AppTopic[] = [
     title: 'Protecție și plasă de siguranță, ',
     titleAccent: 'la fiecare nivel',
     intro:
-      'Te apărăm proactiv de probleme și păstrăm mereu o cale de întoarcere. Scanăm vulnerabilitățile, întărim site-ul și facem backup-uri pe care le putem restaura într-un singur click.',
+      'Te apărăm de probleme din timp și păstrăm mereu o cale de întoarcere. Scanăm vulnerabilitățile, întărim site-ul și facem backup-uri pe care le putem restaura într-un singur click.',
     cards: [
       {
         title: 'Scanare și întărire',
@@ -406,20 +393,7 @@ export const appTopics: AppTopic[] = [
         ],
       },
     ],
-    faqs: [
-      {
-        q: 'Datele și backup-urile mele sunt în siguranță?',
-        body: [
-          'Da. Backup-urile sunt copiate în mai multe locuri (S3, Dropbox, local), iar comunicarea dintre aplicație și site este semnată și protejată. Datele rămân ale tale și le putem restaura oricând.',
-        ],
-      },
-      {
-        q: 'Ce se întâmplă dacă site-ul cade sau e infectat?',
-        body: [
-          'Monitorizăm disponibilitatea și intervenim. Cu backup-urile regulate putem restaura rapid site-ul la o versiune funcțională și curată, iar pentru infecții oferim suport dedicat de curățare.',
-        ],
-      },
-    ],
+    faqs: [],
   },
   {
     id: 'automatizare',
@@ -438,10 +412,10 @@ export const appTopics: AppTopic[] = [
         ],
       },
       {
-        title: 'Răspuns automat la incidente',
+        title: 'Alertă automată la incidente',
         body: [
-          'Pentru situațiile clare avem scenarii predefinite plus un diagnostic asistat de AI care încearcă să rezolve singur problema: site căzut, bază de date critică, plugin vulnerabil.',
-          'Deciziile importante rămân la noi, iar tu primești un rezumat cu ce s-a întâmplat.',
+          'Pentru situațiile clare avem scenarii predefinite, iar un diagnostic asistat de AI ne alertează cu context deja pregătit: site căzut, bază de date critică, plugin vulnerabil.',
+          'Intervenim noi: deciziile importante rămân la oameni, iar tu primești un rezumat cu ce s-a întâmplat.',
         ],
       },
       {
@@ -452,20 +426,7 @@ export const appTopics: AppTopic[] = [
         ],
       },
     ],
-    faqs: [
-      {
-        q: 'Cum vă asigurați că o actualizare nu strică site-ul?',
-        body: [
-          'Înainte de orice update facem backup și o captură a site-ului, aplicăm actualizarea, facem o nouă captură și le comparăm vizual. Dacă apare o diferență sau o eroare, revenim automat la versiunea anterioară, fără ca tu să simți întreruperi.',
-        ],
-      },
-      {
-        q: 'Primesc rapoarte? Ce conțin?',
-        body: [
-          'Da. Lunar primești un raport PDF personalizat (cu logo) care adună uptime, securitate, actualizările făcute, backup-urile, performanța și evoluția SEO. Vezi clar, fără jargon, ce s-a întâmplat cu site-ul tău.',
-        ],
-      },
-    ],
+    faqs: [],
   },
 ];
 
@@ -674,7 +635,7 @@ export const whyPanel: string[] = [
   'Un singur partener pentru grafică, web și marketing',
   'Decizii bazate pe date și neuromarketing',
   'Proces simplu, cu efort minim din partea ta',
-  'Condus de Andrei Panait, doctor în marketing',
+  'Condus de Andrei Panait, cu fundal de cercetare în marketing',
 ];
 
 /** Statisticile compacte din hero-ul hub /servicii (valoare + sufix accent + etichetă). */
@@ -685,8 +646,8 @@ export interface HubStat {
 }
 export const svcHubStats: HubStat[] = [
   { value: 'zeci', em: '', label: 'proiecte' }, // TODO: nr. exact (confirmă Andrei)
-  { value: '10', em: '+', label: 'ani experiență' },
-  { value: 'Dr.', em: '', label: 'în marketing' },
+  { value: '10', em: '+', label: 'ani experiență' }, // TODO: cifră neconfirmată, vezi audit-text-v1.md
+  { value: '6', em: '', label: 'servicii, un singur partener' },
 ];
 
 /** FAQ specific paginii hub /servicii (diferit de FAQ-ul de pe Acasă). */
@@ -779,6 +740,24 @@ export const mentenantaFaqs: Faq[] = [
     q: 'Ce se întâmplă dacă pică sau e infectat site-ul?',
     body: [
       'Suntem anunțați automat și intervenim. Cu backup-urile regulate readucem rapid site-ul la o versiune funcțională și curată.',
+    ],
+  },
+  {
+    q: 'Cât de repede aflu dacă pică site-ul?',
+    body: [
+      'Verificăm site-ul automat, la intervale scurte. Când ceva nu răspunde cum trebuie, primim alertă imediat și intervenim, de cele mai multe ori înainte să observi tu sau clienții tăi.',
+    ],
+  },
+  {
+    q: 'Cum vă asigurați că o actualizare nu strică site-ul?',
+    body: [
+      'Înainte de orice update facem backup și o captură a site-ului, aplicăm actualizarea, facem o nouă captură și le comparăm vizual. Dacă apare o diferență sau o eroare, revenim automat la versiunea anterioară, fără ca tu să simți întreruperi.',
+    ],
+  },
+  {
+    q: 'Primesc rapoarte? Ce conțin?',
+    body: [
+      'Da. Lunar primești un raport PDF personalizat (cu logo) care adună uptime, securitate, actualizările făcute, backup-urile, performanța și evoluția SEO. Vezi clar, fără jargon, ce s-a întâmplat cu site-ul tău.',
     ],
   },
   {

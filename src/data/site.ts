@@ -25,7 +25,7 @@ export const site = {
     country: 'România',
     address: 'Galați, România', // TODO: adresă completă dacă e cazul
     schedule: 'Luni-Vineri, 09:00-18:00', // TODO: confirmă programul
-    responseTime: '24', // ore lucrătoare, TODO: confirmă
+    responseTime: '24', // ore lucrătoare
   },
 
   legal: {

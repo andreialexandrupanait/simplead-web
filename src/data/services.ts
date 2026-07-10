@@ -127,7 +127,7 @@ export const services: Service[] = [
     claim: 'Tu te ocupi de afacere.',
     claimSub: 'Noi ne ocupăm de site.',
     description:
-      'Site-ul tău rămâne rapid, sigur și actualizat, fără bătăi de cap. Îl monitorizez continuu, îl actualizez și îl optimizez, ca tu să te concentrezi pe ce contează.',
+      'Îți monitorizăm site-ul continuu: actualizări, securitate, backup și optimizare de viteză, ca tu să te ocupi doar de afacere.',
     includes: [
       'Actualizări și backup-uri regulate',
       'Securitate și monitorizare uptime',
@@ -139,14 +139,14 @@ export const services: Service[] = [
     image:
       'https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&q=78&auto=format&fit=crop',
     heroTitle: 'Tu te ocupi de afacere, ',
-    heroTitleAccent: 'eu de partea tehnică',
+    heroTitleAccent: 'noi de partea tehnică',
     heroSub:
-      'Site-ul tău rămâne rapid, sigur și actualizat, fără bătăi de cap. Mă ocup de actualizări, securitate, backup-uri, suport și de monitorizarea continuă a site-ului.',
+      'Ne ocupăm de actualizări, securitate, backup-uri, suport și de monitorizarea continuă a site-ului tău.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'Liniște tehnică, ',
-      titleAccent: 'fără bătăi de cap',
-      sub: 'Trei zone de lucru care, împreună, îți țin site-ul rapid, sigur și mereu la zi.',
+      titleAccent: 'pe umerii noștri',
+      sub: 'Trei zone de lucru care, împreună, țin site-ul la zi și te anunță înainte să apară o problemă.',
     },
     capabilities: [
       {
@@ -201,7 +201,7 @@ export const services: Service[] = [
         ],
       },
       {
-        q: 'Cum intră AI-ul în mentenanță?',
+        q: 'Ce rol are supravegherea automată?',
         body: [
           'Îl folosim pentru supraveghere non-stop, prinderea din vreme a problemelor și sarcinile repetitive: ca să intervenim mai repede și să prevenim, nu doar să reparăm. Deciziile importante rămân la oameni.',
         ],
@@ -422,7 +422,7 @@ export const services: Service[] = [
     heroTitle: 'O imagine coerentă, ',
     heroTitleAccent: 'ușor de recunoscut',
     heroSub:
-      'De la identitate vizuală și materiale de promovare, până la print și grafică publicitară. Simplu, dar fundamentat pe cum se uită și decid oamenii.',
+      'De la identitate vizuală și materiale de promovare, până la print și grafică publicitară. Simplu, dar pornit de la cum se uită și decid oamenii.',
     capHead: {
       eyebrow: 'Ce oferim',
       title: 'De la identitate la ',
@@ -559,7 +559,7 @@ export const services: Service[] = [
     ],
     related: ['grafica', 'consultanta', 'ux-ui'],
     title: 'Social media',
-    summary: 'Conținut și prezență care aduc clienți, nu doar aprecieri. Construite pe date.',
+    summary: 'Conținut și prezență care aduc clienți reali, construite pe date.',
     claim: 'Prezență constantă, conținut care prinde.',
     claimSub: 'Hai să discutăm despre canalele tale.',
     description:
@@ -724,7 +724,7 @@ export const services: Service[] = [
     tags: ['Strategie', 'Neuromarketing', 'Analiză', 'Poziționare'],
     image:
       'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=900&q=78&auto=format&fit=crop',
-    heroTitle: 'Marketing fundamentat pe ',
+    heroTitle: 'Marketing bazat pe ',
     heroTitleAccent: 'cercetare, nu pe noroc',
     // TODO[de confirmat]: formularea despre pregătirea academică (doctor vs doctorand, cine).
     heroSub:

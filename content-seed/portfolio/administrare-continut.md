@@ -5,7 +5,7 @@ service: 'Social Media'
 summary: 'Administrare social media și producție de conținut, pe o strategie clară, pe obiective.'
 challenge: 'O prezență constantă și coerentă pe social media, care aduce clienți, nu doar aprecieri.'
 solution: 'Calendar editorial, producție de conținut (grafică + copywriting) și administrare, cu raportare pe obiective.'
-result: 'Comunicare constantă și măsurabilă, aliniată la obiectivele de business.'
+result: 'Comunicare constantă și măsurabilă, legată de obiectivele afacerii tale.'
 order: 6
 draft: false
 ---

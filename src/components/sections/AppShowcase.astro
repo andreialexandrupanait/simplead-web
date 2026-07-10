@@ -64,6 +64,7 @@ const two = (n: number) => String(n).padStart(2, '0');
               ))}
             </div>
 
+            {topic.faqs.length > 0 && (
             <div class="topic__faq">
               <h3 class="topic__faq-title">
                 Întrebări frecvente despre {topic.eyebrow.toLowerCase()}
@@ -114,6 +115,7 @@ const two = (n: number) => String(n).padStart(2, '0');
                 ))}
               </div>
             </div>
+            )}
           </div>
         </div>
       </div>

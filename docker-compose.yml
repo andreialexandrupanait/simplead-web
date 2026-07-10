@@ -8,7 +8,7 @@ services:
     # La schimbarea dependențelor: `docker compose down -v && docker compose up --build`.
     command: pnpm dev --host 0.0.0.0
     ports:
-      - '4321:4321'
+      - '127.0.0.1:4321:4321'
     environment:
       - NODE_ENV=development
       # DB-ul din compose; poate fi suprascris din .env.
@@ -39,7 +39,7 @@ services:
       - POSTGRES_PASSWORD=simplead
       - POSTGRES_DB=simplead
     ports:
-      - '5432:5432'
+      - '127.0.0.1:5432:5432'
     volumes:
       - simplead_pg_data:/var/lib/postgresql/data
     healthcheck:
