@@ -2648,26 +2648,6 @@ img.pf-shot {
   color: var(--electric);
   background: rgba(0, 119, 252, 0.08);
 }
-.bpill--ondark {
-  color: #d4ddf5;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  text-decoration: none;
-}
-a.bpill--ondark:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: #fff;
-}
-/* Pila de categorie (etichetă principală, plină). */
-.bpill--cat {
-  background: var(--electric);
-  color: #fff;
-}
-.bpill--catdark {
-  background: var(--grad);
-  color: #fff;
-  border: none;
-}
 
 /* Hero dark cu căutare + pile. */
 .bhero {
@@ -2930,12 +2910,6 @@ a.bpill--ondark:hover {
 .bcard:hover .bcard__title {
   color: var(--electric);
 }
-.bcard__tags {
-  margin-top: 12px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
 /* Afordanță „citește articolul" — indiciu fin, aliniat jos, animat la hover. */
 .bcard__more {
   margin-top: auto;
@@ -2973,12 +2947,6 @@ a.bpill--ondark:hover {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-}
-.bfeature__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
 }
 .bfeature__title {
   font-family: var(--font-display);
@@ -3208,11 +3176,6 @@ a.bpill--ondark:hover {
 @media (max-width: 560px) {
   .blog-cards {
     grid-template-columns: 1fr;
-  }
-  /* Fără etichete pe mobil (carduri + featured) — listă mai curată, mai aerisită. */
-  .bcard__tags,
-  .bfeature__tags {
-    display: none;
   }
   /* CTA featured full-width — buton intenționat, ușor de atins. */
   .bfeature__cta {
