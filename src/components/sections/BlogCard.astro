@@ -8,6 +8,8 @@ interface Props {
 }
 const { post } = Astro.props;
 const av = authorAvatar(post.author);
+// Thumbnail mai mic pentru carduri (cover-ul e stocat la w=1600): mai puțină lățime de bandă.
+const thumb = post.cover ? post.cover.replace(/([?&])w=\d+/, '$1w=800') : post.cover;
 const dateStr = (post.publishedAt ?? new Date()).toLocaleDateString('ro-RO', {
   year: 'numeric',
   month: 'short',
@@ -19,7 +21,7 @@ const dateStr = (post.publishedAt ?? new Date()).toLocaleDateString('ro-RO', {
   <div class="bcard__thumb">
     {
       post.cover ? (
-        <img src={post.cover} alt={post.title} loading="lazy" width="640" height="400" />
+        <img src={thumb} alt={post.title} loading="lazy" width="640" height="400" />
       ) : (
         <span class="bcard__ph">{post.title}</span>
       )
