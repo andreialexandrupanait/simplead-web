@@ -1,32 +1,73 @@
 ---
 /**
- * Banner de consimțământ cookies (GDPR). Apare DOAR dacă există trackere
- * configurate și utilizatorul nu a decis încă. Acceptul pornește trackerele
- * (window.__saLoadTrackers din Analytics.astro); refuzul le ține oprite.
+ * Banner de consimțământ cookies (GDPR), pe categorii: Analiză și Marketing.
+ * Apare doar dacă există trackere configurate (din /admin/tracking sau env) și
+ * utilizatorul nu a decis încă. Decizia se salvează în localStorage (`sa_consent`)
+ * și pornește trackerele corespunzătoare prin window.__saApplyConsent (Analytics.astro).
  */
-const hasTrackers = Boolean(
-  import.meta.env.GA4_ID || import.meta.env.GTM_ID || import.meta.env.CLARITY_ID,
+import { getPublicSettings } from '@lib/server/public-settings';
+
+const t = (await getPublicSettings()).tracking;
+const hasAnalytics = Boolean(
+  t.ga4Id ||
+    t.clarityId ||
+    t.gtmId ||
+    import.meta.env.GA4_ID ||
+    import.meta.env.GTM_ID ||
+    import.meta.env.CLARITY_ID,
 );
+const hasMarketing = Boolean(t.metaPixelId || t.tiktokPixelId);
+const hasTrackers = hasAnalytics || hasMarketing;
 ---
 
 {
   hasTrackers && (
     <div class="cookie-banner" id="cookie-banner" hidden>
-      <p>
-        Folosim cookie-uri de analiză ca să înțelegem cum e folosit site-ul. Le activăm doar cu
-        acordul tău. Detalii în <a href="/cookies">politica de cookies</a>.
-      </p>
-      <div class="cookie-banner__actions">
-        <button
-          type="button"
-          class="cookie-banner__btn cookie-banner__btn--accept"
-          data-consent="accepted"
-        >
-          Accept
-        </button>
-        <button type="button" class="cookie-banner__btn" data-consent="rejected">
-          Refuz
-        </button>
+      <div class="cookie-banner__main">
+        <p>
+          Folosim cookie-uri ca să înțelegem cum e folosit site-ul și, cu acordul tău, pentru
+          marketing. Le activăm doar dacă accepți. Detalii în{' '}
+          <a href="/cookies">politica de cookies</a>.
+        </p>
+        <div class="cookie-banner__actions">
+          <button type="button" class="cookie-banner__btn" data-consent="none">
+            Refuz
+          </button>
+          <button type="button" class="cookie-banner__btn cookie-banner__btn--ghost" data-consent="prefs">
+            Preferințe
+          </button>
+          <button
+            type="button"
+            class="cookie-banner__btn cookie-banner__btn--accept"
+            data-consent="all"
+          >
+            Accept toate
+          </button>
+        </div>
+      </div>
+
+      <div class="cookie-banner__prefs" hidden>
+        <label class="cookie-banner__cat">
+          <input type="checkbox" data-cat="analytics" checked disabled={!hasAnalytics} />
+          <span>
+            <strong>Analiză</strong> — cum e folosit site-ul (Google Analytics, Clarity).
+          </span>
+        </label>
+        <label class="cookie-banner__cat">
+          <input type="checkbox" data-cat="marketing" disabled={!hasMarketing} />
+          <span>
+            <strong>Marketing</strong> — pixeli publicitari (Meta, TikTok) pentru campanii.
+          </span>
+        </label>
+        <div class="cookie-banner__actions">
+          <button
+            type="button"
+            class="cookie-banner__btn cookie-banner__btn--accept"
+            data-consent="save"
+          >
+            Salvează alegerea
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -40,11 +81,6 @@ const hasTrackers = Boolean(
     z-index: 90;
     margin: 0 auto;
     max-width: 560px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    align-items: center;
-    justify-content: space-between;
     background: var(--ink);
     color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -52,12 +88,19 @@ const hasTrackers = Boolean(
     padding: 16px 20px;
     box-shadow: 0 24px 60px -24px rgba(3, 13, 74, 0.55);
   }
+  .cookie-banner__main {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    justify-content: space-between;
+  }
   .cookie-banner p {
     margin: 0;
     font-size: 0.9rem;
     line-height: 1.5;
     color: var(--muted-dark);
-    flex: 1 1 280px;
+    flex: 1 1 260px;
   }
   .cookie-banner a {
     color: var(--cyan);
@@ -66,9 +109,10 @@ const hasTrackers = Boolean(
   .cookie-banner__actions {
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
   }
   .cookie-banner__btn {
-    padding: 9px 18px;
+    padding: 9px 16px;
     border-radius: var(--r-xs);
     border: 1px solid rgba(255, 255, 255, 0.3);
     background: transparent;
@@ -80,15 +124,44 @@ const hasTrackers = Boolean(
     letter-spacing: 0.04em;
     cursor: pointer;
   }
+  .cookie-banner__btn--ghost {
+    border-color: rgba(255, 255, 255, 0.18);
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 600;
+  }
   .cookie-banner__btn--accept {
     background: var(--electric);
     border-color: transparent;
     box-shadow: var(--glow-electric);
   }
+  .cookie-banner__prefs {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .cookie-banner__cat {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 0.86rem;
+    line-height: 1.45;
+    color: var(--muted-dark);
+  }
+  .cookie-banner__cat strong {
+    color: #fff;
+  }
+  .cookie-banner__cat input {
+    margin-top: 2px;
+    flex: none;
+  }
 </style>
 
 <script>
-  const KEY = 'sa_cookie_consent';
+  const KEY = 'sa_consent';
   const banner = document.getElementById('cookie-banner');
   if (banner) {
     let stored: string | null = null;
@@ -99,17 +172,31 @@ const hasTrackers = Boolean(
     }
     if (!stored) banner.hidden = false;
 
+    const prefs = banner.querySelector<HTMLElement>('.cookie-banner__prefs');
+    const apply = (cats: { analytics: boolean; marketing: boolean }) => {
+      try {
+        localStorage.setItem(KEY, JSON.stringify(cats));
+      } catch {
+        /* localStorage indisponibil */
+      }
+      banner.hidden = true;
+      (
+        window as Window & {
+          __saApplyConsent?: (c: { analytics: boolean; marketing: boolean }) => void;
+        }
+      ).__saApplyConsent?.(cats);
+    };
+
     banner.querySelectorAll<HTMLButtonElement>('[data-consent]').forEach((btn) => {
       btn.addEventListener('click', () => {
-        const value = btn.dataset.consent!;
-        try {
-          localStorage.setItem(KEY, value);
-        } catch {
-          /* localStorage indisponibil */
-        }
-        banner.hidden = true;
-        if (value === 'accepted') {
-          (window as Window & { __saLoadTrackers?: () => void }).__saLoadTrackers?.();
+        const action = btn.dataset.consent!;
+        if (action === 'all') apply({ analytics: true, marketing: true });
+        else if (action === 'none') apply({ analytics: false, marketing: false });
+        else if (action === 'prefs' && prefs) prefs.hidden = false;
+        else if (action === 'save') {
+          const get = (c: string) =>
+            banner.querySelector<HTMLInputElement>(`[data-cat="${c}"]`)?.checked ?? false;
+          apply({ analytics: get('analytics'), marketing: get('marketing') });
         }
       });
     });
