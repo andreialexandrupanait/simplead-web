@@ -152,7 +152,9 @@ export default function ContactForm({
       </div>
 
       <div className="cf">
-        <label htmlFor="cf-message">La ce te gândești?</label>
+        <label htmlFor="cf-message">
+          La ce te gândești? <span className="opt">(opțional)</span>
+        </label>
         <textarea
           id="cf-message"
           placeholder="Câteva rânduri despre proiect, termenul la care te gândești și, dacă ai unul, un buget orientativ. Cu cât mai multe detalii, cu atât revenim mai la obiect."

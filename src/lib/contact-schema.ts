@@ -10,7 +10,8 @@ export const contactSchema = z.object({
   company: z.string().max(120).optional().or(z.literal('')),
   // Serviciul e opțional (formularul din design nu-l cere); util pe pagina /servicii.
   service: z.string().max(60).optional().or(z.literal('')),
-  message: z.string().min(10, 'Spune-ne pe scurt ce ai nevoie (min. 10 caractere).').max(5000),
+  // Mesaj opțional, fără minim; plafon larg doar ca protecție anti-abuz.
+  message: z.string().max(20000).optional().default(''),
   // Consimțământ GDPR: obligatoriu.
   consent: z.literal(true, {
     errorMap: () => ({ message: 'Te rugăm să accepți prelucrarea datelor.' }),
