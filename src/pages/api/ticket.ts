@@ -112,6 +112,22 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     `:lifebuoy: Tichet nou de suport pe simplead.ro\n*${name}* <${email}>${phone ? ` · ${phone}` : ''}\nCategorie: ${categoryLabel} · Prioritate: ${priority}${siteUrl ? `\nSite: ${siteUrl}` : ''}\n${message.length > 300 ? `${message.slice(0, 300)}...` : message}`,
   );
 
+  // 4) Auto-reply de confirmare către client (best-effort). Reply merge la noi.
+  void sendEmail({
+    to: email,
+    replyTo: to,
+    subject: 'Am primit tichetul tău — Simplead',
+    text: [
+      `Salut, ${name}!`,
+      '',
+      `Am înregistrat tichetul tău (${categoryLabel}) și un coleg îl preia cât de curând.`,
+      'Dacă vrei să adaugi detalii, răspunde direct la acest email.',
+      '',
+      '— Echipa Simplead',
+      'https://simplead.ro',
+    ].join('\n'),
+  });
+
   // „ok" dacă tichetul a ajuns măcar pe un canal (DB sau email).
   if (emailResult.sent || stored) {
     return json(emailResult.simulated && !stored ? { ok: true, simulated: true } : { ok: true });

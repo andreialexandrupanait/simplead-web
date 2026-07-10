@@ -1,4 +1,5 @@
 import { defineMiddleware } from 'astro:middleware';
+import type { APIContext, MiddlewareNext } from 'astro';
 import { getAuth } from './lib/auth';
 import { isStaffUser, type SessionUser } from './lib/server/authz';
 import { getPublicSettings } from './lib/server/public-settings';
@@ -13,7 +14,49 @@ import { PAGE_PATHS, normalizePath } from './data/sections';
  * on-demand, ca paginile publice din DB (blog/portofoliu) să poată arăta
  * draft-uri adminului logat la `?preview=1`. Sesiunea e ieftină (cookieCache).
  */
+/**
+ * Headere de securitate pe toate răspunsurile. CSP-ul e intenționat permisiv la
+ * SURSE (https:) ca să nu blocheze GTM (care încarcă tag-uri arbitrare), pixelii
+ * Meta/TikTok, Stripe, Unsplash sau fonturile — dar blochează framing-ul
+ * (clickjacking), injectarea de <base>/<object> și forțează HTTPS.
+ */
+const SECURITY_HEADERS: Record<string, string> = {
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+  'X-Frame-Options': 'SAMEORIGIN',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+};
+
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
+  "style-src 'self' 'unsafe-inline' https:",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data: https:",
+  "connect-src 'self' https:",
+  "frame-src 'self' https:",
+  "media-src 'self' https:",
+  "frame-ancestors 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  'upgrade-insecure-requests',
+].join('; ');
+
+function harden(response: Response): Response {
+  for (const [k, v] of Object.entries(SECURITY_HEADERS)) {
+    if (!response.headers.has(k)) response.headers.set(k, v);
+  }
+  response.headers.set('Content-Security-Policy', CSP);
+  return response;
+}
+
 export const onRequest = defineMiddleware(async (context, next) => {
+  return harden(await route(context, next));
+});
+
+async function route(context: APIContext, next: MiddlewareNext): Promise<Response> {
   const { pathname } = context.url;
 
   // Paginile prerandate nu au un request real la build; nu există admin logat.
@@ -75,4 +118,4 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const response = await next();
   response.headers.set('X-Robots-Tag', 'noindex, nofollow');
   return response;
-});
+}

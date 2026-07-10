@@ -78,6 +78,26 @@ export const POST: APIRoute = async ({ request }) => {
     `:incoming_envelope: Lead nou pe simplead.ro\n*${name}* <${email}> · ${phone}${company ? `\nFirmă/CUI: ${company}` : ''}${service ? `\nServiciu: ${service}` : ''}\n${message.length > 300 ? `${message.slice(0, 300)}...` : message}`,
   );
 
+  // 4) Auto-reply de confirmare către client (best-effort). Reply merge la noi.
+  void sendEmail({
+    to: email,
+    replyTo: to,
+    subject: 'Am primit mesajul tău — Simplead',
+    text: [
+      `Salut, ${firstName}!`,
+      '',
+      'Îți mulțumim că ne-ai scris. Am primit mesajul tău și revenim de obicei în aceeași zi lucrătoare.',
+      service ? `Cererea ta: ${service}` : '',
+      '',
+      'Dacă vrei să adaugi ceva, răspunde direct la acest email.',
+      '',
+      '— Echipa Simplead',
+      'https://simplead.ro',
+    ]
+      .filter(Boolean)
+      .join('\n'),
+  });
+
   // Utilizatorul primește „ok" dacă mesajul a ajuns măcar pe un canal
   // (DB sau email). Eșecul total e singurul caz de eroare.
   if (emailResult.sent || leadStored) {

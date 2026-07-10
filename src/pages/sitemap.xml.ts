@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { staticRoutes } from '@data/static-routes';
 import { getPublishedPosts, getPublishedProjects, getActiveCategories } from '@lib/server/content';
 import { slugify } from '@lib/slug';
+import { BLOG_PAGE_SIZE } from '@lib/blog-page';
 
 export const prerender = false;
 
@@ -22,8 +23,15 @@ export const GET: APIRoute = async ({ site, url }) => {
   // Slug-uri unice de tag + categorii cu articole → pagini de listare.
   const tagSlugs = [...new Set(posts.flatMap((p) => (p.tags ?? []).map(slugify)))];
 
+  // Paginile de paginare /blog/page/N (primul articol e „featured", scos din grilă).
+  const blogTotalPages = Math.max(1, Math.ceil(Math.max(0, posts.length - 1) / BLOG_PAGE_SIZE));
+  const blogPageUrls = Array.from({ length: Math.max(0, blogTotalPages - 1) }, (_, i) => ({
+    loc: `${origin}/blog/page/${i + 2}`,
+  }));
+
   const entries: { loc: string; lastmod?: string }[] = [
     ...staticRoutes.map((path) => ({ loc: `${origin}${path}` })),
+    ...blogPageUrls,
     ...posts.map((p) => ({
       loc: `${origin}/blog/${p.slug}`,
       lastmod: p.updatedAt.toISOString(),
