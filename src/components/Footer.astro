@@ -153,6 +153,9 @@ const social = site.social;
     <div class="links">
       {footerLegal.map((i) => <a href={i.href}>{i.label}</a>)}
     </div>
+    <p class="footer-fineprint">
+      Materialele aparțin Simplead, exceptând sursele menționate; o parte dintre imagini provin din press kits, biblioteci stock sau colecții publice.
+    </p>
   </div>
 </footer>
 
@@ -161,6 +164,15 @@ const social = site.social;
     display: inline-block;
     margin-left: 10px;
     opacity: 0.72;
+  }
+  /* Notă mică de atribuire texte/imagini, pe toată lățimea sub rândul de jos. */
+  .footer-fineprint {
+    flex-basis: 100%;
+    margin: 10px 0 0;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.5;
+    opacity: 0.5;
   }
 
   /* Coloanele de linkuri: pe desktop = listă normală (deschisă); pe mobil =

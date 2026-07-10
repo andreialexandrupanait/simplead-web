@@ -2247,12 +2247,17 @@ img.pf-shot {
 
 /* ---- article (blog/[slug]) ---- */
 .article-hero {
-  background: var(--canvas);
+  /* Nu 100% alb: grilă subtilă de puncte + un glow discret în colț, pe canvas. */
+  background:
+    radial-gradient(900px 380px at 100% 0%, rgba(0, 119, 252, 0.05), transparent 55%),
+    radial-gradient(circle at 1px 1px, rgba(12, 24, 54, 0.05) 1px, transparent 0) 0 0 / 22px 22px,
+    var(--canvas);
   /* navbar e sticky pe articol (în flux) → fără offset nav-h; gol egal sus/jos */
   padding-block: var(--hero-pad-bottom);
 }
 .article-hero__inner {
-  max-width: 768px;
+  /* aliniat pe aceeași axă ca .article-shell (cover + cuprins): stânga la gutter */
+  max-width: var(--maxw);
   margin-inline: auto;
 }
 .article-crumb {
@@ -2352,7 +2357,7 @@ img.pf-shot {
 /* Ax unic de aliniere: cover, corp, related, nav — toate în acest shell. */
 .article-shell {
   width: 100%;
-  max-width: 1080px;
+  max-width: var(--maxw);
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
