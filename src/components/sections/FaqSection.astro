@@ -7,22 +7,40 @@ interface Props {
   eyebrow?: string;
   title?: string;
   titleAccent?: string;
+  /** SVG inner-markup opțional (ex. din SUPPORT_ICON) — badge lângă titlu. */
+  iconSvg?: string;
 }
 const {
   items = defaultFaqs,
   variant = 'light',
   title = 'Ai ',
   titleAccent = 'întrebări?',
+  iconSvg,
 } = Astro.props;
 const faqs = items;
 ---
 
-<section class:list={['section', `section--${variant}`]} id="faq">
+<section class:list={['section', `section--${variant}`]}>
   <div class="container">
     <div class="sec-head center">
+      {
+        iconSvg && (
+          <span class="faq-cat-ic">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              set:html={iconSvg}
+            />
+          </span>
+        )
+      }
       <h2 class="sec-title">{title}<span class="g">{titleAccent}</span></h2>
     </div>
-    <div class="faq" id="faqList">
+    <div class="faq">
       {
         faqs.map((f, i) => (
           <div class:list={['faq-item', i === 0 && 'open']}>
@@ -76,6 +94,22 @@ const faqs = items;
 </section>
 
 <style>
+  /* Badge iconiță de categorie deasupra titlului (centrat cu .sec-head.center). */
+  .faq-cat-ic {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 14px;
+    border-radius: var(--r-md);
+    background: color-mix(in srgb, var(--electric) 9%, transparent);
+    color: var(--electric);
+  }
+  .faq-cat-ic svg {
+    width: 26px;
+    height: 26px;
+  }
   /* Linkuri din răspunsuri (injectate prin set:html, deci :global). */
   .faq-a-body :global(a) {
     color: var(--electric);
@@ -85,27 +119,26 @@ const faqs = items;
 </style>
 
 <script>
-  const list = document.getElementById('faqList');
-  if (list) {
+  // Acordeon single-open PER listă. Folosim querySelectorAll ca să meargă și când
+  // sunt mai multe FaqSection pe aceeași pagină (ex. hub-ul /intrebari-frecvente).
+  const setOpen = (item: HTMLElement, open: boolean) => {
+    item.classList.toggle('open', open);
+    const a = item.querySelector<HTMLElement>('.faq-a');
+    const q = item.querySelector<HTMLButtonElement>('.faq-q');
+    const ic = item.querySelector<HTMLElement>('.faq-ic svg path');
+    if (a) a.style.maxHeight = open ? a.scrollHeight + 'px' : '0px';
+    if (q) q.setAttribute('aria-expanded', String(open));
+    if (ic) ic.setAttribute('d', open ? 'M5 12h14' : 'M12 5v14M5 12h14');
+  };
+  document.querySelectorAll<HTMLElement>('.faq').forEach((list) => {
     const items = Array.from(list.querySelectorAll<HTMLElement>('.faq-item'));
-    const setOpen = (item: HTMLElement, open: boolean) => {
-      item.classList.toggle('open', open);
-      const a = item.querySelector<HTMLElement>('.faq-a');
-      const q = item.querySelector<HTMLButtonElement>('.faq-q');
-      const ic = item.querySelector<HTMLElement>('.faq-ic svg path');
-      if (a) a.style.maxHeight = open ? a.scrollHeight + 'px' : '0px';
-      if (q) q.setAttribute('aria-expanded', String(open));
-      if (ic) ic.setAttribute('d', open ? 'M5 12h14' : 'M12 5v14M5 12h14');
-    };
-    // initialise first open item height
     items.forEach((it) => setOpen(it, it.classList.contains('open')));
     items.forEach((item) => {
-      const q = item.querySelector('.faq-q');
-      q?.addEventListener('click', () => {
+      item.querySelector('.faq-q')?.addEventListener('click', () => {
         const isOpen = item.classList.contains('open');
         items.forEach((other) => setOpen(other, false));
         setOpen(item, !isOpen);
       });
     });
-  }
+  });
 </script>

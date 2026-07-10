@@ -1,20 +1,26 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import PageHeader from '@components/sections/PageHeader.astro';
+import FaqHero from '@components/sections/FaqHero.astro';
 import FaqSection from '@components/sections/FaqSection.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
 import { faqs, generalFaqs, servicesFaqs, type Faq } from '@data/content';
+import { SUPPORT_ICON, type SupportIconKey } from '@data/support-services';
 
-// Hub-ul FAQ: agregă întrebările generale + cele despre colaborare/mentenanță
-// + cele despre servicii, cu o singură schemă FAQPage (SEO/GEO).
-const groups: { id: string; title: string; items: Faq[] }[] = [
-  { id: 'generale', title: 'Despre Simplead', items: faqs },
-  { id: 'colaborare', title: 'Colaborare & mentenanță', items: generalFaqs },
-  { id: 'servicii', title: 'Despre servicii', items: servicesFaqs },
+// Hub-ul FAQ: general + colaborare/mentenanță + servicii, o singură schemă FAQPage.
+const groups: { id: string; title: string; icon: SupportIconKey; items: Faq[] }[] = [
+  { id: 'generale', title: 'Despre Simplead', icon: 'support', items: faqs },
+  { id: 'colaborare', title: 'Colaborare & mentenanță', icon: 'refresh', items: generalFaqs },
+  { id: 'servicii', title: 'Despre servicii', icon: 'spark', items: servicesFaqs },
 ];
 
-// Scoatem tag-urile HTML (ex. linkul către Simplenet din răspunsuri) ca textul
-// din schema FAQPage să rămână curat pentru SEO.
+const categories = groups.map((g) => ({
+  id: g.id,
+  title: g.title,
+  count: g.items.length,
+  iconSvg: SUPPORT_ICON[g.icon],
+}));
+
+// Text curat pentru schema FAQPage (fără HTML din răspunsuri).
 const toAnswer = (f: Faq) => [...f.body, ...(f.list ?? [])].join(' ').replace(/<[^>]+>/g, '');
 const origin = 'https://simplead.ro';
 const schema = {
@@ -37,41 +43,32 @@ const schema = {
   navOverDark={true}
   schema={schema}
 >
-  <PageHeader
-    crumb={[{ label: 'Acasă', href: '/' }, { label: 'Întrebări frecvente' }]}
-    eyebrow="FAQ"
+  <FaqHero
     title="Întrebări frecvente"
-    accent="frecvente"
-    subtitle="Răspunsuri directe, fără jargon. Dacă nu găsești ce cauți, scrie-ne. Răspundem în 24 de ore lucrătoare."
+    intro="Tot ce te întrebi despre cum lucrăm, ce livrăm, cât costă și ce se întâmplă după ce începem — la un loc, fără jargon. Nu găsești răspunsul? Scrie-ne, revenim în 24 de ore lucrătoare."
+    categories={categories}
   />
-
-  <section class="section section--light" style="padding-bottom:0">
-    <div class="container">
-      <nav class="faq-toc" aria-label="Categorii de întrebări">
-        {
-          groups.map((g) => (
-            <a class="pill" href={`#${g.id}`}>
-              {g.title}
-            </a>
-          ))
-        }
-      </nav>
-    </div>
-  </section>
 
   {
     groups.map((g, i) => (
-      <div id={g.id}>
+      <div id={g.id} data-faq-group>
         <FaqSection
           title={g.title}
           titleAccent=""
-          eyebrow="FAQ"
+          iconSvg={SUPPORT_ICON[g.icon]}
           items={g.items}
           variant={i % 2 === 0 ? 'light' : 'tint'}
         />
       </div>
     ))
   }
+
+  <p class="faq-noresults section section--light" data-faq-noresults hidden>
+    <span class="container">
+      Nicio întrebare nu se potrivește căutării tale. Încearcă alt cuvânt sau{' '}
+      <a href="/contact">scrie-ne direct</a>.
+    </span>
+  </p>
 
   <CtaSection
     title="N-ai găsit răspunsul?"
@@ -81,10 +78,63 @@ const schema = {
 </BaseLayout>
 
 <style>
-  .faq-toc {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
+  /* Ascundere robustă la filtrare (bate orice display din .section/.faq-item). */
+  .faq-item[hidden],
+  [data-faq-group][hidden] {
+    display: none !important;
+  }
+  .faq-noresults {
+    text-align: center;
+    color: var(--muted);
+    font-size: 1.02rem;
+  }
+  .faq-noresults .container {
+    display: block;
+  }
+  .faq-noresults a {
+    color: var(--electric);
+    font-weight: 600;
   }
 </style>
+
+<script>
+  // Căutare live: filtrează toate întrebările peste grupuri, ascunde grupurile
+  // goale și afișează mesajul „niciun rezultat". Fără diacritice, ca să prindă
+  // și „pret" pentru „preț".
+  const input = document.querySelector<HTMLInputElement>('[data-faq-search]');
+  const countEl = document.querySelector<HTMLElement>('[data-faq-count]');
+  const noRes = document.querySelector<HTMLElement>('[data-faq-noresults]');
+  const groupEls = Array.from(document.querySelectorAll<HTMLElement>('[data-faq-group]'));
+  const itemEls = Array.from(document.querySelectorAll<HTMLElement>('.faq-item'));
+
+  const norm = (s: string) =>
+    s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  itemEls.forEach((it) => (it.dataset.text = norm(it.textContent || '')));
+
+  if (input) {
+    input.addEventListener('input', () => {
+      const q = norm(input.value.trim());
+      if (!q) {
+        itemEls.forEach((it) => (it.hidden = false));
+        groupEls.forEach((g) => (g.hidden = false));
+        if (noRes) noRes.hidden = true;
+        if (countEl) countEl.textContent = '';
+        return;
+      }
+      let total = 0;
+      itemEls.forEach((it) => {
+        const match = (it.dataset.text || '').includes(q);
+        it.hidden = !match;
+        if (match) total++;
+      });
+      groupEls.forEach((g) => {
+        g.hidden = !g.querySelector('.faq-item:not([hidden])');
+      });
+      if (noRes) noRes.hidden = total > 0;
+      if (countEl)
+        countEl.textContent = total
+          ? `${total} ${total === 1 ? 'rezultat' : 'rezultate'}`
+          : '';
+    });
+  }
+</script>

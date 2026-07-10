@@ -1,0 +1,274 @@
+---
+/** Hero pentru hub-ul FAQ (DARK): titlu + poveste + căutare live + card de categorii.
+ *  Reia limbajul vizual din ServiceHubHero (navy + glow + grilă de puncte). */
+interface Category {
+  id: string;
+  title: string;
+  count: number;
+  iconSvg: string;
+}
+interface Props {
+  title: string;
+  intro: string;
+  categories: Category[];
+}
+const { title, intro, categories } = Astro.props;
+const chev = '<path d="M9 6l6 6-6 6"/>';
+const search =
+  '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>';
+const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
+---
+
+<section class="faqhero">
+  <div class="site-container faqhero__inner">
+    <div class="faqhero__text" data-reveal>
+      <div class="crumb">
+        <a href="/">Acasă</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
+        <span class="cur">Întrebări frecvente</span>
+      </div>
+      <h1 class="faqhero__title">{title}</h1>
+      <p class="faqhero__sub">{intro}</p>
+
+      <div class="faqhero__search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={search} />
+        <input
+          type="search"
+          data-faq-search
+          placeholder="Caută o întrebare… (ex. preț, mentenanță, termen)"
+          aria-label="Caută în întrebări frecvente"
+          autocomplete="off"
+        />
+      </div>
+      <p class="faqhero__hint" data-faq-count aria-live="polite"></p>
+    </div>
+
+    <aside class="faqhero__panel" data-reveal>
+      <h3><span class="dot"></span>Pe categorii</h3>
+      <ul>
+        {
+          categories.map((c) => (
+            <li>
+              <a href={`#${c.id}`}>
+                <span class="faqhero__cat-ic">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={c.iconSvg} />
+                </span>
+                <span class="faqhero__cat-text">
+                  <span class="faqhero__cat-title">{c.title}</span>
+                  <span class="faqhero__cat-count">{c.count} întrebări</span>
+                </span>
+                <svg class="faqhero__cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={arrowR} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .faqhero {
+    position: relative;
+    background: #050a33;
+    color: #fff;
+    overflow: hidden;
+  }
+  .faqhero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(48% 60% at 88% 8%, rgba(0, 119, 252, 0.26) 0%, transparent 60%),
+      radial-gradient(40% 60% at 2% 40%, rgba(0, 224, 198, 0.14) 0%, transparent 60%);
+  }
+  .faqhero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+  }
+  .faqhero__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 56px;
+    align-items: center;
+    padding-top: calc(var(--nav-h) + var(--hero-pad-top));
+    padding-bottom: var(--hero-pad-bottom);
+  }
+  .crumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86rem;
+    color: var(--muted-dark);
+    margin-bottom: 16px;
+  }
+  .crumb svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0.6;
+  }
+  .crumb a:hover {
+    color: var(--cyan);
+  }
+  .crumb .cur {
+    color: #fff;
+    font-weight: 600;
+  }
+  .faqhero__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.9rem, 3.6vw, 3rem);
+    line-height: 1.14;
+    letter-spacing: -0.025em;
+    color: #fff;
+    text-wrap: balance;
+  }
+  .faqhero__sub {
+    margin-top: 18px;
+    max-width: 52ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--muted-dark);
+  }
+  .faqhero__search {
+    margin-top: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 460px;
+    padding: 0 16px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: var(--r-pill);
+    transition: border-color 0.18s ease, background 0.18s ease;
+  }
+  .faqhero__search:focus-within {
+    border-color: var(--cyan);
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .faqhero__search svg {
+    width: 20px;
+    height: 20px;
+    color: var(--muted-dark);
+    flex: none;
+  }
+  .faqhero__search input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 1rem;
+  }
+  .faqhero__search input::placeholder {
+    color: var(--muted-dark);
+  }
+  .faqhero__hint {
+    margin-top: 12px;
+    min-height: 1.2em;
+    font-size: 0.9rem;
+    color: var(--cyan);
+  }
+
+  /* Card categorii (dreapta) */
+  .faqhero__panel {
+    background: var(--ink-soft);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--r-lg);
+    padding: 22px;
+  }
+  .faqhero__panel h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  .faqhero__panel h3 .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 0 4px rgba(0, 224, 198, 0.2);
+  }
+  .faqhero__panel ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .faqhero__panel a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border-radius: var(--r-md);
+    border: 1px solid transparent;
+    transition: background 0.16s ease, border-color 0.16s ease;
+  }
+  .faqhero__panel a:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+  .faqhero__cat-ic {
+    flex: none;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-sm);
+    background: rgba(0, 224, 198, 0.12);
+    color: var(--cyan);
+  }
+  .faqhero__cat-ic svg {
+    width: 21px;
+    height: 21px;
+  }
+  .faqhero__cat-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .faqhero__cat-title {
+    font-weight: 700;
+    font-size: 0.98rem;
+    color: #fff;
+  }
+  .faqhero__cat-count {
+    font-size: 0.82rem;
+    color: var(--muted-dark);
+  }
+  .faqhero__cat-arrow {
+    width: 17px;
+    height: 17px;
+    color: var(--muted-dark);
+    flex: none;
+    transition: transform 0.18s var(--ease-snap, ease), color 0.18s ease;
+  }
+  .faqhero__panel a:hover .faqhero__cat-arrow {
+    transform: translateX(3px);
+    color: var(--cyan);
+  }
+
+  @media (max-width: 900px) {
+    .faqhero__inner {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+</style>
