@@ -121,7 +121,7 @@ if (post.status === 'draft') {
   description={description}
   schema={schema}
   ogType="article"
-  ogImage={post.cover ?? undefined}
+  ogImage={`/api/og/${post.slug}.png`}
 >
   <ReadingProgress />
 
