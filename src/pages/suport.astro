@@ -3,7 +3,6 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import PageHeader from '@components/sections/PageHeader.astro';
 import FaqSection from '@components/sections/FaqSection.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
-import Button from '@components/ui/Button.astro';
 import { SUPPORT_ICON, type SupportIconKey } from '@data/support-services';
 import type { Faq } from '@data/content';
 
@@ -175,16 +174,9 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
     subtitle="WordPress căzut, SSL expirat, DNS greșit, email în spam sau site de mutat. Intervenim rapid și transparent, la oră. Lucrăm și pe site-uri construite de altcineva."
   />
 
-  <section class="sup-intro">
-    <div class="sup-intro__inner container">
-      <Button href={CONTACT} size="lg" withArrow>Descrie-ne problema</Button>
-      <a class="sup-intro__alt" href="/cere-suport">Sau trimite-ne un tichet →</a>
-    </div>
-  </section>
-
   {
-    groups.map((g) => (
-      <section class="section section--light sup-grp">
+    groups.map((g, i) => (
+      <section class:list={['section', i % 2 === 0 ? 'section--light' : 'section--tint', 'sup-grp']}>
         <div class="container">
           <div class="sec-head" data-reveal>
             <h2 class="sec-title">
@@ -275,27 +267,8 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
 </BaseLayout>
 
 <style>
-  .sup-intro {
-    background: var(--canvas);
-    padding-block: clamp(28px, 4vw, 44px);
-  }
-  .sup-intro__inner {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    flex-wrap: wrap;
-    justify-content: center;
-    text-align: center;
-  }
-  .sup-intro__alt {
-    font-weight: 700;
-    font-size: 0.95rem;
-    color: var(--electric);
-  }
-
-  .sup-grp {
-    padding-block: clamp(34px, 4.5vw, 56px);
-  }
+  /* Spațierea verticală vine uniform din .container (--section-pad), ca pe restul
+     site-ului — fără padding-block propriu care ar dubla golurile. */
   .sup-grp .sec-head {
     margin-bottom: clamp(24px, 3vw, 36px);
   }
