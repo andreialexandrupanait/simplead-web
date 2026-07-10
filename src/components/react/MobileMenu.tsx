@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { NavItem, NavServiceItem } from '../../data/nav';
 
 interface Props {
@@ -17,8 +18,12 @@ type Child = { label: string; href: string };
  */
 export default function MobileMenu({ items, services = [], ctaLabel, ctaHref, activePath }: Props) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [blogCats, setBlogCats] = useState<Child[]>([]);
+
+  // Portalul se activează doar pe client (document indisponibil în SSR).
+  useEffect(() => setMounted(true), []);
 
   // Blochează scroll-ul body când meniul e deschis + închide pe Escape.
   useEffect(() => {
@@ -88,12 +93,14 @@ export default function MobileMenu({ items, services = [], ctaLabel, ctaHref, ac
         <span />
       </button>
 
-      <div
-        className={`mm-overlay ${open ? 'is-open' : ''}`}
-        role="dialog"
-        aria-modal="true"
-        aria-hidden={!open}
-      >
+      {mounted &&
+        createPortal(
+          <div
+            className={`mm-overlay ${open ? 'is-open' : ''}`}
+            role="dialog"
+            aria-modal="true"
+            aria-hidden={!open}
+          >
         <div className="mm-bar">
           <span className="mm-bar__brand">Simplead</span>
           <button type="button" aria-label="Închide meniul" onClick={close} className="mm-close">
@@ -152,7 +159,9 @@ export default function MobileMenu({ items, services = [], ctaLabel, ctaHref, ac
             {ctaLabel}
           </a>
         </div>
-      </div>
+          </div>,
+          document.body,
+        )}
 
       <style>{`
         .mm-burger {
