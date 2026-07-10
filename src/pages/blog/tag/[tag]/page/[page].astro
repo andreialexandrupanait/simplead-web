@@ -3,52 +3,55 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import BlogListing from '@components/sections/BlogListing.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
 import { getPublishedPosts, getAllTags } from '@lib/server/content';
-import { paginatePosts, blogListSchema } from '@lib/blog-page';
+import { paginatePosts, blogPageHref, blogListSchema, BLOG_PAGE_SIZE } from '@lib/blog-page';
 import { slugify } from '@lib/slug';
 
 export const prerender = false;
 
 const tagSlug = Astro.params.tag!;
+const base = `/blog/tag/${tagSlug}`;
+const page = parseInt(Astro.params.page ?? '', 10);
+if (!Number.isInteger(page) || page < 2) {
+  return Astro.redirect(base, 301);
+}
+
 const allPosts = await getPublishedPosts();
 const allTags = (await getAllTags()).map((t) => t.tag);
-
-// Numele real al tag-ului (din slug) + articolele care îl conțin.
 const match = allTags.find((t) => slugify(t) === tagSlug);
 const items = allPosts.filter((p) => (p.tags ?? []).some((t) => slugify(t) === tagSlug));
 if (!match || items.length === 0) {
   return Astro.rewrite('/404');
 }
 
-const base = `/blog/tag/${tagSlug}`;
-const page = Math.max(1, parseInt(Astro.url.searchParams.get('page') ?? '1', 10) || 1);
-// Paginile 2+ trăiesc la /blog/tag/SLUG/page/N (stil WordPress).
-if (page >= 2) {
-  return Astro.redirect(`${base}/page/${page}`, 301);
+const { totalPages, safePage, pageItems } = paginatePosts(items, page, false);
+if (page > totalPages) {
+  return Astro.redirect(totalPages >= 2 ? `${base}/page/${totalPages}` : base, 301);
 }
 
 const subtitle = `Tot ce am scris despre ${match.toLowerCase()}.`;
-
 const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
-const { totalPages, pageItems } = paginatePosts(items, 1, false);
-const nextUrl = totalPages > 1 ? `${base}/page/2` : undefined;
+const prevUrl = blogPageHref(base, safePage - 1);
+const nextUrl = safePage < totalPages ? blogPageHref(base, safePage + 1) : undefined;
 const schema = blogListSchema({
-  name: `${match} · Blog Simplead`,
+  name: `${match} · Blog Simplead · pagina ${safePage}`,
   description: subtitle,
-  url: `${origin}${base}`,
+  url: `${origin}${base}/page/${safePage}`,
   origin,
   posts: pageItems,
+  startPosition: (safePage - 1) * BLOG_PAGE_SIZE + 1,
 });
 ---
 
 <BaseLayout
-  title={`${match} · Blog`}
+  title={`${match} · Blog · pagina ${safePage}`}
   description={subtitle}
   transparentNav={true}
   navOverDark={true}
+  prevUrl={prevUrl}
   nextUrl={nextUrl}
   schema={schema}
 >
-  <BlogListing title={match} subtitle={subtitle} items={items} page={1} basePath={base} />
+  <BlogListing title={match} subtitle={subtitle} items={items} page={safePage} basePath={base} />
 
   <CtaSection />
 </BaseLayout>

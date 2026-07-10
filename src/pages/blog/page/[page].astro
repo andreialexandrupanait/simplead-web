@@ -1,0 +1,61 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import BlogListing from '@components/sections/BlogListing.astro';
+import CtaSection from '@components/sections/CtaSection.astro';
+import { getPublishedPosts, getActiveCategories } from '@lib/server/content';
+import { paginatePosts, blogPageHref, blogListSchema, BLOG_PAGE_SIZE } from '@lib/blog-page';
+
+export const prerender = false;
+
+const page = parseInt(Astro.params.page ?? '', 10);
+// Pagina 1 e la /blog, nu la /blog/page/1.
+if (!Number.isInteger(page) || page < 2) {
+  return Astro.redirect('/blog', 301);
+}
+
+const allPosts = await getPublishedPosts();
+const categories = await getActiveCategories();
+
+const { totalPages, safePage, pageItems } = paginatePosts(allPosts, page, true);
+// Pagină în afara intervalului → du la ultima pagină validă (sau /blog).
+if (page > totalPages) {
+  return Astro.redirect(totalPages >= 2 ? `/blog/page/${totalPages}` : '/blog', 301);
+}
+
+const subtitle =
+  'Idei și ghiduri din lumea marketingului: branding, neuromarketing și web design, pe înțelesul tău.';
+
+const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
+const prevUrl = blogPageHref('/blog', safePage - 1);
+const nextUrl = safePage < totalPages ? blogPageHref('/blog', safePage + 1) : undefined;
+const listSchema = blogListSchema({
+  name: `Blog Simplead · pagina ${safePage}`,
+  description: subtitle,
+  url: `${origin}/blog/page/${safePage}`,
+  origin,
+  posts: pageItems,
+  startPosition: (safePage - 1) * BLOG_PAGE_SIZE + 1,
+});
+---
+
+<BaseLayout
+  title={`Blog · pagina ${safePage}`}
+  description={subtitle}
+  transparentNav={true}
+  navOverDark={true}
+  prevUrl={prevUrl}
+  nextUrl={nextUrl}
+  schema={listSchema}
+>
+  <BlogListing
+    title="Blog"
+    subtitle={subtitle}
+    items={allPosts}
+    categories={categories}
+    page={safePage}
+    showFeatured={true}
+    basePath="/blog"
+  />
+
+  <CtaSection />
+</BaseLayout>

@@ -38,12 +38,16 @@ const totalPages = Math.max(1, Math.ceil(rest.length / pageSize));
 const safePage = Math.min(Math.max(1, page), totalPages);
 const pageItems = rest.slice((safePage - 1) * pageSize, safePage * pageSize);
 
+// Stil WordPress: pagina 1 = basePath, restul = basePath/page/N. Căutarea (?q=)
+// rămâne pe query params (paginile de căutare sunt oricum noindex).
 const pageHref = (n: number) => {
-  const params = new URLSearchParams();
-  if (query) params.set('q', query);
-  if (n > 1) params.set('page', String(n));
-  const qs = params.toString();
-  return qs ? `${basePath}?${qs}` : basePath;
+  if (query) {
+    const params = new URLSearchParams();
+    params.set('q', query);
+    if (n > 1) params.set('page', String(n));
+    return `${basePath}?${params.toString()}`;
+  }
+  return n <= 1 ? basePath : `${basePath}/page/${n}`;
 };
 const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 ---

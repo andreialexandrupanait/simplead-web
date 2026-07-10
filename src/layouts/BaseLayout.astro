@@ -27,6 +27,12 @@ interface Props {
   ogType?: 'website' | 'article';
   /** JSON-LD specific paginii (Service, BlogPosting…), adăugat în @graph. */
   schema?: Record<string, unknown> | Record<string, unknown>[];
+  /** Query string (ex. „?page=2") inclus în canonical + og:url — pt canonical
+   *  self-referențial pe listele paginate. Implicit: fără query (doar pathname). */
+  canonicalQuery?: string;
+  /** URL-uri pentru <link rel="prev"/"next"> în head (paginare). Relative sau absolute. */
+  prevUrl?: string;
+  nextUrl?: string;
 }
 
 const {
@@ -39,12 +45,17 @@ const {
   noindex = false,
   ogType = 'website',
   schema,
+  canonicalQuery = '',
+  prevUrl,
+  nextUrl,
 } = Astro.props;
 
 const locale = localeFromPath(Astro.url.pathname);
 const fullTitle = title ? `${title} · ${site.name}` : `${site.name} · Grafică & marketing digital`;
 const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
-const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
+const canonical = new URL(Astro.url.pathname + canonicalQuery, Astro.site ?? Astro.url.origin).href;
+const prevHref = prevUrl ? new URL(prevUrl, Astro.site ?? Astro.url.origin).href : null;
+const nextHref = nextUrl ? new URL(nextUrl, Astro.site ?? Astro.url.origin).href : null;
 const ogImageUrl = new URL(ogImage, Astro.site ?? Astro.url.origin).href;
 
 // Alternate-uri de limbă (emise doar când versiunea EN e live, ca să nu trimitem
@@ -144,6 +155,8 @@ const jsonLd = {
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
+    {prevHref && <link rel="prev" href={prevHref} />}
+    {nextHref && <link rel="next" href={nextHref} />}
     {
       EN_LIVE && (
         <>

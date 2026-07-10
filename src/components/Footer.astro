@@ -168,7 +168,8 @@ const social = site.social;
   /* Notă mică de atribuire texte/imagini, pe toată lățimea sub rândul de jos. */
   .footer-fineprint {
     flex-basis: 100%;
-    margin: 10px 0 0;
+    /* margin negativ ca să anuleze row-gap-ul de 16px al .footer-bottom */
+    margin: -12px 0 0;
     text-align: center;
     font-size: 12px;
     line-height: 1.5;

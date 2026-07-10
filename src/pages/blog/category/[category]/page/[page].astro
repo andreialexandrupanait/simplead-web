@@ -3,47 +3,51 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import BlogListing from '@components/sections/BlogListing.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
 import { getPublishedPosts, getActiveCategories } from '@lib/server/content';
-import { paginatePosts, blogListSchema } from '@lib/blog-page';
+import { paginatePosts, blogPageHref, blogListSchema, BLOG_PAGE_SIZE } from '@lib/blog-page';
 import { slugify } from '@lib/slug';
 
 export const prerender = false;
 
 const catSlug = Astro.params.category!;
+const base = `/blog/category/${catSlug}`;
+const page = parseInt(Astro.params.page ?? '', 10);
+if (!Number.isInteger(page) || page < 2) {
+  return Astro.redirect(base, 301);
+}
+
 const allPosts = await getPublishedPosts();
 const categories = await getActiveCategories();
-
 const match = categories.find((c) => slugify(c) === catSlug);
 const items = allPosts.filter((p) => p.category && slugify(p.category) === catSlug);
 if (!match || items.length === 0) {
   return Astro.rewrite('/404');
 }
 
-const base = `/blog/category/${catSlug}`;
-const page = Math.max(1, parseInt(Astro.url.searchParams.get('page') ?? '1', 10) || 1);
-// Paginile 2+ trăiesc la /blog/category/SLUG/page/N (stil WordPress).
-if (page >= 2) {
-  return Astro.redirect(`${base}/page/${page}`, 301);
+const { totalPages, safePage, pageItems } = paginatePosts(items, page, false);
+if (page > totalPages) {
+  return Astro.redirect(totalPages >= 2 ? `${base}/page/${totalPages}` : base, 301);
 }
 
 const subtitle = `Articole din categoria ${match.toLowerCase()}.`;
-
 const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
-const { totalPages, pageItems } = paginatePosts(items, 1, false);
-const nextUrl = totalPages > 1 ? `${base}/page/2` : undefined;
+const prevUrl = blogPageHref(base, safePage - 1);
+const nextUrl = safePage < totalPages ? blogPageHref(base, safePage + 1) : undefined;
 const schema = blogListSchema({
-  name: `${match} · Blog Simplead`,
+  name: `${match} · Blog Simplead · pagina ${safePage}`,
   description: subtitle,
-  url: `${origin}${base}`,
+  url: `${origin}${base}/page/${safePage}`,
   origin,
   posts: pageItems,
+  startPosition: (safePage - 1) * BLOG_PAGE_SIZE + 1,
 });
 ---
 
 <BaseLayout
-  title={`${match} · Blog`}
+  title={`${match} · Blog · pagina ${safePage}`}
   description={subtitle}
   transparentNav={true}
   navOverDark={true}
+  prevUrl={prevUrl}
   nextUrl={nextUrl}
   schema={schema}
 >
@@ -53,7 +57,7 @@ const schema = blogListSchema({
     items={items}
     categories={categories}
     activeCategory={catSlug}
-    page={1}
+    page={safePage}
     basePath={base}
   />
 

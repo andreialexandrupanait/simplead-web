@@ -3,6 +3,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import BlogListing from '@components/sections/BlogListing.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
 import { getPublishedPosts, getActiveCategories } from '@lib/server/content';
+import { paginatePosts, blogListSchema } from '@lib/blog-page';
 
 // Articolele vin din DB (editate în /admin) — pagina e on-demand ca publicarea
 // să fie instantă, plus citim ?q= și ?page= la request time.
@@ -10,6 +11,12 @@ export const prerender = false;
 
 const q = (Astro.url.searchParams.get('q') ?? '').trim();
 const page = Math.max(1, parseInt(Astro.url.searchParams.get('page') ?? '1', 10) || 1);
+const isSearch = q.length > 0;
+
+// Paginile 2+ trăiesc la /blog/page/N (stil WordPress). Redirect vechile ?page=.
+if (!isSearch && page >= 2) {
+  return Astro.redirect(`/blog/page/${page}`, 301);
+}
 
 const allPosts = await getPublishedPosts();
 const categories = await getActiveCategories();
@@ -23,16 +30,42 @@ const items = q
 
 const subtitle =
   'Idei și ghiduri din lumea marketingului: branding, neuromarketing și web design, pe înțelesul tău.';
+
+// /blog = pagina 1 (căutarea folosește ?page= pe query). Restul la /blog/page/N.
+const { totalPages, safePage, pageItems } = paginatePosts(items, isSearch ? page : 1, !isSearch);
+const featured = !isSearch && safePage === 1 && items.length > 0 ? items[0] : null;
+
+// Căutarea = noindex (rezultate subțiri/duplicate), canonic către /blog.
+const nextUrl = !isSearch && totalPages > 1 ? '/blog/page/2' : undefined;
+
+// Schema listă (AEO/GEO): articolele vizibile pe pagină.
+const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
+const shownPosts = featured ? [featured, ...pageItems] : pageItems;
+const listSchema = blogListSchema({
+  name: 'Blog Simplead',
+  description: subtitle,
+  url: `${origin}/blog`,
+  origin,
+  posts: shownPosts,
+});
 ---
 
-<BaseLayout title="Blog" description={subtitle} transparentNav={true} navOverDark={true}>
+<BaseLayout
+  title="Blog"
+  description={subtitle}
+  transparentNav={true}
+  navOverDark={true}
+  noindex={isSearch}
+  nextUrl={nextUrl}
+  schema={listSchema}
+>
   <BlogListing
     title="Blog"
     subtitle={subtitle}
     items={items}
     categories={categories}
     query={q}
-    page={page}
+    page={isSearch ? page : 1}
     showFeatured={!q}
     basePath="/blog"
   />

@@ -13,22 +13,11 @@ const dateStr = (post.publishedAt ?? new Date()).toLocaleDateString('ro-RO', {
   month: 'long',
   day: 'numeric',
 });
-const tags = (post.tags ?? []).filter((t) => t !== post.category);
 const arrow = '<path d="M5 12h14M13 6l6 6-6 6"/>';
 ---
 
 <article class="bfeature">
   <div class="bfeature__body">
-    {
-      (post.category || tags.length > 0) && (
-        <div class="bfeature__tags">
-          {post.category && <span class="bpill bpill--catdark">{post.category}</span>}
-          {tags.slice(0, post.category ? 2 : 3).map((tag) => (
-            <span class="bpill bpill--ondark">{tag}</span>
-          ))}
-        </div>
-      )
-    }
     <h2 class="bfeature__title">
       <a href={`/blog/${post.slug}`}>{post.title}</a>
     </h2>
@@ -68,5 +57,6 @@ const arrow = '<path d="M5 12h14M13 6l6 6-6 6"/>';
         <span>{post.title}</span>
       )
     }
+    {post.category && <span class="bcard__cat">{post.category}</span>}
   </a>
 </article>

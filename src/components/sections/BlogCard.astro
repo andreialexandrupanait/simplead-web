@@ -13,8 +13,6 @@ const dateStr = (post.publishedAt ?? new Date()).toLocaleDateString('ro-RO', {
   month: 'short',
   day: 'numeric',
 });
-// Tag-uri fără cel care dublează categoria.
-const tags = (post.tags ?? []).filter((t) => t !== post.category);
 ---
 
 <a class="bcard" href={`/blog/${post.slug}`}>
@@ -26,6 +24,7 @@ const tags = (post.tags ?? []).filter((t) => t !== post.category);
         <span class="bcard__ph">{post.title}</span>
       )
     }
+    {post.category && <span class="bcard__cat">{post.category}</span>}
   </div>
   <div class="bcard__byline">
     {
@@ -49,16 +48,6 @@ const tags = (post.tags ?? []).filter((t) => t !== post.category);
     <time datetime={(post.publishedAt ?? post.createdAt).toISOString()}>{dateStr}</time>
   </div>
   <h3 class="bcard__title">{post.title}</h3>
-  {
-    (post.category || tags.length > 0) && (
-      <div class="bcard__tags">
-        {post.category && <span class="bpill bpill--cat">{post.category}</span>}
-        {tags.slice(0, post.category ? 2 : 3).map((tag) => (
-          <span class="bpill">{tag}</span>
-        ))}
-      </div>
-    )
-  }
   <span class="bcard__more">
     Citește articolul
     <svg
