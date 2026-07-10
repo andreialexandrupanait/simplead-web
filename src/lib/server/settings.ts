@@ -93,6 +93,17 @@ export const INTEGRATIONS = {
       webhookUrl: { key: 'integration.slack.webhook_url', env: 'SLACK_WEBHOOK_URL', secret: true },
     },
   },
+  mailerlite: {
+    label: 'MailerLite',
+    group: 'Newsletter',
+    desc: 'Abonații din formularele de newsletter sunt trimiși automat în MailerLite (grupul ales). Datele rămân și în baza noastră, vizibile în /admin/abonati.',
+    docs: 'https://dashboard.mailerlite.com/integrations/api',
+    testable: true,
+    fields: {
+      apiKey: { key: 'integration.mailerlite.api_key', env: 'MAILERLITE_API_KEY', secret: true },
+      groupId: { key: 'integration.mailerlite.group_id', env: 'MAILERLITE_GROUP_ID', secret: false },
+    },
+  },
   google: {
     label: 'Login Google',
     group: 'Autentificare',

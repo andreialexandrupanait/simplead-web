@@ -1,22 +1,35 @@
 ---
 /**
- * Tracking condiționat de env + CONSIMȚĂMÂNT (GDPR). Dacă un ID lipsește,
- * scriptul aferent nu se randează deloc. Dacă există trackere, ele se
- * încarcă DOAR după acceptul din CookieBanner (sau la revenire, dacă
- * acceptul e deja salvat în localStorage sub cheia `sa_cookie_consent`).
+ * Tracking condiționat de setări (admin) + CONSIMȚĂMÂNT (GDPR). ID-urile vin din
+ * /admin/tracking (tabela settings, prin getPublicSettings), cu fallback pe env.
+ * Dacă un ID lipsește, scriptul aferent nu se încarcă. Toate trackerele pornesc
+ * DOAR după acceptul din CookieBanner (cheia `sa_cookie_consent` din localStorage).
+ * Expune window.saTrack(event, params) pentru evenimente (lead, sign_up, purchase).
  */
-const GA4_ID = import.meta.env.GA4_ID;
-const GTM_ID = import.meta.env.GTM_ID;
-const CLARITY_ID = import.meta.env.CLARITY_ID;
-const hasTrackers = Boolean(GA4_ID || GTM_ID || CLARITY_ID);
+import { getPublicSettings } from '@lib/server/public-settings';
+
+const pub = await getPublicSettings();
+const t = pub.tracking;
+
+const GTM_ID = t.gtmId || import.meta.env.GTM_ID || '';
+const GA4_ID = t.ga4Id || import.meta.env.GA4_ID || '';
+const CLARITY_ID = t.clarityId || import.meta.env.CLARITY_ID || '';
+const META_PIXEL_ID = t.metaPixelId || import.meta.env.META_PIXEL_ID || '';
+const TIKTOK_PIXEL_ID = t.tiktokPixelId || import.meta.env.TIKTOK_PIXEL_ID || '';
+
+const hasTrackers = Boolean(GTM_ID || GA4_ID || CLARITY_ID || META_PIXEL_ID || TIKTOK_PIXEL_ID);
 ---
 
 {
   hasTrackers && (
-    <script is:inline define:vars={{ GA4_ID, GTM_ID, CLARITY_ID }}>
+    <script
+      is:inline
+      define:vars={{ GTM_ID, GA4_ID, CLARITY_ID, META_PIXEL_ID, TIKTOK_PIXEL_ID }}
+    >
       (function () {
         const KEY = 'sa_cookie_consent';
         let loaded = false;
+        window.dataLayer = window.dataLayer || [];
 
         function loadTrackers() {
           if (loaded) return;
@@ -27,8 +40,8 @@ const hasTrackers = Boolean(GA4_ID || GTM_ID || CLARITY_ID);
               w[l] = w[l] || [];
               w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
               const f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != 'dataLayer' ? '&l=' + l : '';
+                j = d.createElement(s),
+                dl = l != 'dataLayer' ? '&l=' + l : '';
               j.async = true;
               j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
               f.parentNode.insertBefore(j, f);
@@ -40,14 +53,26 @@ const hasTrackers = Boolean(GA4_ID || GTM_ID || CLARITY_ID);
             s.async = true;
             s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA4_ID;
             document.head.appendChild(s);
-            window.dataLayer = window.dataLayer || [];
             function gtag() {
-              // Snippet gtag canonic Google: `arguments` e parte din pattern-ul oficial.
               // eslint-disable-next-line prefer-rest-params
               dataLayer.push(arguments);
             }
             window.gtag = gtag;
             gtag('js', new Date());
+            // Consent Mode v2: implicit refuzat, apoi acordat (suntem aici doar
+            // fiindcă userul a acceptat) — semnal corect pentru GA4/Ads.
+            gtag('consent', 'default', {
+              ad_storage: 'denied',
+              analytics_storage: 'denied',
+              ad_user_data: 'denied',
+              ad_personalization: 'denied',
+            });
+            gtag('consent', 'update', {
+              ad_storage: 'granted',
+              analytics_storage: 'granted',
+              ad_user_data: 'granted',
+              ad_personalization: 'granted',
+            });
             gtag('config', GA4_ID);
           }
 
@@ -56,7 +81,6 @@ const hasTrackers = Boolean(GA4_ID || GTM_ID || CLARITY_ID);
               c[a] =
                 c[a] ||
                 function () {
-                  // Snippet Microsoft Clarity canonic: `arguments` e parte din pattern-ul oficial.
                   // eslint-disable-next-line prefer-rest-params
                   (c[a].q = c[a].q || []).push(arguments);
                 };
@@ -67,7 +91,89 @@ const hasTrackers = Boolean(GA4_ID || GTM_ID || CLARITY_ID);
               y.parentNode.insertBefore(t, y);
             })(window, document, 'clarity', 'script', CLARITY_ID);
           }
+
+          if (META_PIXEL_ID) {
+            !(function (f, b, e, v, n, t, s) {
+              if (f.fbq) return;
+              n = f.fbq = function () {
+                // eslint-disable-next-line prefer-rest-params
+                n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+              };
+              if (!f._fbq) f._fbq = n;
+              n.push = n;
+              n.loaded = !0;
+              n.version = '2.0';
+              n.queue = [];
+              t = b.createElement(e);
+              t.async = !0;
+              t.src = v;
+              s = b.getElementsByTagName(e)[0];
+              s.parentNode.insertBefore(t, s);
+            })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+            window.fbq('init', META_PIXEL_ID);
+            window.fbq('track', 'PageView');
+          }
+
+          if (TIKTOK_PIXEL_ID) {
+            (function (w, d, t) {
+              w.TiktokAnalyticsObject = t;
+              var ttq = (w[t] = w[t] || []);
+              ttq.methods = [
+                'page','track','identify','instances','debug','on','off','once','ready','alias','group','enableCookie','disableCookie','holdConsent','revokeConsent','grantConsent',
+              ];
+              ttq.setAndDefer = function (e, n) {
+                e[n] = function () {
+                  // eslint-disable-next-line prefer-rest-params
+                  e.push([n].concat(Array.prototype.slice.call(arguments, 0)));
+                };
+              };
+              for (var i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(ttq, ttq.methods[i]);
+              ttq.instance = function (e) {
+                var n = ttq._i[e] || [];
+                for (var r = 0; r < ttq.methods.length; r++) ttq.setAndDefer(n, ttq.methods[r]);
+                return n;
+              };
+              ttq.load = function (e, n) {
+                var r = 'https://analytics.tiktok.com/i18n/pixel/events.js',
+                  o = (n && n.partner);
+                ttq._i = ttq._i || {};
+                ttq._i[e] = [];
+                ttq._i[e]._u = r;
+                ttq._t = ttq._t || {};
+                ttq._t[e] = +new Date();
+                ttq._o = ttq._o || {};
+                ttq._o[e] = n || {};
+                n = d.createElement('script');
+                n.type = 'text/javascript';
+                n.async = !0;
+                n.src = r + '?sdkid=' + e + '&lib=' + t;
+                var s = d.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(n, s);
+              };
+              ttq.load(TIKTOK_PIXEL_ID);
+              ttq.page();
+            })(window, document, 'ttq');
+          }
         }
+
+        // Bridge de evenimente: mereu în dataLayer (GTM); nativ doar dacă trackerele
+        // s-au încărcat (deci consimțământ dat). Mapare eveniment → Meta/TikTok.
+        var NATIVE = {
+          generate_lead: ['Lead', 'SubmitForm'],
+          sign_up: ['CompleteRegistration', 'Subscribe'],
+          purchase: ['Purchase', 'CompletePayment'],
+        };
+        window.saTrack = function (name, params) {
+          params = params || {};
+          window.dataLayer.push(Object.assign({ event: name }, params));
+          if (!loaded) return;
+          if (window.gtag) window.gtag('event', name, params);
+          var m = NATIVE[name];
+          if (m) {
+            if (window.fbq) window.fbq('track', m[0], params);
+            if (window.ttq) window.ttq.track(m[1], params);
+          }
+        };
 
         // Expus pentru CookieBanner.
         window.__saLoadTrackers = loadTrackers;

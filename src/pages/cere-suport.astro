@@ -166,6 +166,7 @@ const metaDescription =
           form.reset();
           msg.textContent = 'Gata! Am primit tichetul și revenim cât de curând.';
           msg.classList.add('sup-msg--ok');
+          window.location.assign('/multumesc?type=suport');
         } else {
           msg.textContent = data.error || 'Ceva n-a mers. Încearcă din nou.';
           msg.classList.add('sup-msg--err');

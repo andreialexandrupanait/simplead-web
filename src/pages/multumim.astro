@@ -80,7 +80,12 @@ const fmtAmount = formatAmount;
   />
 
   <section class="section section--light">
-    <div class="ty-wrap container">
+    <div
+      class="ty-wrap container"
+      data-purchase-value={order?.status === 'paid' ? (order.amountCents / 100).toFixed(2) : undefined}
+      data-purchase-currency={order?.currency?.toUpperCase()}
+      data-purchase-id={order?.id}
+    >
       {
         order && pkg && (
           <div class="ty-order">
@@ -270,6 +275,21 @@ const fmtAmount = formatAmount;
     flex-wrap: wrap;
   }
 </style>
+
+<script>
+  // Conversie „purchase" (dataLayer + nativ, gated pe consimțământ).
+  const pw = document.querySelector<HTMLElement>('[data-purchase-value]');
+  const val = pw?.dataset.purchaseValue;
+  if (pw && val) {
+    (
+      window as unknown as { saTrack?: (e: string, p?: Record<string, unknown>) => void }
+    ).saTrack?.('purchase', {
+      value: Number(val),
+      currency: pw.dataset.purchaseCurrency || 'RON',
+      transaction_id: pw.dataset.purchaseId,
+    });
+  }
+</script>
 
 <script>
   // Countdown OTO: la expirare ascundem oferta (serverul o re-validează oricum).

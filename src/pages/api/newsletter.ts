@@ -1,14 +1,17 @@
 import type { APIRoute } from 'astro';
 import { z } from 'zod';
+import { eq } from 'drizzle-orm';
 import { getDb } from '@lib/server/db';
 import { subscribers } from '@lib/server/schema';
+import { syncSubscriber } from '@lib/server/mailerlite';
+import { notifySlack } from '@lib/server/slack';
 
 export const prerender = false;
 
 /**
  * Abonare la newsletter (formularul din footer + email-gate-urile de pe
- * /resurse). Upsert idempotent; statusul rămâne `pending` până activăm dublul
- * opt-in prin Postmark — funcționează complet și fără token de email.
+ * /resurse). Single opt-in: abonatul intră `active` în DB și e sincronizat
+ * best-effort în MailerLite. Funcționează complet și fără MailerLite configurat.
  */
 const schema = z.object({
   email: z.string().trim().email('Adresa de email nu pare validă.').max(200),
@@ -74,10 +77,33 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   }
 
   try {
-    await db
+    const email = parsed.data.email.toLowerCase();
+    const source = parsed.data.source;
+    const inserted = await db
       .insert(subscribers)
-      .values({ email: parsed.data.email.toLowerCase(), source: parsed.data.source })
-      .onConflictDoNothing({ target: subscribers.email });
+      .values({ email, source, status: 'active' })
+      .onConflictDoNothing({ target: subscribers.email })
+      .returning({ id: subscribers.id });
+
+    // Doar la abonat nou: notificare Slack + sincronizare MailerLite. Ambele
+    // fire-and-forget (serverul Node persistă între request-uri), ca răspunsul
+    // să rămână instant și abonarea să nu depindă de servicii externe.
+    if (inserted.length > 0) {
+      void notifySlack(`📧 Abonat nou la newsletter: ${email} (sursă: ${source})`);
+      void (async () => {
+        const r = await syncSubscriber(email, source);
+        if (r) {
+          try {
+            await db
+              .update(subscribers)
+              .set({ mailerliteId: r.id || null, syncedAt: new Date() })
+              .where(eq(subscribers.email, email));
+          } catch (e) {
+            console.warn('[newsletter] Update MailerLite id a eșuat:', e);
+          }
+        }
+      })();
+    }
     return json(200, { ok: true });
   } catch (err) {
     console.error('[newsletter] Salvarea abonatului a eșuat:', err);

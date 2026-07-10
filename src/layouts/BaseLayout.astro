@@ -154,6 +154,11 @@ const jsonLd = {
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {
+      pub.tracking.gscVerification && (
+        <meta name="google-site-verification" content={pub.tracking.gscVerification} />
+      )
+    }
     <link rel="canonical" href={canonical} />
     {prevHref && <link rel="prev" href={prevHref} />}
     {nextHref && <link rel="next" href={nextHref} />}

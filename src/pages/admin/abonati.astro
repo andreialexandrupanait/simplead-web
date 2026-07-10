@@ -8,23 +8,45 @@ import Pagination from '../../components/admin/Pagination.astro';
 import { getDb } from '../../lib/server/db';
 import { subscribers } from '../../lib/server/schema';
 import { setFlash } from '../../lib/server/flash';
+import { syncSubscriber } from '../../lib/server/mailerlite';
 
 export const prerender = false;
 
 const db = getDb();
 const PER_PAGE = 50;
 
-// Ștergere GDPR per abonat.
+// Acțiuni per abonat: ștergere GDPR + re-sincronizare MailerLite.
 if (Astro.request.method === 'POST' && db) {
   const form = await Astro.request.formData();
   const id = String(form.get('id') ?? '');
-  if (id && String(form.get('action')) === 'delete') {
+  const action = String(form.get('action') ?? '');
+  if (id && action === 'delete') {
     try {
       await db.delete(subscribers).where(eq(subscribers.id, id));
       setFlash(Astro.cookies, { kind: 'ok', msg: 'Abonat șters definitiv.' });
     } catch (err) {
       console.warn('[admin] Ștergerea abonatului a eșuat:', err);
       setFlash(Astro.cookies, { kind: 'error', msg: 'Ștergerea a eșuat.' });
+    }
+  } else if (id && action === 'resync') {
+    try {
+      const [row] = await db.select().from(subscribers).where(eq(subscribers.id, id)).limit(1);
+      const r = row ? await syncSubscriber(row.email, row.source) : null;
+      if (r) {
+        await db
+          .update(subscribers)
+          .set({ mailerliteId: r.id || null, syncedAt: new Date() })
+          .where(eq(subscribers.id, id));
+        setFlash(Astro.cookies, { kind: 'ok', msg: 'Sincronizat cu MailerLite.' });
+      } else {
+        setFlash(Astro.cookies, {
+          kind: 'error',
+          msg: 'Sincronizarea a eșuat. Verifică cheia MailerLite în Integrări.',
+        });
+      }
+    } catch (err) {
+      console.warn('[admin] Re-sincronizarea a eșuat:', err);
+      setFlash(Astro.cookies, { kind: 'error', msg: 'Sincronizarea a eșuat.' });
     }
   }
   return Astro.redirect(`/admin/abonati${Astro.url.search}`, 303);
@@ -110,6 +132,7 @@ const exportUrl = `/api/admin/export/subscribers.csv${Astro.url.search}`;
                     <th>Email</th>
                     <th>Sursă</th>
                     <th>Status</th>
+                    <th>MailerLite</th>
                     <th>Abonat la</th>
                     <th style="width:90px" />
                   </tr>
@@ -121,6 +144,21 @@ const exportUrl = `/api/admin/export/subscribers.csv${Astro.url.search}`;
                       <td style="color:var(--muted)">{s.source}</td>
                       <td>
                         <StatusBadge status={s.status} />
+                      </td>
+                      <td style="white-space:nowrap">
+                        {s.syncedAt ? (
+                          <span style="color:#0b6e63;font-weight:600" title={`Sincronizat: ${dateFmt.format(s.syncedAt)}`}>
+                            ✓ sincronizat
+                          </span>
+                        ) : (
+                          <form method="post" style="display:inline">
+                            <input type="hidden" name="id" value={s.id} />
+                            <input type="hidden" name="action" value="resync" />
+                            <button type="submit" class="admin-btn admin-btn--ghost admin-btn--sm">
+                              Sincronizează
+                            </button>
+                          </form>
+                        )}
                       </td>
                       <td style="white-space:nowrap">{dateFmt.format(s.createdAt)}</td>
                       <td>

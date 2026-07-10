@@ -10,10 +10,17 @@ interface Props {
   onSuccess?: () => void;
   /** Fără card propriu (transparent, fără border/padding) — pentru drawer. */
   flat?: boolean;
+  /** Tipul pentru pagina de mulțumire (trackable): `contact` (implicit) sau `oferta` (drawer). */
+  thankYouType?: 'contact' | 'oferta';
 }
 
 /** Formular de contact stilizat ca în design (.cform). Folosit pe Acasă + /contact + drawer. */
-export default function ContactForm({ service: serviceProp, onSuccess, flat }: Props = {}) {
+export default function ContactForm({
+  service: serviceProp,
+  onSuccess,
+  flat,
+  thankYouType = 'contact',
+}: Props = {}) {
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [serverError, setServerError] = useState<string | null>(null);
   const [preselected, setPreselected] = useState<string | null>(null);
@@ -49,6 +56,8 @@ export default function ContactForm({ service: serviceProp, onSuccess, flat }: P
         setStatus('success');
         reset();
         onSuccess?.();
+        // Redirect către pagina de mulțumire trackabilă (conversie pe pageview).
+        window.location.assign(`/multumesc?type=${thankYouType}`);
       } else {
         setStatus('error');
         setServerError(body.error ?? null);

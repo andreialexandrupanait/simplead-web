@@ -1,0 +1,125 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { setFlash } from '../../lib/server/flash';
+import {
+  getPublicSettings,
+  saveTrackingSettings,
+  type TrackingSettings,
+} from '../../lib/server/public-settings';
+
+export const prerender = false;
+
+let saveError: string | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const data: TrackingSettings = {
+    gtmId: String(form.get('gtmId') ?? ''),
+    ga4Id: String(form.get('ga4Id') ?? ''),
+    clarityId: String(form.get('clarityId') ?? ''),
+    metaPixelId: String(form.get('metaPixelId') ?? ''),
+    tiktokPixelId: String(form.get('tiktokPixelId') ?? ''),
+    gscVerification: String(form.get('gscVerification') ?? ''),
+  };
+  const result = await saveTrackingSettings(data);
+  if (result.ok) {
+    setFlash(Astro.cookies, { kind: 'ok', msg: 'ID-urile de tracking au fost salvate.' });
+    return Astro.redirect('/admin/tracking', 303);
+  }
+  saveError = result.error;
+}
+
+const t = (await getPublicSettings()).tracking;
+
+const FIELDS: {
+  name: keyof TrackingSettings;
+  label: string;
+  placeholder: string;
+  hint: string;
+}[] = [
+  {
+    name: 'gtmId',
+    label: 'Google Tag Manager (container)',
+    placeholder: 'GTM-XXXXXXX',
+    hint: 'Recomandat ca hub: adaugi tag-urile GA4/Meta/TikTok în interfața GTM. Site-ul trimite evenimente în dataLayer (page view, generate_lead, sign_up, purchase).',
+  },
+  {
+    name: 'ga4Id',
+    label: 'Google Analytics 4',
+    placeholder: 'G-XXXXXXXXXX',
+    hint: 'Measurement ID. Dacă îl configurezi și în GTM, lasă-l gol aici (altfel se dublează).',
+  },
+  {
+    name: 'metaPixelId',
+    label: 'Meta (Facebook) Pixel',
+    placeholder: '123456789012345',
+    hint: 'Pixel ID din Meta Events Manager. Evenimente: PageView, Lead, CompleteRegistration, Purchase.',
+  },
+  {
+    name: 'tiktokPixelId',
+    label: 'TikTok Pixel',
+    placeholder: 'CXXXXXXXXXXXXXXXXX',
+    hint: 'Pixel ID din TikTok Events Manager. Evenimente: page, SubmitForm, Subscribe, CompletePayment.',
+  },
+  {
+    name: 'clarityId',
+    label: 'Microsoft Clarity',
+    placeholder: 'xxxxxxxxxx',
+    hint: 'Project ID pentru heatmaps + session recordings.',
+  },
+  {
+    name: 'gscVerification',
+    label: 'Google Search Console — verificare',
+    placeholder: 'conținutul meta-tagului (fără <meta ...>)',
+    hint: 'Din GSC → metoda „HTML tag": copiază DOAR valoarea content="..." (adăugăm noi meta-tagul în <head>).',
+  },
+];
+---
+
+<AdminLayout title="Tracking & analytics">
+  <div class="admin-page-head">
+    <div>
+      <h1>Tracking & analytics</h1>
+      <p class="admin-hint">
+        ID-uri publice. Toate trackerele pornesc <strong>doar după acceptul din bannerul de
+        cookies</strong> (GDPR). Lasă gol ce nu folosești.
+      </p>
+    </div>
+  </div>
+
+  {saveError && <div class="admin-banner admin-banner--error">{saveError}</div>}
+
+  <div class="admin-banner">
+    <strong>Cum funcționează evenimentele.</strong> La conversii, site-ul trimite automat:
+    <code>generate_lead</code> (contact/ofertă/tichet, pe /multumesc), <code>sign_up</code>
+    (newsletter) și <code>purchase</code> (după plata Stripe, pe /multumim). Se trimit în
+    <code>dataLayer</code> (pentru GTM) și, dacă ai pus pixelii direct aici, și nativ către
+    Meta/TikTok. <strong>Configurează fiecare platformă într-un singur loc</strong> (GTM SAU
+    nativ) ca să eviți dubla-numărare.
+  </div>
+
+  <form method="post" style="max-width:640px">
+    {
+      FIELDS.map((f) => (
+        <div class="admin-card" style="margin-top:16px">
+          <label class="admin-field" style="margin-bottom:0">
+            <span>{f.label}</span>
+            <input
+              class="admin-input"
+              type="text"
+              name={f.name}
+              value={t[f.name]}
+              placeholder={f.placeholder}
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <small>{f.hint}</small>
+          </label>
+        </div>
+      ))
+    }
+    <div class="admin-savebar">
+      <button type="submit" class="admin-btn">Salvează</button>
+    </div>
+  </form>
+</AdminLayout>

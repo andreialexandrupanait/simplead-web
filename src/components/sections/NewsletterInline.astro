@@ -147,6 +147,9 @@ const { source = 'blog-article' } = Astro.props;
             msg.className = 'nl-inline__msg is-ok';
             msg.textContent = 'Gata! Verifică-ți inboxul.';
           }
+          (
+            window as unknown as { saTrack?: (e: string, p?: Record<string, unknown>) => void }
+          ).saTrack?.('sign_up', { method: source });
         } else if (msg) {
           msg.className = 'nl-inline__msg is-err';
           msg.textContent = body.error || 'Ceva n-a mers. Încearcă din nou.';

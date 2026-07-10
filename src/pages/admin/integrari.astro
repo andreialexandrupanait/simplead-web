@@ -85,6 +85,16 @@ const FIELD_META: Record<string, Record<string, { label: string; hint?: string }
   slack: {
     webhookUrl: { label: 'Webhook URL', hint: 'Incoming webhook pentru canalul de notificări.' },
   },
+  mailerlite: {
+    apiKey: {
+      label: 'API key',
+      hint: 'Din MailerLite: Integrations → API → Generate new token.',
+    },
+    groupId: {
+      label: 'Group ID (opțional)',
+      hint: 'ID-ul grupului/audienței unde intră abonații. Din MailerLite: Subscribers → Groups → (grup) → din URL. Gol = fără grup.',
+    },
+  },
   google: {
     clientId: {
       label: 'Client ID',
@@ -115,7 +125,7 @@ const masked = Object.fromEntries(
   await Promise.all(integrationNames.map(async (name) => [name, await getMaskedIntegration(name)])),
 ) as Record<IntegrationName, Record<string, MaskedField>>;
 
-const GROUP_ORDER = ['Plăți & facturare', 'Email', 'Notificări', 'Autentificare'];
+const GROUP_ORDER = ['Plăți & facturare', 'Email', 'Notificări', 'Newsletter', 'Autentificare'];
 const grouped = GROUP_ORDER.map((group) => ({
   group,
   names: integrationNames.filter((n) => (INTEGRATIONS[n] as IntMeta).group === group),

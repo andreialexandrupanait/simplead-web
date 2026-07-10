@@ -366,6 +366,9 @@ const social = site.social;
         msg.classList.add('is-ok');
         msg.textContent = 'Gata, ești pe listă! Ne auzim o dată pe lună.';
         form.reset();
+        (
+          window as unknown as { saTrack?: (e: string, p?: Record<string, unknown>) => void }
+        ).saTrack?.('sign_up', { method: 'footer' });
       } else {
         msg.classList.add('is-error');
         msg.textContent = body.error ?? 'Ceva n-a mers. Încearcă din nou.';

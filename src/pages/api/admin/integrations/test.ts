@@ -73,6 +73,21 @@ async function testSlack(): Promise<TestResult> {
   return { ok: true, detail: 'Mesaj de test trimis pe Slack.' };
 }
 
+async function testMailerlite(): Promise<TestResult> {
+  const { apiKey, groupId } = await getIntegration('mailerlite');
+  if (!apiKey.value) return { ok: false, detail: 'Cheia API MailerLite nu e configurată.' };
+  const res = await fetch('https://connect.mailerlite.com/api/subscribers?limit=1', {
+    headers: {
+      Authorization: `Bearer ${apiKey.value}`,
+      Accept: 'application/json',
+    },
+    signal: TIMEOUT(8_000),
+  });
+  if (!res.ok) return { ok: false, detail: `MailerLite a răspuns ${res.status}: cheie invalidă?` };
+  const group = groupId.value ? ` Grup țintă: ${groupId.value}.` : ' (fără grup setat — abonații intră fără grup.)';
+  return { ok: true, detail: `Conectat la MailerLite.${group}` };
+}
+
 async function testGoogle(): Promise<TestResult> {
   const { clientId, clientSecret, allowedDomain } = await getIntegration('google');
   if (!clientId.value || !clientSecret.value) {
@@ -91,6 +106,7 @@ const TESTS: Partial<Record<IntegrationName, () => Promise<TestResult>>> = {
   smartbill: testSmartbill,
   postmark: testPostmark,
   slack: testSlack,
+  mailerlite: testMailerlite,
   google: testGoogle,
 };
 

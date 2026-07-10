@@ -1,0 +1,76 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHeader from '@components/sections/PageHeader.astro';
+import Button from '@components/ui/Button.astro';
+
+export const prerender = false;
+
+// Pagină de mulțumire trackabilă (URL curat → conversie). Formularele de contact,
+// ofertă și suport redirecționează aici pe success; declanșează `generate_lead`.
+const typeRaw = (Astro.url.searchParams.get('type') ?? 'contact').toLowerCase();
+const type = ['contact', 'oferta', 'suport'].includes(typeRaw) ? typeRaw : 'contact';
+
+const COPY: Record<string, { eyebrow: string; title: string; accent: string; subtitle: string }> = {
+  contact: {
+    eyebrow: 'Mesaj trimis',
+    title: 'Mulțumim! Am primit mesajul tău',
+    accent: 'Am primit mesajul tău',
+    subtitle:
+      'Revenim de obicei în aceeași zi lucrătoare. Între timp, poți să te uiți pe portofoliu sau pe blog.',
+  },
+  oferta: {
+    eyebrow: 'Cerere trimisă',
+    title: 'Mulțumim! Am primit cererea ta de ofertă',
+    accent: 'cererea ta de ofertă',
+    subtitle:
+      'Ne uităm pe detalii și revenim cu o propunere, de obicei în aceeași zi lucrătoare.',
+  },
+  suport: {
+    eyebrow: 'Tichet înregistrat',
+    title: 'Mulțumim! Am primit tichetul tău',
+    accent: 'tichetul tău',
+    subtitle: 'Un coleg preia cererea și revine cât de curând pe email.',
+  },
+};
+const c = COPY[type];
+
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+
+<BaseLayout
+  title="Mulțumim"
+  description="Am primit mesajul tău."
+  transparentNav={true}
+  navOverDark={true}
+  noindex={true}
+>
+  <PageHeader eyebrow={c.eyebrow} title={c.title} accent={c.accent} subtitle={c.subtitle} />
+
+  <section class="section section--light">
+    <div class="ty-wrap container" data-lead-type={type}>
+      <div class="ty-actions">
+        <Button href="/" variant="outline">Înapoi la prima pagină</Button>
+        <Button href="/blog" withArrow>Citește pe blog</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .ty-wrap {
+    max-width: 720px;
+  }
+  .ty-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+</style>
+
+<script>
+  // Conversie: eveniment de lead (dataLayer + nativ, gated pe consimțământ).
+  const el = document.querySelector<HTMLElement>('[data-lead-type]');
+  const type = el?.dataset.leadType || 'contact';
+  const w = window as unknown as { saTrack?: (e: string, p?: Record<string, unknown>) => void };
+  w.saTrack?.('generate_lead', { form_type: type });
+</script>

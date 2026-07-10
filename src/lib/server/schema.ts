@@ -194,6 +194,9 @@ export const subscribers = pgTable('subscribers', {
   source: text('source').notNull().default('footer'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   confirmedAt: timestamp('confirmed_at', { withTimezone: true }),
+  // Sincronizare MailerLite: id-ul abonatului acolo + momentul ultimei sincronizări.
+  mailerliteId: text('mailerlite_id'),
+  syncedAt: timestamp('synced_at', { withTimezone: true }),
 });
 
 export const contentStatus = pgEnum('content_status', ['draft', 'published']);

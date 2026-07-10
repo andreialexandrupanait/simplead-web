@@ -174,6 +174,7 @@ export default function ContactDrawer({
               key={instance}
               service={service}
               flat
+              thankYouType="oferta"
               onSuccess={() => setTimeout(close, 2600)}
             />
           )}
