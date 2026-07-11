@@ -17,7 +17,12 @@
  *   2. Creează un Service Account + cheie JSON.
  *   3. În GTM → containerul tău → Admin → User Management → adaugă emailul SA ca
  *      „Publish" (sau Admin) pe container.
- *   4. Instalează dependința:  npm i -D googleapis  (sau pnpm add -D googleapis)
+ *   4. Instalează googleapis DOAR temporar (NU îl comitem — type-defs-urile lui
+ *      uriașe fac OOM la `astro check` în build; de-aia `scripts/` e exclus din
+ *      tsconfig). În containerul de dev:
+ *        docker exec simplead-web sh -c 'cd /app && pnpm add googleapis'
+ *        ...rulezi scriptul...
+ *        docker exec simplead-web sh -c 'cd /app && git checkout package.json pnpm-lock.yaml'
  *   5. Setează env:
  *        GTM_ACCOUNT_ID=1234567
  *        GTM_CONTAINER_ID=7654321
@@ -280,7 +285,7 @@ async function run() {
   try {
     ({ google } = await import('googleapis'));
   } catch {
-    die('Instalează dependința: npm i -D googleapis');
+    die('Instalează googleapis temporar: pnpm add googleapis (apoi git checkout package.json pnpm-lock.yaml)');
   }
 
   const scopes = ['https://www.googleapis.com/auth/tagmanager.edit.containers'];
