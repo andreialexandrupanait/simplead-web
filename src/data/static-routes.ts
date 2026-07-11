@@ -6,7 +6,8 @@
 export const staticRoutes: string[] = [
   '/',
   '/servicii',
-  '/servicii/mentenanta-website',
+  // `/servicii/mentenanta-website` NU e aici: e un redirect 301 → /mentenanta
+  // (vezi astro.config). Pagina canonică `/mentenanta` e mai jos.
   '/servicii/ux-ui-web-design',
   '/servicii/grafica-publicitara',
   '/servicii/social-media',
