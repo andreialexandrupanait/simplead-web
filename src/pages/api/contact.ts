@@ -6,7 +6,12 @@ import { leads } from '../../lib/server/schema';
 import { sendEmail } from '../../lib/server/email';
 import { notifySlack } from '../../lib/server/slack';
 import { getContactToEmail } from '../../lib/server/settings';
-import { trackServerConversion, capiContextFromRequest } from '../../lib/server/capi';
+import {
+  trackServerConversion,
+  capiContextFromRequest,
+  hasMarketingConsent,
+} from '../../lib/server/capi';
+import { createRateLimiter } from '../../lib/server/rate-limit';
 
 // Rută on-demand (POST la runtime). În dev e servită live de dev server;
 // la build, adaptorul node o împachetează ca funcție on-demand.
@@ -25,7 +30,20 @@ function abVariant(request: Request): 'a' | 'b' | null {
   return m ? (m[1] as 'a' | 'b') : null;
 }
 
-export const POST: APIRoute = async ({ request }) => {
+// Limită blândă anti-spam: 6 mesaje / 10 min / IP (același model ca tichetele).
+const limiter = createRateLimiter({ windowMs: 10 * 60_000, max: 6 });
+
+export const POST: APIRoute = async ({ request, clientAddress }) => {
+  let ip = 'unknown';
+  try {
+    ip = clientAddress;
+  } catch {
+    /* indisponibil în unele contexte */
+  }
+  if (!limiter.allow(ip)) {
+    return json({ ok: false, error: 'Prea multe mesaje. Revino în câteva minute.' }, 429);
+  }
+
   let payload: unknown;
   try {
     payload = await request.json();
@@ -80,14 +98,17 @@ export const POST: APIRoute = async ({ request }) => {
 
   const emailResult = await sendEmail({ to, replyTo: email, subject, text });
 
-  // 3) Conversie server-side (Meta CAPI + GA4 MP), dublează evenimentul din browser.
-  void trackServerConversion({
-    event: 'generate_lead',
-    email,
-    phone,
-    custom: { form_type: service || 'contact' },
-    ...capiContextFromRequest(request),
-  });
+  // 3) Conversie server-side (Meta CAPI + GA4 MP), dublează evenimentul din
+  // browser — DOAR cu consimțământ de marketing (GDPR: PII hash-uit către Meta).
+  if (hasMarketingConsent(request)) {
+    void trackServerConversion({
+      event: 'generate_lead',
+      email,
+      phone,
+      custom: { form_type: service || 'contact' },
+      ...capiContextFromRequest(request),
+    });
+  }
 
   // 4) Notificare Slack, fire-and-forget (nu blocăm răspunsul).
   void notifySlack(

@@ -5,6 +5,7 @@ import { orders, packages } from '../../lib/server/schema';
 import { getStripe } from '../../lib/server/stripe';
 import { serverEnv } from '../../lib/server/env';
 import { OTO_WINDOW_MS } from '../../lib/server/packages';
+import { createRateLimiter } from '../../lib/server/rate-limit';
 
 export const prerender = false;
 
@@ -19,7 +20,19 @@ function abVariant(request: Request): 'a' | 'b' | null {
  * /pachete sau /multumim). Fără Stripe sau DB configurate, degradează elegant:
  * redirect către /contact cu serviciul preselectat.
  */
-export const POST: APIRoute = async ({ request, redirect }) => {
+// Anti-abuz: un bot nu are ce căuta cu >10 sesiuni Stripe / 10 min; un om real
+// care lovește limita e retrimis pe /pachete (fără comenzi `pending` la nesfârșit).
+const limiter = createRateLimiter({ windowMs: 10 * 60_000, max: 10 });
+
+export const POST: APIRoute = async ({ request, redirect, clientAddress }) => {
+  let ip = 'unknown';
+  try {
+    ip = clientAddress;
+  } catch {
+    /* indisponibil în unele contexte */
+  }
+  if (!limiter.allow(ip)) return redirect('/pachete?limit=1', 303);
+
   const form = await request.formData().catch(() => null);
   const slug = String(form?.get('slug') ?? '').trim();
   const otoForOrderId = String(form?.get('oto_for') ?? '').trim();

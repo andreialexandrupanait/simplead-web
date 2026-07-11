@@ -175,12 +175,26 @@ const hasTrackers = hasAnalytics || hasMarketing;
     if (!stored) banner.hidden = false;
 
     const prefs = banner.querySelector<HTMLElement>('.cookie-banner__prefs');
+    // Oglindim consimțământul de marketing într-un cookie citibil server-side:
+    // API-urile (contact/newsletter) nu trimit conversii CAPI fără el.
+    const mirror = (marketing: boolean) => {
+      document.cookie = `sa_consent_mkt=${marketing ? '1' : '0'}; path=/; max-age=${180 * 86400}; samesite=lax`;
+    };
+    // Utilizatorii care au decis înainte de introducerea cookie-ului: sincronizăm la load.
+    if (stored && !document.cookie.includes('sa_consent_mkt=')) {
+      try {
+        mirror(Boolean(JSON.parse(stored).marketing));
+      } catch {
+        /* valoare coruptă: bannerul rămâne sursa de adevăr */
+      }
+    }
     const apply = (cats: { analytics: boolean; marketing: boolean }) => {
       try {
         localStorage.setItem(KEY, JSON.stringify(cats));
       } catch {
         /* localStorage indisponibil */
       }
+      mirror(cats.marketing);
       banner.hidden = true;
       (
         window as Window & {

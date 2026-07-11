@@ -10,6 +10,7 @@ import { issueInvoice, recordCardPayment } from '../../../lib/server/smartbill';
 import { pushOrderToErp } from '../../../lib/server/erp';
 import { getContactToEmail } from '../../../lib/server/settings';
 import { trackServerConversion } from '../../../lib/server/capi';
+import { alertAdmin } from '../../../lib/server/alert';
 import { site } from '../../../data/site';
 
 export const prerender = false;
@@ -43,9 +44,17 @@ export const POST: APIRoute = async ({ request }) => {
     try {
       await handleCheckoutCompleted(event.data.object);
     } catch (err) {
-      // Logăm dar răspundem 200: Stripe ar retrimite la nesfârșit altfel,
-      // iar comanda poate fi reconciliată manual din admin.
+      // Eșec ÎNAINTE ca comanda să fie marcată plătită (DB căzut, comandă
+      // negăsită): răspundem 500 ca Stripe să retrimită (backoff, până la ~72h).
+      // Idempotența pe `status === 'paid'` face retrimiterea sigură. Pașii de
+      // după plată (factură/email/ERP) au propriul try/catch + alertă și NU
+      // ajung aici.
       console.error('[stripe-webhook] Procesarea comenzii a eșuat:', err);
+      void alertAdmin(
+        'Webhook Stripe: procesare eșuată (se reîncearcă)',
+        `Sesiune: ${event.data.object.id}\nEroare: ${err instanceof Error ? err.message : String(err)}`,
+      );
+      return new Response('Procesarea a eșuat; Stripe va retrimite.', { status: 500 });
     }
   }
 
@@ -58,8 +67,9 @@ export const POST: APIRoute = async ({ request }) => {
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promise<void> {
   const db = getDb();
   if (!db) {
-    console.error('[stripe-webhook] Fără DB: comanda nu poate fi înregistrată.', session.id);
-    return;
+    // Aruncăm ca POST-ul să răspundă 500 → Stripe retrimite când DB revine.
+    // (Înainte se răspundea 200 și comanda plătită se pierdea definitiv.)
+    throw new Error(`Fără DB: comanda pentru sesiunea ${session.id} nu poate fi înregistrată.`);
   }
 
   const orderId = session.metadata?.order_id;
@@ -70,8 +80,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
     ? await db.select().from(orders).where(eq(orders.id, orderId)).limit(1)
     : await db.select().from(orders).where(eq(orders.stripeCheckoutSessionId, session.id)).limit(1);
   if (!order) {
-    console.error('[stripe-webhook] Comanda nu a fost găsită pentru sesiunea', session.id);
-    return;
+    // Plată încasată fără comandă în DB = bani nepotriviți cu nimic → retry + alertă.
+    throw new Error(`Comanda nu a fost găsită pentru sesiunea ${session.id}.`);
   }
   // Idempotență: Stripe poate retrimite evenimentul.
   if (order.status === 'paid') return;
@@ -110,6 +120,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
     .where(eq(orders.id, order.id))
     .returning();
 
+  // De aici încolo comanda E marcată plătită: orice eșec (factură/email/ERP) se
+  // ALERTEAZĂ dar nu mai aruncă — un retry Stripe ar fi oricum ignorat de
+  // idempotență, deci fără alertă problema ar rămâne invizibilă.
+  try {
   const [pkg] = order.packageId
     ? await db.select().from(packages).where(eq(packages.id, order.packageId)).limit(1)
     : [];
@@ -155,7 +169,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
         currency,
       });
     } else {
-      console.warn('[stripe-webhook] Factura nu a fost emisă:', invoice.reason);
+      // Comandă plătită FĂRĂ factură = problemă fiscală → alertă, nu doar log.
+      void alertAdmin(
+        'Comandă plătită fără factură SmartBill',
+        `Comanda ${order.id} (${amount} ${currency}, ${email}) e plătită, dar factura nu a fost emisă.\nMotiv: ${invoice.reason}\nEmite manual din SmartBill și completează seria/numărul pe comandă în /admin/comenzi.`,
+      );
     }
   }
 
@@ -212,4 +230,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
   void notifySlack(
     `:tada: Comandă nouă pe simplead.ro\n*${packageName}* · ${amount} ${currency}\n${name || '-'} <${email || '-'}>${order.otoForOrderId ? '\n(ofertă OTO acceptată)' : ''}`,
   );
+  } catch (err) {
+    void alertAdmin(
+      'Comandă plătită, procesare parțială',
+      `Comanda ${order.id} e plătită, dar un pas post-plată a eșuat (factură/email/notificări).\nVerifică în /admin/comenzi/${order.id}.\nEroare: ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
 }

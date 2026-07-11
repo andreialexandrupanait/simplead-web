@@ -48,6 +48,16 @@ function sha256(v: string): string {
   return createHash('sha256').update(v).digest('hex');
 }
 
+/**
+ * Consimțământul de marketing, citit din cookie-ul oglindit de CookieBanner
+ * (`sa_consent_mkt=1|0`). Evenimentele de marketing (generate_lead, sign_up) se
+ * trimit doar cu `1`; `purchase` (tranzacțional) nu trece pe aici.
+ */
+export function hasMarketingConsent(request: Request): boolean {
+  const cookie = request.headers.get('cookie') ?? '';
+  return /(?:^|; )sa_consent_mkt=1(?:;|$)/.test(cookie);
+}
+
 /** Extrage contextul de matching (client id GA, cookie-uri Meta, IP, UA) din request. */
 export function capiContextFromRequest(
   request: Request,

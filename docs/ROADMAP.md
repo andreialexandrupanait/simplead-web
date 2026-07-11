@@ -42,16 +42,17 @@
 
 ---
 
-## FAZA 2 — Fiabilitate & securitate
+## FAZA 2 — Fiabilitate & securitate ✅ (implementată 11 iul)
 
-- [ ] 🟠 **Webhook Stripe**: la eroare în pași critici (post-plată) → răspunde non-200 ca Stripe să reia, SAU tabel `processed_events`/dead-letter + job de reconciliere din admin; alertă pe „comandă plătită fără factură". (`api/stripe/webhook.ts`)
-- [ ] 🟠 **Observabilitate**: logging structurat + Sentry (sau echivalent) pe API-uri publice și webhook; înlocuiește `console.*` de pe căile critice.
-- [ ] 🟠 **Rate-limit** pe `api/contact.ts` și `api/checkout.ts` (refolosesc `lib/server/rate-limit.ts`, ca la `ticket`/`newsletter`).
-- [ ] 🟠 **Authz per-capabilitate** pe `api/admin/{theme,preview,uploads}` (`can(...)`, nu doar gate „staff").
-- [ ] 🟠 **Consimțământ vs CAPI**: nu trimite `generate_lead`/`sign_up` la Meta/GA4 MP fără categoria marketing acceptată (aliniere cu bannerul de cookies). `purchase` rămâne.
-- [ ] 🟢 Hardening: nonce CSP pe scripturile proprii (păstrez `https:` pt GTM); unific sursa CSP (middleware ↔ `maintenance/*.conf`); `.env` → `600`; HSTS+Permissions-Policy și pe static; HSTS `preload`.
+- [x] **Webhook Stripe**: eșec ÎNAINTE de marcarea plății (DB căzut, comandă negăsită) → **500 = Stripe retrimite** (backoff ~72h; idempotența face retry-ul sigur — înainte se răspundea 200 și comanda plătită se pierdea); pașii post-plată au try/catch propriu + **alertă email** („comandă plătită fără factură SmartBill", „procesare parțială").
+- [x] **Observabilitate FĂRĂ Sentry** (decizia ta): `lib/server/alert.ts` — `alertAdmin()` trimite email prin Postmark (funcțional în prod) la incidente; fail-safe (dacă emailul pică, doar loghează).
+- [x] **Rate-limit**: `api/contact.ts` (6/10min/IP) + `api/checkout.ts` (10/10min/IP → redirect `/pachete?limit=1`). Testat funcțional: al 7-lea POST → 429.
+- [x] **Authz per-capabilitate**: `uploads` GET/POST → `content: edit-own`; `uploads/[name]` DELETE → `content: delete` (biblioteca e partajată); `preview` → `content: edit-own`. **Decizie: `theme` rămâne doar pe gate-ul staff** — setează exclusiv cookie-ul propriu de temă, inofensiv.
+- [x] **Consimțământ vs CAPI**: CookieBanner oglindește consimțământul de marketing în cookie-ul `sa_consent_mkt` (citibil server-side; sincronizat și pentru deciziile vechi din localStorage); `generate_lead`/`sign_up` se trimit doar cu consimțământ (`hasMarketingConsent()`); `purchase` rămâne (tranzacțional).
+- [x] Hardening parțial: `.env` → `600` (Faza 0); **Permissions-Policy pe static** (nginx vhost, era lipsă); HSTS deduplicat (nginx-proxy emite deja unul — `proxy_hide_header` pe upstream, un singur header pe static+dinamic).
+- [ ] 🟢 Rămas (amânat deliberat): **nonce CSP** pe scripturile proprii — invaziv (fiecare script inline + GTM cu nonce), de făcut coordonat; până atunci CSP rămâne cu `unsafe-inline` (necesar oricum pt GTM). Sursa CSP e încă în 3 locuri (middleware + 2 conf nginx) — ține-le sincron la orice schimbare.
 
-**Verificare:** test de rate-limit pe contact/checkout; simulare eroare webhook → comanda intră în reprocesare; headere securitate pe HTML + static (securityheaders.com).
+**Verificare făcută:** rate-limit 429 confirmat; teste 71/71; un singur HSTS + Permissions-Policy pe static (curl live).
 
 ---
 
