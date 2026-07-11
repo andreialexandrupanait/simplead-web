@@ -9,6 +9,7 @@ import { notifySlack } from '../../../lib/server/slack';
 import { issueInvoice, recordCardPayment } from '../../../lib/server/smartbill';
 import { pushOrderToErp } from '../../../lib/server/erp';
 import { getContactToEmail } from '../../../lib/server/settings';
+import { trackServerConversion } from '../../../lib/server/capi';
 import { site } from '../../../data/site';
 
 export const prerender = false;
@@ -116,6 +117,18 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
   const amount = (order.amountCents / 100).toFixed(2).replace(/\.00$/, '');
   const currency = order.currency.trim();
 
+  // Conversie server-side (Meta CAPI + GA4 MP). Server-to-server: fără context de
+  // cookie, dar cu email pentru matching. event_id = id-ul comenzii → deduplicare
+  // cu evenimentul `purchase` din browser (dacă GTM îl trimite cu același id).
+  void trackServerConversion({
+    event: 'purchase',
+    eventId: `order_${order.id}`,
+    email: email || undefined,
+    value: order.amountCents / 100,
+    currency: currency.toUpperCase(),
+    transactionId: order.id,
+  });
+
   // Factură SmartBill (best-effort; numărul se salvează pe comandă).
   if (email) {
     const invoice = await issueInvoice({
@@ -149,20 +162,20 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
   // Push în aplicația internă (best-effort, idempotent pe orderId).
   if (email)
     void pushOrderToErp({
-    orderId: order.id,
-    packageSlug: pkg?.slug ?? 'necunoscut',
-    packageName,
-    packageKind: pkg?.kind ?? null,
-    packageInterval: pkg?.interval ?? null,
-    amountCents: order.amountCents,
-    currency,
-    customerEmail: email,
-    customerName: name || null,
-    stripeCheckoutSessionId: order.stripeCheckoutSessionId,
-    stripePaymentIntentId: order.stripePaymentIntentId,
-    invoiceSeries: order.invoiceSeries ?? null,
-    invoiceNumber: order.invoiceNumber ?? null,
-  });
+      orderId: order.id,
+      packageSlug: pkg?.slug ?? 'necunoscut',
+      packageName,
+      packageKind: pkg?.kind ?? null,
+      packageInterval: pkg?.interval ?? null,
+      amountCents: order.amountCents,
+      currency,
+      customerEmail: email,
+      customerName: name || null,
+      stripeCheckoutSessionId: order.stripeCheckoutSessionId,
+      stripePaymentIntentId: order.stripePaymentIntentId,
+      invoiceSeries: order.invoiceSeries ?? null,
+      invoiceNumber: order.invoiceNumber ?? null,
+    });
 
   // Confirmare către client.
   if (email) {

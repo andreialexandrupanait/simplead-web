@@ -5,6 +5,7 @@ import { getDb } from '@lib/server/db';
 import { subscribers } from '@lib/server/schema';
 import { syncSubscriber } from '@lib/server/mailerlite';
 import { notifySlack } from '@lib/server/slack';
+import { trackServerConversion, capiContextFromRequest } from '@lib/server/capi';
 
 export const prerender = false;
 
@@ -90,6 +91,12 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     // să rămână instant și abonarea să nu depindă de servicii externe.
     if (inserted.length > 0) {
       void notifySlack(`📧 Abonat nou la newsletter: ${email} (sursă: ${source})`);
+      void trackServerConversion({
+        event: 'sign_up',
+        email,
+        custom: { method: source },
+        ...capiContextFromRequest(request),
+      });
       void (async () => {
         const r = await syncSubscriber(email, source);
         if (r) {

@@ -1,0 +1,128 @@
+---
+/**
+ * Runtime pentru evenimentele no-code definite în /admin/evenimente.
+ * Server-side alege regulile active care se potrivesc paginii curente și emite
+ * un script care le cablează la DOM. Fiecare declanșare → window.saTrack(name, params)
+ * → dataLayer (GTM decide restul, cu consimțământ la nivel de tag). Idempotent,
+ * fără dependințe. Nu emite nimic dacă nu există reguli pentru pagină.
+ */
+import { getTrackingEvents, rulesForPath } from '@lib/server/tracking-events';
+import { normalizePath } from '@data/sections';
+
+const RULES = rulesForPath(await getTrackingEvents(), normalizePath(Astro.url.pathname));
+---
+
+{
+  RULES.length > 0 && (
+    <script is:inline define:vars={{ RULES }}>
+      (function () {
+        const rules = RULES || [];
+        function fire(rule, extra) {
+          const params = Object.assign({}, rule.params || {}, extra || {});
+          if (typeof window.saTrack === 'function') window.saTrack(rule.name, params);
+          else {
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push(Object.assign({ event: rule.name }, params));
+          }
+        }
+
+        // pageview + timer: la încărcare.
+        rules.forEach(function (r) {
+          if (r.trigger.type === 'pageview') fire(r);
+          else if (r.trigger.type === 'timer')
+            setTimeout(function () {
+              fire(r);
+            }, (r.trigger.seconds || 0) * 1000);
+        });
+
+        // click (delegat, în captură pentru a prinde și elementele care navighează).
+        const clickRules = rules.filter(function (r) {
+          return r.trigger.type === 'click';
+        });
+        if (clickRules.length) {
+          document.addEventListener(
+            'click',
+            function (e) {
+              const t = e.target;
+              if (!t || !t.closest) return;
+              clickRules.forEach(function (r) {
+                let el;
+                try {
+                  el = t.closest(r.trigger.selector);
+                } catch {
+                  return; // selector invalid
+                }
+                if (!el) return;
+                const extra = {};
+                if (el.tagName === 'A') {
+                  extra.link_url = el.href || '';
+                  extra.link_text = (el.textContent || '').trim().slice(0, 120);
+                }
+                fire(r, extra);
+              });
+            },
+            true,
+          );
+        }
+
+        // submit (delegat).
+        const submitRules = rules.filter(function (r) {
+          return r.trigger.type === 'submit';
+        });
+        if (submitRules.length) {
+          document.addEventListener(
+            'submit',
+            function (e) {
+              const form = e.target;
+              if (!form) return;
+              submitRules.forEach(function (r) {
+                let match = false;
+                try {
+                  match = form.matches
+                    ? form.matches(r.trigger.selector)
+                    : !!(form.closest && form.closest(r.trigger.selector));
+                } catch {
+                  return;
+                }
+                if (!match) return;
+                const extra = {};
+                if (form.id) extra.form_id = form.id;
+                fire(r, extra);
+              });
+            },
+            true,
+          );
+        }
+
+        // scroll: un singur listener, fiecare prag se trage o dată.
+        const scrollRules = rules
+          .filter(function (r) {
+            return r.trigger.type === 'scroll';
+          })
+          .map(function (r) {
+            return { r: r, fired: false };
+          });
+        if (scrollRules.length) {
+          const onScroll = function () {
+            const doc = document.documentElement;
+            const scrolled = doc.scrollTop || document.body.scrollTop || 0;
+            const max = doc.scrollHeight - doc.clientHeight;
+            const pct = max > 0 ? (scrolled / max) * 100 : 100;
+            scrollRules.forEach(function (s) {
+              if (!s.fired && pct >= (s.r.trigger.threshold || 0)) {
+                s.fired = true;
+                fire(s.r, { percent: s.r.trigger.threshold });
+              }
+            });
+            const allDone = scrollRules.every(function (s) {
+              return s.fired;
+            });
+            if (allDone) window.removeEventListener('scroll', onScroll);
+          };
+          window.addEventListener('scroll', onScroll, { passive: true });
+          onScroll();
+        }
+      })();
+    </script>
+  )
+}

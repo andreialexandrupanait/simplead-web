@@ -4,6 +4,7 @@ import '../styles/global.css';
 import Navbar from '@components/Navbar.astro';
 import Footer from '@components/Footer.astro';
 import Analytics from '@components/Analytics.astro';
+import TrackingRuntime from '@components/TrackingRuntime.astro';
 import CookieBanner from '@components/CookieBanner.astro';
 import ScrollTop from '@components/ui/ScrollTop.astro';
 import ContactDrawer from '@components/react/ContactDrawer';
@@ -230,14 +231,12 @@ const jsonLd = {
           <div class="maint-bars">
             {Astro.locals.siteMaintenance && (
               <div class="maint-bar maint-bar--mnt">
-                Site în mentenanță, vezi doar tu (admin).{' '}
-                <a href="/admin/setari">Setări</a>
+                Site în mentenanță, vezi doar tu (admin). <a href="/admin/setari">Setări</a>
               </div>
             )}
             {Astro.locals.pageUnderConstruction && (
               <div class="maint-bar maint-bar--cst">
-                Pagină „în construcție", vezi doar tu (admin).{' '}
-                <a href="/admin/setari">Setări</a>
+                Pagină „în construcție", vezi doar tu (admin). <a href="/admin/setari">Setări</a>
               </div>
             )}
           </div>
@@ -300,6 +299,7 @@ const jsonLd = {
     </style>
     <Footer />
     <CookieBanner />
+    <TrackingRuntime />
     <ScrollTop />
 
     <ContactDrawer

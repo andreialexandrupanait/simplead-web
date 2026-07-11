@@ -101,7 +101,22 @@ export const INTEGRATIONS = {
     testable: true,
     fields: {
       apiKey: { key: 'integration.mailerlite.api_key', env: 'MAILERLITE_API_KEY', secret: true },
-      groupId: { key: 'integration.mailerlite.group_id', env: 'MAILERLITE_GROUP_ID', secret: false },
+      groupId: {
+        key: 'integration.mailerlite.group_id',
+        env: 'MAILERLITE_GROUP_ID',
+        secret: false,
+      },
+    },
+  },
+  conversions: {
+    label: 'Conversii server-side (CAPI)',
+    group: 'Tracking',
+    desc: 'Trimite conversiile (lead, abonare, plată) și din server: Meta Conversions API + GA4 Measurement Protocol, deduplicate cu event_id. Rezistent la ad-blockere/iOS. ID-urile de pixel/measurement se iau din /admin/tracking.',
+    docs: 'https://developers.facebook.com/docs/marketing-api/conversions-api/get-started',
+    testable: false,
+    fields: {
+      metaCapiToken: { key: 'integration.meta.capi_token', env: 'META_CAPI_TOKEN', secret: true },
+      ga4MpSecret: { key: 'integration.ga4.mp_secret', env: 'GA4_MP_SECRET', secret: true },
     },
   },
   google: {
