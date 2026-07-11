@@ -467,40 +467,15 @@ export const testimonials: Testimonial[] = [
     monogram: 'BD',
     variant: 'electric',
   },
-  // ⚠️ PLACEHOLDER — testimoniale FICTIVE, de înlocuit cu reale înainte de a le
-  // considera definitive. Nume/companii inventate; păstrate doar pentru a umple
-  // layout-ul bento. Vezi și convenția „de confirmat de Andrei" din homeCaseStudies.
+  // Testimoniale REALE — fictivele-placeholder au fost eliminate (11 iul 2026):
+  // pe un site în producție nu afișăm citate inventate de la clienți inexistenți.
   {
     quote:
-      'Comunicare clară de la brief la livrare. Am primit exact ce ne-am dorit, la timp și fără surprize.',
-    author: 'Andreea Marin', // PLACEHOLDER
-    company: 'Verdana Studio', // PLACEHOLDER
-    monogram: 'AM',
+      'Am dezvoltat împreună un ecosistem digital complet: aplicații web și mobile, management de conținut și funcționalități multilingve. Colaborarea a fost profesionistă, iar rezultatele au depășit așteptările.',
+    author: 'Universitatea „Dunărea de Jos" din Galați',
+    company: 'Proiect Cross2Map',
+    monogram: 'UG',
     variant: 'dark',
-  },
-  {
-    quote:
-      'Site-ul nou ne-a adus mai multe cereri de ofertă în prima lună decât tot anul trecut. Recomand fără rezerve.',
-    author: 'Radu Popescu', // PLACEHOLDER
-    company: 'Nordis Construct', // PLACEHOLDER
-    monogram: 'RP',
-    variant: 'dark',
-  },
-  {
-    quote:
-      'Oameni cu care e ușor să lucrezi: ascultă, propun soluții și își respectă termenele.',
-    author: 'Ioana Dumitru', // PLACEHOLDER
-    company: 'Lumea Copiilor', // PLACEHOLDER
-    monogram: 'ID',
-    variant: 'dark',
-  },
-  {
-    quote:
-      'De la rebranding până la mentenanță lunară, ne-au fost alături la fiecare pas. Un partener de încredere.',
-    author: 'Mihai Ionescu', // PLACEHOLDER
-    company: 'Cofetăria Dulce', // PLACEHOLDER
-    monogram: 'MI',
-    variant: 'electric',
   },
 ];
 

@@ -9,10 +9,10 @@ import { testimonials, type Testimonial } from '@data/content';
  * carduri întunecate la mijloc), inspirat din designul de referință.
  */
 const t = testimonials;
+// 4 testimoniale reale → două coloane echilibrate (featured + card scurt fiecare).
 const columns: Testimonial[][] = [
-  [t[0], t[2]].filter(Boolean), // featured înalt + albastru
-  [t[3], t[4], t[5]].filter(Boolean), // 3 carduri întunecate
-  [t[6], t[1]].filter(Boolean), // albastru + featured înalt
+  [t[0], t[3]].filter(Boolean),
+  [t[1], t[2]].filter(Boolean),
 ];
 ---
 
@@ -67,9 +67,11 @@ const columns: Testimonial[][] = [
   }
   .tst__grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     align-items: stretch;
     gap: 20px;
+    max-width: 1040px;
+    margin-inline: auto;
   }
   .tst__col {
     display: flex;

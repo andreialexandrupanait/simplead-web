@@ -139,7 +139,7 @@ const social = site.social;
   <div class="footer-bottom">
     <span>
       © {year}
-      {site.legalName}. Toate drepturile rezervate.
+      {site.legalName.replace(/\.+$/, '')}. Toate drepturile rezervate.
       {
         (site.legal.cif || site.legal.regCom) && (
           <span class="footer-legal">

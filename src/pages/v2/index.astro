@@ -95,10 +95,10 @@ const aiFeatures = [
 
 // ── TESTIMONIALE: aceeași distribuție bento ca varianta A ─────────────────────
 const t = testimonials;
+// 4 testimoniale reale → două coloane echilibrate (featured + card scurt fiecare).
 const tstColumns: Testimonial[][] = [
-  [t[0], t[2]].filter(Boolean),
-  [t[3], t[4], t[5]].filter(Boolean),
-  [t[6], t[1]].filter(Boolean),
+  [t[0], t[3]].filter(Boolean),
+  [t[1], t[2]].filter(Boolean),
 ];
 ---
 
@@ -881,11 +881,20 @@ const tstColumns: Testimonial[][] = [
   .hp-svc__track {
     list-style: none;
     margin: 0;
-    padding: 6px 36px 14px;
+    /* Primul card se aliniază cu marginea containerului (nu tăiat la 36px fix),
+       iar la capătul din dreapta cardul următor rămâne „peek" — pattern de carusel. */
+    padding: 6px max(var(--v2-gutter), calc((100vw - var(--v2-container)) / 2 + var(--v2-gutter)))
+      14px;
     display: flex;
     gap: 22px;
     overflow-x: auto;
     scroll-snap-type: x proximity;
+    /* Punctele de snap respectă insetul containerului (altfel snap-ul „mănâncă"
+       padding-ul și primul card ajunge tăiat la marginea viewport-ului). */
+    scroll-padding-inline: max(
+      var(--v2-gutter),
+      calc((100vw - var(--v2-container)) / 2 + var(--v2-gutter))
+    );
     scrollbar-width: none;
   }
   .hp-svc__track::-webkit-scrollbar {
@@ -1710,9 +1719,11 @@ const tstColumns: Testimonial[][] = [
   }
   .hp-tst__grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     align-items: stretch;
     gap: 20px;
+    max-width: 1040px;
+    margin-inline: auto;
   }
   .hp-tst__col {
     display: flex;
