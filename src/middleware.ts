@@ -3,6 +3,8 @@ import type { APIContext, MiddlewareNext } from 'astro';
 import { getAuth } from './lib/auth';
 import { isStaffUser, type SessionUser } from './lib/server/authz';
 import { getPublicSettings } from './lib/server/public-settings';
+import { getPublishedPosts } from './lib/server/content';
+import { resolveLegacyRedirect } from './data/legacy-redirects';
 import { PAGE_PATHS, normalizePath } from './data/sections';
 
 /**
@@ -59,6 +61,43 @@ export const onRequest = defineMiddleware(async (context, next) => {
 async function route(context: APIContext, next: MiddlewareNext): Promise<Response> {
   const { pathname } = context.url;
 
+  // Canonicalizare de host + URL vechi, într-un singur 301 (evită lanțuri):
+  //   1. www.simplead.ro → simplead.ro  (site-ul răspunde pe ambele hosturi prin
+  //      nginx-proxy; fără asta fiecare pagină www e „Canonicalised"/duplicat în
+  //      ochii Google — 134 de pagini în auditul Screaming Frog).
+  //   2. URL-uri WordPress vechi (articole la rădăcină, categorii, arhive, feed)
+  //      → noua structură (altfel 404).
+  //   3. Trailing slash `/x/` → `/x` (o singură variantă indexabilă).
+  // Doar pe GET public non-asset: sunt linkuri indexate/backlink-uri.
+  const isAssetPath = /\.[^/]+$/.test(pathname);
+  if (
+    context.request.method === 'GET' &&
+    !pathname.startsWith('/admin') &&
+    !pathname.startsWith('/api') &&
+    !isAssetPath
+  ) {
+    const host = context.url.hostname;
+    const wwwRedirect = host.startsWith('www.');
+
+    const slugSet = new Set((await getPublishedPosts()).map((p) => p.slug));
+    let finalPath = resolveLegacyRedirect(pathname, slugSet);
+    if (!finalPath && pathname.length > 1 && pathname.endsWith('/')) {
+      finalPath = pathname.replace(/\/+$/, '');
+    }
+
+    // Host swap (www) → URL absolut către non-www (păstrează path-ul rezolvat).
+    if (wwwRedirect) {
+      const url = new URL(context.url);
+      url.hostname = host.slice(4);
+      if (finalPath) url.pathname = finalPath;
+      return context.redirect(url.toString(), 301);
+    }
+    // Doar schimbare de path → redirect relativ (păstrează query-ul).
+    if (finalPath && finalPath !== pathname) {
+      return context.redirect(finalPath + context.url.search, 301);
+    }
+  }
+
   // Paginile prerandate nu au un request real la build; nu există admin logat.
   if (context.isPrerendered) {
     context.locals.user = null;
@@ -84,8 +123,7 @@ async function route(context: APIContext, next: MiddlewareNext): Promise<Respons
   // gate sau fișiere (.xml, .png, robots…). Cache de 60s în getPublicSettings.
   const norm = normalizePath(pathname);
   const isGateScreen = norm === '/in-mentenanta' || norm === '/in-constructie';
-  const isAsset = /\.[^/]+$/.test(pathname);
-  if (!isAdminPath && !pathname.startsWith('/api') && !isGateScreen && !isAsset) {
+  if (!isAdminPath && !pathname.startsWith('/api') && !isGateScreen && !isAssetPath) {
     const pub = await getPublicSettings();
     if (pub.maintenanceMode) {
       context.locals.siteMaintenance = true;

@@ -20,6 +20,10 @@ export default defineConfig({
   // cele viitoare), nu doar cele care declară explicit `prerender = false`.
   // Aplicația rulează oricum pe serverul node (api/admin/DB).
   output: 'server',
+  // Trailing slash rămâne pe „ignore" (implicit): cu „never", Astro răspunde 404
+  // la orice URL cu `/` final ÎNAINTE de middleware, ceea ce ar omorî redirect-urile
+  // de la vechile URL-uri WordPress (toate au trailing slash). Canonicalizarea
+  // `/x/` → `/x` o face middleware-ul cu un 301, sub „ignore" (vezi src/middleware.ts).
   // i18n nativ: română implicit (fără prefix), engleză pregătită pentru mai târziu.
   i18n: {
     defaultLocale: 'ro',
