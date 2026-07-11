@@ -289,7 +289,11 @@ async function run() {
   }
 
   const scopes = ['https://www.googleapis.com/auth/tagmanager.edit.containers'];
-  if (PUBLISH) scopes.push('https://www.googleapis.com/auth/tagmanager.publish');
+  if (PUBLISH)
+    scopes.push(
+      'https://www.googleapis.com/auth/tagmanager.edit.containerversions',
+      'https://www.googleapis.com/auth/tagmanager.publish',
+    );
 
   let auth;
   if (process.env.GTM_SA_KEY) {
