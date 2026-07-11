@@ -4,6 +4,7 @@ import PageHeader from '@components/sections/PageHeader.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
 import { getProjectBySlug } from '@lib/server/content';
 import { renderMarkdown } from '@lib/server/markdown';
+import { breadcrumbLd } from '@/lib/seo-schema';
 
 // Proiectul vine din DB; on-demand. Adminul vede draft-uri cu `?preview=1`.
 export const prerender = false;
@@ -29,8 +30,18 @@ const projectSchema = {
   description: project.summary,
   creator: { '@id': `${origin}#organization` },
   mainEntityOfPage: `${origin}/portofoliu/${project.slug}`,
+  datePublished: project.createdAt.toISOString(),
+  dateModified: project.updatedAt.toISOString(),
   ...(project.cover ? { image: new URL(project.cover, origin).href } : {}),
 };
+const pageSchema = [
+  projectSchema,
+  breadcrumbLd(origin, [
+    { label: 'Acasă', href: '/' },
+    { label: 'Portofoliu', href: '/portofoliu' },
+    { label: project.title },
+  ]),
+];
 
 if (project.status === 'draft') {
   Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
@@ -43,9 +54,9 @@ if (project.status === 'draft') {
   description={description}
   transparentNav={true}
   navOverDark={true}
-  schema={projectSchema}
+  schema={pageSchema}
   ogType="article"
-  ogImage={project.cover ?? undefined}
+  ogImage={project.cover || `/api/og/${project.slug}.png`}
 >
   <PageHeader eyebrow={project.service} title={project.title} subtitle={project.summary} />
 

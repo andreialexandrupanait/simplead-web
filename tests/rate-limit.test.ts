@@ -3,7 +3,9 @@ import { createRateLimiter } from '@lib/server/rate-limit';
 
 describe('createRateLimiter', () => {
   beforeEach(() => {
-    vi.useFakeTimers();
+    // Doar `Date` — limiterul folosește exclusiv Date.now(). Fake pe toate
+    // primitivele (default) blochează async-ul intern al vitest 4 → timeout.
+    vi.useFakeTimers({ toFake: ['Date'] });
   });
   afterEach(() => {
     vi.useRealTimers();

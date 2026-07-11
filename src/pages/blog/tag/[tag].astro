@@ -37,6 +37,7 @@ const schema = blogListSchema({
   url: `${origin}${base}`,
   origin,
   posts: pageItems,
+  crumbs: [{ label: 'Acasă', href: '/' }, { label: 'Blog', href: '/blog' }, { label: match }],
 });
 ---
 

@@ -9,6 +9,7 @@ import { getPublicPackages, formatPrice, canBuy } from '@/lib/server/packages';
 import { getIntegration } from '@/lib/server/settings';
 import { hourlyRates, hourlyRatesIntro, pricingSections } from '@/data/pricing';
 import { packagesFaqs } from '@data/content';
+import { breadcrumbLd, faqLd, packageProductLd } from '@/lib/seo-schema';
 
 // On-demand: pachetele vin din DB (editabile din admin, fără rebuild).
 export const prerender = false;
@@ -40,13 +41,26 @@ const contactHref = (name: string) => `/contact?service=${encodeURIComponent(nam
 
 const metaDescription =
   'Pachete clare pentru site-uri, identitate vizuală și grafică, plus abonamente lunare de mentenanță. Știi de la început ce primești și de unde pornește prețul.';
+
+// JSON-LD: Product/Offer doar pentru pachetele cu preț fix real (politica Google),
+// plus breadcrumb + FAQ (aceleași date ca FaqSection de mai jos).
+const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
+const pageSchema = [
+  breadcrumbLd(origin, [{ label: 'Acasă', href: '/' }, { label: 'Pachete' }]),
+  faqLd(packagesFaqs),
+  ...items
+    .filter((p) => (p.pricing ?? 'fixed') === 'fixed' && p.priceCents > 0)
+    .map((p) => packageProductLd(origin, p)),
+];
 ---
 
 <BaseLayout
   title="Pachete și prețuri"
   description={metaDescription}
+  ogImage="/api/og/pachete.png"
   transparentNav={true}
   navOverDark={true}
+  schema={pageSchema}
 >
   <PageHeader
     crumb={[{ label: 'Acasă', href: '/' }, { label: 'Pachete' }]}

@@ -47,6 +47,7 @@ const listSchema = blogListSchema({
   url: `${origin}/blog`,
   origin,
   posts: shownPosts,
+  crumbs: [{ label: 'Acasă', href: '/' }, { label: 'Blog' }],
 });
 ---
 

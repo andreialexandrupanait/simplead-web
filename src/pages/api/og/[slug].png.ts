@@ -1,9 +1,24 @@
 import type { APIRoute } from 'astro';
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
-import { getPostBySlug } from '@lib/server/content';
+import { getPostBySlug, getProjectBySlug } from '@lib/server/content';
+import { getService } from '@data/services';
+import { supportServices } from '@data/support-services';
 
 export const prerender = false;
+
+// Pagini statice cu OG dedicat (slug → titlu + etichetă). `_default` e imaginea
+// implicită a site-ului (folosită de BaseLayout unde pagina nu are OG propriu).
+const PAGE_OG: Record<string, { title: string; category?: string }> = {
+  _default: { title: 'Marketing, branding și web, pe bază de neuroștiință' },
+  pachete: { title: 'Pachete și prețuri clare, fără surprize', category: 'Pachete' },
+  servicii: { title: 'Servicii de grafică, web și marketing', category: 'Servicii' },
+  portofoliu: { title: 'Proiecte reale, rezultate măsurabile', category: 'Portofoliu' },
+  despre: { title: 'Cine suntem și cum lucrăm', category: 'Despre' },
+  contact: { title: 'Hai să vorbim despre proiectul tău', category: 'Contact' },
+  mentenanta: { title: 'Mentenanță website cu abonament lunar', category: 'Mentenanță' },
+  'intrebari-frecvente': { title: 'Întrebări frecvente', category: 'FAQ' },
+};
 
 // Fonturi Space Grotesk 700 (latin + latin-ext pentru diacritice RO), încărcate
 // o singură dată din /public/og prin origin-ul propriu, apoi cache în memorie.
@@ -35,16 +50,33 @@ export const GET: APIRoute = async ({ params, url, site }) => {
   const slug = (params.slug ?? '').replace(/\.png$/, '');
   const origin = (site ?? new URL(url.origin)).toString().replace(/\/$/, '');
 
-  let title = 'Marketing, branding și web, pe bază de neuroștiință';
+  let title = PAGE_OG._default.title;
   let category = '';
-  try {
-    const post = await getPostBySlug(slug);
-    if (post) {
-      title = post.title;
-      category = post.category || '';
+  const page = PAGE_OG[slug];
+  const service = getService(slug) ?? supportServices.find((s) => s.slug === slug);
+  if (page) {
+    title = page.title;
+    category = page.category ?? '';
+  } else if (service) {
+    title = service.title;
+    category = 'Servicii';
+  } else {
+    try {
+      // Articol de blog sau proiect de portofoliu (ambele au slug unic).
+      const post = await getPostBySlug(slug);
+      if (post) {
+        title = post.title;
+        category = post.category || '';
+      } else {
+        const project = await getProjectBySlug(slug);
+        if (project) {
+          title = project.title;
+          category = 'Portofoliu';
+        }
+      }
+    } catch {
+      /* fallback la titlul generic */
     }
-  } catch {
-    /* fallback la titlul generic */
   }
 
   const fontSize = title.length > 90 ? 52 : title.length > 55 ? 62 : 74;

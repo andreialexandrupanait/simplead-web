@@ -238,3 +238,8 @@ Stack-ul live stă în `/var/www/simplead` (repo-ul e clonat în `./app`):
   (persistă peste rebuild-uri) și se servesc la `/uploads/...`.
 - **Sitemap/RSS**: generate dinamic la `/sitemap.xml` și `/rss.xml` (includ articolele
   din DB). Lista rutelor statice: `src/data/static-routes.ts`.
+- **Backup DB**: `/var/www/simplead/backup-db.sh` rulează zilnic la 03:17 din cron
+  (`/etc/cron.d/simplead-db-backup`) — `pg_dump` gzip în `backups/daily/` (retenție 7)
+  + copie duminicală în `backups/weekly/` (retenție 5). Log: `backups/backup.log`.
+  Restore: `gunzip -c backups/daily/<fișier>.sql.gz | docker exec -i simplead_db sh -c 'psql -U "$POSTGRES_USER" -d <db>'`.
+  TODO: sincronizare off-site (S3/NAS/rclone) — momentan backup-urile stau doar pe server.

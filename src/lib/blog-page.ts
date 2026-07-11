@@ -1,6 +1,7 @@
 /** Paginare de blog stil WordPress: pagina 1 la basePath, restul la basePath/page/N.
  *  Un singur loc pentru matematica de paginare + schema listă (AEO/GEO). */
 import type { Post } from '@lib/server/content';
+import { breadcrumbLd, type Crumb } from '@/lib/seo-schema';
 
 export const BLOG_PAGE_SIZE = 9;
 
@@ -19,7 +20,8 @@ export function blogPageHref(basePath: string, n: number) {
   return n <= 1 ? basePath : `${basePath}/page/${n}`;
 }
 
-/** JSON-LD CollectionPage + ItemList cu articolele vizibile (AEO/GEO). */
+/** JSON-LD CollectionPage + ItemList cu articolele vizibile (AEO/GEO).
+ *  Cu `crumbs`, întoarce și BreadcrumbList (BaseLayout acceptă array la `schema`). */
 export function blogListSchema(opts: {
   name: string;
   description?: string;
@@ -27,9 +29,10 @@ export function blogListSchema(opts: {
   origin: string;
   posts: { slug: string; title: string }[];
   startPosition?: number;
+  crumbs?: Crumb[];
 }) {
   const start = opts.startPosition ?? 1;
-  return {
+  const collection = {
     '@type': 'CollectionPage',
     name: opts.name,
     description: opts.description,
@@ -45,4 +48,5 @@ export function blogListSchema(opts: {
       })),
     },
   };
+  return opts.crumbs ? [collection, breadcrumbLd(opts.origin, opts.crumbs)] : collection;
 }

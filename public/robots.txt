@@ -1,6 +1,8 @@
 User-agent: *
 Allow: /
+Allow: /api/og/
 Disallow: /admin
 Disallow: /api/
+Disallow: /v2
 
 Sitemap: https://simplead.ro/sitemap.xml

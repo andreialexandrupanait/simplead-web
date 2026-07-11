@@ -40,7 +40,8 @@ interface Props {
 const {
   title,
   description = site.description,
-  ogImage = '/og-default.png',
+  // Implicitul e generat dinamic (satori, 1200×630, branded) — vezi /api/og/[slug].png.
+  ogImage = '/api/og/_default.png',
   transparentNav = false,
   navOverDark = false,
   activePath = Astro.url.pathname,
@@ -59,6 +60,8 @@ const canonical = new URL(Astro.url.pathname + canonicalQuery, Astro.site ?? Ast
 const prevHref = prevUrl ? new URL(prevUrl, Astro.site ?? Astro.url.origin).href : null;
 const nextHref = nextUrl ? new URL(nextUrl, Astro.site ?? Astro.url.origin).href : null;
 const ogImageUrl = new URL(ogImage, Astro.site ?? Astro.url.origin).href;
+// Dimensiunile sunt garantate doar pentru imaginile generate de endpoint-ul OG.
+const ogImageHasDims = ogImage.startsWith('/api/og/');
 
 // Alternate-uri de limbă (emise doar când versiunea EN e live, ca să nu trimitem
 // crawlerele spre pagini inexistente).
@@ -83,9 +86,17 @@ const jsonLd = {
       '@type': 'Organization',
       '@id': `${origin}#organization`,
       name: site.name,
+      legalName: site.legalName,
       url: origin,
       logo: new URL('/favicon.svg', origin).href,
       description: site.description,
+      // Identificatori fiscali verificabili (E-E-A-T + rich results locale).
+      taxID: site.legal.cif,
+      identifier: {
+        '@type': 'PropertyValue',
+        propertyID: 'Registrul Comerțului',
+        value: site.legal.regCom,
+      },
       founder: { '@id': `${origin}#founder` },
       address: {
         '@type': 'PostalAddress',
@@ -126,6 +137,15 @@ const jsonLd = {
       name: site.name,
       inLanguage: 'ro-RO',
       publisher: { '@id': `${origin}#organization` },
+      // Sitelinks search box: căutarea reală din blog.
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: `${origin}/blog?q={search_term_string}`,
+        },
+        'query-input': 'required name=search_term_string',
+      },
     },
     // E-E-A-T: fondatorul ca Person cu credențiale academice verificabile.
     {
@@ -198,6 +218,8 @@ const jsonLd = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImageUrl} />
+    {ogImageHasDims && <meta property="og:image:width" content="1200" />}
+    {ogImageHasDims && <meta property="og:image:height" content="630" />}
     <meta property="og:locale" content={ogLocale} />
     {EN_LIVE && <meta property="og:locale:alternate" content={ogLocaleAlt} />}
     <meta name="twitter:card" content="summary_large_image" />

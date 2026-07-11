@@ -5,15 +5,29 @@ import ServiceHubCards from '@components/sections/ServiceHubCards.astro';
 import FaqSection from '@components/sections/FaqSection.astro';
 import CtaSection from '@components/sections/CtaSection.astro';
 import { servicesFaqs } from '@data/content';
+import { services, serviceHref } from '@data/services';
+import { breadcrumbLd, faqLd, itemListLd } from '@/lib/seo-schema';
 
 export const prerender = false;
+
+const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
+const pageSchema = [
+  breadcrumbLd(origin, [{ label: 'Acasă', href: '/' }, { label: 'Servicii' }]),
+  itemListLd(
+    origin,
+    services.map((s) => ({ name: s.title, url: serviceHref(s.slug) })),
+  ),
+  faqLd(servicesFaqs),
+];
 ---
 
 <BaseLayout
   title="Servicii"
   description="Marketing, grafică, web și mentenanță, la un singur partener. Lucrăm pe obiective clare și pornim de la date și de la cum decid oamenii (neuromarketing)."
+  ogImage="/api/og/servicii.png"
   transparentNav={true}
   navOverDark={true}
+  schema={pageSchema}
 >
   <ServiceHubHero
     eyebrow="Servicii"

@@ -39,6 +39,12 @@ const schema = blogListSchema({
   origin,
   posts: pageItems,
   startPosition: (safePage - 1) * BLOG_PAGE_SIZE + 1,
+  crumbs: [
+    { label: 'Acasă', href: '/' },
+    { label: 'Blog', href: '/blog' },
+    { label: match, href: base },
+    { label: `Pagina ${safePage}` },
+  ],
 });
 ---
 

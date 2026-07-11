@@ -22,8 +22,14 @@ describe('contactSchema', () => {
     expect(contactSchema.safeParse({ ...valid, consent: false }).success).toBe(false);
   });
 
-  it('respinge mesajele prea scurte (min. 10 caractere)', () => {
-    expect(contactSchema.safeParse({ ...valid, message: 'scurt' }).success).toBe(false);
+  it('acceptă mesajul opțional/gol (decizie de produs: fără minim)', () => {
+    expect(contactSchema.safeParse({ ...valid, message: '' }).success).toBe(true);
+    const { message: _omit, ...faraMesaj } = valid;
+    expect(contactSchema.safeParse(faraMesaj).success).toBe(true);
+  });
+
+  it('respinge mesajele peste plafonul anti-abuz (20000)', () => {
+    expect(contactSchema.safeParse({ ...valid, message: 'x'.repeat(20001) }).success).toBe(false);
   });
 
   it('respinge honeypot-ul completat (semnal de bot)', () => {

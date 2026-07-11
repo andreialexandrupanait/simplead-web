@@ -14,6 +14,7 @@ import { getService, type ServiceProcessStep } from '@data/services';
 import { supportServices } from '@data/support-services';
 import { processSteps } from '@data/content';
 import { clientsForService } from '@data/clients';
+import { breadcrumbLd, faqLd } from '@/lib/seo-schema';
 
 // On-demand: ca tot site-ul să treacă prin middleware (mentenanță/construcție).
 // Datele sunt statice (@data/services + @data/support-services), deci doar căutăm
@@ -58,14 +59,25 @@ const serviceSchema = {
   provider: { '@id': `${origin}#organization` },
   areaServed: { '@type': 'Country', name: 'România' },
 };
+// Breadcrumb + FAQ (aceleași date ca FaqSection); FAQ doar unde există.
+const pageSchema = [
+  serviceSchema,
+  breadcrumbLd(origin, [
+    { label: 'Acasă', href: '/' },
+    { label: 'Servicii', href: '/servicii' },
+    { label: service ? service.title : support!.title },
+  ]),
+  ...(service?.faqs?.length ? [faqLd(service.faqs)] : []),
+];
 ---
 
 <BaseLayout
   title={pageTitle}
   description={pageDesc}
+  ogImage={`/api/og/${slug}.png`}
   transparentNav={true}
   navOverDark={true}
-  schema={serviceSchema}
+  schema={pageSchema}
 >
   {
     service ? (
