@@ -1,7 +1,7 @@
 ---
 /** „Alte servicii" (rel-grid): celelalte 3 servicii, pe pagina de detaliu. */
 import ServiceIcon from '@components/ui/ServiceIcon.astro';
-import type { Service } from '@data/services';
+import { serviceHref, type Service } from '@data/services';
 
 interface Props {
   items: Service[];
@@ -19,7 +19,7 @@ const arrow = '<path d="M5 12h14M13 6l6 6-6 6"/>';
     <div class="rel-grid" data-reveal-stagger>
       {
         items.map((s) => (
-          <a class="rel-card" href={`/servicii/${s.slug}`}>
+          <a class="rel-card" href={serviceHref(s.slug)}>
             <span class="ri">
               <ServiceIcon icon={s.icon} class="h-6 w-6" />
             </span>

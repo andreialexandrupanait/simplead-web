@@ -4,7 +4,7 @@
  * full-bleed cu fade la margini (cardurile din afara containerului se
  * estompează). Carduri pătrate (mai joase). Scroll nativ cu snap.
  */
-import { services } from '@data/services';
+import { services, serviceHref } from '@data/services';
 const arrow = '<path d="M7 17L17 7M7 7h10v10"/>';
 const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
 
@@ -88,7 +88,7 @@ const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).f
           <li class="svcx__item">
             <a
               class:list={['svcx__card', 'svc2-tile', i === 0 && 'hot']}
-              href={s.slug === 'mentenanta-website' ? '/mentenanta' : `/servicii/${s.slug}`}
+              href={serviceHref(s.slug)}
             >
               <span class="svc2-media">
                 <img src={s.image} alt={s.title} loading="lazy" />

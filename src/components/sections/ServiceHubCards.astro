@@ -1,6 +1,6 @@
 ---
 /** Cardurile mari de servicii (svc-hub) din hub-ul /servicii. */
-import { services } from '@data/services';
+import { services, serviceHref } from '@data/services';
 
 interface Props {
   eyebrow?: string;
@@ -27,7 +27,7 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
       {
         services.map((s, i) => (
           <article class="svc-hub-card has-media">
-            <a class="svc-hub-media" href={`/servicii/${s.slug}`}>
+            <a class="svc-hub-media" href={serviceHref(s.slug)}>
               <img src={s.image} alt={s.title} loading="lazy" />
               <span class="num">{String(i + 1).padStart(2, '0')}</span>
               <span class="svc-hub-ab">
@@ -50,7 +50,7 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
                   <span>{t}</span>
                 ))}
               </div>
-              <a class="more" href={`/servicii/${s.slug}`}>
+              <a class="more" href={serviceHref(s.slug)}>
                 Vezi detalii
                 <svg
                   viewBox="0 0 24 24"

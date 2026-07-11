@@ -1157,6 +1157,16 @@ export function getService(slug: string): Service | undefined {
   return services.find((s) => s.slug === slug);
 }
 
+/**
+ * URL-ul canonic al unui serviciu. `mentenanta-website` are pagină proprie la
+ * `/mentenanta` (cu calculator); `/servicii/mentenanta-website` e doar un redirect
+ * 301 în astro.config, deci NU trebuie linkat direct (ar fi un hop inutil, semnalat
+ * de Screaming Frog). Un singur loc pentru regula asta.
+ */
+export function serviceHref(slug: string): string {
+  return slug === 'mentenanta-website' ? '/mentenanta' : `/servicii/${slug}`;
+}
+
 /** Celelalte servicii (pentru secțiunea „Alte servicii"). */
 export function relatedServices(slug: string): Service[] {
   return services.filter((s) => s.slug !== slug);
