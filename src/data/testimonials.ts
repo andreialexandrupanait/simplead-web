@@ -13,7 +13,7 @@ export interface Testimonial {
 
 /** Statistica din coloana navy — comună (deocamdată) pe toate paginile. */
 export const caseStat = {
-  statBig: 'zeci',
+  statBig: '72+',
   statBigAccent: 'de proiecte',
   statCap: 'Afaceri care lucrează cu Simplead.',
 };

@@ -337,7 +337,7 @@ export const services: Service[] = [
       },
     ],
     caseStudy: {
-      statBig: 'zeci',
+      statBig: '72+',
       statBigAccent: 'de proiecte',
       statCap: 'Afaceri care au ales Simplead pentru web și marketing.',
       quote: '„Platformă digitală de turism gastronomic"',

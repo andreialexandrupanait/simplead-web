@@ -645,8 +645,8 @@ export interface HubStat {
   label: string;
 }
 export const svcHubStats: HubStat[] = [
-  { value: 'zeci', em: '', label: 'proiecte' }, // TODO: nr. exact (confirmă Andrei)
-  { value: '10', em: '+', label: 'ani experiență' }, // TODO: cifră neconfirmată, vezi audit-text-v1.md
+  { value: '72', em: '+', label: 'proiecte' }, // confirmat de Andrei (iul 2026)
+  { value: '12', em: '', label: 'ani experiență' }, // confirmat de Andrei (iul 2026)
   { value: '6', em: '', label: 'servicii, un singur partener' },
 ];
 
