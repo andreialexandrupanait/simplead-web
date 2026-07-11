@@ -13,29 +13,32 @@
 ### 👤 De la tine (fără astea nu putem închide)
 - [ ] 🔴 **Date firmă** în `src/data/site.ts`: formă juridică + denumire legală completă (ex. „Simplead SRL"/„… PFA"), adresa completă a sediului, program, linkuri social (sau confirmă „fără social").
 - [ ] 🔴 **Pagini legale** — dă-mi datele ca să elimin `[confirmă:…]` din `src/pages/confidentialitate.astro:26` și `src/pages/termeni.astro:31`.
-- [ ] 🔴 **Confirmă integrările în `/admin/integrari`**: Stripe `sk_live_` + `whsec_` (+ endpoint `checkout.session.completed` în Stripe Dashboard); **Postmark token** (altfel emailurile tac); SmartBill (token/serie/CIF/tax). Dacă vrei, verific eu read-only și îți spun exact ce lipsește.
-- [ ] 🔴 **Confirmă migrarea `0015`** aplicată pe prod (`ab_exposure` + `leads.variant`/`orders.variant`) — necesară înainte de A/B.
+- [x] ~~Confirmă integrările~~ **Verificat pe prod (11 iul)**: Stripe ✓ (`secret_key`+`webhook_secret` în DB), Postmark ✓ (`server_token`+`from_email` — emailurile pleacă), Google login ✓.
+- [ ] 🔴 **SmartBill incomplet**: are `cif`/`email`/`token`, dar **lipsește `series` (seria de facturi)** + `taxName`/`taxPercent` → facturarea automată nu poate emite. Completează în `/admin/integrari`.
+- [x] ~~Confirmă migrarea `0015`~~ **Verificat pe prod (11 iul)**: `ab_exposure` + `leads.variant`/`orders.variant` există — A/B deblocat tehnic.
 - [ ] 🟢 Poză reală Gabriel (`src/pages/despre.astro`) + confirmă cifrele „TODO" din `src/data/content.ts`.
 
 ### 🤖 Tehnic
-- [ ] 🔴 **Backup DB automat**: cron `pg_dump` (orders/customers/leads/subscribers/settings/posts/projects) + retenție (ex. 7 zilnice / 4 săptămânale) + copie off-site; restore testat o dată; documentat în `README.md`.
-- [ ] 🟠 **Teste verzi**: fix `rate-limit.test.ts` (`vi.useFakeTimers({ toFake: ['Date'] })`); aliniază `contact-schema.test.ts` cu codul (decide: mesaj opțional → actualizez testul; sau reintrodu `.min(10)`).
-- [ ] 🟠 Curăță `RESEND_API_KEY` mort din `.env` + cod; șterge config deploy legacy `app/docker-compose.prod.yml` + `app/Dockerfile.prod`.
+- [x] **Backup DB automat** (11 iul): `backup-db.sh` + cron 03:17 (`/etc/cron.d/simplead-db-backup`), retenție 7 zilnice/5 săptămânale, **restore testat**; documentat în README. Rămâne: copie off-site (S3/NAS/rclone) — necesită destinație de la tine.
+- [x] **Teste verzi 71/71** (11 iul): fix fake-timers vitest 4 pe rate-limit; test contact aliniat la decizia „mesaj opțional".
+- [x] **Curățenie** (11 iul): `RESEND_API_KEY` scos din `.env`; configs legacy `docker-compose.prod.yml`/`Dockerfile.prod` șterse; `.env` → `600`.
 
 ---
 
-## FAZA 1 — SEO complet funcțional (prioritate)
+## FAZA 1 — SEO complet funcțional ✅ (implementată 11 iul)
 
-- [ ] 🔴 `public/robots.txt`: adaugă `Allow: /api/og/` (deblochează imaginea Twitter card pe blog) + `Disallow: /v2` (defensiv).
-- [ ] 🟠 `src/pages/pachete.astro`: JSON-LD `Product`/`Offer` per pachet (`price`, `priceCurrency: RON`, `availability`, `url`) + `BreadcrumbList`. Opțional `AggregateOffer` pe listă.
-- [ ] 🟠 `BreadcrumbList` pe: `servicii/[slug]`, `portofoliu/[slug]`, `servicii/index`, `portofoliu/index`, listările blog/tag/categorie (multe au deja breadcrumb vizual).
-- [ ] 🟠 `FAQPage` pe `servicii/[slug]` și `pachete` (refolosesc datele din `FaqSection`).
-- [ ] 🟠 OG dinamic non-blog: parametrizez `src/pages/api/og/[slug].png.ts` (titlu/subtitlu generic) și pun `ogImage` pe servicii/pachete/despre — sau accept `/og-default.png` unde nu merită.
-- [ ] 🟢 `BaseLayout.astro`: `WebSite.potentialAction` SearchAction (`/blog?q={q}`); îmbogățesc `Organization`/`LocalBusiness` cu `identifier`/`vatID` (CIF/RegCom), `streetAddress`, `geo`, `sameAs` (după ce ai social), `openingHours`; `og:image:width/height` 1200×630.
-- [ ] 🟢 `Review`/`AggregateRating` din `src/data/testimonials.ts`; `ItemList` pe listări servicii/portofoliu.
-- [ ] 🟢 `src/pages/rss.xml.ts`: `content:encoded` full-text.
+- [x] `robots.txt`: `Allow: /api/og/` + `Disallow: /v2`.
+- [x] `/pachete`: `Product`/`Offer` per pachet cu preț fix (moneda reală din DB) + `BreadcrumbList` + `FAQPage`.
+- [x] `BreadcrumbList` pe: `servicii/[slug]`, `portofoliu/[slug]` (+ `datePublished`/`dateModified`), `servicii/index`, `portofoliu/index` (+ `ItemList` pe ambele), toate listările blog/tag/categorie.
+- [x] `FAQPage` pe `servicii/[slug]` (unde există FAQ) și `pachete`.
+- [x] OG dinamic non-blog: endpoint extins (registru pagini + servicii + suport + proiecte); `ogImage` pe pachete/servicii/portofoliu/despre/contact/mentenanta/FAQ; **imaginea implicită a site-ului e acum generată** (`/api/og/_default.png`, 1200×630 — vechiul `og-default.png` era JPEG 909×540 cu extensie greșită).
+- [x] `BaseLayout`: `SearchAction` (→ `/blog?q=`), `taxID`+`identifier` (CIF/RegCom), `legalName`, `og:image:width/height`.
+- [x] `rss.xml`: `content:encoded` full-text (HTML sanitizat).
+- Constructori reutilizabili: `src/lib/seo-schema.ts` (breadcrumb/FAQ/ItemList/Product).
+- **Decizie: `Review`/`AggregateRating` NU se emit** — testimonialele găzduite pe propriul site sunt „self-serving reviews" (împotriva politicii Google pentru rich results; risc de ignorare/penalizare). Se poate revizita cu recenzii dintr-o sursă terță (Google Business Profile).
+- Rămâne (depinde de datele tale din Faza 0): `streetAddress`/`geo`/`sameAs`/`openingHours` reale în LocalBusiness.
 
-**Verificare:** Google Rich Results Test + Schema validator pe `/pachete`, `/servicii/[slug]`, `/blog/[slug]`; card Twitter cu imagine; `sitemap.xml` + `robots.txt` corecte.
+**Verificare rămasă (după deploy):** Google Rich Results Test pe `/pachete`, `/servicii/[slug]`, `/blog/[slug]`; card Twitter cu imagine.
 
 ---
 
