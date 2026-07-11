@@ -19,18 +19,18 @@ const ICON = {
 
 // Logo-uri reale de clienți/parteneri (descărcate local în public/parteneri).
 const clients = [
-  { src: '/parteneri/feaa-galati.png', name: 'FEAA Galați' },
-  { src: '/parteneri/m1-med-beauty.png', name: 'M1 Med Beauty' },
-  { src: '/parteneri/matematica-interactiva.png', name: 'Matematica Interactivă' },
-  { src: '/parteneri/priority-clinic.png', name: 'Priority Clinic' },
-  { src: '/parteneri/simona-halep.png', name: 'Hotel Simona Halep' },
-  { src: '/parteneri/fastrackids.webp', name: 'FasTrackKids' },
-  { src: '/parteneri/roll-shape.png', name: 'Roll Shape' },
-  { src: '/parteneri/premium-stone.png', name: 'Premium Stone' },
-  { src: '/parteneri/georgiana-ungureanu.png', name: 'Georgiana Ungureanu' },
-  { src: '/parteneri/ichb.png', name: 'ICHB' },
-  { src: '/parteneri/isor.png', name: 'ISOR' },
-  { src: '/parteneri/florin-pasat.png', name: 'Florin Pasat' },
+  { src: '/parteneri/feaa-galati.png', name: 'FEAA Galați', w: 1057, h: 216 },
+  { src: '/parteneri/m1-med-beauty.png', name: 'M1 Med Beauty', w: 278, h: 63 },
+  { src: '/parteneri/matematica-interactiva.png', name: 'Matematica Interactivă', w: 2084, h: 687 },
+  { src: '/parteneri/priority-clinic.png', name: 'Priority Clinic', w: 1402, h: 183 },
+  { src: '/parteneri/simona-halep.png', name: 'Hotel Simona Halep', w: 852, h: 275 },
+  { src: '/parteneri/fastrackids.webp', name: 'FasTrackKids', w: 1558, h: 382 },
+  { src: '/parteneri/roll-shape.png', name: 'Roll Shape', w: 1485, h: 797 },
+  { src: '/parteneri/premium-stone.png', name: 'Premium Stone', w: 785, h: 116 },
+  { src: '/parteneri/georgiana-ungureanu.png', name: 'Georgiana Ungureanu', w: 878, h: 85 },
+  { src: '/parteneri/ichb.png', name: 'ICHB', w: 781, h: 218 },
+  { src: '/parteneri/isor.png', name: 'ISOR', w: 268, h: 86 },
+  { src: '/parteneri/florin-pasat.png', name: 'Florin Pasat', w: 300, h: 101 },
 ];
 ---
 
@@ -214,7 +214,7 @@ const clients = [
         {
           clients.map((c) => (
             <span class="ab-logo">
-              <img src={c.src} alt={c.name} loading="lazy" />
+              <img src={c.src} alt={c.name} width={c.w} height={c.h} loading="lazy" />
             </span>
           ))
         }
