@@ -1,0 +1,421 @@
+---
+import BaseLayoutV2 from '@layouts/BaseLayoutV2.astro';
+import { getPublishedProjects } from '@lib/server/content';
+import { excerpt } from '@lib/server/markdown';
+import { breadcrumbLd, itemListLd } from '@/lib/seo-schema';
+
+// Conținut IDENTIC cu varianta A (src/pages/portofoliu/index.astro). Doar
+// prezentarea diferă. Proiectele vin din DB (editate în /admin) — on-demand.
+export const prerender = false;
+
+const projects = await getPublishedProjects();
+
+const subtitle =
+  'De la branding și magazine online, până la grafică publicitară și identitate de brand. Iată o parte din ce am construit.';
+
+// Categoriile, în ordinea preferată din export, intersectate cu ce există
+// (aceeași logică ca PortfolioPageGrid din varianta A).
+const preferred = [
+  'Branding',
+  'Web Design',
+  'Marketing',
+  'Grafică',
+  'Foto-Video',
+  'Social Media',
+  'Mentenanță',
+];
+const present = new Set<string>(projects.map((p) => p.service));
+const cats = ['Toate', ...preferred.filter((c) => present.has(c))];
+const trend = '<path d="M3 17l6-6 4 4 7-7"/><path d="M14 7h7v7"/>';
+
+// Schema identică cu varianta A (căi publice, fără /v2).
+const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
+const pageSchema = [
+  breadcrumbLd(origin, [{ label: 'Acasă', href: '/' }, { label: 'Portofoliu' }]),
+  itemListLd(
+    origin,
+    projects.map((p) => ({ name: p.title, url: `/portofoliu/${p.slug}` })),
+  ),
+];
+---
+
+<BaseLayoutV2
+  title="Portofoliu"
+  description="Proiecte de care suntem mândri: branding, magazine online și grafică publicitară din Galați și nu numai."
+  ogImage="/api/og/portofoliu.png"
+  schema={pageSchema}
+>
+  {/* ===== HERO ===== */}
+  <section class="pv-hero">
+    <div class="v2-container pv-hero__inner">
+      <div class="pv-crumb">
+        <a href="/">Acasă</a> <span>/</span> <span class="accent">Portofoliu</span>
+      </div>
+      <div class="v2-eyebrow pv-hero__eyebrow">Portofoliu</div>
+      <h1 class="pv-hero__title">Proiecte de care suntem <span class="accent">mândri</span></h1>
+      <p class="pv-hero__sub">{subtitle}</p>
+      {
+        cats.length > 1 && (
+          <div class="pv-filters" id="pvFilters" role="tablist" aria-label="Filtrează după serviciu">
+            {cats.map((c, i) => (
+              <button
+                class:list={['pv-filter', i === 0 && 'is-active']}
+                role="tab"
+                aria-selected={i === 0 ? 'true' : 'false'}
+                data-cat={c}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  {/* ===== GRILĂ PROIECTE ===== */}
+  <section class="pv-list">
+    <div class="v2-container">
+      {
+        projects.length === 0 && (
+          <p class="pv-empty">Pregătim studiile de caz. Revino curând.</p>
+        )
+      }
+      <div class="pv-grid" id="pvGrid">
+        {
+          projects.map((project) => (
+            <a
+              class="pv-card"
+              href={`/portofoliu/${project.slug}`}
+              data-cat={project.service}
+              data-reveal
+            >
+              <div class="pv-card__thumb">
+                {project.cover ? (
+                  <img src={project.cover} alt={project.title} loading="lazy" />
+                ) : (
+                  <span class="pv-card__ph">{project.title}</span>
+                )}
+                <span class="pv-cat">{project.service}</span>
+              </div>
+              <div class="pv-card__body">
+                <h3 class="pv-card__title">{project.title}</h3>
+                <p class="pv-card__excerpt">{project.summary}</p>
+                {project.result && (
+                  <span class="pv-card__result">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                      set:html={trend}
+                    />
+                    {excerpt(project.result, 240)}
+                  </span>
+                )}
+                <span class="pv-card__more">Vezi proiectul →</span>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ===== CTA ===== */}
+  <section class="pv-cta">
+    <div class="v2-container">
+      <div class="pv-cta__box" data-reveal>
+        <h2 class="pv-cta__title">Vrei un proiect <span class="dv-blue">ca acestea</span>?</h2>
+        <p class="pv-cta__sub">
+          Hai să discutăm despre proiectul tău. Prima întâlnire e fără obligații.
+        </p>
+        <div class="pv-cta__actions">
+          <a class="v2-btn v2-btn--light" href="/contact">Cere o ofertă</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayoutV2>
+
+<script>
+  // Filtrare client-side (aceeași logică ca PortfolioPageGrid din varianta A).
+  const filters = document.getElementById('pvFilters');
+  const grid = document.getElementById('pvGrid');
+  if (filters && grid) {
+    const btns = Array.from(filters.querySelectorAll<HTMLButtonElement>('.pv-filter'));
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>('.pv-card'));
+    filters.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.pv-filter');
+      if (!btn) return;
+      const cat = btn.dataset.cat;
+      btns.forEach((b) => {
+        b.setAttribute('aria-selected', String(b === btn));
+        b.classList.toggle('is-active', b === btn);
+      });
+      cards.forEach((c) => {
+        const show = cat === 'Toate' || c.dataset.cat === cat;
+        c.style.display = show ? '' : 'none';
+      });
+    });
+  }
+</script>
+
+<style>
+  .dv-blue {
+    color: var(--v2-blue-soft);
+  }
+
+  /* ===== HERO ===== */
+  .pv-hero {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0) 35%, #ffffff 88%),
+      linear-gradient(#e9eef7 1px, transparent 1px),
+      linear-gradient(90deg, #e9eef7 1px, transparent 1px);
+    background-size:
+      auto,
+      88px 88px,
+      88px 88px;
+  }
+  .pv-hero__inner {
+    padding: 56px 36px 40px;
+  }
+  .pv-crumb {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--v2-faint);
+  }
+  .pv-crumb a {
+    color: var(--v2-faint);
+  }
+  .pv-crumb span {
+    margin: 0 6px;
+  }
+  .pv-crumb .accent {
+    font-weight: 700;
+    margin: 0;
+  }
+  .pv-hero__eyebrow {
+    margin-top: 28px;
+  }
+  .pv-hero__title {
+    font-size: clamp(38px, 5.2vw, 52px);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    font-weight: 800;
+    margin: 10px 0 0;
+    max-width: 820px;
+    text-wrap: balance;
+  }
+  .pv-hero__title .accent {
+    color: var(--v2-blue);
+  }
+  .pv-hero__sub {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--v2-muted);
+    max-width: 680px;
+    margin: 18px 0 0;
+  }
+
+  /* ===== FILTRE ===== */
+  .pv-filters {
+    display: flex;
+    gap: 10px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .pv-filter {
+    border: 1px solid var(--v2-line-soft);
+    background: #fff;
+    color: var(--v2-slate, #33415e);
+    font-family: var(--v2-font);
+    font-size: 13.5px;
+    font-weight: 700;
+    padding: 11px 22px;
+    border-radius: 22px;
+    cursor: pointer;
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .pv-filter:hover {
+    border-color: var(--v2-blue);
+    color: var(--v2-blue);
+  }
+  .pv-filter.is-active {
+    background: var(--v2-blue);
+    border-color: var(--v2-blue);
+    color: #fff;
+  }
+
+  /* ===== LISTĂ ===== */
+  .pv-list {
+    border-top: 1px solid var(--v2-line);
+    padding: 56px 0 72px;
+  }
+  .pv-empty {
+    font-size: 15.5px;
+    color: var(--v2-muted);
+    text-align: center;
+    padding: 40px 0;
+  }
+  .pv-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .pv-card {
+    background: #fff;
+    border: 1px solid var(--v2-line-soft);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+  }
+  .pv-card:hover {
+    border-color: var(--v2-blue);
+    box-shadow: 0 14px 32px rgba(13, 27, 62, 0.12);
+    transform: translateY(-3px);
+  }
+  .pv-card__thumb {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: var(--v2-surface-soft);
+    overflow: hidden;
+  }
+  .pv-card__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .pv-card__ph {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--v2-faint);
+  }
+  .pv-cat {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: var(--v2-tint);
+    color: var(--v2-blue);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 14px;
+  }
+  .pv-card__body {
+    padding: 24px 28px 30px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .pv-card__title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--v2-navy);
+  }
+  .pv-card__excerpt {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--v2-muted);
+    margin: 10px 0 0;
+  }
+  .pv-card__result {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--v2-tint);
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.55;
+    font-weight: 600;
+    color: var(--v2-navy);
+  }
+  .pv-card__result svg {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    margin-top: 2px;
+    color: var(--v2-blue);
+  }
+  .pv-card__more {
+    margin-top: auto;
+    padding-top: 18px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--v2-blue);
+  }
+
+  /* ===== CTA ===== */
+  .pv-cta {
+    padding: 0 0 96px;
+  }
+  .pv-cta__box {
+    background: linear-gradient(135deg, #0c1633 0%, #102a63 100%);
+    color: #fff;
+    border-radius: var(--v2-r-lg);
+    padding: 64px 48px;
+    text-align: center;
+  }
+  .pv-cta__title {
+    font-size: clamp(28px, 4vw, 38px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .pv-cta__sub {
+    font-size: 16px;
+    line-height: 1.65;
+    color: #a9b4cc;
+    max-width: 520px;
+    margin: 18px auto 0;
+  }
+  .pv-cta__actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 900px) {
+    .pv-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 560px) {
+    .pv-grid {
+      grid-template-columns: 1fr;
+    }
+    .pv-cta__box {
+      padding: 48px 24px;
+    }
+  }
+</style>

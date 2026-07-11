@@ -7,6 +7,7 @@ import { getDb } from '../../lib/server/db';
 import { abExposure, leads, orders } from '../../lib/server/schema';
 import { getPublicSettings } from '../../lib/server/public-settings';
 import { can } from '../../lib/server/authz';
+import { twoProportionTest, minSampleReached, verdict } from '../../lib/server/ab-stats';
 import { fmtMoney } from '../../lib/format';
 
 export const prerender = false;
@@ -77,6 +78,20 @@ const rows = [
   { m: 'Rată comandă', a: fmtRate(orderRateA), b: fmtRate(orderRateB), d: fmtUplift(uplift(orderRateA, orderRateB)) },
 ];
 
+// Semnificație statistică (test z pe două proporții) pe cele două rate-cheie.
+// Consumă cifrele deja calculate mai sus; sub MIN_SAMPLE expuneri/variantă nu dăm verdict.
+const MIN_SAMPLE = 100;
+const minReached = minSampleReached(exposures.a, exposures.b, MIN_SAMPLE);
+const significance = [
+  { m: 'Rată lead', test: twoProportionTest(leadsByVariant.a, exposures.a, leadsByVariant.b, exposures.b) },
+  { m: 'Rată comandă', test: twoProportionTest(paidOrders.a, exposures.a, paidOrders.b, exposures.b) },
+].map(({ m, test }) => ({
+  m,
+  text: verdict(test, minReached),
+  // Ton vizual: verde = verdict clar, galben = încă zgomot, gri = date insuficiente.
+  tone: !minReached || test === null ? 'plain' : test.significant95 ? 'ok' : 'warn',
+}));
+
 // Pagini cu design v2 pentru preview rapid (forțează varianta prin ?v=).
 const previewPages = [
   { label: 'Homepage', path: '/' },
@@ -87,6 +102,8 @@ const previewPages = [
   { label: 'Contact', path: '/contact' },
   { label: 'Mentenanță', path: '/mentenanta' },
   { label: 'Întrebări', path: '/intrebari-frecvente' },
+  { label: 'Portofoliu', path: '/portofoliu' },
+  { label: 'Suport', path: '/suport' },
 ];
 ---
 
@@ -155,6 +172,25 @@ const previewPages = [
   </div>
 
   <div class="admin-card" style="margin-top:16px">
+    <h2 style="margin:0 0 14px">Semnificație statistică</h2>
+    <div class="exp-sig">
+      {
+        significance.map((s) => (
+          <div class="exp-sig__row">
+            <span class="exp-sig__name">{s.m}</span>
+            <span class={`admin-tag admin-tag--${s.tone}`}>{s.text}</span>
+          </div>
+        ))
+      }
+    </div>
+    <p class="admin-hint" style="margin-top:12px">
+      Test z pe două proporții (two-tailed) pe conversii / expuneri. Verdictul apare doar după minim
+      {MIN_SAMPLE} expuneri per variantă; „≥95% încredere" înseamnă p&lt;0.05 — sub 5% șanse ca
+      diferența să fie doar zgomot. Fără verdict clar, nu opri și nu promova B.
+    </p>
+  </div>
+
+  <div class="admin-card" style="margin-top:16px">
     <h2 style="margin:0 0 6px">Vezi cu ochii tăi</h2>
     <p class="admin-hint" style="margin:0 0 14px">
       Deschide orice pagină forțând varianta. Alegerea se ține într-un cookie până o schimbi.
@@ -204,6 +240,21 @@ const previewPages = [
   }
   .exp-delta {
     font-weight: 700;
+  }
+  .exp-sig__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--admin-border);
+  }
+  .exp-sig__row:last-child {
+    border-bottom: 0;
+  }
+  .exp-sig__name {
+    font-weight: 600;
   }
   .exp-preview__row {
     display: flex;

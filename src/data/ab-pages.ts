@@ -18,6 +18,8 @@ const V2_EXACT = new Set<string>([
   '/contact',
   '/mentenanta',
   '/intrebari-frecvente',
+  '/portofoliu',
+  '/suport',
 ]);
 
 /**
@@ -38,6 +40,8 @@ export function hasV2(norm: string): boolean {
   if (V2_EXACT.has(norm)) return true;
   // Paginile de detaliu servicii au v2, mai puțin slug-urile legacy redirecționate.
   if (norm.startsWith('/servicii/') && !LEGACY_SERVICE_SLUGS.has(norm)) return true;
+  // Detaliile de portofoliu (slug din DB) au v2.
+  if (norm.startsWith('/portofoliu/')) return true;
   return false;
 }
 

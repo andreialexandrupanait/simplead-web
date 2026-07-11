@@ -196,9 +196,21 @@ async function route(context: APIContext, next: MiddlewareNext): Promise<Respons
         } else if (pub.abTestEnabled) {
           variant = assignVariant();
           setVariantCookie(context.cookies, AB_COOKIE, variant); // sticky
-          recordExposure(variant, norm); // o expunere per vizitator nou (statistici)
         } else {
           variant = 'a';
+        }
+        // Expunere: o dată per vizitator, la PRIMA pagină care CHIAR are v2 —
+        // cine aterizează pe o pagină fără v2 nu „vede" testul și nu intră în
+        // eșantion până nu ajunge pe o pagină din test (altfel diluează statistica).
+        if (pub.abTestEnabled && hasV2(norm) && context.cookies.get('sa_ab_exp')?.value !== '1') {
+          recordExposure(variant, norm);
+          context.cookies.set('sa_ab_exp', '1', {
+            path: '/',
+            httpOnly: true,
+            sameSite: 'lax',
+            secure: import.meta.env.PROD,
+            maxAge: 60 * 60 * 24 * 90,
+          });
         }
       }
       context.locals.abVariant = variant;

@@ -49,10 +49,11 @@ export function assignVariant(): Variant {
  * Google vede mereu același HTML canonical și nu apare „cloaking"/flip-flop în index.
  */
 const BOT_RE =
-  /bot|crawl|spider|slurp|bingpreview|googlebot|bingbot|duckduckbot|baiduspider|yandex|applebot|petalbot|semrush|ahrefs|mj12bot|dotbot|facebookexternalhit|facebot|twitterbot|linkedinbot|whatsapp|telegrambot|discordbot|bytespider|gptbot|claudebot|claude-web|ccbot|google-inspectiontool|chrome-lighthouse|headlesschrome|pingdom|uptimerobot/i;
+  /bot|crawl|spider|slurp|bingpreview|googlebot|bingbot|duckduckbot|baiduspider|yandex|applebot|petalbot|semrush|ahrefs|mj12bot|dotbot|facebookexternalhit|facebot|twitterbot|linkedinbot|whatsapp|telegrambot|discordbot|bytespider|gptbot|claudebot|claude-web|ccbot|google-inspectiontool|chrome-lighthouse|headlesschrome|pingdom|uptimerobot|curl|wget|python-requests|httpie/i;
 
 export function isBot(ua: string): boolean {
-  return BOT_RE.test(ua);
+  // UA gol/lipsă = client non-browser → control (A), să nu dilueze eșantionul.
+  return !ua.trim() || BOT_RE.test(ua);
 }
 
 /**

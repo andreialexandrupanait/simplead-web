@@ -1,0 +1,296 @@
+---
+import BaseLayoutV2 from '@layouts/BaseLayoutV2.astro';
+import { getProjectBySlug } from '@lib/server/content';
+import { renderMarkdown } from '@lib/server/markdown';
+import { breadcrumbLd } from '@/lib/seo-schema';
+
+// Conținut IDENTIC cu varianta A (src/pages/portofoliu/[slug].astro). Doar
+// prezentarea diferă. Proiectul vine din DB; on-demand. Adminul vede
+// draft-uri cu `?preview=1`.
+export const prerender = false;
+
+const slug = Astro.params.slug!;
+const includeDrafts = Astro.locals.isAdmin && Astro.url.searchParams.has('preview');
+const project = await getProjectBySlug(slug, { includeDrafts });
+if (!project) {
+  return Astro.rewrite('/404');
+}
+
+const title = project.seoTitle || project.title;
+const description = project.seoDescription || project.summary;
+const bodyHtml = renderMarkdown(project.body);
+// `result` poate conține Markdown ușor (bold etc.) — trece prin același
+// renderer sanitizat ca orice conținut din DB.
+const resultHtml = project.result ? renderMarkdown(project.result) : '';
+
+// Schema identică cu varianta A (căi publice, fără /v2).
+const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
+const projectSchema = {
+  '@type': 'CreativeWork',
+  name: project.title,
+  description: project.summary,
+  creator: { '@id': `${origin}#organization` },
+  mainEntityOfPage: `${origin}/portofoliu/${project.slug}`,
+  datePublished: project.createdAt.toISOString(),
+  dateModified: project.updatedAt.toISOString(),
+  ...(project.cover ? { image: new URL(project.cover, origin).href } : {}),
+};
+const pageSchema = [
+  projectSchema,
+  breadcrumbLd(origin, [
+    { label: 'Acasă', href: '/' },
+    { label: 'Portofoliu', href: '/portofoliu' },
+    { label: project.title },
+  ]),
+];
+
+if (project.status === 'draft') {
+  Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  Astro.response.headers.set('Cache-Control', 'no-store');
+}
+---
+
+<BaseLayoutV2
+  title={title}
+  description={description}
+  schema={pageSchema}
+  ogType="article"
+  ogImage={project.cover || `/api/og/${project.slug}.png`}
+>
+  {/* ===== HERO ===== */}
+  <section class="pd-hero">
+    <div class="v2-container pd-hero__inner">
+      <div class="pd-crumb">
+        <a href="/">Acasă</a> <span>/</span> <a href="/portofoliu">Portofoliu</a> <span>/</span>
+        <span class="accent">{project.title}</span>
+      </div>
+      <div class="v2-eyebrow pd-hero__eyebrow">{project.service}</div>
+      <h1 class="pd-hero__title">{project.title}</h1>
+      <p class="pd-hero__sub">{project.summary}</p>
+    </div>
+  </section>
+
+  {/* ===== STUDIU DE CAZ ===== */}
+  <section class="pd-body">
+    <div class="v2-container">
+      {
+        project.status === 'draft' && (
+          <p class="pd-draft">
+            <strong>Draft</strong>: proiectul nu e public; doar tu îl vezi, prin previzualizare.
+          </p>
+        )
+      }
+      <div class="pd-grid">
+        <article class="prose-simplead pd-prose" set:html={bodyHtml} />
+        <aside class="pd-aside">
+          <div class="pd-facts">
+            <dl>
+              <div class="pd-fact">
+                <dt>Client</dt>
+                <dd>{project.client}</dd>
+              </div>
+              <div class="pd-fact">
+                <dt>Serviciu</dt>
+                <dd>{project.service}</dd>
+              </div>
+              {
+                resultHtml && (
+                  <div class="pd-fact pd-fact--result">
+                    <dt>Rezultat</dt>
+                    <dd set:html={resultHtml} />
+                  </div>
+                )
+              }
+            </dl>
+          </div>
+          <a class="pd-back" href="/portofoliu">← Înapoi la portofoliu</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  {/* ===== CTA ===== */}
+  <section class="pd-cta">
+    <div class="v2-container">
+      <div class="pd-cta__box" data-reveal>
+        <h2 class="pd-cta__title">Vrei un proiect <span class="dv-blue">ca acesta</span>?</h2>
+        <p class="pd-cta__sub">
+          Hai să discutăm despre proiectul tău. Prima întâlnire e fără obligații.
+        </p>
+        <div class="pd-cta__actions">
+          <a class="v2-btn v2-btn--light" href="/contact">Cere o ofertă</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayoutV2>
+
+<style>
+  .dv-blue {
+    color: var(--v2-blue-soft);
+  }
+
+  /* ===== HERO ===== */
+  .pd-hero {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0) 35%, #ffffff 88%),
+      linear-gradient(#e9eef7 1px, transparent 1px),
+      linear-gradient(90deg, #e9eef7 1px, transparent 1px);
+    background-size:
+      auto,
+      88px 88px,
+      88px 88px;
+  }
+  .pd-hero__inner {
+    padding: 56px 36px 48px;
+  }
+  .pd-crumb {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--v2-faint);
+  }
+  .pd-crumb a {
+    color: var(--v2-faint);
+  }
+  .pd-crumb span {
+    margin: 0 6px;
+  }
+  .pd-crumb .accent {
+    font-weight: 700;
+    margin: 0;
+  }
+  .pd-hero__eyebrow {
+    margin-top: 28px;
+  }
+  .pd-hero__title {
+    font-size: clamp(34px, 5vw, 50px);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    font-weight: 800;
+    margin: 10px 0 0;
+    max-width: 880px;
+    text-wrap: balance;
+  }
+  .pd-hero__sub {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--v2-muted);
+    max-width: 720px;
+    margin: 18px 0 0;
+  }
+
+  /* ===== STUDIU DE CAZ ===== */
+  .pd-body {
+    border-top: 1px solid var(--v2-line);
+    padding: 56px 0 72px;
+  }
+  .pd-draft {
+    background: var(--v2-tint);
+    border: 1px solid var(--v2-tint-line);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--v2-navy);
+    margin: 0 0 28px;
+  }
+  .pd-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr;
+    gap: 56px;
+    align-items: start;
+  }
+  .pd-prose {
+    min-width: 0;
+  }
+  .pd-aside {
+    position: sticky;
+    top: calc(var(--v2-nav-h, 72px) + 24px);
+  }
+  .pd-facts {
+    background: var(--v2-surface-soft);
+    border: 1px solid var(--v2-line-soft);
+    border-radius: var(--v2-r-card);
+    padding: 28px;
+  }
+  .pd-facts dl {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin: 0;
+    font-size: 14px;
+  }
+  .pd-fact dt {
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--v2-faint);
+  }
+  .pd-fact dd {
+    margin: 6px 0 0;
+    font-weight: 700;
+    color: var(--v2-navy);
+    line-height: 1.6;
+  }
+  .pd-fact--result dd {
+    font-weight: 500;
+    color: var(--v2-ink);
+  }
+  .pd-back {
+    display: inline-block;
+    margin-top: 18px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--v2-blue);
+  }
+
+  /* ===== CTA ===== */
+  .pd-cta {
+    padding: 0 0 96px;
+  }
+  .pd-cta__box {
+    background: linear-gradient(135deg, #0c1633 0%, #102a63 100%);
+    color: #fff;
+    border-radius: var(--v2-r-lg);
+    padding: 64px 48px;
+    text-align: center;
+  }
+  .pd-cta__title {
+    font-size: clamp(28px, 4vw, 38px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .pd-cta__sub {
+    font-size: 16px;
+    line-height: 1.65;
+    color: #a9b4cc;
+    max-width: 520px;
+    margin: 18px auto 0;
+  }
+  .pd-cta__actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 900px) {
+    .pd-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .pd-aside {
+      position: static;
+    }
+  }
+  @media (max-width: 560px) {
+    .pd-cta__box {
+      padding: 48px 24px;
+    }
+  }
+</style>

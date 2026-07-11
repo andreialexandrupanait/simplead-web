@@ -1,0 +1,715 @@
+---
+import BaseLayoutV2 from '@layouts/BaseLayoutV2.astro';
+import { SUPPORT_ICON, type SupportIconKey } from '@data/support-services';
+import type { Faq } from '@data/content';
+
+export const prerender = false;
+
+// Conținut IDENTIC cu varianta A (src/pages/suport.astro). Doar prezentarea diferă.
+// Aceleași grupuri, tarife, FAQ și linkuri (carduri → /servicii/{slug},
+// CTA → /contact?service=Suport+tehnic și /cere-suport).
+const CONTACT = '/contact?service=Suport+tehnic';
+
+interface SupportItem {
+  slug: string;
+  icon: SupportIconKey;
+  title: string;
+  desc: string;
+  bullets?: string[];
+}
+interface SupportGroup {
+  title: string;
+  accent: string;
+  intro: string;
+  items: SupportItem[];
+}
+
+const groups: SupportGroup[] = [
+  {
+    title: 'Site-ul ',
+    accent: 'tău',
+    intro: 'Îl reparăm, îl mutăm și îl construim rapid. Partea tehnică o ținem noi.',
+    items: [
+      {
+        slug: 'wordpress-support',
+        icon: 'support',
+        title: 'Suport WordPress',
+        desc: 'Diagnosticăm și reparăm: ecran alb, erori fatale, conflicte de plugin sau temă, WooCommerce stricat. Facem și update-uri și backup, sau le preluăm în mentenanță lunară dacă vrei să nu mai ajungi în situații de urgență.',
+        bullets: [
+          'Ecran alb și erori fatale',
+          'Conflicte plugin sau temă',
+          'WooCommerce și checkout',
+          'Update-uri și securitate',
+        ],
+      },
+      {
+        slug: 'migrare-site',
+        icon: 'refresh',
+        title: 'Migrare site',
+        desc: 'Mutăm tot: fișiere, bază de date, emailuri, redirecturi, fără downtime și fără să pierzi poziții în Google.',
+        bullets: [
+          'Pregătire pe staging',
+          'Testare înainte de live',
+          'Schimbare DNS controlată',
+          'Redirecturi 301 pentru SEO',
+        ],
+      },
+      {
+        slug: 'site-astro-ai',
+        icon: 'spark',
+        title: 'Site-uri Astro cu AI',
+        desc: 'Site static rapid construit pe Astro, ideal pentru prezentare, landing sau blog. Costuri de rulare minime, viteză maximă, livrat mai repede cu AI în flux.',
+      },
+    ],
+  },
+  {
+    title: 'Securitate și ',
+    accent: 'email',
+    intro: 'Domeniu protejat, emailuri în inbox, site rapid și sigur.',
+    items: [
+      {
+        slug: 'cloudflare-support',
+        icon: 'shield',
+        title: 'Suport Cloudflare',
+        desc: 'DNS, SSL, cache, reguli firewall și protecție anti-DDoS configurate corect, fără să blochezi traficul real.',
+        bullets: [
+          'Cache și CDN',
+          'Firewall, WAF și anti-bot',
+          'DNS și SSL',
+          'Optimizare performanță',
+        ],
+      },
+      {
+        slug: 'dmarc',
+        icon: 'mail',
+        title: 'Configurare și monitorizare DMARC',
+        desc: 'SPF, DKIM și DMARC setate ca emailurile tale să ajungă în inbox și monitorizăm cine trimite în numele domeniului tău.',
+        bullets: [
+          'Configurare SPF, DKIM, DMARC',
+          'Aliniere servicii: newsletter, facturare, workspace',
+          'Monitorizare rapoarte DMARC',
+          'Protecție anti-spoofing',
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Intervenții ',
+    accent: 'rapide',
+    intro: 'Când arde sau când e o singură treabă de rezolvat, intervenim pe loc.',
+    items: [
+      {
+        slug: 'suport-urgenta',
+        icon: 'bolt',
+        title: 'Suport de urgență',
+        desc: 'Site-ul e jos sau ceva critic s-a stricat. Intervenim cât de repede putem: oprim focul și te repunem online.',
+        bullets: [
+          'Site căzut sau hack',
+          'Erori critice și restore din backup',
+          'Checkout sau email de comandă stricat',
+          'DNS și SSL urgent',
+        ],
+      },
+      {
+        slug: 'quick-fix',
+        icon: 'wrench',
+        title: 'Sesiune Quick Fix',
+        desc: 'O singură problemă, o singură sesiune. Dacă cere mai mult, îți spunem din start, fără să facturăm timp pierdut.',
+        bullets: [
+          'Modificări mici și bug-uri izolate',
+          'Setări și configurări punctuale',
+          'Verificare rapidă sau a doua opinie',
+        ],
+      },
+    ],
+  },
+];
+
+const rates: { label: string; amount: string }[] = [
+  { label: 'Intervenții tehnice web', amount: '50€/h' },
+  { label: 'Tracking, analytics, configurări', amount: '25€/h' },
+];
+
+const supportFaqs: Faq[] = [
+  {
+    q: 'Cât de repede interveniți?',
+    body: [
+      'Pentru urgențe, cât de repede putem în programul de lucru. Scrie-ne contextul și îți dăm imediat un timp realist, nu o fereastră de 48h.',
+    ],
+  },
+  {
+    q: 'Lucrați pe site-uri pe care nu le-ați construit voi?',
+    body: ['Da, pentru orice intervenție tehnică intrăm și pe site-uri construite de altcineva.'],
+  },
+  {
+    q: 'Ce acces aveți nevoie?',
+    body: [
+      'Depinde de problemă. De obicei admin WordPress, acces hosting (cPanel sau Plesk) ori FTP/SFTP. Îți spunem exact ce ne trebuie după ce ne descrii situația.',
+    ],
+  },
+  {
+    q: 'Ce se întâmplă dacă nu se rezolvă în sesiune?',
+    body: [
+      'Îți spunem clar ce cere și cât costă să mergem mai departe. Nu facturăm timp dacă n-am rezolvat nimic util.',
+    ],
+  },
+];
+
+const metaDescription =
+  'Probleme tehnice rezolvate la oră, fără proiect întreg: WordPress, SSL, DNS, migrare, securitate, email și urgențe. Intervenim rapid, transparent, și pe site-uri construite de altcineva.';
+---
+
+<BaseLayoutV2 title="Suport tehnic" description={metaDescription}>
+  {/* ===== HERO ===== */}
+  <section class="spt-hero">
+    <div class="v2-container spt-hero__inner">
+      <div class="spt-crumb">
+        <a href="/">Acasă</a> <span>/</span> <span class="accent">Suport tehnic</span>
+      </div>
+      <div class="spt-hero__body" data-reveal>
+        <p class="spt-eyebrow">Suport tehnic</p>
+        <h1 class="spt-hero__title">
+          Probleme tehnice rezolvate, <span class="accent">fără să deschizi un proiect întreg</span>
+        </h1>
+        <p class="spt-hero__sub">
+          WordPress căzut, SSL expirat, DNS greșit, email în spam sau site de mutat. Intervenim
+          rapid și transparent, la oră. Lucrăm și pe site-uri construite de altcineva.
+        </p>
+        <div class="spt-hero__cta">
+          <a class="v2-btn" href={CONTACT}>Solicită ajutor tehnic</a>
+          <a class="spt-link" href="#servicii">Vezi ce acoperim <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ===== GRUPURI DE SERVICII ===== */}
+  {
+    groups.map((g, i) => (
+      <section
+        class:list={['spt-grp', i % 2 === 1 && 'spt-grp--soft']}
+        id={i === 0 ? 'servicii' : undefined}
+      >
+        <div class="v2-container">
+          <div class="spt-grp__head" data-reveal>
+            <h2 class="v2-h2">
+              {g.title}
+              <span class="accent">{g.accent}</span>
+            </h2>
+            <p class="spt-grp__sub">{g.intro}</p>
+          </div>
+          <div class="spt-grid" data-reveal>
+            {g.items.map((s) => (
+              <a class="spt-card" href={`/servicii/${s.slug}`}>
+                <span class="spt-card__ic">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    set:html={SUPPORT_ICON[s.icon]}
+                  />
+                </span>
+                <h3 class="spt-card__title">{s.title}</h3>
+                <p class="spt-card__desc">{s.desc}</p>
+                {s.bullets && (
+                  <ul class="spt-card__list">
+                    {s.bullets.map((b) => (
+                      <li>{b}</li>
+                    ))}
+                  </ul>
+                )}
+                <span class="spt-card__more">Vezi detalii <span aria-hidden="true">→</span></span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  {/* ===== TARIFE ===== */}
+  <section class="spt-rates-sec">
+    <div class="v2-container">
+      <div class="spt-rates-head" data-reveal>
+        <h2 class="v2-h2">Plătești <span class="accent">la oră</span>, fără surprize</h2>
+      </div>
+      <ul class="spt-rates" data-reveal>
+        {
+          rates.map((r) => (
+            <li>
+              <span class="spt-rate__label">{r.label}</span>
+              <span class="spt-rate__val">{r.amount}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="spt-rates-note">Fără oră minimă ascunsă. Estimarea o primești înainte să începem.</p>
+    </div>
+  </section>
+
+  {/* ===== FAQ ===== */}
+  <section class="spt-faq">
+    <div class="v2-container spt-faq__inner">
+      <p class="spt-eyebrow spt-faq__eyebrow">Întrebări frecvente</p>
+      <h2 class="v2-h2 spt-faq__title">Ce vor să știe <span class="accent">clienții noștri</span></h2>
+      <div class="spt-faq__list">
+        {
+          supportFaqs.map((f, i) => (
+            <div class:list={['spt-faq-item', i === 0 && 'is-open']}>
+              <button class="spt-faq-q" type="button" aria-expanded={i === 0 ? 'true' : 'false'}>
+                <span>{f.q}</span>
+                <span class="spt-faq-ic" aria-hidden="true">▾</span>
+              </button>
+              <div class="spt-faq-a">
+                <div class="spt-faq-a__inner">
+                  {f.body.map((p) => (
+                    <p set:html={p} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ===== CTA ===== */}
+  <section class="spt-cta">
+    <div class="v2-container">
+      <div class="spt-cta__box" data-reveal>
+        <p class="spt-cta__kicker">Hai să rezolvăm</p>
+        <h2 class="spt-cta__title">Ai o problemă tehnică acum?</h2>
+        <p class="spt-cta__sub">
+          Descrie-ne pe scurt situația și îți răspundem în aceeași zi lucrătoare.
+        </p>
+        <div class="spt-cta__actions">
+          <a class="v2-btn v2-btn--light" href={CONTACT}>Solicită ajutor tehnic</a>
+          <a class="spt-cta__secondary" href="/cere-suport">Trimite un tichet</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayoutV2>
+
+<style>
+  .spt-eyebrow {
+    margin: 0 0 14px;
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--v2-blue);
+  }
+
+  /* ===== HERO =====
+     Prefixul claselor e `spt-` (nu `sp-`): styles/sections.css (v1, încărcat global
+     prin global.css) are deja un namespace `.sp-hero*` dark (color:#fff + grid pe
+     __inner) care ar suprascrie hero-ul light de aici. */
+  .spt-hero {
+    color: var(--v2-ink);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0) 35%, #ffffff 88%),
+      linear-gradient(#e9eef7 1px, transparent 1px),
+      linear-gradient(90deg, #e9eef7 1px, transparent 1px);
+    background-size:
+      auto,
+      88px 88px,
+      88px 88px;
+  }
+  .spt-hero__inner {
+    padding: 56px 36px 80px;
+  }
+  .spt-crumb {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--v2-faint);
+  }
+  .spt-crumb a {
+    color: var(--v2-faint);
+  }
+  .spt-crumb span {
+    margin: 0 6px;
+  }
+  .spt-crumb .accent {
+    font-weight: 700;
+    margin: 0;
+  }
+  .spt-hero__body {
+    margin-top: 36px;
+    max-width: 780px;
+  }
+  .spt-hero__title {
+    color: var(--v2-navy);
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    font-weight: 800;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .spt-hero__sub {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--v2-muted);
+    max-width: 640px;
+    margin: 24px 0 0;
+  }
+  .spt-hero__cta {
+    display: flex;
+    gap: 24px;
+    margin-top: 36px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .spt-link {
+    color: var(--v2-navy);
+    font-size: 15.5px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .spt-link:hover {
+    color: var(--v2-blue);
+  }
+
+  /* ===== GRUPURI ===== */
+  .spt-grp {
+    padding: 88px 0;
+    border-top: 1px solid var(--v2-line);
+    /* ancora #servicii nu intră sub navbar-ul fix */
+    scroll-margin-top: var(--v2-nav-h);
+  }
+  .spt-grp--soft {
+    background: var(--v2-surface-soft);
+  }
+  .spt-grp__head {
+    max-width: 720px;
+    margin-bottom: 44px;
+  }
+  .spt-grp__sub {
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: var(--v2-muted);
+    margin: 16px 0 0;
+  }
+  .spt-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .spt-card {
+    display: flex;
+    flex-direction: column;
+    padding: 28px;
+    background: var(--v2-surface);
+    border: 1px solid var(--v2-line-soft);
+    border-radius: var(--v2-r-card);
+    color: var(--v2-navy);
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+  }
+  .spt-card:hover {
+    border-color: var(--v2-blue);
+    box-shadow: 0 14px 32px rgba(13, 27, 62, 0.12);
+    transform: translateY(-3px);
+  }
+  .spt-card__ic {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: var(--v2-tint);
+    color: var(--v2-blue);
+  }
+  .spt-card__ic svg {
+    width: 23px;
+    height: 23px;
+  }
+  .spt-card__title {
+    margin: 18px 0 0;
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .spt-card__desc {
+    margin: 8px 0 0;
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--v2-muted);
+  }
+  .spt-card__list {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .spt-card__list li {
+    position: relative;
+    padding-left: 22px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    font-weight: 600;
+    color: #33415e;
+  }
+  .spt-card__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--v2-blue);
+  }
+  .spt-card__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 18px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--v2-blue);
+  }
+
+  /* ===== TARIFE ===== */
+  .spt-rates-sec {
+    padding: 88px 0;
+    border-top: 1px solid var(--v2-line);
+    background-color: var(--v2-surface-soft);
+    background-image: radial-gradient(#e4eaf5 1.1px, transparent 1.1px);
+    background-size: 26px 26px;
+  }
+  .spt-rates-head {
+    text-align: center;
+  }
+  .spt-rates {
+    list-style: none;
+    margin: 36px auto 0;
+    padding: 0;
+    max-width: 560px;
+    background: var(--v2-surface);
+    border: 1px solid var(--v2-line-soft);
+    border-radius: var(--v2-r-card);
+    overflow: hidden;
+    box-shadow: 0 20px 48px rgba(13, 27, 62, 0.08);
+  }
+  .spt-rates li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--v2-line);
+  }
+  .spt-rates li:last-child {
+    border-bottom: 0;
+  }
+  .spt-rate__label {
+    font-weight: 700;
+    color: var(--v2-navy);
+  }
+  .spt-rate__val {
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--v2-blue);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .spt-rates-note {
+    margin: 16px auto 0;
+    max-width: 560px;
+    text-align: center;
+    font-size: 0.92rem;
+    color: var(--v2-muted);
+  }
+
+  /* ===== FAQ ===== */
+  .spt-faq {
+    border-top: 1px solid var(--v2-line);
+  }
+  .spt-faq__inner {
+    max-width: 880px;
+    padding: 96px 36px;
+  }
+  .spt-faq__eyebrow {
+    text-align: center;
+  }
+  .spt-faq__title {
+    text-align: center;
+    margin: 0 0 40px;
+  }
+  .spt-faq__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .spt-faq-item {
+    background: #fff;
+    border: 1px solid var(--v2-line-soft);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .spt-faq-q {
+    width: 100%;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: var(--v2-font);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 26px;
+    text-align: left;
+    color: var(--v2-navy);
+  }
+  .spt-faq-q > span:first-child {
+    font-size: 16.5px;
+    font-weight: 700;
+  }
+  .spt-faq-ic {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--v2-blue);
+    transform: rotate(0deg);
+    transition: transform 0.2s ease;
+    flex: none;
+  }
+  .spt-faq-item.is-open .spt-faq-ic {
+    transform: rotate(180deg);
+  }
+  .spt-faq-a {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.24s ease;
+  }
+  .spt-faq-item.is-open .spt-faq-a {
+    grid-template-rows: 1fr;
+  }
+  .spt-faq-a__inner {
+    overflow: hidden;
+  }
+  .spt-faq-a__inner p {
+    margin: 0;
+    padding: 0 26px 22px;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--v2-muted);
+  }
+  .spt-faq-a__inner :global(a) {
+    color: var(--v2-blue);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* ===== CTA ===== */
+  .spt-cta {
+    padding: 0 0 96px;
+  }
+  .spt-cta__box {
+    background: linear-gradient(135deg, #0c1633 0%, #102a63 100%);
+    color: #fff;
+    border-radius: var(--v2-r-lg);
+    padding: 64px 48px;
+    text-align: center;
+  }
+  .spt-cta__kicker {
+    margin: 0 0 14px;
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--v2-blue-soft);
+  }
+  .spt-cta__title {
+    font-size: clamp(28px, 4vw, 38px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .spt-cta__sub {
+    font-size: 16px;
+    line-height: 1.65;
+    color: #a9b4cc;
+    max-width: 520px;
+    margin: 18px auto 0;
+  }
+  .spt-cta__actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+  }
+  .spt-cta__secondary {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    transition: color 0.18s ease;
+  }
+  .spt-cta__secondary:hover {
+    color: var(--v2-blue-soft);
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 900px) {
+    .spt-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 640px) {
+    .spt-hero__inner {
+      padding: 40px 20px 56px;
+    }
+    .spt-grp,
+    .spt-rates-sec {
+      padding: 64px 0;
+    }
+    .spt-faq__inner {
+      padding: 64px 20px;
+    }
+    .spt-cta {
+      padding-bottom: 64px;
+    }
+    .spt-cta__box {
+      padding: 48px 24px;
+    }
+  }
+</style>
+
+<script>
+  // Acordeon single-open pentru FAQ (același pattern ca /v2/servicii).
+  document.querySelectorAll<HTMLElement>('.spt-faq__list').forEach((list) => {
+    const items = Array.from(list.querySelectorAll<HTMLElement>('.spt-faq-item'));
+    items.forEach((item) => {
+      const btn = item.querySelector<HTMLButtonElement>('.spt-faq-q');
+      btn?.addEventListener('click', () => {
+        const isOpen = item.classList.contains('is-open');
+        items.forEach((other) => {
+          other.classList.remove('is-open');
+          other.querySelector('.spt-faq-q')?.setAttribute('aria-expanded', 'false');
+        });
+        if (!isOpen) {
+          item.classList.add('is-open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  });
+</script>
