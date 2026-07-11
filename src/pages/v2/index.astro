@@ -554,7 +554,7 @@ const tstColumns: Testimonial[][] = [
                     class:list={['hp-tst__card', `hp-tst__card--${item.variant ?? 'dark'}`]}
                     data-reveal
                   >
-                    <blockquote>„{item.quote}"</blockquote>
+                    <blockquote>„{item.quote}”</blockquote>
                     <figcaption>
                       <div>
                         <span class="hp-tst__name">{item.author}</span>
@@ -621,7 +621,9 @@ const tstColumns: Testimonial[][] = [
       88px 88px;
   }
   .hp-hero__inner {
-    padding: 64px 36px 90px;
+    /* Navbar-ul v2 e fixed (72px, transparent peste hero) — padding-top îl compensează,
+       altfel pill-ul intră sub bara de navigație. */
+    padding: calc(var(--v2-nav-h, 72px) + 36px) 36px 90px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1903,6 +1905,9 @@ const tstColumns: Testimonial[][] = [
     }
     .hp-svc__top {
       flex-wrap: wrap;
+      /* Când titlul și săgețile ajung pe rânduri separate, gap-ul vertical de 40px
+         le rupea vizual — pe verticală e de-ajuns mai puțin. */
+      gap: 18px 40px;
     }
     .hp-proc__rail {
       padding: 0;
@@ -1929,7 +1934,7 @@ const tstColumns: Testimonial[][] = [
   }
   @media (max-width: 560px) {
     .hp-hero__inner {
-      padding: 48px 20px 64px;
+      padding: calc(var(--v2-nav-h, 72px) + 24px) 20px 64px;
     }
     .hp-show {
       flex-direction: column;

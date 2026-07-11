@@ -155,7 +155,7 @@ const metaDescription =
             </div>
             <p class="pk-lead">
               Ținem site-ul actualizat, salvat și supravegheat, ca să meargă bine fără să-ți faci
-              griji. <a href="/mentenanta">Calculează-ți abonamentul →</a>
+              griji. <a href="/mentenanta">Calculează-ți abonamentul&nbsp;→</a>
             </p>
           </header>
           <div class="pk-mnt">
@@ -391,6 +391,8 @@ const metaDescription =
   .pk-lead a {
     color: var(--v2-blue);
     font-weight: 600;
+    /* Link-CTA scurt: nu-l rupem la mijloc (săgeata rămânea singură pe rând). */
+    white-space: nowrap;
   }
   .pk-head--center {
     text-align: center;
@@ -412,7 +414,8 @@ const metaDescription =
       88px 88px;
   }
   .pk-hero__inner {
-    padding: 56px 36px 72px;
+    /* Navbar-ul e fixed (72px): compensăm ca breadcrumb-ul să nu intre sub el. */
+    padding: calc(var(--v2-nav-h, 72px) + 40px) var(--v2-gutter) 72px;
     text-align: center;
   }
   .pk-crumb {
@@ -976,6 +979,10 @@ const metaDescription =
     }
     .pk-mnt-cards {
       grid-template-columns: 1fr;
+    }
+    /* Textul notei AI se întinde pe mai multe rânduri: iconul stă mai bine sus. */
+    .pk-ai-note {
+      align-items: flex-start;
     }
   }
 </style>

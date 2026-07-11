@@ -179,7 +179,8 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
       auto;
   }
   .fq-hero__inner {
-    padding: 96px 36px 88px;
+    /* Gutter din token ca pe mobil (≤640px) să scadă la 20px, aliniat cu restul v2. */
+    padding: 96px var(--v2-gutter) 88px;
     display: grid;
     grid-template-columns: 1.25fr 0.85fr;
     gap: 64px;
@@ -351,7 +352,7 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
   }
   .fq-lists__inner {
     max-width: 920px;
-    padding: 72px 36px 88px;
+    padding: 72px var(--v2-gutter) 88px;
   }
   .fq-group {
     scroll-margin-top: 96px;
@@ -444,6 +445,8 @@ const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
     margin-bottom: 0;
   }
   .fq-a__inner ul {
+    /* Preflight-ul Tailwind (global.css v1) scoate bulinele — le refacem explicit. */
+    list-style: disc;
     margin: 10px 0 0;
     padding-left: 20px;
   }

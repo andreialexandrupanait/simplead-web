@@ -24,7 +24,7 @@ const clients = [
 ];
 ---
 
-<BaseLayoutV2 title="Despre" description={metaDescription}>
+<BaseLayoutV2 title="Despre" description={metaDescription} transparentNav={true} navOverDark={false}>
   {/* ===== HERO ===== */}
   <section class="dv-hero">
     <div class="v2-container dv-hero__inner">
@@ -193,7 +193,7 @@ const clients = [
           Relații care țin de ani, <span class="dv-blue">nu de luni</span>
         </h2>
         <p class="dv-trust__sub">
-          Unii clienți sunt cu noi de <b>[confirmă: ani]</b>. Doi parteneri principali,
+          Unii clienți sunt cu noi de <b>6 ani</b>. Doi parteneri principali,
           <b>Marketing Deck</b> și <b>M1 Med Beauty</b>, ne trimit constant proiecte noi, fiindcă
           rezultatele se văd în timp.
         </p>
@@ -297,7 +297,8 @@ const clients = [
       88px 88px;
   }
   .dv-hero__inner {
-    padding: 56px 36px 80px;
+    /* Navbar-ul transparent e position:fixed — compensăm înălțimea lui. */
+    padding: calc(var(--v2-nav-h) + 40px) 36px 80px;
     text-align: center;
   }
   .dv-crumb {
@@ -800,6 +801,21 @@ const clients = [
     }
     .dv-logos {
       grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    /* Cardurile duo se stivuiesc — slash-ul rămâne orfan, îl ascundem. */
+    .dv-duo {
+      flex-direction: column;
+      gap: 12px;
+    }
+    .dv-duo__slash {
+      display: none;
+    }
+    .dv-duo__card {
+      width: 100%;
+      max-width: 320px;
+      text-align: center;
     }
   }
   @media (max-width: 480px) {

@@ -28,6 +28,17 @@ const present = new Set<string>(projects.map((p) => p.service));
 const cats = ['Toate', ...preferred.filter((c) => present.has(c))];
 const trend = '<path d="M3 17l6-6 4 4 7-7"/><path d="M14 7h7v7"/>';
 
+// Monogramă pentru cardurile fără cover (fallback vizual intenționat, nu
+// text plutitor pe fundal gol). Derivată din titlu — zero conținut inventat.
+const monogram = (title: string) =>
+  title
+    .split(/\s+/)
+    .filter((w) => /\p{L}/u.test(w))
+    .slice(0, 2)
+    .map((w) => (w.match(/\p{L}/u) ?? [''])[0])
+    .join('')
+    .toUpperCase();
+
 // Schema identică cu varianta A (căi publice, fără /v2).
 const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
 const pageSchema = [
@@ -94,7 +105,9 @@ const pageSchema = [
                 {project.cover ? (
                   <img src={project.cover} alt={project.title} loading="lazy" />
                 ) : (
-                  <span class="pv-card__ph">{project.title}</span>
+                  <span class="pv-card__ph" aria-hidden="true">
+                    <span class="pv-card__ph-mono">{monogram(project.title)}</span>
+                  </span>
                 )}
                 <span class="pv-cat">{project.service}</span>
               </div>
@@ -303,11 +316,32 @@ const pageSchema = [
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    text-align: center;
-    font-weight: 700;
-    font-size: 14px;
-    color: var(--v2-faint);
+    background:
+      linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+      radial-gradient(120% 120% at 85% -10%, rgba(77, 139, 255, 0.38) 0%, transparent 55%),
+      linear-gradient(135deg, #0c1633 0%, #102a63 100%);
+    background-size:
+      44px 44px,
+      44px 44px,
+      auto,
+      auto;
+  }
+  .pv-card__ph-mono {
+    font-size: 54px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    background: linear-gradient(180deg, #ffffff 0%, #9cbcff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: none;
+  }
+  .pv-card:hover .pv-card__ph-mono {
+    background: linear-gradient(180deg, #ffffff 0%, #c5d8ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
   }
   .pv-cat {
     position: absolute;
@@ -408,6 +442,23 @@ const pageSchema = [
   @media (max-width: 900px) {
     .pv-grid {
       grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .pv-hero__inner {
+      padding: 40px 20px 36px;
+    }
+    .pv-hero__eyebrow {
+      margin-top: 24px;
+    }
+    .pv-list {
+      padding: 40px 0 56px;
+    }
+    .pv-card__body {
+      padding: 20px 22px 26px;
+    }
+    .pv-cta {
+      padding-bottom: 64px;
     }
   }
   @media (max-width: 560px) {

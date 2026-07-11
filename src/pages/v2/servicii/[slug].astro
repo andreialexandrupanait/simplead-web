@@ -526,7 +526,7 @@ const serviceSchema = {
     grid-template-columns: 1.1fr 0.9fr;
     gap: 72px;
     align-items: center;
-    padding: calc(var(--v2-nav-h) + 40px) 36px 80px;
+    padding: calc(var(--v2-nav-h) + 40px) var(--v2-gutter) 80px;
   }
   .sv-crumb {
     font-size: 13px;
@@ -1187,6 +1187,21 @@ const serviceSchema = {
   @media (max-width: 640px) {
     .sv-cap-grid {
       grid-template-columns: 1fr;
+    }
+    /* Cardurile de temă: pe mobil numărul + padding-ul de desktop lasă textul
+       pe o coloană prea îngustă — compactăm ca să respire. */
+    .sv-topic-card {
+      padding: 22px 20px;
+      gap: 14px;
+    }
+    .sv-topic-card__num {
+      width: 34px;
+      height: 34px;
+      font-size: 13.5px;
+      border-radius: 8px;
+    }
+    .sv-topic-card__title {
+      font-size: 17px;
     }
     .sv-proj-grid {
       grid-template-columns: 1fr 1fr;

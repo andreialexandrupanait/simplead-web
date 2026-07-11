@@ -58,14 +58,11 @@ const calLink = import.meta.env.CALCOM_LINK;
           </div>
 
           <div class="ct-tiles">
-            {
-              (pub.showPhone || true) && (
-                <a class="ct-tile" href={site.contact.phoneHref}>
-                  <span class="ct-tile__lbl">Telefon</span>
-                  <span class="ct-tile__val">{site.contact.phone}</span>
-                </a>
-              )
-            }
+            {/* Pe pagina de contact telefonul e mereu vizibil (ca în varianta A: showPhone || isPage). */}
+            <a class="ct-tile" href={site.contact.phoneHref}>
+              <span class="ct-tile__lbl">Telefon</span>
+              <span class="ct-tile__val">{site.contact.phone}</span>
+            </a>
             {
               waHref && (
                 <a class="ct-tile" href={waHref} target="_blank" rel="noopener">
@@ -136,7 +133,8 @@ const calLink = import.meta.env.CALCOM_LINK;
       88px 88px;
   }
   .ct-hero__inner {
-    padding: 56px 36px 96px;
+    /* Navbar-ul transparent e position:fixed — compensăm înălțimea lui. */
+    padding: calc(var(--v2-nav-h) + 40px) 36px 96px;
   }
   .ct-crumb {
     font-size: 13px;

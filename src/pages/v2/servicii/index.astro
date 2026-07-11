@@ -171,7 +171,7 @@ const heroSub =
       88px 88px;
   }
   .sv-hero__inner {
-    padding: 56px 36px 80px;
+    padding: 56px var(--v2-gutter) 80px;
   }
   .sv-crumb {
     font-size: 13px;
@@ -580,6 +580,27 @@ const heroSub =
     }
   }
   @media (max-width: 640px) {
+    /* Statisticile din panoul hero: pe mobil coloanele devin prea înguste
+       (etichetele rup pe 3 rânduri) — le stivuim ca rânduri valoare + etichetă. */
+    .sv-panel__stats {
+      grid-template-columns: 1fr;
+    }
+    .sv-stat {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 13px 24px;
+      border-right: none;
+    }
+    .sv-stat + .sv-stat {
+      border-top: 1px solid #eef1f6;
+    }
+    .sv-stat b {
+      font-size: 20px;
+    }
+    .sv-stat span {
+      margin-top: 0;
+    }
     .sv-services {
       padding: 64px 0;
     }

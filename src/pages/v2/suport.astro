@@ -420,6 +420,16 @@ const metaDescription =
     box-shadow: 0 14px 32px rgba(13, 27, 62, 0.12);
     transform: translateY(-3px);
   }
+  /* Card orfan (număr impar de servicii în grup): ocupă tot rândul, ca să nu
+     rămână o gaură moartă în grilă. Textul rămâne la lățime de citit. */
+  @media (min-width: 901px) {
+    .spt-grid > .spt-card:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+    .spt-grid > .spt-card:last-child:nth-child(odd) .spt-card__desc {
+      max-width: 68ch;
+    }
+  }
   .spt-card__ic {
     display: inline-flex;
     align-items: center;

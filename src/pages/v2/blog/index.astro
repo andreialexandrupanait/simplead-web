@@ -285,7 +285,8 @@ const featAv = featured ? authorAvatar(featured.author) : null;
       88px 88px;
   }
   .bl-hero__inner {
-    padding: 56px 36px 40px;
+    /* Gutter din token ca pe mobil (≤640px) să scadă la 20px, aliniat cu restul v2. */
+    padding: 56px var(--v2-gutter) 40px;
   }
   .bl-crumb {
     font-size: 13px;
