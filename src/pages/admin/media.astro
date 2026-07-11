@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
+import PageHeader from '../../components/admin/PageHeader.astro';
 import { listUploads, uploadsWritable } from '../../lib/server/uploads';
 
 export const prerender = false;
@@ -11,15 +12,10 @@ const fmtSize = (b: number) =>
 ---
 
 <AdminLayout title="Media">
-  <div class="admin-page-head">
-    <div>
-      <h1>Bibliotecă media</h1>
-      <p class="admin-sub">
-        Imaginile pentru articole și portofoliu. Inserarea în conținut se face din editor (butonul
-        🖼 Imagine).
-      </p>
-    </div>
-  </div>
+  <PageHeader
+    title="Bibliotecă media"
+    sub="Imaginile pentru articole și portofoliu. Inserarea în conținut se face din editor (butonul 🖼 Imagine)."
+  />
 
   {
     !writable && (
@@ -50,7 +46,7 @@ const fmtSize = (b: number) =>
             <figcaption title={e.name}>
               {e.name}
               <br />
-              <span style="color:var(--muted-dark)">{fmtSize(e.size)}</span>
+              <span style="color:var(--admin-muted)">{fmtSize(e.size)}</span>
             </figcaption>
             <div style="display:flex;gap:6px;padding:0 8px 8px">
               <button
@@ -75,7 +71,7 @@ const fmtSize = (b: number) =>
       }
       {
         entries.length === 0 && (
-          <p style="color:var(--muted);grid-column:1/-1">Nicio imagine încă. Încarcă prima.</p>
+          <p style="color:var(--admin-text-soft);grid-column:1/-1">Nicio imagine încă. Încarcă prima.</p>
         )
       }
     </div>

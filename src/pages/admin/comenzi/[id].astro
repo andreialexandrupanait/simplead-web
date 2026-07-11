@@ -55,14 +55,14 @@ const dateFmt = new Intl.DateTimeFormat('ro-RO', { dateStyle: 'long', timeStyle:
 <AdminLayout title={`Comandă · ${packageName ?? order.id.slice(0, 8)}`}>
   <div class="admin-page-head">
     <div>
-      <a href="/admin/comenzi" style="font-size:0.88rem;color:var(--muted)">← Înapoi la comenzi</a>
+      <a href="/admin/comenzi" style="font-size:0.88rem;color:var(--admin-text-soft)">← Înapoi la comenzi</a>
       <h1 style="margin-top:6px">{packageName ?? 'Comandă'}</h1>
       <p class="admin-sub">Plasată pe {dateFmt.format(order.createdAt)}</p>
     </div>
     <StatusBadge status={order.status} />
   </div>
 
-  <div class="order-cols">
+  <div class="admin-cols">
     <div class="admin-card">
       <h2>Detalii comandă</h2>
       <dl class="admin-kv" style="margin-top:14px">
@@ -156,7 +156,7 @@ const dateFmt = new Intl.DateTimeFormat('ro-RO', { dateStyle: 'long', timeStyle:
           }
           {
             !order.stripePaymentIntentId && !stripeCustomerId && (
-              <span style="color:var(--muted);font-size:0.9rem">
+              <span style="color:var(--admin-text-soft);font-size:0.9rem">
                 Fără referințe Stripe (comanda nu a ajuns la plată).
               </span>
             )
@@ -167,16 +167,3 @@ const dateFmt = new Intl.DateTimeFormat('ro-RO', { dateStyle: 'long', timeStyle:
   </div>
 </AdminLayout>
 
-<style>
-  .order-cols {
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 20px;
-    align-items: start;
-  }
-  @media (max-width: 1000px) {
-    .order-cols {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>

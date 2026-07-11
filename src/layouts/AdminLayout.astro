@@ -5,17 +5,26 @@
  * pe tokenii design system-ului (global.css).
  */
 import '../styles/global.css';
+import '../styles/fonts.css';
+import '../styles/admin-theme.css';
 import '../styles/admin.css';
+import Logo from '../components/ui/Logo.astro';
 import { takeFlash } from '../lib/server/flash';
+import { readTheme } from '../lib/server/theme';
 
 interface Props {
   title: string;
   /** Ascunde meniul (pagina de login). */
   bare?: boolean;
+  /** Container mai lat (dashboard + liste dense). */
+  wide?: boolean;
 }
-const { title, bare = false } = Astro.props;
+const { title, bare = false, wide = false } = Astro.props;
 
 const flash = takeFlash(Astro.cookies);
+// Paginile bare (login/recuperare) rămân light; restul citesc preferința din
+// cookie și o ștanțează pe <body> încă din primul byte (zero flash).
+const theme = bare ? 'light' : readTheme(Astro.cookies);
 
 // Iconuri inline (stroke 2, 24x24) — fără dependențe.
 const icons: Record<string, string> = {
@@ -43,43 +52,59 @@ const icons: Record<string, string> = {
     '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
   cont: '<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>',
   evenimente: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+  content:
+    '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/>',
+  chevron: '<path d="m9 18 6-6-6-6"/>',
 };
 
-const groups = [
+// Navigație în stil WordPress: intrări de nivel 1 (cu icon) care se expandează
+// în submeniuri. Secțiunea care conține pagina curentă e deschisă automat.
+type NavItem = { label: string; href: string };
+type NavNode =
+  | { type: 'single'; label: string; href: string; icon: string }
+  | { type: 'group'; label: string; icon: string; items: NavItem[] };
+
+const nav: NavNode[] = [
+  { type: 'single', label: 'Panou', href: '/admin', icon: 'panou' },
   {
-    label: null,
-    items: [{ label: 'Panou', href: '/admin', icon: 'panou' }],
-  },
-  {
+    type: 'group',
     label: 'Conținut',
+    icon: 'content',
     items: [
-      { label: 'Articole', href: '/admin/articole', icon: 'articole' },
-      { label: 'Portofoliu', href: '/admin/portofoliu', icon: 'portofoliu' },
-      { label: 'Media', href: '/admin/media', icon: 'media' },
+      { label: 'Articole', href: '/admin/articole' },
+      { label: 'Portofoliu', href: '/admin/portofoliu' },
+      { label: 'Media', href: '/admin/media' },
     ],
   },
   {
+    type: 'group',
     label: 'Vânzări',
+    icon: 'comenzi',
     items: [
-      { label: 'Comenzi', href: '/admin/comenzi', icon: 'comenzi' },
-      { label: 'Pachete', href: '/admin/pachete', icon: 'pachete' },
+      { label: 'Comenzi', href: '/admin/comenzi' },
+      { label: 'Pachete', href: '/admin/pachete' },
     ],
   },
   {
+    type: 'group',
     label: 'Audiență',
+    icon: 'leads',
     items: [
-      { label: 'Lead-uri', href: '/admin/leads', icon: 'leads' },
-      { label: 'Tichete', href: '/admin/tichete', icon: 'tichete' },
-      { label: 'Abonați', href: '/admin/abonati', icon: 'abonati' },
+      { label: 'Lead-uri', href: '/admin/leads' },
+      { label: 'Tichete', href: '/admin/tichete' },
+      { label: 'Abonați', href: '/admin/abonati' },
     ],
   },
   {
+    type: 'group',
     label: 'Setări',
+    icon: 'integrari',
     items: [
-      { label: 'Utilizatori', href: '/admin/utilizatori', icon: 'utilizatori' },
-      { label: 'Site', href: '/admin/setari', icon: 'integrari' },
-      { label: 'Integrări', href: '/admin/integrari', icon: 'integrari' },
-      { label: 'Tracking & Analytics', href: '/admin/tracking', icon: 'evenimente' },
+      { label: 'Utilizatori', href: '/admin/utilizatori' },
+      { label: 'Site', href: '/admin/setari' },
+      { label: 'Integrări', href: '/admin/integrari' },
+      { label: 'Tracking & Analytics', href: '/admin/tracking' },
+      { label: 'Experiment A/B', href: '/admin/experiment' },
     ],
   },
 ];
@@ -87,6 +112,7 @@ const groups = [
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isActive = (href: string) =>
   currentPath === href || (href !== '/admin' && currentPath.startsWith(href));
+const sectionActive = (items: NavItem[]) => items.some((i) => isActive(i.href));
 ---
 
 <!doctype html>
@@ -97,14 +123,22 @@ const isActive = (href: string) =>
     <meta name="robots" content="noindex, nofollow" />
     <title>{title} · Admin Simplead</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/space-grotesk-600-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/hanken-grotesk-400-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
   </head>
-  <body class="admin-body">
+  <body class="admin-body" data-theme={theme}>
     {
       bare ? (
         <main class="admin-main">
@@ -115,35 +149,71 @@ const isActive = (href: string) =>
           <button class="admin-scrim" id="adminScrim" aria-label="Închide meniul" />
           <aside class="admin-sidebar">
             <a href="/admin" class="admin-sidebar__logo" aria-label="Admin Simplead">
-              simple<span>ad</span>
+              <Logo height={26} color="#ffffff" />
               <span class="admin-logo-badge">Admin</span>
             </a>
             <nav class="admin-nav" aria-label="Navigație admin">
-              {groups.map((group) => (
-                <div>
-                  {group.label && <div class="admin-nav__group-label">{group.label}</div>}
-                  <div class="admin-nav__links">
-                    {group.items.map((item) => (
-                      <a
-                        href={item.href}
-                        class:list={['admin-nav__link', isActive(item.href) && 'is-active']}
-                        aria-current={isActive(item.href) ? 'page' : undefined}
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          set:html={icons[item.icon]}
-                        />
-                        {item.label}
-                      </a>
-                    ))}
+              {nav.map((node) =>
+                node.type === 'single' ? (
+                  <a
+                    href={node.href}
+                    class:list={['admin-nav__link', 'admin-nav__link--top', isActive(node.href) && 'is-active']}
+                    aria-current={isActive(node.href) ? 'page' : undefined}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      set:html={icons[node.icon]}
+                    />
+                    <span class="admin-nav__text">{node.label}</span>
+                  </a>
+                ) : (
+                  <div class="admin-nav__group">
+                    <a
+                      href={node.items[0].href}
+                      class:list={['admin-nav__link', 'admin-nav__link--top', 'admin-nav__parent', sectionActive(node.items) && 'is-section']}
+                      aria-current={sectionActive(node.items) ? 'true' : undefined}
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        set:html={icons[node.icon]}
+                      />
+                      <span class="admin-nav__text">{node.label}</span>
+                      <svg
+                        class="admin-nav__caret"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        set:html={icons.chevron}
+                      />
+                    </a>
+                    <div class="admin-nav__flyout" role="menu" aria-label={node.label}>
+                      <div class="admin-nav__flyout-label">{node.label}</div>
+                      {node.items.map((item) => (
+                        <a
+                          href={item.href}
+                          class:list={['admin-nav__sublink', isActive(item.href) && 'is-active']}
+                          aria-current={isActive(item.href) ? 'page' : undefined}
+                        >
+                          {item.label}
+                        </a>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ),
+              )}
             </nav>
             <div class="admin-sidebar__foot">
               <a href="/admin/cont">
@@ -201,6 +271,42 @@ const isActive = (href: string) =>
               </button>
               <div class="admin-topbar__title">{title}</div>
               <div class="admin-topbar__actions">
+                <form method="post" action="/api/admin/theme" id="adminThemeForm">
+                  <button
+                    type="submit"
+                    class="admin-theme-toggle"
+                    id="adminThemeToggle"
+                    aria-label="Comută tema"
+                    aria-pressed={theme === 'dark' ? 'true' : 'false'}
+                    title="Comută light / dark"
+                  >
+                    <svg
+                      class="icon-sun"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="4"></circle>
+                      <path
+                        d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+                      ></path>
+                    </svg>
+                    <svg
+                      class="icon-moon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"></path>
+                    </svg>
+                  </button>
+                </form>
                 <a
                   class="admin-btn admin-btn--ghost admin-btn--sm"
                   href="/"
@@ -211,7 +317,7 @@ const isActive = (href: string) =>
                 </a>
               </div>
             </header>
-            <main class="admin-main">
+            <main class:list={['admin-main', wide && 'admin-main--wide']}>
               <slot />
             </main>
           </div>
@@ -255,6 +361,18 @@ const isActive = (href: string) =>
       });
       document.getElementById('adminScrim')?.addEventListener('click', () => {
         shell?.classList.remove('nav-open');
+      });
+
+      // Comutator temă: cu JS flip instant (cookie + atribut), fără reload.
+      // Fără JS, form-ul face POST la /api/admin/theme și redirect. Baseline OK.
+      document.getElementById('adminThemeForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const body = document.body;
+        const next = body.dataset.theme === 'dark' ? 'light' : 'dark';
+        body.dataset.theme = next;
+        document.cookie = `sa_theme=${next}; path=/admin; max-age=31536000; samesite=lax`;
+        const btn = document.getElementById('adminThemeToggle');
+        btn?.setAttribute('aria-pressed', next === 'dark' ? 'true' : 'false');
       });
     </script>
   </body>

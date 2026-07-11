@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import PageHeader from '../../../components/admin/PageHeader.astro';
 import UsersAdmin from '../../../components/react/UsersAdmin.tsx';
 import { can } from '../../../lib/server/authz';
 
@@ -14,12 +15,10 @@ const me = Astro.locals.user;
 ---
 
 <AdminLayout title="Utilizatori">
-  <div class="admin-page-head">
-    <div>
-      <h1>Utilizatori</h1>
-      <p class="admin-sub">Conturile cu acces în platformă: roluri, suspendare, impersonare.</p>
-    </div>
-  </div>
+  <PageHeader
+    title="Utilizatori"
+    sub="Conturile cu acces în platformă: roluri, suspendare, impersonare."
+  />
 
   <UsersAdmin client:load currentUserId={me?.id ?? ''} />
 </AdminLayout>

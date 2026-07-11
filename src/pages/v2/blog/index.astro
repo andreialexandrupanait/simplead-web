@@ -1,0 +1,689 @@
+---
+import BaseLayoutV2 from '@layouts/BaseLayoutV2.astro';
+import { getPublishedPosts, getActiveCategories } from '@lib/server/content';
+import { paginatePosts, blogListSchema } from '@lib/blog-page';
+import { authorAvatar } from '@lib/author';
+import { slugify } from '@lib/slug';
+
+// Conținut IDENTIC cu varianta A (src/pages/blog/index.astro). Doar prezentarea
+// diferă. Articolele vin din DB (editate în /admin) — pagina e on-demand.
+export const prerender = false;
+
+const q = (Astro.url.searchParams.get('q') ?? '').trim();
+const page = Math.max(1, parseInt(Astro.url.searchParams.get('page') ?? '1', 10) || 1);
+const isSearch = q.length > 0;
+
+// Paginile 2+ trăiesc la /blog/page/N (stil WordPress). Redirect vechile ?page=.
+if (!isSearch && page >= 2) {
+  return Astro.redirect(`/blog/page/${page}`, 301);
+}
+
+const allPosts = await getPublishedPosts();
+const categories = await getActiveCategories();
+
+const ql = q.toLowerCase();
+const items = q
+  ? allPosts.filter((p) =>
+      [p.title, p.description, ...(p.tags ?? [])].join(' ').toLowerCase().includes(ql),
+    )
+  : allPosts;
+
+const subtitle =
+  'Idei și ghiduri din lumea marketingului: branding, neuromarketing și web design, pe înțelesul tău.';
+
+// /blog = pagina 1 (căutarea folosește ?page= pe query). Restul la /blog/page/N.
+const { totalPages, safePage, pageItems } = paginatePosts(items, isSearch ? page : 1, !isSearch);
+const featured = !isSearch && safePage === 1 && items.length > 0 ? items[0] : null;
+
+// Căutarea = noindex (rezultate subțiri/duplicate), canonic către /blog.
+const nextUrl = !isSearch && totalPages > 1 ? '/blog/page/2' : undefined;
+
+// Schema listă (AEO/GEO): articolele vizibile pe pagină.
+const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
+const shownPosts = featured ? [featured, ...pageItems] : pageItems;
+const listSchema = blogListSchema({
+  name: 'Blog Simplead',
+  description: subtitle,
+  url: `${origin}/blog`,
+  origin,
+  posts: shownPosts,
+});
+
+// Link paginare: pagina 1 = /blog, restul = /blog/page/N; căutarea pe ?q=&page=.
+const pageHref = (n: number) => {
+  if (q) {
+    const params = new URLSearchParams();
+    params.set('q', q);
+    if (n > 1) params.set('page', String(n));
+    return `/blog?${params.toString()}`;
+  }
+  return n <= 1 ? '/blog' : `/blog/page/${n}`;
+};
+const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+// Coperta pentru carduri (thumbnail mai mic), la fel ca BlogCard din varianta A.
+const cardThumb = (cover: string | null) =>
+  cover
+    ? cover.startsWith('/blog-covers/')
+      ? cover.replace(/\.webp$/, '-800.webp')
+      : cover.replace(/([?&])w=\d+/, '$1w=800')
+    : cover;
+
+const dateLong = (d: Date | null) =>
+  (d ?? new Date()).toLocaleDateString('ro-RO', { year: 'numeric', month: 'long', day: 'numeric' });
+const dateShort = (d: Date | null) =>
+  (d ?? new Date()).toLocaleDateString('ro-RO', { year: 'numeric', month: 'short', day: 'numeric' });
+
+const featAv = featured ? authorAvatar(featured.author) : null;
+---
+
+<BaseLayoutV2
+  title="Blog"
+  description={subtitle}
+  noindex={isSearch}
+  nextUrl={nextUrl}
+  schema={listSchema}
+>
+  {/* ===== HERO ===== */}
+  <section class="bl-hero">
+    <div class="v2-container bl-hero__inner">
+      <div class="bl-crumb">
+        <a href="/">Acasă</a> <span>/</span> <span class="accent">Blog</span>
+      </div>
+      <div class="bl-hero__row">
+        <div class="bl-hero__lead">
+          <h1 class="bl-hero__title">Blog</h1>
+          <p class="bl-hero__sub">{subtitle}</p>
+        </div>
+        <form class="bl-search" method="get" action="/blog" role="search">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M21 21l-4.3-4.3"></path>
+          </svg>
+          <input
+            type="search"
+            name="q"
+            value={q}
+            placeholder="Caută un articol…"
+            aria-label="Caută un articol"
+          />
+        </form>
+      </div>
+      {
+        categories.length > 0 && (
+          <nav class="bl-filters" aria-label="Filtrează după categorie">
+            <a class="bl-filter is-active" href="/blog">
+              Toate
+            </a>
+            {categories.map((label) => (
+              <a class="bl-filter" href={`/blog/category/${slugify(label)}`}>
+                {label}
+              </a>
+            ))}
+          </nav>
+        )
+      }
+    </div>
+  </section>
+
+  {/* ===== LISTĂ ===== */}
+  <section class="bl-list">
+    <div class="v2-container">
+      {
+        q && (
+          <p class="bl-note">
+            Rezultate pentru „{q}": {items.length} {items.length === 1 ? 'articol' : 'articole'}.{' '}
+            <a href="/blog">Resetează</a>
+          </p>
+        )
+      }
+
+      {
+        featured && (
+          <a class="bl-feature" href={`/blog/${featured.slug}`}>
+            <div class="bl-feature__body">
+              <h2 class="bl-feature__title">{featured.title}</h2>
+              <p class="bl-feature__excerpt">{featured.description}</p>
+              <div class="bl-feature__byline">
+                {featAv?.src ? (
+                  <img class="bl-avatar" src={featAv.src} alt={featured.author} width="28" height="28" loading="lazy" />
+                ) : (
+                  <span class="bl-avatar bl-avatar--mono" aria-hidden="true">
+                    {featAv?.monogram}
+                  </span>
+                )}
+                <span>{featured.author}</span>
+                <span class="bl-dot">·</span>
+                <time datetime={(featured.publishedAt ?? featured.createdAt).toISOString()}>
+                  {dateLong(featured.publishedAt)}
+                </time>
+              </div>
+              <span class="bl-feature__cta">Citește articolul →</span>
+            </div>
+            <div class="bl-feature__media">
+              {featured.cover ? (
+                <img src={featured.cover} alt={featured.title} width="800" height="600" loading="lazy" />
+              ) : (
+                <span class="bl-feature__ph">{featured.title}</span>
+              )}
+              {featured.category && <span class="bl-cat">{featured.category}</span>}
+            </div>
+          </a>
+        )
+      }
+
+      {
+        items.length === 0 && (
+          <p class="bl-empty">
+            Nimic pe această temă deocamdată. <a href="/blog">Vezi toate articolele</a>.
+          </p>
+        )
+      }
+
+      {
+        pageItems.length > 0 && (
+          <div class:list={['bl-cards', featured && 'bl-cards--after-feature']}>
+            {pageItems.map((p) => {
+              const av = authorAvatar(p.author);
+              return (
+                <a class="bl-card" href={`/blog/${p.slug}`} data-reveal>
+                  <div class="bl-card__thumb">
+                    {p.cover ? (
+                      <img src={cardThumb(p.cover)} alt={p.title} loading="lazy" width="640" height="400" />
+                    ) : (
+                      <span class="bl-card__ph">{p.title}</span>
+                    )}
+                    {p.category && <span class="bl-cat">{p.category}</span>}
+                  </div>
+                  <div class="bl-card__byline">
+                    {av.src ? (
+                      <img class="bl-avatar" src={av.src} alt={p.author} width="24" height="24" loading="lazy" />
+                    ) : (
+                      <span class="bl-avatar bl-avatar--mono" aria-hidden="true">
+                        {av.monogram}
+                      </span>
+                    )}
+                    <span>{p.author}</span>
+                    <span class="bl-dot">·</span>
+                    <time datetime={(p.publishedAt ?? p.createdAt).toISOString()}>
+                      {dateShort(p.publishedAt)}
+                    </time>
+                  </div>
+                  <h3 class="bl-card__title">{p.title}</h3>
+                  <span class="bl-card__more">Citește articolul →</span>
+                </a>
+              );
+            })}
+          </div>
+        )
+      }
+
+      {
+        totalPages > 1 && (
+          <nav class="bl-pager" aria-label="Paginare">
+            {safePage > 1 && (
+              <a class="bl-pager__edge" href={pageHref(safePage - 1)} rel="prev">
+                ← Înapoi
+              </a>
+            )}
+            <div class="bl-pager__nums">
+              {pages.map((n) => (
+                <a class:list={['bl-pager__num', n === safePage && 'is-active']} href={pageHref(n)}>
+                  {n}
+                </a>
+              ))}
+            </div>
+            {safePage < totalPages && (
+              <a class="bl-pager__edge" href={pageHref(safePage + 1)} rel="next">
+                Înainte →
+              </a>
+            )}
+          </nav>
+        )
+      }
+    </div>
+  </section>
+
+  {/* ===== CTA ===== */}
+  <section class="bl-cta">
+    <div class="v2-container">
+      <div class="bl-cta__box" data-reveal>
+        <h2 class="bl-cta__title">Gata să-ți pui <span class="dv-blue">afacerea pe roți</span>?</h2>
+        <p class="bl-cta__sub">
+          Hai să discutăm despre proiectul tău. Prima întâlnire e fără obligații.
+        </p>
+        <div class="bl-cta__actions">
+          <a class="v2-btn v2-btn--light" href="/contact">Cere o ofertă</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayoutV2>
+
+<style>
+  .dv-blue {
+    color: var(--v2-blue-soft);
+  }
+
+  /* ===== HERO ===== */
+  .bl-hero {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0) 35%, #ffffff 88%),
+      linear-gradient(#e9eef7 1px, transparent 1px),
+      linear-gradient(90deg, #e9eef7 1px, transparent 1px);
+    background-size:
+      auto,
+      88px 88px,
+      88px 88px;
+  }
+  .bl-hero__inner {
+    padding: 56px 36px 40px;
+  }
+  .bl-crumb {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--v2-faint);
+  }
+  .bl-crumb a {
+    color: var(--v2-faint);
+  }
+  .bl-crumb span {
+    margin: 0 6px;
+  }
+  .bl-crumb .accent {
+    font-weight: 700;
+    margin: 0;
+  }
+  .bl-hero__row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 36px;
+    margin-top: 28px;
+  }
+  .bl-hero__title {
+    font-size: clamp(38px, 5.2vw, 52px);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    font-weight: 800;
+    margin: 0;
+  }
+  .bl-hero__sub {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--v2-muted);
+    max-width: 680px;
+    margin: 18px 0 0;
+  }
+  .bl-search {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border: 1px solid var(--v2-line-soft);
+    border-radius: 24px;
+    padding: 12px 20px;
+    min-width: 280px;
+    color: var(--v2-faint);
+  }
+  .bl-search svg {
+    width: 18px;
+    height: 18px;
+    flex: none;
+  }
+  .bl-search input {
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-family: var(--v2-font);
+    font-size: 14.5px;
+    color: var(--v2-navy);
+    width: 100%;
+  }
+
+  /* ===== FILTRE ===== */
+  .bl-filters {
+    display: flex;
+    gap: 10px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .bl-filter {
+    border: 1px solid var(--v2-line-soft);
+    background: #fff;
+    color: var(--v2-slate, #33415e);
+    font-size: 13.5px;
+    font-weight: 700;
+    padding: 11px 22px;
+    border-radius: 22px;
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .bl-filter:hover {
+    border-color: var(--v2-blue);
+    color: var(--v2-blue);
+  }
+  .bl-filter.is-active {
+    background: var(--v2-blue);
+    border-color: var(--v2-blue);
+    color: #fff;
+  }
+
+  /* ===== LISTĂ ===== */
+  .bl-list {
+    border-top: 1px solid var(--v2-line);
+    padding: 56px 0 72px;
+  }
+  .bl-note {
+    font-size: 14.5px;
+    color: var(--v2-muted);
+    margin: 0 0 24px;
+  }
+  .bl-empty {
+    font-size: 15.5px;
+    color: var(--v2-muted);
+    text-align: center;
+    padding: 40px 0;
+  }
+  .bl-dot {
+    color: var(--v2-faint);
+  }
+  .bl-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex: none;
+  }
+  .bl-avatar--mono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--v2-navy);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .bl-cat {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: var(--v2-tint);
+    color: var(--v2-blue);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 14px;
+  }
+
+  /* ===== FEATURED ===== */
+  .bl-feature {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: #fff;
+    border: 1px solid var(--v2-line-soft);
+    border-radius: 14px;
+    overflow: hidden;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .bl-feature:hover {
+    border-color: var(--v2-blue);
+    box-shadow: 0 20px 48px rgba(13, 27, 62, 0.12);
+  }
+  .bl-feature__body {
+    padding: 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .bl-feature__title {
+    font-size: clamp(24px, 3vw, 30px);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin: 0;
+    color: var(--v2-navy);
+  }
+  .bl-feature__excerpt {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--v2-muted);
+    margin: 16px 0 0;
+  }
+  .bl-feature__byline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--v2-faint);
+    margin-top: 22px;
+  }
+  .bl-feature__cta {
+    margin-top: 20px;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--v2-blue);
+  }
+  .bl-feature__media {
+    position: relative;
+    min-height: 340px;
+    background: var(--v2-surface-soft);
+  }
+  .bl-feature__media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .bl-feature__ph {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+    font-weight: 700;
+    color: var(--v2-faint);
+  }
+
+  /* ===== CARDS ===== */
+  .bl-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .bl-cards--after-feature {
+    margin-top: 24px;
+  }
+  .bl-card {
+    background: #fff;
+    border: 1px solid var(--v2-line-soft);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+  }
+  .bl-card:hover {
+    border-color: var(--v2-blue);
+    box-shadow: 0 14px 32px rgba(13, 27, 62, 0.12);
+    transform: translateY(-3px);
+  }
+  .bl-card__thumb {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: var(--v2-surface-soft);
+    overflow: hidden;
+  }
+  .bl-card__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .bl-card__ph {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--v2-faint);
+  }
+  .bl-card__byline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--v2-faint);
+    padding: 24px 28px 0;
+  }
+  .bl-card__byline .bl-avatar {
+    width: 24px;
+    height: 24px;
+  }
+  .bl-card__title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    margin: 14px 0 0;
+    padding: 0 28px;
+    color: var(--v2-navy);
+  }
+  .bl-card__more {
+    margin: auto 0 0;
+    padding: 20px 28px 30px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--v2-blue);
+  }
+
+  /* ===== PAGER ===== */
+  .bl-pager {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 48px;
+  }
+  .bl-pager__nums {
+    display: flex;
+    gap: 10px;
+  }
+  .bl-pager__num,
+  .bl-pager__edge {
+    height: 42px;
+    min-width: 42px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid var(--v2-line-soft);
+    color: var(--v2-slate, #33415e);
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s ease;
+  }
+  .bl-pager__num:hover,
+  .bl-pager__edge:hover {
+    border-color: var(--v2-navy);
+  }
+  .bl-pager__num.is-active {
+    background: var(--v2-blue);
+    border-color: var(--v2-blue);
+    color: #fff;
+    font-weight: 800;
+  }
+
+  /* ===== CTA ===== */
+  .bl-cta {
+    padding: 0 0 96px;
+  }
+  .bl-cta__box {
+    background: linear-gradient(135deg, #0c1633 0%, #102a63 100%);
+    color: #fff;
+    border-radius: var(--v2-r-lg);
+    padding: 64px 48px;
+    text-align: center;
+  }
+  .bl-cta__title {
+    font-size: clamp(28px, 4vw, 38px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .bl-cta__sub {
+    font-size: 16px;
+    line-height: 1.65;
+    color: #a9b4cc;
+    max-width: 520px;
+    margin: 18px auto 0;
+  }
+  .bl-cta__actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 900px) {
+    .bl-hero__row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+    }
+    .bl-search {
+      min-width: 0;
+    }
+    .bl-cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 720px) {
+    .bl-feature {
+      grid-template-columns: 1fr;
+    }
+    .bl-feature__media {
+      grid-row: 1;
+      min-height: 220px;
+    }
+    .bl-feature__body {
+      padding: 32px 28px;
+    }
+  }
+  @media (max-width: 560px) {
+    .bl-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

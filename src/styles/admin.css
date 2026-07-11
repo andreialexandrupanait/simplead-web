@@ -1,12 +1,14 @@
 /* ============================================================
    Admin Simplead v2 — shell cu sidebar + componente.
-   Folosește tokenii din global.css (culori, fonturi, radii, umbre).
-   Layout: sidebar navy fix + topbar + conținut pe canvas-soft.
+   Culorile de suprafață/text/bordură vin din admin-theme.css
+   (tokeni --admin-*, light + dark). Accentele de brand
+   (--electric/--cyan/--signal) și radii/umbre din global.css.
+   Layout: sidebar navy fix + topbar + conținut pe --admin-bg.
    ============================================================ */
 
 .admin-body {
-  background: var(--canvas-soft);
-  color: var(--ink);
+  background: var(--admin-bg);
+  color: var(--admin-text);
   font-family: var(--font-body);
   min-height: 100vh;
   margin: 0;
@@ -26,16 +28,17 @@
 
 /* ---------- Sidebar ---------- */
 .admin-sidebar {
-  background: linear-gradient(180deg, var(--ink) 0%, var(--ink-soft) 100%);
-  color: #fff;
+  background: var(--admin-sidebar-bg);
+  color: var(--admin-sidebar-text-strong);
   display: flex;
   flex-direction: column;
   padding: 20px 14px;
   position: sticky;
   top: 0;
   height: 100vh;
-  overflow-y: auto;
+  overflow: visible;
   scrollbar-width: thin;
+  border-right: 1px solid var(--admin-sidebar-border);
 }
 .admin-sidebar__logo {
   display: flex;
@@ -45,7 +48,7 @@
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 1.15rem;
-  color: #fff;
+  color: var(--admin-sidebar-text-strong);
   letter-spacing: -0.02em;
 }
 .admin-sidebar__logo span {
@@ -64,32 +67,20 @@
 .admin-nav {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 2px;
   flex: 1;
 }
-.admin-nav__group-label {
-  font-size: 0.68rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--muted-dark);
-  padding: 0 10px;
-  margin-bottom: 6px;
-}
-.admin-nav__links {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
+/* Rând de navigație (nivel 1 sau summary de secțiune) — stil WordPress. */
 .admin-nav__link {
   display: flex;
   align-items: center;
   gap: 11px;
-  padding: 9px 10px;
-  border-radius: var(--r-sm);
+  padding: 10px 14px;
+  border-radius: 0;
   font-size: 0.92rem;
   font-weight: 500;
-  color: #c7d0ea;
+  color: var(--admin-sidebar-text);
+  cursor: pointer;
   transition:
     background-color 0.15s ease,
     color 0.15s ease;
@@ -100,24 +91,132 @@
   flex: none;
   opacity: 0.75;
 }
-.admin-nav__link:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: #fff;
+.admin-nav__text {
+  flex: 1;
+  min-width: 0;
 }
-.admin-nav__link.is-active {
-  background: color-mix(in srgb, var(--electric) 28%, transparent);
+.admin-nav__link:hover {
+  background: var(--admin-sidebar-hover);
+  color: var(--admin-sidebar-text-strong);
+}
+/* Activ: tentă soft (nu albastru plin), text alb + icon cyan ca accent. */
+.admin-nav__link.is-active,
+.admin-nav__parent.is-section {
+  background: color-mix(in srgb, var(--electric) 22%, transparent);
   color: #fff;
   font-weight: 600;
-  box-shadow: inset 2px 0 0 var(--cyan);
 }
-.admin-nav__link.is-active svg {
+.admin-nav__link.is-active svg,
+.admin-nav__parent.is-section svg:not(.admin-nav__caret) {
   opacity: 1;
   color: var(--cyan);
+}
+
+/* Grup cu submeniu FLOTANT (WordPress: flyout pe hover; coloana rămâne un nivel). */
+.admin-nav__group {
+  position: relative;
+}
+.admin-nav__caret {
+  width: 14px;
+  height: 14px;
+  margin-left: auto;
+  opacity: 0.4;
+  flex: none;
+}
+.admin-nav__flyout {
+  position: absolute;
+  left: calc(100% + 14px);
+  top: -1px;
+  min-width: 204px;
+  padding: 6px;
+  background: var(--admin-sidebar-flyout);
+  border: 1px solid var(--admin-sidebar-border);
+  border-radius: 0;
+  box-shadow: 12px 14px 34px -16px rgba(0, 0, 0, 0.6);
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.1s ease,
+    visibility 0.1s;
+}
+/* Punte invizibilă peste gap: hover-ul nu se rupe între buton și panou. */
+.admin-nav__flyout::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 0;
+  width: 16px;
+  height: 100%;
+}
+.admin-nav__group:hover > .admin-nav__flyout,
+.admin-nav__group:focus-within > .admin-nav__flyout {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.admin-nav__flyout-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--admin-muted);
+  padding: 6px 12px 8px;
+}
+.admin-nav__sublink {
+  display: block;
+  padding: 9px 14px;
+  border-radius: 0;
+  font-size: 0.88rem;
+  color: var(--admin-sidebar-text);
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+.admin-nav__sublink:hover {
+  background: var(--admin-sidebar-hover);
+  color: var(--admin-sidebar-text-strong);
+}
+.admin-nav__sublink.is-active {
+  color: var(--cyan);
+  font-weight: 600;
+}
+/* Pe mobil (drawer, fără hover): submeniul devine inline, în sidebar-ul navy. */
+@media (max-width: 960px) {
+  .admin-nav__flyout {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    pointer-events: auto;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    min-width: 0;
+    padding: 0 0 6px 30px;
+  }
+  .admin-nav__flyout::before,
+  .admin-nav__flyout-label,
+  .admin-nav__caret {
+    display: none;
+  }
+  .admin-nav__sublink {
+    color: var(--admin-sidebar-text);
+  }
+  .admin-nav__sublink:hover {
+    background: var(--admin-sidebar-hover);
+    color: var(--admin-sidebar-text-strong);
+  }
+  .admin-nav__sublink.is-active {
+    color: var(--cyan);
+    background: transparent;
+  }
 }
 .admin-sidebar__foot {
   margin-top: 18px;
   padding: 12px 10px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--admin-sidebar-border);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -128,7 +227,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #c7d0ea;
+  color: var(--admin-sidebar-text);
   background: none;
   border: none;
   font: inherit;
@@ -137,7 +236,7 @@
 }
 .admin-sidebar__foot a:hover,
 .admin-sidebar__foot button:hover {
-  color: #fff;
+  color: var(--admin-sidebar-text-strong);
 }
 .admin-sidebar__foot svg {
   width: 16px;
@@ -155,17 +254,18 @@
   align-items: center;
   gap: 16px;
   padding: 14px 32px;
-  background: var(--canvas);
-  border-bottom: 1px solid var(--line);
+  background: var(--admin-surface);
+  border-bottom: 1px solid var(--admin-border);
   position: sticky;
   top: 0;
   z-index: 40;
 }
 .admin-topbar__title {
   font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--ink);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--admin-text);
   flex: 1;
   min-width: 0;
   white-space: nowrap;
@@ -180,11 +280,11 @@
 .admin-burger {
   display: none;
   background: none;
-  border: 1px solid var(--line);
+  border: 1px solid var(--admin-border);
   border-radius: var(--r-xs);
   padding: 8px;
   cursor: pointer;
-  color: var(--ink);
+  color: var(--admin-text);
 }
 .admin-burger svg {
   width: 18px;
@@ -192,28 +292,68 @@
   display: block;
 }
 
+/* Comutator de temă (sun/moon) în topbar. */
+.admin-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--r-xs);
+  background: var(--admin-surface);
+  color: var(--admin-text-soft);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+.admin-theme-toggle:hover {
+  color: var(--electric);
+  border-color: var(--electric);
+}
+.admin-theme-toggle svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+/* Iconul de soare se vede pe light (oferă „treci pe dark"), luna pe dark. */
+.admin-theme-toggle .icon-moon {
+  display: none;
+}
+.admin-body[data-theme='dark'] .admin-theme-toggle .icon-sun {
+  display: none;
+}
+.admin-body[data-theme='dark'] .admin-theme-toggle .icon-moon {
+  display: block;
+}
+
 .admin-main {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 30px 32px 90px;
+}
+/* Pagini dense (dashboard, liste) — folosesc mai multă lățime. */
+.admin-main--wide {
+  max-width: 1440px;
 }
 .admin-main > h1 {
   font-size: 1.55rem;
   margin-bottom: 4px;
 }
 .admin-main .admin-sub {
-  color: var(--muted);
+  color: var(--admin-text-soft);
   margin-bottom: 26px;
 }
 
 /* ---------- Carduri ---------- */
 .admin-card {
-  background: var(--canvas);
-  border: 1px solid var(--line);
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
   border-radius: var(--r-lg);
   padding: 24px;
-  box-shadow: var(--sh-sm);
 }
 .admin-card + .admin-card {
   margin-top: 20px;
@@ -223,7 +363,7 @@
   margin-bottom: 4px;
 }
 .admin-card .admin-hint {
-  color: var(--muted);
+  color: var(--admin-text-soft);
   font-size: 0.9rem;
   margin-bottom: 16px;
 }
@@ -235,6 +375,208 @@
   padding: 18px 22px 0;
 }
 
+/* Grid de câmpuri într-un card (inputuri pe mai multe coloane). */
+.admin-field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px 24px;
+}
+
+/* ============================================================
+   Pagina de setări — coloană unică, secțiuni pe rânduri.
+   ============================================================ */
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.settings-section {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.settings-section__head {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--admin-border);
+}
+.settings-section__head h2 {
+  font-size: 1.05rem;
+  margin: 0 0 2px;
+}
+.settings-section__head p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--admin-text-soft);
+}
+.setting-row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--admin-border);
+}
+.setting-row:last-child {
+  border-bottom: none;
+}
+.setting-row__text {
+  flex: 1;
+  min-width: 0;
+}
+.setting-row__label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--admin-text);
+}
+.setting-row__desc {
+  margin: 4px 0 0;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--admin-text-soft);
+  max-width: 62ch;
+}
+.setting-row__desc code {
+  font-size: 0.85em;
+}
+.setting-row__control {
+  flex: none;
+  display: flex;
+  align-items: center;
+}
+.setting-row__control--input {
+  width: 260px;
+}
+.setting-row__control--input .admin-input {
+  width: 100%;
+}
+.setting-row {
+  transition: background-color 0.12s ease;
+}
+.setting-row:hover {
+  background: var(--admin-surface-2);
+}
+.setting-row--flag {
+  box-shadow: inset 3px 0 0 var(--signal);
+  background: color-mix(in srgb, var(--signal) 6%, var(--admin-surface));
+}
+/* În pagina de setări, bara de salvare NU e sticky (nu plutește peste conținut). */
+.settings .admin-savebar {
+  position: static;
+}
+
+/* Switch pătrățos, flat, pe tokeni (on = electric). Pur CSS, zero JS. */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 24px;
+  flex: none;
+  cursor: pointer;
+}
+.switch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.switch__track {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r-sm);
+  background: var(--admin-muted);
+  transition: background-color 0.15s ease;
+}
+.switch__track::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  transition: transform 0.18s var(--ease-snap);
+}
+.switch input:checked + .switch__track {
+  background: var(--electric);
+}
+.switch input:checked + .switch__track::after {
+  transform: translateX(18px);
+  background: #fff;
+}
+.switch input:focus-visible + .switch__track {
+  outline: 2px solid color-mix(in srgb, var(--electric) 45%, transparent);
+  outline-offset: 2px;
+}
+
+/* Grilă uniformă de checkbox-uri (homepage / construcție). */
+.setting-check-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 2px 16px;
+  padding: 12px 16px 16px;
+}
+.setting-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 8px;
+  border-radius: var(--r-xs);
+  font-size: 0.9rem;
+  color: var(--admin-text);
+  cursor: pointer;
+}
+.setting-check:hover {
+  background: var(--admin-surface-2);
+}
+.setting-check input {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  accent-color: var(--electric);
+  cursor: pointer;
+}
+.setting-check small {
+  color: var(--admin-text-soft);
+  font-size: 0.78rem;
+}
+@media (max-width: 640px) {
+  .setting-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .setting-row__control {
+    justify-content: flex-start;
+  }
+  .setting-row__control--input {
+    width: 100%;
+  }
+  .settings-section__head,
+  .setting-row {
+    padding-inline: 16px;
+  }
+}
+
+/* Grid utilitar pe 2 coloane pentru paginile de detaliu (conținut / meta). */
+.admin-cols {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 1000px) {
+  .admin-cols {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---------- Stat cards ---------- */
 .admin-stats {
   display: grid;
@@ -243,62 +585,70 @@
   margin-bottom: 24px;
 }
 .admin-stat {
-  background: var(--canvas);
-  border: 1px solid var(--line);
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
   border-radius: var(--r-lg);
   padding: 18px 20px;
-  box-shadow: var(--sh-sm);
   display: flex;
   flex-direction: column;
   gap: 4px;
   position: relative;
-  overflow: hidden;
+  transition: border-color 0.15s ease;
 }
-.admin-stat::after {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto;
-  height: 3px;
-  background: linear-gradient(90deg, var(--electric), var(--cyan));
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-.admin-stat:hover::after {
-  opacity: 1;
+a.admin-stat:hover {
+  border-color: color-mix(in srgb, var(--electric) 45%, var(--admin-border));
 }
 .admin-stat__label {
   font-size: 0.78rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--muted);
+  color: var(--admin-text-soft);
 }
 .admin-stat__value {
   font-family: var(--font-display);
   font-size: 1.9rem;
   font-weight: 700;
-  color: var(--ink);
+  color: var(--admin-text);
   line-height: 1.1;
 }
 .admin-stat__hint {
   font-size: 0.82rem;
-  color: var(--muted);
+  color: var(--admin-text-soft);
 }
-.admin-stat__icon {
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  width: 34px;
-  height: 34px;
-  border-radius: var(--r-sm);
-  display: grid;
-  place-items: center;
-  background: color-mix(in srgb, var(--electric) 9%, transparent);
-  color: var(--electric);
+/* Rândul de sus al unui stat card: label + chip de trend. */
+.admin-stat__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
-.admin-stat__icon svg {
-  width: 18px;
-  height: 18px;
+.admin-stat__trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--r-pill);
+  background: var(--admin-surface-2);
+  color: var(--admin-text-soft);
+  border: 1px solid var(--admin-border);
+  font-variant-numeric: tabular-nums;
+}
+.admin-stat__trend.is-up {
+  color: var(--admin-ok-fg);
+  background: color-mix(in srgb, var(--cyan) 12%, var(--admin-surface));
+  border-color: color-mix(in srgb, var(--cyan) 40%, var(--admin-border));
+}
+.admin-stat__trend.is-down {
+  color: var(--admin-danger-accent);
+  background: var(--admin-danger-bg);
+  border-color: var(--admin-danger-border);
+}
+.admin-stat__spark {
+  margin-top: 8px;
+  display: block;
 }
 
 /* ---------- Bannere ---------- */
@@ -307,20 +657,22 @@
   padding: 12px 16px;
   font-size: 0.95rem;
   margin-bottom: 20px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--admin-border);
+  background: var(--admin-surface);
+  color: var(--admin-text);
 }
 .admin-banner--warn {
-  background: color-mix(in srgb, var(--signal) 14%, var(--canvas));
-  border-color: color-mix(in srgb, var(--signal) 50%, var(--line));
+  background: color-mix(in srgb, var(--signal) 14%, var(--admin-surface));
+  border-color: color-mix(in srgb, var(--signal) 50%, var(--admin-border));
 }
 .admin-banner--error {
-  background: #fdf0f0;
-  border-color: #efc7c7;
-  color: #8a2424;
+  background: var(--admin-danger-bg);
+  border-color: var(--admin-danger-border);
+  color: var(--admin-danger-fg);
 }
 .admin-banner--ok {
-  background: color-mix(in srgb, var(--cyan) 10%, var(--canvas));
-  border-color: color-mix(in srgb, var(--cyan) 40%, var(--line));
+  background: color-mix(in srgb, var(--cyan) 10%, var(--admin-surface));
+  border-color: color-mix(in srgb, var(--cyan) 40%, var(--admin-border));
 }
 
 /* ---------- Formulare ---------- */
@@ -336,22 +688,22 @@
 }
 .admin-field small {
   display: block;
-  color: var(--muted);
+  color: var(--admin-text-soft);
   font-size: 0.82rem;
   margin-top: 4px;
 }
 .admin-field .field-error {
-  color: #b3261e;
+  color: var(--admin-danger-accent);
 }
 .admin-input,
 .admin-select,
 .admin-textarea {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--admin-border);
   border-radius: var(--r-xs);
-  background: var(--canvas);
-  color: var(--ink);
+  background: var(--admin-surface);
+  color: var(--admin-text);
   font: inherit;
   font-size: 0.95rem;
 }
@@ -370,7 +722,7 @@
   align-items: center;
   gap: 8px;
   font-size: 0.9rem;
-  color: var(--muted);
+  color: var(--admin-text-soft);
 }
 
 /* ---------- Butoane ---------- */
@@ -382,7 +734,7 @@
   border-radius: var(--r-xs);
   border: 1px solid transparent;
   background: var(--electric);
-  color: #fff;
+  color: var(--admin-on-accent);
   font-family: var(--font-body);
   font-weight: 700;
   font-size: 0.86rem;
@@ -391,7 +743,6 @@
   cursor: pointer;
   text-decoration: none;
   transition:
-    transform 0.18s var(--ease-snap),
     background-color 0.18s var(--ease-snap),
     color 0.18s var(--ease-snap),
     border-color 0.18s var(--ease-snap);
@@ -400,13 +751,13 @@
   width: 15px;
   height: 15px;
 }
-.admin-btn:hover {
-  transform: translateY(-1px);
+.admin-btn:not(.admin-btn--ghost):not(.admin-btn--outline):not(.admin-btn--danger):hover {
+  background: color-mix(in srgb, var(--electric) 88%, black);
 }
 .admin-btn--outline {
   background: transparent;
-  color: var(--ink);
-  border-color: var(--ink);
+  color: var(--admin-text);
+  border-color: var(--admin-text);
 }
 .admin-btn--outline:hover {
   border-color: var(--electric);
@@ -414,8 +765,8 @@
 }
 .admin-btn--ghost {
   background: transparent;
-  color: var(--muted);
-  border-color: var(--line);
+  color: var(--admin-text-soft);
+  border-color: var(--admin-border);
   padding: 8px 14px;
 }
 .admin-btn--ghost:hover {
@@ -424,12 +775,12 @@
 }
 .admin-btn--danger {
   background: transparent;
-  color: #b3261e;
-  border-color: #e6b8b5;
+  color: var(--admin-danger-accent);
+  border-color: var(--admin-danger-btn-border);
 }
 .admin-btn--danger:hover {
-  background: #fdf0f0;
-  border-color: #b3261e;
+  background: var(--admin-danger-bg);
+  border-color: var(--admin-danger-accent);
 }
 .admin-btn--sm {
   padding: 6px 12px;
@@ -464,7 +815,7 @@
   transform: translateY(-50%);
   width: 16px;
   height: 16px;
-  color: var(--muted);
+  color: var(--admin-text-soft);
   pointer-events: none;
 }
 .admin-toolbar__spacer {
@@ -485,29 +836,29 @@
   font-size: 0.76rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--muted);
+  color: var(--admin-text-soft);
   padding: 10px 12px;
-  border-bottom: 1px solid var(--line);
-  background: var(--canvas);
+  border-bottom: 1px solid var(--admin-border);
+  background: var(--admin-surface);
   position: sticky;
   top: 0;
 }
 .admin-table td {
   padding: 12px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--admin-border);
   vertical-align: middle;
 }
 .admin-table tbody tr {
   transition: background-color 0.12s ease;
 }
 .admin-table tbody tr:hover {
-  background: color-mix(in srgb, var(--electric) 3%, var(--canvas));
+  background: color-mix(in srgb, var(--electric) 4%, var(--admin-surface));
 }
 .admin-table tr:last-child td {
   border-bottom: none;
 }
 .admin-table .admin-row-link {
-  color: var(--ink);
+  color: var(--admin-text);
   font-weight: 600;
 }
 .admin-table .admin-row-link:hover {
@@ -527,9 +878,9 @@
   border-radius: var(--r-pill);
   font-size: 0.78rem;
   font-weight: 600;
-  background: var(--canvas-soft);
-  color: var(--muted);
-  border: 1px solid var(--line);
+  background: var(--admin-surface-2);
+  color: var(--admin-text-soft);
+  border: 1px solid var(--admin-border);
   white-space: nowrap;
 }
 .admin-tag::before {
@@ -545,41 +896,41 @@
 }
 .admin-tag--ok,
 .admin-tag--on {
-  background: color-mix(in srgb, var(--cyan) 12%, var(--canvas));
-  color: #0b6e63;
-  border-color: color-mix(in srgb, var(--cyan) 40%, var(--line));
+  background: color-mix(in srgb, var(--cyan) 12%, var(--admin-surface));
+  color: var(--admin-ok-fg);
+  border-color: color-mix(in srgb, var(--cyan) 40%, var(--admin-border));
 }
 .admin-tag--info {
-  background: color-mix(in srgb, var(--electric) 9%, var(--canvas));
+  background: color-mix(in srgb, var(--electric) 9%, var(--admin-surface));
   color: var(--electric);
-  border-color: color-mix(in srgb, var(--electric) 30%, var(--line));
+  border-color: color-mix(in srgb, var(--electric) 30%, var(--admin-border));
 }
 .admin-tag--warn {
-  background: color-mix(in srgb, var(--signal) 18%, var(--canvas));
-  color: #7a6505;
-  border-color: color-mix(in srgb, var(--signal) 55%, var(--line));
+  background: color-mix(in srgb, var(--signal) 18%, var(--admin-surface));
+  color: var(--admin-warn-fg);
+  border-color: color-mix(in srgb, var(--signal) 55%, var(--admin-border));
 }
 .admin-tag--danger {
-  background: #fdf0f0;
-  color: #8a2424;
-  border-color: #efc7c7;
+  background: var(--admin-danger-bg);
+  color: var(--admin-danger-fg);
+  border-color: var(--admin-danger-border);
 }
 
 /* ---------- Empty state ---------- */
 .admin-empty {
   text-align: center;
   padding: 56px 20px;
-  color: var(--muted);
+  color: var(--admin-text-soft);
 }
 .admin-empty svg {
   width: 38px;
   height: 38px;
-  color: var(--muted-dark);
+  color: var(--admin-muted);
   margin-bottom: 12px;
 }
 .admin-empty h3 {
   font-size: 1.02rem;
-  color: var(--ink);
+  color: var(--admin-text);
   margin-bottom: 4px;
 }
 .admin-empty p {
@@ -596,7 +947,7 @@
   gap: 12px;
   padding: 14px 4px 0;
   font-size: 0.88rem;
-  color: var(--muted);
+  color: var(--admin-text-soft);
 }
 .admin-pagination__pages {
   display: flex;
@@ -608,8 +959,8 @@
   padding: 6px 10px;
   text-align: center;
   border-radius: var(--r-xs);
-  border: 1px solid var(--line);
-  color: var(--ink);
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text);
   font-weight: 600;
 }
 .admin-pagination__pages a:hover {
@@ -619,7 +970,7 @@
 .admin-pagination__pages .is-current {
   background: var(--electric);
   border-color: var(--electric);
-  color: #fff;
+  color: var(--admin-on-accent);
 }
 .admin-pagination__pages .is-disabled {
   opacity: 0.45;
@@ -641,12 +992,12 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  background: var(--ink);
-  color: #fff;
+  background: var(--admin-toast-bg);
+  color: var(--admin-toast-fg);
   border-radius: var(--r-sm);
   padding: 13px 16px;
   font-size: 0.92rem;
-  box-shadow: 0 12px 32px -12px rgba(3, 13, 74, 0.5);
+  box-shadow: var(--admin-shadow-pop);
   animation: admin-toast-in 0.25s var(--ease-snap);
   border-left: 3px solid var(--cyan);
 }
@@ -671,6 +1022,24 @@
   }
 }
 
+/* ---------- Utilitare micro-tipografie (înlocuiesc inline-style repetate) ---------- */
+.u-muted {
+  color: var(--admin-text-soft);
+}
+.u-nowrap {
+  white-space: nowrap;
+}
+.u-strong {
+  font-weight: 600;
+}
+.u-sub {
+  font-size: 0.85rem;
+  color: var(--admin-text-soft);
+}
+.u-num {
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---------- Diverse ---------- */
 .admin-grid {
   display: grid;
@@ -692,12 +1061,29 @@
   flex-wrap: wrap;
   margin-bottom: 22px;
 }
+/* Titlul paginii stă în topbar (header standard) — nu-l repetăm ca h1 în corp. */
 .admin-page-head h1 {
-  font-size: 1.55rem;
-  margin-bottom: 4px;
+  display: none;
 }
 .admin-page-head .admin-sub {
   margin-bottom: 0;
+  color: var(--admin-text-soft);
+}
+.admin-page-head__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--admin-text-soft);
+  margin-bottom: 8px;
+}
+.admin-page-head__back:hover {
+  color: var(--electric);
+}
+.admin-page-head__back svg {
+  width: 14px;
+  height: 14px;
 }
 .admin-kv {
   display: grid;
@@ -706,11 +1092,11 @@
   font-size: 0.93rem;
 }
 .admin-kv dt {
-  color: var(--muted);
+  color: var(--admin-text-soft);
 }
 .admin-kv dd {
   margin: 0;
-  color: var(--ink);
+  color: var(--admin-text);
   font-weight: 500;
   overflow-wrap: anywhere;
 }
@@ -726,7 +1112,7 @@
   align-items: center;
   gap: 12px;
   padding: 11px 2px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--admin-border);
   font-size: 0.93rem;
 }
 .admin-checklist li:last-child {
@@ -741,14 +1127,14 @@
   flex: none;
   font-size: 0.7rem;
   font-weight: 700;
-  background: var(--canvas-soft);
-  color: var(--muted);
-  border: 1px solid var(--line);
+  background: var(--admin-surface-2);
+  color: var(--admin-text-soft);
+  border: 1px solid var(--admin-border);
 }
 .admin-checklist .check-dot.is-done {
-  background: color-mix(in srgb, var(--cyan) 16%, var(--canvas));
-  color: #0b6e63;
-  border-color: color-mix(in srgb, var(--cyan) 45%, var(--line));
+  background: color-mix(in srgb, var(--cyan) 16%, var(--admin-surface));
+  color: var(--admin-ok-fg);
+  border-color: color-mix(in srgb, var(--cyan) 45%, var(--admin-border));
 }
 .admin-checklist .check-action {
   margin-left: auto;
@@ -767,14 +1153,14 @@
   gap: 12px;
   align-items: baseline;
   padding: 10px 2px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--admin-border);
   font-size: 0.92rem;
 }
 .admin-activity li:last-child {
   border-bottom: none;
 }
 .admin-activity time {
-  color: var(--muted);
+  color: var(--admin-text-soft);
   font-size: 0.8rem;
   white-space: nowrap;
   min-width: 86px;
@@ -782,9 +1168,9 @@
 
 /* ---------- Editor markdown v2 ---------- */
 .admin-editor2 {
-  border: 1px solid var(--line);
+  border: 1px solid var(--admin-border);
   border-radius: var(--r-md);
-  background: var(--canvas);
+  background: var(--admin-surface);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -803,8 +1189,8 @@
   gap: 10px;
   flex-wrap: wrap;
   padding: 8px 10px;
-  border-bottom: 1px solid var(--line);
-  background: var(--canvas-soft);
+  border-bottom: 1px solid var(--admin-border);
+  background: var(--admin-surface-2);
 }
 .admin-editor2__tools {
   display: flex;
@@ -818,7 +1204,7 @@
   font: inherit;
   font-size: 0.88rem;
   font-weight: 600;
-  color: var(--ink-soft, var(--ink));
+  color: var(--admin-text);
   min-width: 32px;
   height: 30px;
   padding: 0 8px;
@@ -829,22 +1215,21 @@
   justify-content: center;
 }
 .admin-editor2__tools button:hover {
-  background: var(--canvas);
+  background: var(--admin-surface);
   color: var(--electric);
-  box-shadow: var(--sh-sm);
 }
 .admin-editor2__tools .sep {
   width: 1px;
   height: 18px;
-  background: var(--line);
+  background: var(--admin-border);
   margin: 0 6px;
 }
 .admin-editor2__modes {
   display: flex;
   align-items: center;
   gap: 2px;
-  background: var(--canvas);
-  border: 1px solid var(--line);
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
   border-radius: var(--r-pill);
   padding: 3px;
 }
@@ -854,14 +1239,14 @@
   font: inherit;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--muted);
+  color: var(--admin-text-soft);
   padding: 5px 13px;
   border-radius: var(--r-pill);
   cursor: pointer;
 }
 .admin-editor2__modes button.is-active {
-  background: var(--ink);
-  color: #fff;
+  background: var(--admin-text);
+  color: var(--admin-surface);
 }
 .admin-editor2__modes .admin-editor2__fs {
   font-size: 0.95rem;
@@ -874,12 +1259,12 @@
   flex-wrap: wrap;
   padding: 9px 14px;
   font-size: 0.86rem;
-  background: color-mix(in srgb, var(--signal) 14%, var(--canvas));
-  border-bottom: 1px solid color-mix(in srgb, var(--signal) 50%, var(--line));
+  background: color-mix(in srgb, var(--signal) 14%, var(--admin-surface));
+  border-bottom: 1px solid color-mix(in srgb, var(--signal) 50%, var(--admin-border));
 }
 .admin-editor2__restore button {
-  border: 1px solid var(--line);
-  background: var(--canvas);
+  border: 1px solid var(--admin-border);
+  background: var(--admin-surface);
   font: inherit;
   font-size: 0.8rem;
   font-weight: 600;
@@ -923,8 +1308,8 @@
   font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   font-size: 15px;
   line-height: 1.75;
-  color: var(--ink);
-  background: var(--canvas);
+  color: var(--admin-text);
+  background: var(--admin-surface);
   min-height: 560px;
 }
 .admin-editor2__panes.mode-write .admin-editor2__write textarea {
@@ -932,8 +1317,8 @@
   margin: 0 auto;
 }
 .admin-editor2__view {
-  border-left: 1px solid var(--line);
-  background: #fbfcfe;
+  border-left: 1px solid var(--admin-border);
+  background: var(--admin-surface-inset);
   padding: 26px 30px;
   overflow-y: auto;
   min-height: 560px;
@@ -964,9 +1349,9 @@
   flex-wrap: wrap;
   padding: 8px 14px;
   font-size: 0.78rem;
-  color: var(--muted);
-  border-top: 1px solid var(--line);
-  background: var(--canvas-soft);
+  color: var(--admin-text-soft);
+  border-top: 1px solid var(--admin-border);
+  background: var(--admin-surface-2);
 }
 @media (max-width: 1100px) {
   .admin-editor2__panes {
@@ -989,19 +1374,19 @@
   font-family: var(--font-display);
   font-size: clamp(1.5rem, 3vw, 2.1rem);
   font-weight: 700;
-  color: var(--ink);
+  color: var(--admin-text);
   padding: 4px 0;
   letter-spacing: -0.02em;
 }
 .admin-title-input::placeholder {
-  color: var(--muted-dark);
+  color: var(--admin-muted);
 }
 .admin-slug-line {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 0.85rem;
-  color: var(--muted);
+  color: var(--admin-text-soft);
   flex-wrap: wrap;
 }
 .admin-slug-line input {
@@ -1027,19 +1412,17 @@
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 20px;
-  padding: 12px 18px;
-  background: var(--canvas);
-  border: 1px solid var(--line);
-  border-radius: var(--r-md);
-  box-shadow: 0 -8px 28px -14px rgba(3, 13, 74, 0.35);
+  margin-top: 28px;
+  padding: 14px 0;
+  background: var(--admin-bg);
+  border-top: 1px solid var(--admin-border);
 }
 .admin-savebar .spacer {
   flex: 1;
 }
 .admin-savebar .savebar-status {
   font-size: 0.86rem;
-  color: var(--muted);
+  color: var(--admin-text-soft);
 }
 
 /* ---------- Lista de articole (rânduri bogate) ---------- */
@@ -1053,25 +1436,25 @@
   gap: 16px;
   align-items: center;
   padding: 14px 20px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--admin-border);
   transition: background-color 0.12s ease;
 }
 .post-row:last-child {
   border-bottom: none;
 }
 .post-row:hover {
-  background: color-mix(in srgb, var(--electric) 3%, var(--canvas));
+  background: color-mix(in srgb, var(--electric) 4%, var(--admin-surface));
 }
 .post-row__thumb {
   width: 64px;
   height: 48px;
   border-radius: var(--r-xs);
   object-fit: cover;
-  background: var(--canvas-soft);
-  border: 1px solid var(--line);
+  background: var(--admin-surface-2);
+  border: 1px solid var(--admin-border);
   display: grid;
   place-items: center;
-  color: var(--muted-dark);
+  color: var(--admin-muted);
   font-size: 0.7rem;
   overflow: hidden;
 }
@@ -1092,7 +1475,7 @@
 .post-row__title a {
   font-weight: 700;
   font-size: 1.02rem;
-  color: var(--ink);
+  color: var(--admin-text);
 }
 .post-row__title a:hover {
   color: var(--electric);
@@ -1100,7 +1483,7 @@
 .post-row__desc {
   margin-top: 3px;
   font-size: 0.88rem;
-  color: var(--muted);
+  color: var(--admin-text-soft);
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -1113,13 +1496,13 @@
   gap: 8px;
   flex-wrap: wrap;
   font-size: 0.78rem;
-  color: var(--muted);
+  color: var(--admin-text-soft);
 }
 .post-row__meta .chip {
   padding: 1px 9px;
   border-radius: var(--r-pill);
-  background: var(--canvas-soft);
-  border: 1px solid var(--line);
+  background: var(--admin-surface-2);
+  border: 1px solid var(--admin-border);
   font-weight: 600;
 }
 .post-row__actions {
@@ -1153,19 +1536,19 @@
 .admin-count-chips a {
   padding: 5px 13px;
   border-radius: var(--r-pill);
-  border: 1px solid var(--line);
+  border: 1px solid var(--admin-border);
   font-size: 0.84rem;
   font-weight: 600;
-  color: var(--muted);
+  color: var(--admin-text-soft);
 }
 .admin-count-chips a:hover {
   border-color: var(--electric);
   color: var(--electric);
 }
 .admin-count-chips a.is-active {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: #fff;
+  background: var(--admin-text);
+  border-color: var(--admin-text);
+  color: var(--admin-surface);
 }
 
 /* ---------- Editor markdown (două panouri) ---------- */
@@ -1185,10 +1568,10 @@
   gap: 4px;
   flex-wrap: wrap;
   padding: 6px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--admin-border);
   border-bottom: none;
   border-radius: var(--r-xs) var(--r-xs) 0 0;
-  background: var(--canvas-soft);
+  background: var(--admin-surface-2);
 }
 .admin-editor__toolbar button {
   border: none;
@@ -1196,13 +1579,13 @@
   font: inherit;
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--muted);
+  color: var(--admin-text-soft);
   padding: 5px 9px;
   border-radius: 6px;
   cursor: pointer;
 }
 .admin-editor__toolbar button:hover {
-  background: var(--canvas);
+  background: var(--admin-surface);
   color: var(--electric);
 }
 .admin-editor__textarea {
@@ -1214,9 +1597,9 @@
   line-height: 1.6;
 }
 .admin-editor__preview {
-  border: 1px solid var(--line);
+  border: 1px solid var(--admin-border);
   border-radius: var(--r-xs);
-  background: var(--canvas);
+  background: var(--admin-surface);
   padding: 20px 22px;
   overflow-y: auto;
   min-height: 460px;
@@ -1224,7 +1607,7 @@
 }
 .admin-editor__meta {
   font-size: 0.8rem;
-  color: var(--muted);
+  color: var(--admin-text-soft);
   padding-top: 6px;
   display: flex;
   justify-content: space-between;
@@ -1242,10 +1625,10 @@
   gap: 14px;
 }
 .admin-media-item {
-  border: 1px solid var(--line);
+  border: 1px solid var(--admin-border);
   border-radius: var(--r-sm);
   overflow: hidden;
-  background: var(--canvas);
+  background: var(--admin-surface);
   position: relative;
 }
 .admin-media-item img {
@@ -1253,22 +1636,22 @@
   aspect-ratio: 4 / 3;
   object-fit: cover;
   display: block;
-  background: var(--canvas-soft);
+  background: var(--admin-surface-2);
 }
 .admin-media-item figcaption {
   padding: 8px 10px;
   font-size: 0.76rem;
-  color: var(--muted);
+  color: var(--admin-text-soft);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .admin-dropzone {
-  border: 2px dashed var(--line);
+  border: 2px dashed var(--admin-border);
   border-radius: var(--r-md);
   padding: 26px;
   text-align: center;
-  color: var(--muted);
+  color: var(--admin-text-soft);
   font-size: 0.92rem;
   transition:
     border-color 0.15s ease,
@@ -1278,7 +1661,7 @@
 .admin-dropzone.is-over,
 .admin-dropzone:hover {
   border-color: var(--electric);
-  background: color-mix(in srgb, var(--electric) 4%, var(--canvas));
+  background: color-mix(in srgb, var(--electric) 4%, var(--admin-surface));
 }
 
 /* ---------- Responsive ---------- */
@@ -1291,9 +1674,10 @@
     inset: 0 auto 0 0;
     width: 264px;
     z-index: 100;
+    overflow-y: auto;
     transform: translateX(-100%);
     transition: transform 0.22s var(--ease-snap);
-    box-shadow: 0 0 60px rgba(3, 13, 74, 0.35);
+    box-shadow: 8px 0 24px -12px rgba(3, 13, 74, 0.35);
   }
   .admin-shell.nav-open .admin-sidebar {
     transform: translateX(0);
@@ -1302,7 +1686,7 @@
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(3, 13, 74, 0.45);
+    background: var(--admin-scrim);
     z-index: 90;
     border: none;
   }

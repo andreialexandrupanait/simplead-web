@@ -1,0 +1,2040 @@
+---
+import BaseLayoutV2 from '@layouts/BaseLayoutV2.astro';
+import { services, serviceHref } from '@data/services';
+import { homeCaseStudies, testimonials, type Testimonial } from '@data/content';
+import { getPublicSettings } from '@lib/server/public-settings';
+
+// On-demand (ca varianta A): ProofSection/DB + setările de secțiuni ascunse.
+export const prerender = false;
+
+// Conținut IDENTIC cu varianta A (src/pages/index.astro). Doar prezentarea diferă.
+// Vizibilitatea secțiunilor e controlată din /admin/setari (cheile din @data/sections).
+const { hiddenHomeSections } = await getPublicSettings();
+const show = (key: string) => !hiddenHomeSections.includes(key);
+
+// ── HERO: parteneri (identic cu @components/home/HomeHero.astro) ──────────────
+const partners = [
+  { src: '/parteneri/marketing-deck.png', name: 'Marketing Deck', w: 1843, h: 468 },
+  { src: '/parteneri/paul-ardeleanu.png', name: 'Paul Ardeleanu', w: 286, h: 56 },
+  { src: '/parteneri/m1-med-beauty.png', name: 'M1 Med Beauty', w: 278, h: 63 },
+  { src: '/parteneri/matematica-interactiva.png', name: 'Matematica Interactivă', w: 2084, h: 687 },
+  { src: '/parteneri/feaa-galati.png', name: 'FEAA Galați', w: 1057, h: 216 },
+  { src: '/parteneri/simona-halep.png', name: 'Hotel Simona Halep', w: 852, h: 275 },
+  { src: '/parteneri/priority-clinic.png', name: 'Priority Clinic', w: 1402, h: 183 },
+  { src: '/parteneri/fastrackids.webp', name: 'FasTrackKids', w: 1558, h: 382 },
+];
+
+// ── SERVICII: aceleași 6 servicii, în aceeași ordine ca varianta A ────────────
+const FEATURED = [
+  'mentenanta-website',
+  'ux-ui-web-design',
+  'grafica-publicitara',
+  'consultanta-marketing',
+  'social-media',
+  'ai-pentru-business',
+];
+const featured = FEATURED.map((slug) => services.find((s) => s.slug === slug)).filter(
+  (s): s is (typeof services)[number] => Boolean(s),
+);
+
+// ── PROCES: pași identici cu @components/home/ProcessTimeline.astro ───────────
+const steps = [
+  {
+    n: '01',
+    title: 'Ne cunoaștem',
+    body: 'O discuție fără obligații în care ascultăm: ce vrei să obții, unde ești blocat și dacă suntem partenerii potriviți pentru tine.',
+    tag: 'Start',
+  },
+  {
+    n: '02',
+    title: 'Analiză & cercetare',
+    body: 'Ne uităm la situația ta, la concurență și la public. Aici intervin datele și neuromarketingul: deciziile pornesc de la cum gândesc oamenii, nu de la presupuneri.',
+    tag: 'Cercetare',
+  },
+  {
+    n: '03',
+    title: 'Strategie',
+    body: 'Punem concluziile într-un plan concret, pe obiective măsurabile. Știi exact ce facem, pe ce canale și ce rezultat țintim.',
+    tag: 'Plan',
+  },
+  {
+    n: '04',
+    title: 'Execuție',
+    body: 'Ducem planul în realitate (design, grafică, web), transparent și cu update-uri regulate, ca să știi mereu unde suntem.',
+    tag: 'Execuție',
+  },
+  {
+    n: '05',
+    title: 'Rezultate & mentenanță',
+    body: 'Rămânem alături și după lansare. Măsurăm, optimizăm și ținem site-ul în formă până se văd rezultatele.',
+    tag: 'Rezultate',
+  },
+];
+
+// ── AI: direcții identice cu @components/home/AiSection.astro ─────────────────
+const aiFeatures = [
+  {
+    n: '01',
+    title: 'Procese mai bune',
+    body: 'Ne uităm la felul în care lucrezi și folosim AI ca să eliminăm pașii inutili și să scurtăm drumul de la idee la rezultat.',
+    color: 'var(--v2-blue)',
+  },
+  {
+    n: '02',
+    title: 'Aplicații pe măsura ta',
+    body: 'Dezvoltăm aplicații specifice businessului tău: de la fluxuri interne la unelte care nu există „de-a gata" pe piață.',
+    color: '#12b981',
+  },
+  {
+    n: '03',
+    title: 'Automatizări cu cap',
+    body: 'Sarcinile repetitive trec pe pilot automat, ca tu să nu le mai faci de mână.',
+    color: '#f5c02e',
+  },
+];
+
+// ── TESTIMONIALE: aceeași distribuție bento ca varianta A ─────────────────────
+const t = testimonials;
+const tstColumns: Testimonial[][] = [
+  [t[0], t[2]].filter(Boolean),
+  [t[3], t[4], t[5]].filter(Boolean),
+  [t[6], t[1]].filter(Boolean),
+];
+---
+
+<BaseLayoutV2 transparentNav={true}>
+  {/* ============================ 1 · HERO ============================ */}
+  {
+    show('hero') && (
+      <section class="hp-hero">
+        <div class="v2-container hp-hero__inner">
+          <p class="hp-pill">
+            <span class="hp-pill__dot" aria-hidden="true" />
+            Studio de grafică &amp; marketing digital
+          </p>
+          <h1 class="hp-hero__title">
+            Servicii digitale bazate pe <span class="accent">neuroștiință</span>, nu pe noroc.
+          </h1>
+          <p class="hp-hero__sub">
+            Înainte să arate bine, ne asigurăm că și funcționează: pornim de la cum decid oamenii și
+            de la nevoile tale. Combinăm creativitatea cu cercetarea, ca afacerile mici și mijlocii
+            să concureze de la egal la egal cu cele mari.
+          </p>
+          <div class="hp-hero__cta">
+            <a class="v2-btn" href="/contact">Cere o ofertă</a>
+            <a class="hp-textlink" href="/servicii">Vezi serviciile</a>
+          </div>
+
+          <div class="hp-show">
+            <figure class="hp-shot">
+              <img
+                src="/exemplu-design.webp"
+                alt="Material de design realizat de Simplead"
+                width="383"
+                height="384"
+              />
+              <figcaption>Designul</figcaption>
+            </figure>
+            <span class="hp-show__arrow" aria-hidden="true">→</span>
+            <figure class="hp-shot hp-shot--heat">
+              <img
+                src="/exemplu-heatmap.webp"
+                alt="Harta de atenție (heatmap) peste același design"
+                width="381"
+                height="383"
+              />
+              <figcaption>Unde se duce atenția, măsurat</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="hp-logos">
+          <div class="v2-container hp-logos__inner">
+            <span class="hp-logos__lbl">Lucrează cu noi</span>
+            <div class="hp-marquee">
+              <ul class="hp-marquee__group">
+                {partners.map((p) => (
+                  <li>
+                    <img src={p.src} alt={p.name} width={p.w} height={p.h} loading="lazy" />
+                  </li>
+                ))}
+              </ul>
+              <ul class="hp-marquee__group" aria-hidden="true">
+                {partners.map((p) => (
+                  <li>
+                    <img src={p.src} alt="" width={p.w} height={p.h} loading="lazy" />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ========================= 2 · SERVICII ========================= */}
+  {
+    show('services') && (
+      <section class="hp-svc" id="servicii">
+        <div class="v2-container hp-svc__head" data-reveal>
+          <div class="hp-svc__top">
+            <h2 class="v2-h2 hp-svc__title">
+              Pornim de la ce-ți trebuie, <span class="accent">nu de la un șablon</span>.
+            </h2>
+            <div class="hp-svc__nav">
+              <button
+                class="hp-svc__btn"
+                type="button"
+                data-dir="prev"
+                aria-label="Serviciul anterior"
+                disabled
+              >
+                ‹
+              </button>
+              <button class="hp-svc__btn" type="button" data-dir="next" aria-label="Serviciul următor">
+                ›
+              </button>
+            </div>
+          </div>
+          <div class="hp-svc__meta">
+            <p class="hp-svc__lead">
+              Verificăm întâi ce ai deja, ce funcționează și ce poate fi îmbunătățit, apoi venim cu
+              completări acolo unde e nevoie. Aici ai lista noastră de servicii.
+            </p>
+            <a class="hp-svc__all" href="/servicii">
+              Vezi toate serviciile <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="hp-svc__viewport" data-reveal>
+          <ul class="hp-svc__track">
+            {featured.map((s) => (
+              <li class="hp-svc__item">
+                <a class="hp-card" href={serviceHref(s.slug)}>
+                  <span class="hp-card__img" style={`background-image:url(${s.image})`} aria-hidden="true" />
+                  <span class="hp-card__shade" aria-hidden="true" />
+                  <span class="hp-card__lbl">{s.title}</span>
+                  <span class="hp-card__ab" aria-hidden="true">↗</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ==================== 3 · DIFERENȚIATOR (dark) ==================== */}
+  {
+    show('differentiator') && (
+      <section class="hp-diff">
+        <div class="v2-container hp-diff__grid">
+          <div data-reveal>
+            <div class="hp-diff__badge">
+              <span class="hp-diff__eyebrow">Studiu de caz</span>
+              <span class="hp-diff__client">FEAA Galați · reclamă</span>
+            </div>
+            <h2 class="hp-diff__title">
+              Designul bun <span class="hp-blue">se vede și se măsoară.</span>
+            </h2>
+            <p class="hp-diff__sub">
+              Un material bun arată bine și, mai ales, funcționează. De-asta pornim de la cum gândesc
+              și aleg oamenii, fie că lucrăm la o identitate vizuală sau la un site. Urmărim efectul
+              real în afacerea ta, nu doar aspectul. AI-ul ne ajută să lucrăm mai repede, dar cum
+              arată totul la final decidem noi.
+            </p>
+            <dl class="hp-diff__meta">
+              <div>
+                <dt>Metodă</dt>
+                <dd>Eye-tracking + heatmap</dd>
+              </div>
+              <div>
+                <dt>Ce citim</dt>
+                <dd>Primele secunde de atenție</dd>
+              </div>
+            </dl>
+          </div>
+
+          <figure class="hp-study" data-reveal>
+            <div class="hp-study__plates">
+              <div class="hp-plate">
+                <span class="hp-plate__tag">01 · Design</span>
+                <img
+                  src="/exemplu-design.webp"
+                  alt="Reclama FEAA Galați așa cum a fost publicată."
+                  width="383"
+                  height="384"
+                  loading="lazy"
+                />
+              </div>
+              <div class="hp-plate hp-plate--heat">
+                <span class="hp-plate__tag">02 · Heatmap</span>
+                <img
+                  src="/exemplu-heatmap.webp"
+                  alt="Aceeași reclamă cu heatmap din eye-tracking, care arată unde se concentrează privirea."
+                  width="381"
+                  height="383"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+            <div class="hp-study__legend">
+              <span>Atenție</span>
+              <i class="hp-study__scale" aria-hidden="true" />
+              <span>scăzută → ridicată</span>
+            </div>
+            <div class="hp-study__notes">
+              <p>
+                <b>Reclama, așa cum o vede oricine.</b> Un design publicat pentru FEAA Galați. Frumos,
+                dar atât poate vedea ochiul liber.
+              </p>
+              <p>
+                <b>Heatmap din eye-tracking.</b> Zonele calde arată unde cade privirea întâi: pe fețe,
+                pe „economic", pe buton. De-aici știm unde să punem mesajul, fără să ghicim.
+              </p>
+            </div>
+          </figure>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ========================= 4 · PROCES ========================= */}
+  {
+    show('process') && (
+      <section class="hp-proc" data-proc>
+        <div class="v2-container">
+          <div class="hp-proc__head" data-reveal>
+            <h2 class="v2-h2">
+              Procesul, <span class="accent">pas cu pas</span>
+            </h2>
+            <p class="hp-proc__sub">Un proces clar, în care știi mereu unde suntem și de ce.</p>
+          </div>
+
+          <div class="hp-proc__rail" data-reveal>
+            <div class="hp-proc__line" aria-hidden="true" />
+            <ol class="hp-proc__steps" role="tablist" aria-label="Etapele procesului">
+              {steps.map((s, i) => (
+                <li>
+                  <button
+                    class="hp-proc__step"
+                    type="button"
+                    role="tab"
+                    data-i={i}
+                    aria-selected={i === 0 ? 'true' : 'false'}
+                  >
+                    <span class="hp-proc__no">{s.n}</span>
+                    <span class="hp-proc__name">{s.title}</span>
+                    <span class="hp-proc__tag">{s.tag}</span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div class="hp-proc__panels" data-reveal>
+            {steps.map((s, i) => (
+              <article
+                class:list={['hp-proc__panel', i === 0 && 'on']}
+                role="tabpanel"
+                data-i={i}
+                aria-hidden={i === 0 ? 'false' : 'true'}
+              >
+                <span class="hp-proc__badge" aria-hidden="true">
+                  {s.n}
+                </span>
+                <div class="hp-proc__body">
+                  <div class="hp-proc__row">
+                    <h3>{s.title}</h3>
+                    <span class="hp-proc__count">{s.n} / 05</span>
+                  </div>
+                  <p>{s.body}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ===================== 5 · STUDII DE CAZ ===================== */}
+  {
+    show('case-studies') && (
+      <section class="hp-cs" id="hp-cs">
+        <div class="v2-container" data-reveal>
+          <div class="hp-cs__top">
+            <span class="hp-cs__rule" aria-hidden="true" />
+            <a class="hp-cs__all" href="/portofoliu">
+              Vezi tot portofoliul <span aria-hidden="true">→</span>
+            </a>
+          </div>
+          <div class="hp-cs__head">
+            <h2 class="v2-h2 hp-cs__title">
+              Rezultate care se văd, <span class="accent">pentru orice afacere.</span>
+            </h2>
+            <p class="hp-cs__sub">
+              Proiecte reale, pentru afaceri reale. Dovada e în rezultatele clienților noștri.
+            </p>
+          </div>
+
+          <div class="hp-cs__tabs" role="tablist" aria-label="Categorii studii de caz">
+            {homeCaseStudies.map((c, i) => (
+              <button
+                class="hp-cs__tab"
+                role="tab"
+                type="button"
+                data-i={i}
+                aria-selected={i === 0 ? 'true' : 'false'}
+              >
+                {c.tab}
+              </button>
+            ))}
+          </div>
+
+          <div class="hp-cs__panels">
+            {homeCaseStudies.map((c, i) => (
+              <article
+                class:list={['hp-cs__card', i === 0 && 'on']}
+                role="tabpanel"
+                data-i={i}
+                aria-hidden={i === 0 ? 'false' : 'true'}
+              >
+                <div class="hp-cs__main">
+                  <div class="hp-cs__media">
+                    {c.image ? (
+                      <img src={c.image} alt={c.imageAlt} loading="lazy" />
+                    ) : (
+                      <span class="hp-cs__ph" aria-hidden="true">
+                        <span class="hp-cs__ph-mark">{c.logo}</span>
+                      </span>
+                    )}
+                  </div>
+                  <div class="hp-cs__quote">
+                    <p class="hp-cs__qt">{c.quote}</p>
+                    <div class="hp-cs__who">
+                      <b>{c.author}</b>
+                      <span>{c.role}</span>
+                    </div>
+                    <a class="hp-cs__read" href={c.href}>
+                      Citește studiul complet <span aria-hidden="true">→</span>
+                    </a>
+                  </div>
+                </div>
+                <div class="hp-cs__stats">
+                  {c.stats.map((s) => (
+                    <div class="hp-cs__stat">
+                      <b>{s.value}</b>
+                      <span>{s.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ===================== 6 · MENTENANȚĂ ===================== */}
+  {
+    show('maintenance') && (
+      <section class="hp-mnt">
+        <div class="v2-container hp-mnt__grid" data-reveal>
+          <div class="hp-mnt__copy">
+            <h2 class="v2-h2 hp-mnt__title">
+              Site-ul tău, monitorizat continuu. <span class="accent">Prindem problemele</span>{' '}
+              înainte să le simți tu.
+            </h2>
+            <p class="hp-mnt__sub">
+              Site-ul tău e monitorizat în permanență de aplicația noastră, SimpleAd Manager. Așa, tu
+              îți vezi liniștit de afacere, iar noi rezolvăm problemele înainte să le simți tu. Și
+              înainte să te coste.
+            </p>
+            <div class="hp-mnt__cta">
+              <a class="v2-btn" href="/mentenanta">Calculează-ți pachetul</a>
+              <a class="v2-btn v2-btn--ghost" href="/mentenanta#monitorizare">Vezi ce monitorizăm</a>
+            </div>
+          </div>
+
+          <div class="hp-app" aria-hidden="true">
+            <div class="hp-app__top">
+              <span class="hp-app__brand"><span class="hp-app__logo" /> SimpleAd Manager</span>
+              <span class="hp-app__live"><span class="hp-app__pulse" /> Live</span>
+            </div>
+            <div class="hp-app__chart">
+              <div class="hp-app__chart-head">
+                <span class="hp-app__chart-lbl">Uptime · ultimele 30 de zile</span>
+                <span class="hp-app__chart-val">99.85% <i>▲</i></span>
+              </div>
+              <div class="hp-app__bars">
+                {Array.from({ length: 30 }).map((_, i) => (
+                  <span style={`height:${55 + ((i * 37) % 42)}%`} />
+                ))}
+              </div>
+            </div>
+            <div class="hp-app__stats">
+              <div class="hp-app__stat">
+                <b>37</b>
+                <span>Site-uri</span>
+              </div>
+              <div class="hp-app__stat">
+                <b>1.1 TB</b>
+                <span>Backup</span>
+              </div>
+              <div class="hp-app__stat hp-app__stat--alert">
+                <b>2</b>
+                <span>Alerte</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ===================== 7 · AI (dark) ===================== */}
+  {
+    show('ai') && (
+      <section class="hp-ai">
+        <div class="v2-container hp-ai__grid">
+          <div class="hp-ai__panel" data-reveal>
+            <div class="hp-ai__panel-head">
+              <span class="hp-ai__panel-title">Ce construim cu AI</span>
+              <span class="hp-ai__panel-meta">03 direcții</span>
+            </div>
+            <ul class="hp-ai__rows">
+              {aiFeatures.map((f) => (
+                <li class="hp-ai__row" style={`--accent:${f.color}`}>
+                  <span class="hp-ai__idx">{f.n}</span>
+                  <span class="hp-ai__ic" aria-hidden="true" />
+                  <div class="hp-ai__copy">
+                    <h3>{f.title}</h3>
+                    <p>{f.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="hp-ai__lead" data-reveal>
+            <h2 class="hp-ai__title">
+              AI gândit pe <span class="hp-blue">afacerea ta</span>.
+            </h2>
+            <p class="hp-ai__sub">
+              Folosim AI ca să automatizăm ce e repetitiv în firma ta și să construim aplicații pe
+              nevoile tale, de la fluxuri interne la unelte care nu există de-a gata. Unde nu ajută cu
+              adevărat, îți spunem direct.
+            </p>
+            <div class="hp-ai__cta">
+              <a class="v2-btn v2-btn--light" href="/servicii/ai-pentru-business">
+                Descoperă AI pentru business
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ===================== 8 · TESTIMONIALE ===================== */}
+  {
+    show('testimonials') && (
+      <section class="hp-tst">
+        <div class="v2-container">
+          <h2 class="v2-h2 center hp-tst__title" data-reveal>Oameni care au lucrat direct cu noi.</h2>
+          <div class="hp-tst__grid">
+            {tstColumns.map((col) => (
+              <div class="hp-tst__col">
+                {col.map((item) => (
+                  <figure
+                    class:list={['hp-tst__card', `hp-tst__card--${item.variant ?? 'dark'}`]}
+                    data-reveal
+                  >
+                    <blockquote>„{item.quote}"</blockquote>
+                    <figcaption>
+                      <div>
+                        <span class="hp-tst__name">{item.author}</span>
+                        <span class="hp-tst__role">{item.company}</span>
+                      </div>
+                      <span class="hp-tst__avatar" aria-hidden="true">
+                        {item.photo ? (
+                          <img src={item.photo} alt={item.author} loading="lazy" width="64" height="64" />
+                        ) : (
+                          <span>{item.monogram ?? item.author.slice(0, 2)}</span>
+                        )}
+                      </span>
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ===================== 9 · CTA FINAL ===================== */}
+  {
+    show('cta') && (
+      <section class="hp-cta">
+        <div class="v2-container">
+          <div class="hp-cta__box" data-reveal>
+            <h2 class="hp-cta__title">
+              Ai o afacere bună.<br />Hai s-o facem <span class="hp-blue">și să se vadă</span>.
+            </h2>
+            <p class="hp-cta__sub">
+              Spune-ne în câteva cuvinte cu ce te putem ajuta. Îți răspundem noi, oameni, la fiecare
+              mesaj.
+            </p>
+            <div class="hp-cta__actions">
+              <a class="v2-btn v2-btn--light" href="/contact">Cere o ofertă</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+</BaseLayoutV2>
+
+<style>
+  .center {
+    text-align: center;
+  }
+  .hp-blue {
+    color: var(--v2-blue-soft);
+  }
+
+  /* ============================ HERO ============================ */
+  .hp-hero {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0) 35%, #ffffff 88%),
+      linear-gradient(#e9eef7 1px, transparent 1px),
+      linear-gradient(90deg, #e9eef7 1px, transparent 1px);
+    background-size:
+      auto,
+      88px 88px,
+      88px 88px;
+  }
+  .hp-hero__inner {
+    padding: 64px 36px 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .hp-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    background: #fff;
+    color: var(--v2-navy);
+    padding: 10px 18px;
+    border-radius: 24px;
+    border: 1px solid var(--v2-line-soft);
+    box-shadow: 0 2px 8px rgba(13, 27, 62, 0.06);
+  }
+  .hp-pill__dot {
+    width: 8px;
+    height: 8px;
+    background: var(--v2-blue);
+    border-radius: 50%;
+  }
+  .hp-hero__title {
+    font-size: clamp(34px, 5.6vw, 62px);
+    line-height: 1.14;
+    letter-spacing: -0.025em;
+    font-weight: 800;
+    margin: 28px auto 0;
+    max-width: 920px;
+    text-wrap: balance;
+  }
+  .hp-hero__sub {
+    font-size: 17.5px;
+    line-height: 1.7;
+    color: var(--v2-muted);
+    max-width: 860px;
+    margin: 24px auto 0;
+  }
+  .hp-hero__cta {
+    display: flex;
+    gap: 24px;
+    margin-top: 36px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .hp-textlink {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--v2-navy);
+  }
+  .hp-textlink:hover {
+    color: var(--v2-blue);
+  }
+  .hp-show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(16px, 3vw, 28px);
+    margin-top: 60px;
+    flex-wrap: wrap;
+  }
+  .hp-shot {
+    margin: 0;
+    width: clamp(240px, 34vw, 380px);
+    background: #fff;
+    border: 1px solid var(--v2-line-soft);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 18px 44px rgba(13, 27, 62, 0.12);
+  }
+  .hp-shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .hp-shot figcaption {
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--v2-muted);
+    border-top: 1px solid #eef1f6;
+    text-align: left;
+  }
+  .hp-shot--heat figcaption {
+    color: var(--v2-navy);
+    font-weight: 600;
+  }
+  .hp-show__arrow {
+    flex: none;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--v2-blue);
+  }
+
+  /* logo-uri parteneri (marquee) */
+  .hp-logos {
+    border-top: 1px solid var(--v2-line);
+    border-bottom: 1px solid var(--v2-line);
+    background: var(--v2-surface-soft);
+  }
+  .hp-logos__inner {
+    padding: 28px 36px;
+    display: flex;
+    align-items: center;
+    gap: 44px;
+  }
+  .hp-logos__lbl {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--v2-faint);
+    white-space: nowrap;
+  }
+  .hp-marquee {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+  .hp-marquee__group {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: none;
+    display: flex;
+    align-items: center;
+    animation: hpMarquee 32s linear infinite;
+  }
+  .hp-marquee:hover .hp-marquee__group {
+    animation-play-state: paused;
+  }
+  .hp-marquee__group li {
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+  }
+  .hp-marquee__group img {
+    height: 26px;
+    width: auto;
+    max-width: 150px;
+    object-fit: contain;
+    filter: grayscale(1);
+    opacity: 0.62;
+    transition:
+      filter 0.2s ease,
+      opacity 0.2s ease;
+  }
+  .hp-marquee__group li:hover img {
+    filter: grayscale(0);
+    opacity: 1;
+  }
+  @keyframes hpMarquee {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hp-marquee {
+      overflow-x: auto;
+    }
+    .hp-marquee__group {
+      animation: none;
+    }
+    .hp-marquee__group[aria-hidden='true'] {
+      display: none;
+    }
+  }
+
+  /* ============================ SERVICII ============================ */
+  .hp-svc {
+    padding: 96px 0;
+    overflow: hidden;
+  }
+  .hp-svc__head {
+    padding-bottom: 0;
+  }
+  .hp-svc__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    border-bottom: 1px solid var(--v2-line-soft);
+    padding-bottom: 22px;
+  }
+  .hp-svc__title {
+    max-width: 34ch;
+  }
+  .hp-svc__nav {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .hp-svc__btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--v2-line-soft);
+    background: #fff;
+    color: var(--v2-navy);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background 0.16s ease,
+      color 0.16s ease,
+      opacity 0.16s ease;
+  }
+  .hp-svc__btn:hover:not(:disabled) {
+    background: var(--v2-navy);
+    color: #fff;
+    border-color: var(--v2-navy);
+  }
+  .hp-svc__btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .hp-svc__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .hp-svc__lead {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--v2-muted);
+    margin: 0;
+    max-width: 560px;
+  }
+  .hp-svc__all {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--v2-blue);
+    white-space: nowrap;
+  }
+  .hp-svc__all:hover {
+    gap: 13px;
+  }
+  .hp-svc__viewport {
+    margin-top: 36px;
+  }
+  .hp-svc__track {
+    list-style: none;
+    margin: 0;
+    padding: 6px 36px 14px;
+    display: flex;
+    gap: 22px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+  .hp-svc__track::-webkit-scrollbar {
+    display: none;
+  }
+  .hp-svc__item {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+  .hp-card {
+    position: relative;
+    display: block;
+    width: clamp(260px, 26vw, 328px);
+    height: clamp(280px, 26vw, 310px);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--v2-navy);
+  }
+  .hp-card__img {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.4s ease;
+  }
+  .hp-card:hover .hp-card__img {
+    transform: scale(1.06);
+  }
+  .hp-card__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(13, 27, 62, 0) 45%, rgba(13, 27, 62, 0.82));
+  }
+  .hp-card__lbl {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    right: 70px;
+    color: #fff;
+    font-size: 17.5px;
+    font-weight: 700;
+    z-index: 1;
+  }
+  .hp-card__ab {
+    position: absolute;
+    right: 16px;
+    bottom: 14px;
+    width: 44px;
+    height: 44px;
+    background: var(--v2-blue);
+    border-radius: 50%;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    transition: background 0.16s ease;
+  }
+  .hp-card:hover .hp-card__ab {
+    background: #fff;
+    color: var(--v2-blue);
+  }
+
+  /* ============================ DIFERENȚIATOR ============================ */
+  .hp-diff {
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    background-color: var(--v2-navy-deep);
+    background-image:
+      radial-gradient(ellipse 55% 45% at 88% 0%, rgba(32, 101, 236, 0.2), transparent 70%),
+      radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size:
+      auto,
+      26px 26px;
+  }
+  .hp-diff__grid {
+    position: relative;
+    padding: 96px 36px;
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 84px;
+    align-items: center;
+  }
+  .hp-diff__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(32, 101, 236, 0.16);
+    color: var(--v2-blue-soft);
+    padding: 7px 14px;
+    border-radius: 20px;
+  }
+  .hp-diff__client::before {
+    content: '·';
+    margin-right: 6px;
+    opacity: 0.7;
+  }
+  .hp-diff__title {
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin: 22px 0 0;
+    text-wrap: balance;
+  }
+  .hp-diff__sub {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #a9b4cc;
+    margin: 22px 0 0;
+  }
+  .hp-diff__meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 36px 0 0;
+  }
+  .hp-diff__meta > div {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+  .hp-diff__meta dt {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--v2-faint);
+  }
+  .hp-diff__meta dd {
+    margin: 6px 0 0;
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .hp-study {
+    margin: 0;
+  }
+  .hp-study__plates {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+  }
+  .hp-plate {
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+  .hp-plate img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+  .hp-plate__tag {
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--v2-blue-soft);
+    margin-bottom: 12px;
+    order: -1;
+  }
+  .hp-plate {
+    display: flex;
+    flex-direction: column;
+  }
+  .hp-study__legend {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 28px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--v2-faint);
+  }
+  .hp-study__scale {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #22315c, #f5c33b, #e8742c, #d9481f);
+  }
+  .hp-study__notes {
+    margin-top: 24px;
+    display: grid;
+    gap: 14px;
+  }
+  .hp-study__notes p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #a9b4cc;
+  }
+  .hp-study__notes b {
+    color: #fff;
+  }
+
+  /* ============================ PROCES ============================ */
+  .hp-proc {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--v2-surface-soft);
+    background-image: radial-gradient(#e4eaf5 1.1px, transparent 1.1px);
+    background-size: 26px 26px;
+    padding: 96px 0;
+  }
+  .hp-proc__head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 60px;
+  }
+  .hp-proc__sub {
+    font-size: 16.5px;
+    color: var(--v2-muted);
+    margin: 16px 0 0;
+  }
+  .hp-proc__rail {
+    position: relative;
+    padding: 0 40px;
+  }
+  .hp-proc__line {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    top: 26px;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, #c3cddd 0 8px, transparent 8px 14px);
+  }
+  .hp-proc__steps {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+  }
+  .hp-proc__step {
+    width: 100%;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 0;
+    font-family: var(--v2-font);
+  }
+  .hp-proc__no {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 800;
+    background: #fff;
+    color: var(--v2-faint);
+    border: 2px solid var(--v2-line-soft);
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .hp-proc__name {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--v2-faint);
+    text-align: center;
+    transition: color 0.2s ease;
+  }
+  .hp-proc__tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--v2-faint);
+  }
+  .hp-proc__step[aria-selected='true'] .hp-proc__no {
+    background: var(--v2-navy);
+    color: #fff;
+    border-color: var(--v2-navy);
+    box-shadow: 0 8px 20px rgba(13, 27, 62, 0.22);
+  }
+  .hp-proc__step[aria-selected='true'] .hp-proc__name {
+    color: var(--v2-navy);
+  }
+  .hp-proc__step:hover .hp-proc__no {
+    border-color: var(--v2-blue);
+    color: var(--v2-navy);
+  }
+  .hp-proc__panels {
+    position: relative;
+    max-width: 860px;
+    margin: 44px auto 0;
+  }
+  .hp-proc__panel {
+    display: none;
+    background: #fff;
+    border: 1px solid var(--v2-line-soft);
+    border-radius: 10px;
+    padding: 32px 36px;
+    grid-template-columns: auto 1fr;
+    gap: 28px;
+    align-items: center;
+    box-shadow: 0 16px 44px rgba(13, 27, 62, 0.08);
+  }
+  .hp-proc__panel.on {
+    display: grid;
+    animation: hpFade 0.3s ease both;
+  }
+  @keyframes hpFade {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+  .hp-proc__badge {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--v2-navy);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    font-weight: 800;
+  }
+  .hp-proc__row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .hp-proc__row h3 {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+  }
+  .hp-proc__count {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--v2-blue);
+  }
+  .hp-proc__body p {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--v2-muted);
+    margin: 8px 0 0;
+  }
+
+  /* ============================ STUDII DE CAZ ============================ */
+  .hp-cs {
+    background: #fff;
+    padding: 96px 0;
+  }
+  .hp-cs__top {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+  }
+  .hp-cs__rule {
+    flex: 1;
+    height: 0;
+    border-top: 1px dashed var(--v2-line);
+  }
+  .hp-cs__all {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: 1px solid var(--v2-navy);
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--v2-navy);
+    transition:
+      background 0.16s ease,
+      color 0.16s ease;
+  }
+  .hp-cs__all:hover {
+    background: var(--v2-navy);
+    color: #fff;
+  }
+  .hp-cs__head {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 40px;
+    align-items: end;
+  }
+  .hp-cs__sub {
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--v2-muted);
+  }
+  .hp-cs__tabs {
+    margin-top: 44px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    border-bottom: 1px solid var(--v2-line);
+  }
+  .hp-cs__tab {
+    position: relative;
+    padding: 0 2px 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--v2-font);
+    font-size: 1.02rem;
+    font-weight: 600;
+    color: var(--v2-muted);
+    transition: color 0.16s ease;
+  }
+  .hp-cs__tab::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 100%;
+    height: 2px;
+    background: var(--v2-blue);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease;
+  }
+  .hp-cs__tab:hover,
+  .hp-cs__tab[aria-selected='true'] {
+    color: var(--v2-navy);
+  }
+  .hp-cs__tab[aria-selected='true']::after {
+    transform: scaleX(1);
+  }
+  .hp-cs__panels {
+    margin-top: 36px;
+  }
+  .hp-cs__card {
+    display: none;
+    background: #fff;
+    border: 1px solid var(--v2-line);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 16px 44px rgba(13, 27, 62, 0.08);
+  }
+  .hp-cs__card.on {
+    display: block;
+    animation: hpFade 0.3s ease both;
+  }
+  .hp-cs__main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  .hp-cs__media {
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .hp-cs__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hp-cs__ph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background:
+      radial-gradient(120% 90% at 80% 10%, rgba(77, 139, 255, 0.3), transparent 60%),
+      linear-gradient(150deg, var(--v2-navy) 0%, #0a1b6b 100%);
+  }
+  .hp-cs__ph-mark {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: #fff;
+    opacity: 0.92;
+  }
+  .hp-cs__qt {
+    font-weight: 600;
+    font-size: clamp(1.15rem, 1.7vw, 1.5rem);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: var(--v2-navy);
+    margin: 0;
+  }
+  .hp-cs__who {
+    margin-top: 24px;
+  }
+  .hp-cs__who b {
+    display: block;
+    font-size: 1rem;
+    color: var(--v2-navy);
+  }
+  .hp-cs__who span {
+    font-size: 0.92rem;
+    color: var(--v2-muted);
+  }
+  .hp-cs__read {
+    margin-top: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 0.96rem;
+    color: var(--v2-blue);
+    border-bottom: 2px solid var(--v2-blue);
+    padding-bottom: 2px;
+    transition: gap 0.16s ease;
+  }
+  .hp-cs__read:hover {
+    gap: 12px;
+  }
+  .hp-cs__stats {
+    margin-top: 32px;
+    padding-top: 28px;
+    border-top: 1px solid var(--v2-line);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  .hp-cs__stat {
+    text-align: center;
+    position: relative;
+  }
+  .hp-cs__stat + .hp-cs__stat::before {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: 4px;
+    bottom: 4px;
+    width: 1px;
+    background: var(--v2-line);
+  }
+  .hp-cs__stat b {
+    display: block;
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    line-height: 1;
+    font-weight: 800;
+    color: var(--v2-navy);
+    letter-spacing: -0.02em;
+  }
+  .hp-cs__stat span {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: var(--v2-muted);
+  }
+
+  /* ============================ MENTENANȚĂ ============================ */
+  .hp-mnt {
+    background: #fff;
+    padding: 96px 0;
+  }
+  .hp-mnt__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 84px;
+    align-items: center;
+  }
+  .hp-mnt__title {
+    text-wrap: balance;
+  }
+  .hp-mnt__sub {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--v2-muted);
+    margin: 24px 0 0;
+  }
+  .hp-mnt__cta {
+    display: flex;
+    gap: 14px;
+    margin-top: 34px;
+    flex-wrap: wrap;
+  }
+  .hp-app {
+    background: #fff;
+    border: 1px solid var(--v2-line-soft);
+    border-radius: 10px;
+    box-shadow: 0 20px 48px rgba(13, 27, 62, 0.12);
+    overflow: hidden;
+  }
+  .hp-app__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background: var(--v2-navy);
+    color: #fff;
+  }
+  .hp-app__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .hp-app__logo {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    background: linear-gradient(135deg, var(--v2-blue), #4d8bff);
+  }
+  .hp-app__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5fd68a;
+  }
+  .hp-app__pulse {
+    width: 8px;
+    height: 8px;
+    background: #40c46e;
+    border-radius: 50%;
+    animation: hpPulse 2s infinite;
+  }
+  @keyframes hpPulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
+    }
+  }
+  .hp-app__chart {
+    padding: 24px 24px 18px;
+  }
+  .hp-app__chart-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .hp-app__chart-lbl {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--v2-faint);
+  }
+  .hp-app__chart-val {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--v2-navy);
+  }
+  .hp-app__chart-val i {
+    color: #40c46e;
+    font-size: 14px;
+    font-style: normal;
+  }
+  .hp-app__bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 64px;
+    margin-top: 16px;
+  }
+  .hp-app__bars span {
+    flex: 1;
+    background: linear-gradient(180deg, #4d8bff, var(--v2-blue));
+    border-radius: 2px 2px 0 0;
+  }
+  .hp-app__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--v2-line-soft);
+  }
+  .hp-app__stat {
+    padding: 18px 24px;
+    border-right: 1px solid var(--v2-line-soft);
+  }
+  .hp-app__stat:last-child {
+    border-right: none;
+  }
+  .hp-app__stat b {
+    display: block;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--v2-navy);
+  }
+  .hp-app__stat span {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--v2-faint);
+    margin-top: 2px;
+  }
+  .hp-app__stat--alert b {
+    color: #d97706;
+  }
+
+  /* ============================ AI ============================ */
+  .hp-ai {
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    background-color: var(--v2-navy-deep);
+    background-image:
+      radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      radial-gradient(ellipse 60% 55% at 12% 100%, rgba(32, 101, 236, 0.28), transparent 70%),
+      linear-gradient(135deg, #0c1633 0%, #102a63 55%, #0e2152 100%);
+    background-size:
+      24px 24px,
+      auto,
+      auto;
+  }
+  .hp-ai__grid {
+    position: relative;
+    padding: 96px 36px 88px;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 84px;
+    align-items: center;
+  }
+  .hp-ai__panel {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 32px 72px rgba(4, 10, 30, 0.4);
+    color: var(--v2-navy);
+    overflow: hidden;
+  }
+  .hp-ai__panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 26px;
+    border-bottom: 1px solid var(--v2-line-soft);
+  }
+  .hp-ai__panel-title {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .hp-ai__panel-meta {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--v2-faint);
+  }
+  .hp-ai__rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .hp-ai__row {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: 0 18px;
+    align-items: start;
+    padding: 22px 26px;
+    border-bottom: 1px solid #eef2f8;
+  }
+  .hp-ai__row:last-child {
+    border-bottom: none;
+  }
+  .hp-ai__idx {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--v2-faint);
+    padding-top: 14px;
+  }
+  .hp-ai__ic {
+    width: 44px;
+    height: 44px;
+    border-radius: 9px;
+    background: var(--accent);
+  }
+  .hp-ai__copy h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .hp-ai__copy p {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--v2-muted);
+    margin: 5px 0 0;
+  }
+  .hp-ai__title {
+    font-size: clamp(28px, 4.4vw, 42px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin: 0;
+  }
+  .hp-ai__sub {
+    font-size: 16.5px;
+    line-height: 1.7;
+    color: #a9b4cc;
+    margin: 24px 0 0;
+  }
+  .hp-ai__cta {
+    margin-top: 34px;
+  }
+
+  /* ============================ TESTIMONIALE ============================ */
+  .hp-tst {
+    background: #fff;
+    padding: 96px 0;
+  }
+  .hp-tst__title {
+    margin-bottom: 52px;
+  }
+  .hp-tst__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: stretch;
+    gap: 20px;
+  }
+  .hp-tst__col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .hp-tst__col .hp-tst__card--featured {
+    flex: 1 1 auto;
+  }
+  .hp-tst__card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+    border: 1px solid var(--v2-line);
+    border-radius: 16px;
+    padding: 28px;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .hp-tst__card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(13, 27, 62, 0.1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hp-tst__card {
+      transition: none;
+    }
+    .hp-tst__card:hover {
+      transform: none;
+    }
+  }
+  .hp-tst__card--featured {
+    background: #fff;
+    color: var(--v2-navy);
+  }
+  .hp-tst__card--electric {
+    background: var(--v2-blue);
+    border-color: transparent;
+    color: #fff;
+  }
+  .hp-tst__card--dark {
+    background: var(--v2-navy);
+    border-color: var(--v2-navy);
+    color: #fff;
+  }
+  .hp-tst__card blockquote {
+    margin: 0;
+    font-weight: 500;
+    font-size: 1.0625rem;
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+  }
+  .hp-tst__card--featured blockquote {
+    font-size: 1.15rem;
+  }
+  .hp-tst__card figcaption {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .hp-tst__name {
+    display: block;
+    font-weight: 700;
+  }
+  .hp-tst__role {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.88rem;
+    opacity: 0.72;
+  }
+  .hp-tst__avatar {
+    flex: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+  }
+  .hp-tst__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hp-tst__card--featured .hp-tst__avatar {
+    background: linear-gradient(135deg, var(--v2-blue), #4d8bff);
+    color: #fff;
+  }
+  .hp-tst__card--electric .hp-tst__avatar {
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+  }
+  .hp-tst__card--dark .hp-tst__avatar {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--v2-blue-soft);
+  }
+
+  /* ============================ CTA ============================ */
+  .hp-cta {
+    padding: 16px 0 96px;
+  }
+  .hp-cta__box {
+    background: linear-gradient(135deg, #0c1633 0%, #102a63 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 64px 48px;
+    text-align: center;
+  }
+  .hp-cta__title {
+    font-size: clamp(28px, 4vw, 38px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .hp-cta__sub {
+    font-size: 16px;
+    line-height: 1.65;
+    color: #a9b4cc;
+    max-width: 520px;
+    margin: 18px auto 0;
+  }
+  .hp-cta__actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  /* ============================ RESPONSIVE ============================ */
+  @media (max-width: 900px) {
+    .hp-diff__grid,
+    .hp-mnt__grid,
+    .hp-ai__grid {
+      grid-template-columns: 1fr;
+      gap: 44px;
+      padding-top: 72px;
+      padding-bottom: 72px;
+    }
+    .hp-ai__lead {
+      order: -1;
+    }
+    .hp-tst__grid {
+      grid-template-columns: 1fr;
+    }
+    .hp-tst__col .hp-tst__card--featured {
+      flex: 0 0 auto;
+    }
+    .hp-cs__head {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .hp-cs__main {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .hp-cs__media {
+      aspect-ratio: 16 / 9;
+    }
+  }
+  @media (max-width: 760px) {
+    .hp-svc,
+    .hp-proc,
+    .hp-cs,
+    .hp-mnt,
+    .hp-tst {
+      padding: 72px 0;
+    }
+    .hp-svc__top {
+      flex-wrap: wrap;
+    }
+    .hp-proc__rail {
+      padding: 0;
+    }
+    .hp-proc__line {
+      display: none;
+    }
+    .hp-proc__steps {
+      grid-auto-flow: column;
+      grid-template-columns: none;
+      grid-auto-columns: 128px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 6px;
+    }
+    .hp-proc__steps::-webkit-scrollbar {
+      display: none;
+    }
+    .hp-proc__panel {
+      grid-template-columns: 1fr;
+      gap: 18px;
+      padding: 26px 22px;
+    }
+  }
+  @media (max-width: 560px) {
+    .hp-hero__inner {
+      padding: 48px 20px 64px;
+    }
+    .hp-show {
+      flex-direction: column;
+    }
+    .hp-show__arrow {
+      transform: rotate(90deg);
+    }
+    .hp-logos__inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .hp-diff__grid,
+    .hp-ai__grid {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    .hp-study__plates {
+      grid-template-columns: 1fr;
+    }
+    .hp-cs__top {
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .hp-cs__rule {
+      display: none;
+    }
+    .hp-cs__card {
+      padding: 22px;
+    }
+    .hp-cta__box {
+      padding: 48px 24px;
+    }
+  }
+</style>
+
+<script>
+  // ── Servicii: săgeți prev/next + stare disabled ──
+  {
+    const track = document.querySelector<HTMLElement>('.hp-svc__track');
+    const prev = document.querySelector<HTMLButtonElement>('.hp-svc__btn[data-dir="prev"]');
+    const next = document.querySelector<HTMLButtonElement>('.hp-svc__btn[data-dir="next"]');
+    if (track) {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const behavior: ScrollBehavior = reduce ? 'auto' : 'smooth';
+      const stepBy = () => {
+        const item = track.querySelector<HTMLElement>('.hp-svc__item');
+        const w = item ? item.getBoundingClientRect().width : 300;
+        return (w + 22) * 1.5;
+      };
+      const sync = () => {
+        const max = track.scrollWidth - track.clientWidth - 2;
+        if (prev) prev.disabled = track.scrollLeft <= 2;
+        if (next) next.disabled = track.scrollLeft >= max;
+      };
+      prev?.addEventListener('click', () => track.scrollBy({ left: -stepBy(), behavior }));
+      next?.addEventListener('click', () => track.scrollBy({ left: stepBy(), behavior }));
+      track.addEventListener('scroll', sync, { passive: true });
+      window.addEventListener('resize', sync);
+      sync();
+    }
+  }
+
+  // ── Proces: pași clicabili → panou activ ──
+  {
+    const root = document.querySelector<HTMLElement>('[data-proc]');
+    if (root) {
+      const steps = Array.from(root.querySelectorAll<HTMLButtonElement>('.hp-proc__step'));
+      const panels = Array.from(root.querySelectorAll<HTMLElement>('.hp-proc__panel'));
+      const show = (i: number) => {
+        steps.forEach((s, k) => s.setAttribute('aria-selected', k === i ? 'true' : 'false'));
+        panels.forEach((p, k) => {
+          p.classList.toggle('on', k === i);
+          p.setAttribute('aria-hidden', k === i ? 'false' : 'true');
+        });
+      };
+      steps.forEach((s, i) => {
+        s.addEventListener('click', () => show(i));
+        s.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault();
+            const dir = e.key === 'ArrowRight' ? 1 : -1;
+            const n = (i + dir + steps.length) % steps.length;
+            show(n);
+            steps[n]?.focus();
+          }
+        });
+      });
+    }
+  }
+
+  // ── Studii de caz: taburi ──
+  {
+    const root = document.getElementById('hp-cs');
+    if (root) {
+      const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('.hp-cs__tab'));
+      const cards = Array.from(root.querySelectorAll<HTMLElement>('.hp-cs__card'));
+      const select = (i: number) => {
+        tabs.forEach((t, k) => t.setAttribute('aria-selected', k === i ? 'true' : 'false'));
+        cards.forEach((c, k) => {
+          c.classList.toggle('on', k === i);
+          c.setAttribute('aria-hidden', k === i ? 'false' : 'true');
+        });
+      };
+      tabs.forEach((t, i) => {
+        t.addEventListener('click', () => select(i));
+        t.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault();
+            const dir = e.key === 'ArrowRight' ? 1 : -1;
+            const n = (i + dir + tabs.length) % tabs.length;
+            select(n);
+            tabs[n]?.focus();
+          }
+        });
+      });
+    }
+  }
+</script>

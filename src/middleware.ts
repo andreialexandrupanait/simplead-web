@@ -6,6 +6,17 @@ import { getPublicSettings } from './lib/server/public-settings';
 import { getPublishedPosts } from './lib/server/content';
 import { resolveLegacyRedirect } from './data/legacy-redirects';
 import { PAGE_PATHS, normalizePath } from './data/sections';
+import { hasV2, v2Path, stripV2 } from './data/ab-pages';
+import {
+  AB_COOKIE,
+  AB_FORCE_COOKIE,
+  readVariant,
+  setVariantCookie,
+  assignVariant,
+  isBot,
+  recordExposure,
+  type Variant,
+} from './lib/server/ab';
 
 /**
  * Protejează /admin/* și /api/admin/* cu sesiunea Better Auth (în DB, revocabilă).
@@ -46,20 +57,36 @@ const CSP = [
   'upgrade-insecure-requests',
 ].join('; ');
 
-function harden(response: Response): Response {
+function harden(context: APIContext, response: Response): Response {
   for (const [k, v] of Object.entries(SECURITY_HEADERS)) {
     if (!response.headers.has(k)) response.headers.set(k, v);
   }
   response.headers.set('Content-Security-Policy', CSP);
+  // Pe rutele din testul A/B, aceeași adresă poate servi două HTML-uri (după cookie).
+  // Marcăm răspunsul „privat, necache-uibil" ca niciun intermediar să nu servească
+  // o variantă B din cache sub URL-ul comun.
+  if (context.locals.abVariant) {
+    const vary = response.headers.get('Vary');
+    response.headers.set('Vary', vary ? `${vary}, Cookie` : 'Cookie');
+    response.headers.set('Cache-Control', 'private, no-cache');
+  }
   return response;
 }
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  return harden(await route(context, next));
+  return harden(context, await route(context, next));
 });
 
 async function route(context: APIContext, next: MiddlewareNext): Promise<Response> {
   const { pathname } = context.url;
+
+  // Arborele v2 (redesign) e INTERN: se ajunge la el doar prin rewrite-ul de mai
+  // jos, care setează `locals.__abRewrite` (locals persistă peste rewrite). Un hit
+  // extern direct pe /v2/* → 301 la calea curată, ca /v2 să nu fie niciodată indexabil.
+  if (pathname.startsWith('/v2')) {
+    if (context.locals.__abRewrite) return next();
+    return context.redirect(stripV2(pathname) + context.url.search, 301);
+  }
 
   // Canonicalizare de host + URL vechi, într-un singur 301 (evită lanțuri):
   //   1. www.simplead.ro → simplead.ro  (site-ul răspunde pe ambele hosturi prin
@@ -135,6 +162,51 @@ async function route(context: APIContext, next: MiddlewareNext): Promise<Respons
       context.locals.pageUnderConstruction = true;
       if (!context.locals.isAdmin) {
         return context.rewrite('/in-constructie');
+      }
+    }
+
+    // ---- Test A/B redesign: atribuire variantă + rewrite intern către /v2 ----
+    // Varianta A = site-ul actual (neatins). Varianta B = redesign din src/pages/v2.
+    // Cât timp testul e OPRIT (și nimeni nu forțează manual), NU atingem nimic:
+    // fără cookie, fără headere, fără expunere — live-ul rămâne identic.
+    // Boții și adminii sunt EXCLUȘI din eșantion (control A); adminii pot forța
+    // manual varianta cu `?v=a` / `?v=b` (persistă peste kill-switch).
+    const forceParam = context.url.searchParams.get('v');
+    const forceCookie = readVariant(context.cookies, AB_FORCE_COOKIE);
+    const abActive =
+      pub.abTestEnabled || forceParam === 'a' || forceParam === 'b' || forceCookie != null;
+
+    if (abActive) {
+      const bot = isBot(context.request.headers.get('user-agent') ?? '');
+      let variant: Variant;
+
+      if (!bot && (forceParam === 'a' || forceParam === 'b')) {
+        // Override QA `?v=` — setează ambele cookie-uri (sticky + forțare).
+        variant = forceParam;
+        setVariantCookie(context.cookies, AB_COOKIE, variant);
+        setVariantCookie(context.cookies, AB_FORCE_COOKIE, variant);
+      } else if (!bot && forceCookie) {
+        variant = forceCookie; // preview forțat persistă peste kill-switch
+      } else if (bot || context.locals.isAdmin) {
+        variant = 'a'; // control: boți + admin fără forțare (excluși din eșantion)
+      } else {
+        const existing = readVariant(context.cookies);
+        if (existing) {
+          variant = existing;
+        } else if (pub.abTestEnabled) {
+          variant = assignVariant();
+          setVariantCookie(context.cookies, AB_COOKIE, variant); // sticky
+          recordExposure(variant, norm); // o expunere per vizitator nou (statistici)
+        } else {
+          variant = 'a';
+        }
+      }
+      context.locals.abVariant = variant;
+
+      const forceB = forceParam === 'b' || forceCookie === 'b';
+      if (variant === 'b' && (pub.abTestEnabled || forceB) && hasV2(norm)) {
+        context.locals.__abRewrite = true;
+        return context.rewrite(v2Path(norm));
       }
     }
   }

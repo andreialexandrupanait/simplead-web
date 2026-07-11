@@ -1,0 +1,10 @@
+---
+/** Banner admin (info/atenționare/eroare/succes) peste .admin-banner. */
+interface Props {
+  tone?: 'warn' | 'error' | 'ok' | 'info';
+}
+const { tone = 'info' } = Astro.props;
+const cls = tone === 'info' ? 'admin-banner' : `admin-banner admin-banner--${tone}`;
+---
+
+<div class={cls}><slot /></div>

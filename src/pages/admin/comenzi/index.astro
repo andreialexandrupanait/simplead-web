@@ -5,6 +5,7 @@ import Toolbar from '../../../components/admin/Toolbar.astro';
 import StatusBadge from '../../../components/admin/StatusBadge.astro';
 import EmptyState from '../../../components/admin/EmptyState.astro';
 import Pagination from '../../../components/admin/Pagination.astro';
+import PageHeader from '../../../components/admin/PageHeader.astro';
 import { getDb } from '../../../lib/server/db';
 import { orders, orderStatus, packages } from '../../../lib/server/schema';
 import { formatAmount } from '../../../lib/server/packages';
@@ -74,16 +75,11 @@ const STATUS_LABEL: Record<string, string> = {
 };
 ---
 
-<AdminLayout title="Comenzi">
-  <div class="admin-page-head">
-    <div>
-      <h1>Comenzi</h1>
-      <p class="admin-sub">
-        Comenzile din Stripe Checkout. Pentru rambursări și detalii fine de plată, deschide comanda
-        și sari în Stripe Dashboard.
-      </p>
-    </div>
-  </div>
+<AdminLayout title="Comenzi" wide>
+  <PageHeader
+    title="Comenzi"
+    sub="Comenzile din Stripe Checkout. Pentru rambursări și detalii fine de plată, deschide comanda și sari în Stripe Dashboard."
+  />
 
   {
     !db && (
@@ -145,7 +141,7 @@ const STATUS_LABEL: Record<string, string> = {
                 <tbody>
                   {rows.map(({ order, packageName }) => (
                     <tr>
-                      <td style="white-space:nowrap">
+                      <td class="u-nowrap">
                         <a class="admin-row-link" href={`/admin/comenzi/${order.id}`}>
                           {dateFmt.format(order.createdAt)}
                         </a>

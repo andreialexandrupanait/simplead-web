@@ -1,0 +1,1229 @@
+---
+import BaseLayoutV2 from '@layouts/BaseLayoutV2.astro';
+import { getService, type ServiceProcessStep } from '@data/services';
+import { supportServices } from '@data/support-services';
+import { processSteps } from '@data/content';
+import { whySimplead } from '@data/content';
+import { clientsForService } from '@data/clients';
+import { getPublicSettings, getDirectContact } from '@lib/server/public-settings';
+import { phoneIconPath, whatsappIconPath } from '@lib/icons';
+
+// On-demand: ca tot site-ul să treacă prin middleware (mentenanță/construcție).
+// Aceeași căutare după slug ca în varianta A (src/pages/servicii/[slug].astro):
+// serviciu-pilon sau serviciu de suport (catalog), altfel 404.
+export const prerender = false;
+
+const slug = Astro.params.slug!;
+const service = getService(slug);
+const support = service ? undefined : supportServices.find((s) => s.slug === slug);
+if (!service && !support) {
+  return Astro.rewrite('/404');
+}
+
+// Pilon: proces specific sau procesul generic (content.ts). Suport: procesul propriu.
+const proc: ServiceProcessStep[] = service
+  ? (service.process ??
+    processSteps.map((p) => ({ n: String(p.n).padStart(2, '0'), title: p.title, body: p.text })))
+  : support!.process;
+
+const pageTitle = `${service ? service.title : support!.title} · Servicii`;
+const pageDesc = service ? service.summary : support!.cardSummary;
+
+// Câmpuri unificate (pilon vs. suport) — conținut IDENTIC cu varianta A.
+const hero = service
+  ? {
+      title: service.heroTitle,
+      accent: service.heroTitleAccent,
+      sub: service.heroSub,
+      image: service.image,
+      imageAlt: service.title,
+      current: service.title,
+      primaryCtaHref: `/contact?service=${encodeURIComponent(service.title)}`,
+    }
+  : {
+      title: support!.heroTitle,
+      accent: support!.heroTitleAccent,
+      sub: support!.heroSub,
+      image: support!.image,
+      imageAlt: support!.title,
+      current: support!.title,
+      primaryCtaHref: '/contact',
+    };
+
+const caps = service ? service.capabilities : support!.capabilities;
+const capHead = service ? service.capHead : support!.capHead;
+const faqItems = service ? service.faqs : support!.faqs;
+const faqTitle = service ? 'Ce vor să știe ' : 'Bine de ';
+const faqAccent = service ? 'clienții noștri' : 'știut';
+const ctaTitle = service ? service.claim : support!.claim;
+const ctaSub = service
+  ? service.claimSub
+  : 'De la design și dezvoltare până la lansare și mentenanță: lucrezi direct cu noi, de la prima discuție.';
+
+const topics = service?.topics;
+const engagement = service?.engagement;
+const projects = service ? clientsForService(service.key) : [];
+
+const two = (n: number) => String(n).padStart(2, '0');
+const favicon = (domain: string) => `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+
+// Contact direct (telefon/WhatsApp) — aceeași logică ca varianta A.
+const direct = getDirectContact(await getPublicSettings());
+const directIcon = direct?.kind === 'whatsapp' ? whatsappIconPath : phoneIconPath;
+
+// Schema Service — identică cu varianta A (calea publică, fără /v2).
+const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
+const serviceSchema = {
+  '@type': 'Service',
+  name: service ? service.title : support!.title,
+  description: pageDesc,
+  serviceType: service ? service.title : support!.title,
+  url: `${origin}/servicii/${service ? service.slug : support!.slug}`,
+  provider: { '@id': `${origin}#organization` },
+  areaServed: { '@type': 'Country', name: 'România' },
+};
+---
+
+<BaseLayoutV2
+  title={pageTitle}
+  description={pageDesc}
+  transparentNav={true}
+  navOverDark={true}
+  schema={serviceSchema}
+>
+  {/* ===== HERO (dark) ===== */}
+  <section class="sv-hero">
+    <div class="v2-container sv-hero__inner">
+      <div class="sv-hero__text" data-reveal>
+        <div class="sv-crumb">
+          <a href="/">Acasă</a> <span aria-hidden="true">/</span>
+          <a href="/servicii">Servicii</a> <span aria-hidden="true">/</span>
+          <span class="cur">{hero.current}</span>
+        </div>
+        <h1 class="sv-hero__title">{hero.title}<span class="accent">{hero.accent}</span></h1>
+        <p class="sv-hero__sub">{hero.sub}</p>
+        <div class="sv-hero__actions">
+          <a class="v2-btn" href={hero.primaryCtaHref}>Solicită ofertă</a>
+          {
+            direct && (
+              <a
+                class="sv-phone"
+                href={direct.href}
+                {...(direct.kind === 'whatsapp' ? { target: '_blank', rel: 'noopener' } : {})}
+              >
+                <span class="sv-phone__ic">
+                  <svg viewBox="0 0 24 24" fill="currentColor" set:html={directIcon} />
+                </span>
+                <span class="sv-phone__txt">
+                  <small>{direct.sub}</small>
+                  <b>{direct.label}</b>
+                </span>
+              </a>
+            )
+          }
+        </div>
+      </div>
+      <div class="sv-hero__photo" data-reveal>
+        <img src={hero.image} alt={hero.imageAlt} width="760" height="608" loading="eager" />
+      </div>
+    </div>
+  </section>
+
+  {/* ===== PENTRU CINE / SUNĂ CUNOSCUT (doar piloni cu forWhom) ===== */}
+  {
+    service?.forWhom && (
+      <section class="sv-fw">
+        <div class="v2-container">
+          <div class="sv-fw__head" data-reveal>
+            <h2 class="v2-h2">
+              Sună <span class="accent">cunoscut?</span>
+            </h2>
+            <p class="sv-lead">
+              Dacă te regăsești în măcar una, ești exact unde trebuie. Hai să vedem ce schimbăm.
+            </p>
+          </div>
+          <ul class="sv-fw__list" data-reveal>
+            {service.forWhom.map((it) => (
+              <li class="sv-fw__row">
+                <p class="sv-fw__problem">{it.problem}</p>
+                <p class="sv-fw__cost">
+                  <span aria-hidden="true">→</span>
+                  {it.cost}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ===== CAPABILITĂȚI ===== */}
+  <section class="sv-caps">
+    <div class="v2-container">
+      <div class="sv-sec-head" data-reveal>
+        <h2 class="v2-h2">{capHead.title}<span class="accent">{capHead.titleAccent}</span></h2>
+        {capHead.sub && <p class="sv-lead">{capHead.sub}</p>}
+      </div>
+      <div class="sv-cap-grid" data-reveal>
+        {
+          caps.map((cap) => (
+            <div class="sv-cap-card">
+              <span class="sv-cap-ic">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  set:html={cap.icon}
+                />
+              </span>
+              <h3 class="sv-cap-title">{cap.title}</h3>
+              <p class="sv-cap-desc">{cap.desc}</p>
+              <ul class="sv-cap-list">
+                {cap.items.map((it) => (
+                  <li>
+                    <span class="sv-check" aria-hidden="true">
+                      ✓
+                    </span>
+                    {it}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ===== TEME „ÎN DETALIU" (AppShowcase — doar paginile cu topics) ===== */}
+  {
+    topics &&
+      topics.map((topic, ti) => (
+        <section class:list={['sv-topic', ti % 2 === 1 && 'sv-topic--tint']} id={topic.id}>
+          <div class="v2-container sv-topic__grid">
+            <div class="sv-topic__intro" data-reveal>
+              <h2 class="v2-h2 sv-topic__title">
+                {topic.title}
+                <span class="accent">{topic.titleAccent}</span>
+              </h2>
+              <p class="sv-lead sv-topic__lead">{topic.intro}</p>
+              {topics.length > 1 && (
+                <ol class="sv-topic__steps" aria-label="Teme">
+                  {topics.map((t, i) => (
+                    <li class:list={['sv-topic__step', t.id === topic.id && 'is-active']}>
+                      <a href={`#${t.id}`}>
+                        <span class="sv-topic__step-n">{two(i + 1)}</span>
+                        <span>{t.eyebrow}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+            <div class="sv-topic__main">
+              <div class="sv-topic__cards" data-reveal>
+                {topic.cards.map((c, ci) => (
+                  <article class="sv-topic-card">
+                    <span class="sv-topic-card__num">{two(ci + 1)}</span>
+                    <div>
+                      <h3 class="sv-topic-card__title">{c.title}</h3>
+                      {c.body.map((p) => (
+                        <p class="sv-topic-card__text">{p}</p>
+                      ))}
+                    </div>
+                  </article>
+                ))}
+              </div>
+              {topic.faqs.length > 0 && (
+                <div class="sv-topic__faq">
+                  <h3 class="sv-topic__faq-title">
+                    Întrebări frecvente despre {topic.eyebrow.toLowerCase()}
+                  </h3>
+                  <p class="sv-topic__faq-lead">
+                    Mai ai întrebări? Scrie-ne și îți răspundem rapid &mdash;{' '}
+                    <a href="/contact">contactează-ne</a>.
+                  </p>
+                  <div class="sv-faq">
+                    {topic.faqs.map((f, i) => (
+                      <div class:list={['sv-faq-item', i === 0 && 'is-open']}>
+                        <button class="sv-faq-q" type="button" aria-expanded={i === 0 ? 'true' : 'false'}>
+                          {f.q}
+                          <span class="sv-faq-ic" aria-hidden="true">
+                            ▾
+                          </span>
+                        </button>
+                        <div class="sv-faq-a">
+                          <div class="sv-faq-a__inner">
+                            {f.body.map((p) => (
+                              <p set:html={p} />
+                            ))}
+                            {f.list && (
+                              <ul>
+                                {f.list.map((li) => (
+                                  <li>{li}</li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      ))
+  }
+
+  {/* ===== PROCES ===== */}
+  <section class="sv-proc">
+    <div class="v2-container sv-proc__grid">
+      <div class="sv-proc__intro" data-reveal>
+        <h2 class="v2-h2">Cum decurge o <span class="accent">colaborare</span></h2>
+        <p class="sv-lead">
+          La fiecare pas știi unde suntem, ce urmează și de ce. Fără surprize și fără limbaj de lemn.
+        </p>
+      </div>
+      <ol class="sv-steps" data-reveal>
+        {
+          proc.map((s) => (
+            <li class="sv-step">
+              <span class="sv-step__n">{s.n}</span>
+              <div>
+                <h3 class="sv-step__title">{s.title}</h3>
+                <p class="sv-step__text">{s.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  {/* ===== MODELE DE COLABORARE (engagement — opțional) ===== */}
+  {
+    engagement && (
+      <section class="sv-caps sv-caps--alt">
+        <div class="v2-container">
+          <div class="sv-sec-head" data-reveal>
+            <div class="v2-eyebrow">Cum lucrăm împreună</div>
+            <h2 class="v2-h2">
+              Modele de <span class="accent">colaborare</span>
+            </h2>
+            <p class="sv-lead">
+              Alegi cum lucrăm: un proiect punctual sau un parteneriat lunar. Detalii și pachete pe
+              pagina Pachete.
+            </p>
+          </div>
+          <div class="sv-cap-grid" data-reveal>
+            {engagement.map((cap) => (
+              <div class="sv-cap-card">
+                <span class="sv-cap-ic">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    set:html={cap.icon}
+                  />
+                </span>
+                <h3 class="sv-cap-title">{cap.title}</h3>
+                <p class="sv-cap-desc">{cap.desc}</p>
+                <ul class="sv-cap-list">
+                  {cap.items.map((it) => (
+                    <li>
+                      <span class="sv-check" aria-hidden="true">
+                        ✓
+                      </span>
+                      {it}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ===== PROIECTE (dovadă vie — doar dacă serviciul are proiecte live) ===== */}
+  {
+    projects.length > 0 && (
+      <section class="sv-proj">
+        <div class="v2-container">
+          <div class="sv-sec-head" data-reveal>
+            <h2 class="v2-h2">Proiecte la care lucrăm</h2>
+            <p class="sv-lead">
+              <b>{projects.length} de site-uri</b>, fiecare cu pagina lui live. Dă click pe oricare.
+            </p>
+          </div>
+          <div class="sv-proj-grid" data-reveal>
+            {projects.map((c) => (
+              <a class="sv-proj-card" href={c.url} target="_blank" rel="noopener noreferrer">
+                <span class:list={['sv-proj-thumb', c.dark && 'is-dark']}>
+                  <img
+                    class={c.logo ? 'sv-proj-logo' : 'sv-proj-fav'}
+                    src={c.logo ?? favicon(c.domain)}
+                    alt={`Logo ${c.name}`}
+                    loading="lazy"
+                    onerror={`this.onerror=null;this.src='${favicon(c.domain)}';this.className='sv-proj-fav'`}
+                  />
+                </span>
+                <span class="sv-proj-name">{c.name}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ===== DE CE SIMPLEAD (dark) ===== */}
+  <section class="sv-why">
+    <div class="v2-container">
+      <h2 class="v2-h2 sv-why__title" data-reveal>
+        Lucruri pe care alții <span class="sv-blue">nu ți le spun</span>
+      </h2>
+      <div class="sv-why-grid" data-reveal>
+        {
+          whySimplead.map((w) => (
+            <div class="sv-why-card">
+              <span class="sv-why-ic">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  set:html={w.icon}
+                />
+              </span>
+              <h3>{w.title}</h3>
+              <p>{w.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ===== FAQ ===== */}
+  <section class="sv-faq-sec">
+    <div class="v2-container sv-faq-wrap">
+      <h2 class="v2-h2 center sv-faq-head" data-reveal>{faqTitle}<span class="accent">{faqAccent}</span></h2>
+      <div class="sv-faq" data-reveal>
+        {
+          faqItems.map((f, i) => (
+            <div class:list={['sv-faq-item', i === 0 && 'is-open']}>
+              <button class="sv-faq-q" type="button" aria-expanded={i === 0 ? 'true' : 'false'}>
+                {f.q}
+                <span class="sv-faq-ic" aria-hidden="true">
+                  ▾
+                </span>
+              </button>
+              <div class="sv-faq-a">
+                <div class="sv-faq-a__inner">
+                  {f.body.map((p) => (
+                    <p set:html={p} />
+                  ))}
+                  {f.list && (
+                    <ul>
+                      {f.list.map((li) => (
+                        <li>{li}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ===== CTA (dark) ===== */}
+  <section class="sv-cta">
+    <div class="v2-container">
+      <div class="sv-cta__box" data-reveal>
+        <h2 class="sv-cta__title" set:html={ctaTitle} />
+        {ctaSub && <p class="sv-cta__sub">{ctaSub}</p>}
+        <div class="sv-cta__actions">
+          <a class="v2-btn v2-btn--light" href="/contact">Hai să vorbim</a>
+          {
+            direct && (
+              <a
+                class="sv-phone sv-phone--dark"
+                href={direct.href}
+                {...(direct.kind === 'whatsapp' ? { target: '_blank', rel: 'noopener' } : {})}
+              >
+                <span class="sv-phone__ic">
+                  <svg viewBox="0 0 24 24" fill="currentColor" set:html={directIcon} />
+                </span>
+                <span class="sv-phone__txt">
+                  <small>{direct.sub}</small>
+                  <b>{direct.label}</b>
+                </span>
+              </a>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayoutV2>
+
+<style>
+  .sv-lead {
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: var(--v2-muted);
+    margin: 16px 0 0;
+  }
+  .center {
+    text-align: center;
+  }
+  .sv-blue {
+    color: var(--v2-blue-soft);
+  }
+  .sv-sec-head {
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto 48px;
+  }
+  .sv-sec-head .sv-lead {
+    margin-top: 16px;
+  }
+
+  /* ===== HERO (dark) ===== */
+  .sv-hero {
+    position: relative;
+    color: #fff;
+    background-color: var(--v2-navy-deep);
+    background-image:
+      radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      radial-gradient(ellipse 60% 55% at 90% 8%, rgba(32, 101, 236, 0.32), transparent 65%),
+      linear-gradient(135deg, #0c1633 0%, #102a63 55%, #0e2152 100%);
+    background-size:
+      26px 26px,
+      auto,
+      auto;
+    overflow: hidden;
+  }
+  .sv-hero__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 72px;
+    align-items: center;
+    padding: calc(var(--v2-nav-h) + 40px) 36px 80px;
+  }
+  .sv-crumb {
+    font-size: 13px;
+    font-weight: 600;
+    color: #8593ad;
+  }
+  .sv-crumb a {
+    color: #8593ad;
+  }
+  .sv-crumb a:hover {
+    color: #fff;
+  }
+  .sv-crumb span {
+    margin: 0 6px;
+  }
+  .sv-crumb .cur {
+    color: var(--v2-blue-soft);
+    font-weight: 700;
+  }
+  .sv-hero__title {
+    font-size: clamp(32px, 5vw, 48px);
+    line-height: 1.14;
+    letter-spacing: -0.025em;
+    font-weight: 800;
+    margin: 18px 0 0;
+    text-wrap: balance;
+  }
+  .sv-hero__title .accent {
+    color: var(--v2-blue-soft);
+  }
+  .sv-hero__sub {
+    font-size: 17px;
+    line-height: 1.7;
+    color: #a9b4cc;
+    max-width: 580px;
+    margin: 22px 0 0;
+  }
+  .sv-hero__actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-top: 34px;
+    flex-wrap: wrap;
+  }
+  .sv-phone {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #fff;
+  }
+  .sv-phone__ic {
+    width: 46px;
+    height: 46px;
+    flex: none;
+    border-radius: var(--v2-r);
+    background: var(--v2-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .sv-phone__ic svg {
+    width: 20px;
+    height: 20px;
+    color: #fff;
+  }
+  .sv-phone__txt small {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #a9b4cc;
+  }
+  .sv-phone__txt b {
+    display: block;
+    font-size: 17px;
+    font-weight: 800;
+    margin-top: 2px;
+  }
+  .sv-hero__photo {
+    border-radius: var(--v2-r-lg);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 24px 56px rgba(5, 10, 40, 0.5);
+    aspect-ratio: 4 / 3.2;
+  }
+  .sv-hero__photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ===== PENTRU CINE ===== */
+  .sv-fw {
+    background: var(--v2-surface-soft);
+    border-top: 1px solid var(--v2-line);
+    padding: 88px 0;
+  }
+  .sv-fw__head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 48px;
+  }
+  .sv-fw__list {
+    list-style: none;
+    margin: 0 auto;
+    padding: 6px 30px;
+    max-width: 900px;
+    background: #fff;
+    border: 1px solid var(--v2-line-soft);
+    border-radius: var(--v2-r-lg);
+  }
+  .sv-fw__row {
+    padding: 24px 0;
+    border-top: 1px solid var(--v2-line);
+  }
+  .sv-fw__row:first-child {
+    border-top: 0;
+  }
+  .sv-fw__problem {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--v2-navy);
+  }
+  .sv-fw__cost {
+    margin: 10px 0 0;
+    display: flex;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #b23b3b;
+    font-weight: 600;
+  }
+  .sv-fw__cost span {
+    flex: none;
+  }
+
+  /* ===== CAPABILITĂȚI ===== */
+  .sv-caps {
+    padding: 88px 0;
+    border-top: 1px solid var(--v2-line);
+  }
+  .sv-caps--alt {
+    background: var(--v2-surface-soft);
+  }
+  .sv-cap-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .sv-cap-card {
+    background: #fff;
+    border: 1px solid var(--v2-line-soft);
+    border-radius: var(--v2-r-card);
+    padding: 30px 30px 34px;
+  }
+  .sv-cap-ic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: var(--v2-tint);
+    color: var(--v2-blue);
+  }
+  .sv-cap-ic svg {
+    width: 23px;
+    height: 23px;
+  }
+  .sv-cap-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 18px 0 10px;
+  }
+  .sv-cap-desc {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--v2-muted);
+    margin: 0;
+  }
+  .sv-cap-list {
+    list-style: none;
+    margin: 18px 0 0;
+    padding: 16px 0 0;
+    border-top: 1px solid var(--v2-line);
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .sv-cap-list li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: #33415e;
+  }
+  .sv-check {
+    color: var(--v2-blue);
+    font-weight: 800;
+    flex: none;
+  }
+
+  /* ===== TEME (AppShowcase) ===== */
+  .sv-topic {
+    padding: 88px 0;
+    border-top: 1px solid var(--v2-line);
+  }
+  .sv-topic--tint {
+    background: var(--v2-surface-soft);
+  }
+  .sv-topic__grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 72px;
+    align-items: start;
+  }
+  .sv-topic__intro {
+    position: sticky;
+    top: calc(var(--v2-nav-h) + 28px);
+  }
+  .sv-topic__title {
+    line-height: 1.12;
+  }
+  .sv-topic__lead {
+    margin-top: 18px;
+  }
+  .sv-topic__steps {
+    margin: 32px 0 0;
+    list-style: none;
+    padding: 0;
+    border-top: 1px solid var(--v2-line);
+  }
+  .sv-topic__step a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--v2-line);
+    color: var(--v2-muted);
+    font-weight: 600;
+    font-size: 14.5px;
+  }
+  .sv-topic__step-n {
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: var(--v2-faint);
+  }
+  .sv-topic__step a:hover {
+    color: var(--v2-blue);
+  }
+  .sv-topic__step.is-active a {
+    color: var(--v2-navy);
+  }
+  .sv-topic__step.is-active .sv-topic__step-n {
+    color: var(--v2-blue);
+  }
+  .sv-topic__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .sv-topic-card {
+    display: flex;
+    gap: 22px;
+    padding: 28px 32px;
+    background: #fff;
+    border: 1px solid var(--v2-line-soft);
+    border-radius: var(--v2-r-card);
+  }
+  .sv-topic-card__num {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: var(--v2-tint);
+    color: var(--v2-blue);
+    font-weight: 800;
+    font-size: 15px;
+  }
+  .sv-topic-card__title {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0 0 10px;
+  }
+  .sv-topic-card__text {
+    font-size: 14.5px;
+    line-height: 1.62;
+    color: var(--v2-muted);
+    margin: 0;
+  }
+  .sv-topic-card__text + .sv-topic-card__text {
+    margin-top: 10px;
+  }
+  .sv-topic__faq {
+    margin-top: 48px;
+    padding-top: 44px;
+    border-top: 1px solid var(--v2-line);
+  }
+  .sv-topic__faq-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+  }
+  .sv-topic__faq-lead {
+    margin: 10px 0 0;
+    font-size: 15px;
+    color: var(--v2-muted);
+  }
+  .sv-topic__faq-lead a {
+    color: var(--v2-blue);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .sv-topic__faq .sv-faq {
+    margin-top: 20px;
+  }
+
+  /* ===== PROCES ===== */
+  .sv-proc {
+    padding: 88px 0;
+    border-top: 1px solid var(--v2-line);
+  }
+  .sv-proc__grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 72px;
+    align-items: start;
+  }
+  .sv-proc__intro {
+    position: sticky;
+    top: calc(var(--v2-nav-h) + 28px);
+  }
+  .sv-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sv-step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 24px;
+    padding: 26px 0;
+    border-bottom: 1px solid var(--v2-line-soft);
+  }
+  .sv-step:first-child {
+    padding-top: 0;
+  }
+  .sv-step:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+  .sv-step__n {
+    width: 48px;
+    height: 48px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--v2-tint);
+    color: var(--v2-blue);
+    font-size: 15px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .sv-step__title {
+    font-size: 19px;
+    font-weight: 800;
+    margin: 0 0 8px;
+  }
+  .sv-step__text {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--v2-muted);
+    margin: 0;
+  }
+
+  /* ===== PROIECTE ===== */
+  .sv-proj {
+    padding: 88px 0;
+    border-top: 1px solid var(--v2-line);
+    background: var(--v2-surface-soft);
+  }
+  .sv-proj .sv-lead b {
+    color: var(--v2-navy);
+  }
+  .sv-proj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 16px;
+  }
+  .sv-proj-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    padding: 22px 18px;
+    background: #fff;
+    border: 1px solid var(--v2-line-soft);
+    border-radius: var(--v2-r-card);
+    transition:
+      transform 0.18s ease,
+      border-color 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+  .sv-proj-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--v2-tint-line);
+    box-shadow: 0 14px 30px rgba(13, 27, 62, 0.1);
+  }
+  .sv-proj-thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 46px;
+    padding-inline: 6px;
+  }
+  .sv-proj-thumb.is-dark {
+    background: var(--v2-navy);
+    border-radius: var(--v2-r);
+    padding: 6px 14px;
+  }
+  .sv-proj-logo {
+    height: 30px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+  }
+  .sv-proj-fav {
+    height: 30px;
+    width: 30px;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+  .sv-proj-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--v2-muted);
+  }
+  .sv-proj-card:hover .sv-proj-name {
+    color: var(--v2-navy);
+  }
+
+  /* ===== DE CE SIMPLEAD (dark) ===== */
+  .sv-why {
+    color: #fff;
+    padding: 96px 0;
+    background-color: var(--v2-navy-deep);
+    background-image:
+      radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      radial-gradient(ellipse 60% 55% at 12% 100%, rgba(32, 101, 236, 0.28), transparent 70%),
+      linear-gradient(135deg, #0c1633 0%, #102a63 55%, #0e2152 100%);
+    background-size:
+      24px 24px,
+      auto,
+      auto;
+  }
+  .sv-why__title {
+    text-align: center;
+    margin: 0 0 48px;
+    color: #fff;
+  }
+  .sv-why-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  .sv-why-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--v2-r-card);
+    padding: 30px 32px;
+  }
+  .sv-why-ic {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: rgba(32, 101, 236, 0.18);
+    color: var(--v2-blue-soft);
+    margin-bottom: 14px;
+  }
+  .sv-why-ic svg {
+    width: 23px;
+    height: 23px;
+  }
+  .sv-why-card h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0 0 10px;
+  }
+  .sv-why-card p {
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: #a9b4cc;
+    margin: 0;
+  }
+
+  /* ===== FAQ (acordeoane) ===== */
+  .sv-faq-sec {
+    background: var(--v2-surface-soft);
+    padding: 88px 0;
+  }
+  .sv-faq-wrap {
+    max-width: 880px;
+  }
+  .sv-faq-head {
+    margin: 0 0 40px;
+  }
+  .sv-faq {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .sv-faq-item {
+    background: #fff;
+    border: 1px solid var(--v2-line-soft);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .sv-faq-q {
+    width: 100%;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: var(--v2-font);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 26px;
+    text-align: left;
+    font-size: 16.5px;
+    font-weight: 700;
+    color: var(--v2-navy);
+  }
+  .sv-faq-ic {
+    flex: none;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--v2-blue);
+    transition: transform 0.2s ease;
+  }
+  .sv-faq-item.is-open .sv-faq-ic {
+    transform: rotate(180deg);
+  }
+  .sv-faq-a {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.24s ease;
+  }
+  .sv-faq-item.is-open .sv-faq-a {
+    grid-template-rows: 1fr;
+  }
+  .sv-faq-a__inner {
+    overflow: hidden;
+  }
+  .sv-faq-a__inner p {
+    margin: 0 0 12px;
+    padding: 0 26px;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--v2-muted);
+  }
+  .sv-faq-a__inner p:first-child {
+    padding-top: 2px;
+  }
+  .sv-faq-a__inner p:last-child {
+    margin-bottom: 22px;
+  }
+  .sv-faq-a__inner ul {
+    margin: 0 0 22px;
+    padding: 0 26px 0 46px;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--v2-muted);
+  }
+  .sv-faq-a__inner :global(a) {
+    color: var(--v2-blue);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* ===== CTA (dark) ===== */
+  .sv-cta {
+    padding: 80px 0 96px;
+  }
+  .sv-cta__box {
+    background: linear-gradient(135deg, #0c1633 0%, #102a63 100%);
+    color: #fff;
+    border-radius: var(--v2-r-lg);
+    padding: 64px 48px;
+    text-align: center;
+  }
+  .sv-cta__title {
+    font-size: clamp(28px, 4vw, 38px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .sv-cta__title :global(.g) {
+    color: var(--v2-blue-soft);
+  }
+  .sv-cta__sub {
+    font-size: 16px;
+    line-height: 1.65;
+    color: #a9b4cc;
+    max-width: 560px;
+    margin: 18px auto 0;
+  }
+  .sv-cta__actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+  }
+  .sv-phone--dark .sv-phone__txt {
+    text-align: left;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 960px) {
+    .sv-hero__inner,
+    .sv-topic__grid,
+    .sv-proc__grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .sv-hero__photo {
+      order: -1;
+    }
+    .sv-topic__intro,
+    .sv-proc__intro {
+      position: static;
+    }
+    .sv-cap-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 640px) {
+    .sv-cap-grid {
+      grid-template-columns: 1fr;
+    }
+    .sv-proj-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .sv-cta__box {
+      padding: 48px 24px;
+    }
+    .sv-fw,
+    .sv-caps,
+    .sv-topic,
+    .sv-proc,
+    .sv-proj,
+    .sv-why,
+    .sv-faq-sec {
+      padding-block: 64px;
+    }
+  }
+</style>
+
+<script>
+  // Acordeoane single-open per listă (FAQ paginii + FAQ pe teme). Independente,
+  // ca să meargă și când sunt mai multe pe pagină.
+  document.querySelectorAll<HTMLElement>('.sv-faq').forEach((list) => {
+    const items = Array.from(list.querySelectorAll<HTMLElement>('.sv-faq-item'));
+    items.forEach((item) => {
+      const q = item.querySelector<HTMLButtonElement>('.sv-faq-q');
+      q?.addEventListener('click', () => {
+        const open = item.classList.contains('is-open');
+        items.forEach((other) => {
+          other.classList.remove('is-open');
+          other.querySelector('.sv-faq-q')?.setAttribute('aria-expanded', 'false');
+        });
+        if (!open) {
+          item.classList.add('is-open');
+          q.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  });
+</script>

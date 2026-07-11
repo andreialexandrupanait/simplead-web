@@ -73,13 +73,13 @@ const hasErrors = Object.keys(errors).length > 0;
           </small>
         )
       }
-      <small id="pfSlugWarn" style="display:none;color:#7a6505;margin-top:4px">
+      <small id="pfSlugWarn" style="display:none;color:var(--admin-warn-fg);margin-top:4px">
         ⚠ Schimbarea slug-ului unui articol publicat rupe linkurile existente (Google, social
         media).
       </small>
       <label class="admin-field" style="margin:16px 0 0">
         <span
-          >Descriere scurtă <small style="display:inline;color:var(--muted)"
+          >Descriere scurtă <small style="display:inline;color:var(--admin-text-soft)"
             >(apare în listă și în Google, max 300 caractere)</small
           ></span
         >
@@ -159,7 +159,7 @@ const hasErrors = Object.keys(errors).length > 0;
 
     <div class="admin-card">
       <h2>
-        Pe scurt & FAQ <small style="display:inline;font-weight:400;color:var(--muted)"
+        Pe scurt & FAQ <small style="display:inline;font-weight:400;color:var(--admin-text-soft)"
           >(opțional)</small
         >
       </h2>
@@ -191,7 +191,7 @@ const hasErrors = Object.keys(errors).length > 0;
 
     <div class="admin-card">
       <h2>
-        SEO <small style="display:inline;font-weight:400;color:var(--muted)">(opțional)</small>
+        SEO <small style="display:inline;font-weight:400;color:var(--admin-text-soft)">(opțional)</small>
       </h2>
       <label class="admin-field">
         <span>Titlu SEO</span>

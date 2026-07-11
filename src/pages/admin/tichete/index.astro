@@ -5,6 +5,7 @@ import Toolbar from '../../../components/admin/Toolbar.astro';
 import StatusBadge from '../../../components/admin/StatusBadge.astro';
 import EmptyState from '../../../components/admin/EmptyState.astro';
 import Pagination from '../../../components/admin/Pagination.astro';
+import PageHeader from '../../../components/admin/PageHeader.astro';
 import { getDb } from '../../../lib/server/db';
 import { tickets, ticketStatus } from '../../../lib/server/schema';
 import { ticketCategories, ticketCategoryLabel } from '../../../lib/ticket-schema';
@@ -76,13 +77,8 @@ const STATUS_LABEL: Record<string, string> = {
 };
 ---
 
-<AdminLayout title="Tichete">
-  <div class="admin-page-head">
-    <div>
-      <h1>Tichete</h1>
-      <p class="admin-sub">Cererile de suport trimise prin pagina /cere-suport.</p>
-    </div>
-  </div>
+<AdminLayout title="Tichete" wide>
+  <PageHeader title="Tichete" sub="Cererile de suport trimise prin pagina /cere-suport." />
 
   {
     !db && (
@@ -152,11 +148,11 @@ const STATUS_LABEL: Record<string, string> = {
                           {ticket.name}
                         </a>
                         <br />
-                        <span style="color:var(--muted);font-size:0.85rem">{ticket.email}</span>
+                        <span class="u-sub">{ticket.email}</span>
                       </td>
                       <td>{ticketCategoryLabel(ticket.category)}</td>
-                      <td style="color:var(--muted)">{ticket.siteUrl || '–'}</td>
-                      <td style="white-space:nowrap">{dateFmt.format(ticket.createdAt)}</td>
+                      <td class="u-muted">{ticket.siteUrl || '–'}</td>
+                      <td class="u-nowrap">{dateFmt.format(ticket.createdAt)}</td>
                       <td>
                         <StatusBadge status={ticket.status} />
                       </td>

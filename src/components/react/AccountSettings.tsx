@@ -86,9 +86,19 @@ export default function AccountSettings({
   const dateFmt = new Intl.DateTimeFormat('ro-RO', { dateStyle: 'medium', timeStyle: 'short' });
 
   return (
-    <div style={{ display: 'grid', gap: '20px', maxWidth: '640px' }}>
+    <div
+      style={{
+        display: 'grid',
+        gap: '20px',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+        alignItems: 'start',
+      }}
+    >
       {note && (
-        <div className={`admin-banner admin-banner--${note.kind === 'ok' ? 'ok' : 'error'}`}>
+        <div
+          className={`admin-banner admin-banner--${note.kind === 'ok' ? 'ok' : 'error'}`}
+          style={{ gridColumn: '1 / -1', marginBottom: 0 }}
+        >
           {note.msg}
         </div>
       )}
@@ -153,7 +163,7 @@ export default function AccountSettings({
         </form>
       </div>
 
-      <div className="admin-card admin-card--flush">
+      <div className="admin-card admin-card--flush" style={{ gridColumn: '1 / -1' }}>
         <div
           style={{
             display: 'flex',

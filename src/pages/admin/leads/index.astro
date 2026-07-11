@@ -5,6 +5,7 @@ import Toolbar from '../../../components/admin/Toolbar.astro';
 import StatusBadge from '../../../components/admin/StatusBadge.astro';
 import EmptyState from '../../../components/admin/EmptyState.astro';
 import Pagination from '../../../components/admin/Pagination.astro';
+import PageHeader from '../../../components/admin/PageHeader.astro';
 import { getDb } from '../../../lib/server/db';
 import { leads, leadStatus } from '../../../lib/server/schema';
 
@@ -66,13 +67,8 @@ const STATUS_LABEL: Record<string, string> = {
 };
 ---
 
-<AdminLayout title="Lead-uri">
-  <div class="admin-page-head">
-    <div>
-      <h1>Lead-uri</h1>
-      <p class="admin-sub">Mesajele primite prin formularul de contact.</p>
-    </div>
-  </div>
+<AdminLayout title="Lead-uri" wide>
+  <PageHeader title="Lead-uri" sub="Mesajele primite prin formularul de contact." />
 
   {
     !db && (
@@ -134,13 +130,13 @@ const STATUS_LABEL: Record<string, string> = {
                           {lead.name}
                         </a>
                         <br />
-                        <span style="color:var(--muted);font-size:0.85rem">{lead.email}</span>
+                        <span class="u-sub">{lead.email}</span>
                       </td>
                       <td>{lead.service || '–'}</td>
-                      <td style="max-width:320px;color:var(--muted)">
+                      <td class="u-muted" style="max-width:320px">
                         {lead.message.length > 90 ? `${lead.message.slice(0, 90)}…` : lead.message}
                       </td>
-                      <td style="white-space:nowrap">{dateFmt.format(lead.createdAt)}</td>
+                      <td class="u-nowrap">{dateFmt.format(lead.createdAt)}</td>
                       <td>
                         <StatusBadge status={lead.status} />
                       </td>

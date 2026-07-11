@@ -1,0 +1,143 @@
+/*
+ * Sistemul de design pentru varianta B (redesign) a testului A/B.
+ * Se încarcă DUPĂ global.css (doar în BaseLayoutV2 → doar pe rutele /v2), deci
+ * suprascrie tokenii partajați fără să atingă site-ul actual (varianta A).
+ *
+ * Tokeni extrași din machetele Claude Design (.dc.html): navy #0d1b3e / #0c1633,
+ * albastru electric #2065ec, text estompat #5a6b8a / #8593ad, font Figtree.
+ */
+
+:root {
+  /* Paleta redesign */
+  --v2-navy: #0d1b3e;
+  --v2-navy-deep: #0c1633;
+  --v2-navy-mid: #102a63;
+  --v2-footer: #0a0f1e;
+  --v2-blue: #2065ec;
+  --v2-blue-soft: #4d8bff;
+  --v2-ink: #0d1b3e;
+  --v2-muted: #5a6b8a;
+  --v2-faint: #8593ad;
+  --v2-line: #e9edf4;
+  --v2-line-soft: #e5e9f0;
+  --v2-surface: #ffffff;
+  --v2-surface-soft: #f8fafd;
+  --v2-tint: #e8f0fe;
+  --v2-tint-line: #c8dbfc;
+  --v2-mint: #2dd4a8;
+
+  /* Radii, layout, font */
+  --v2-r: 6px; /* butoane */
+  --v2-r-card: 12px;
+  --v2-r-lg: 16px;
+  --v2-container: 1280px;
+  --v2-gutter: 36px;
+  --v2-nav-h: 72px;
+  --v2-font: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Suprascrie tokenii partajați ca elementele comune (skip-link, bara de admin,
+     drawer de contact) să se potrivească cu redesign-ul. */
+  --font-body: var(--v2-font);
+  --font-display: var(--v2-font);
+  --ink: var(--v2-navy);
+  --electric: var(--v2-blue);
+}
+
+body {
+  font-family: var(--v2-font);
+  color: var(--v2-ink);
+  background: var(--v2-surface);
+  -webkit-font-smoothing: antialiased;
+}
+::selection {
+  background: var(--v2-blue);
+  color: #fff;
+}
+
+/* ============ Kit partajat (nav/footer/pagini v2) ============ */
+.v2-container {
+  max-width: var(--v2-container);
+  margin: 0 auto;
+  padding: 0 var(--v2-gutter);
+}
+@media (max-width: 640px) {
+  :root {
+    --v2-gutter: 20px;
+  }
+}
+
+.v2-eyebrow {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--v2-blue);
+}
+
+/* Butoane */
+.v2-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--v2-blue);
+  color: #fff;
+  font-family: var(--v2-font);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 15px 30px;
+  border-radius: var(--v2-r);
+  border: 1.5px solid var(--v2-blue);
+  cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+.v2-btn:hover {
+  background: var(--v2-navy);
+  border-color: var(--v2-navy);
+  color: #fff;
+}
+.v2-btn--ghost {
+  background: transparent;
+  color: var(--v2-ink);
+  border-color: #c3cddd;
+}
+.v2-btn--ghost:hover {
+  background: transparent;
+  border-color: var(--v2-navy);
+  color: var(--v2-ink);
+}
+.v2-btn--light {
+  background: #fff;
+  color: var(--v2-navy-deep);
+  border-color: #fff;
+}
+.v2-btn--light:hover {
+  background: #fff;
+  color: var(--v2-blue);
+  border-color: #fff;
+}
+
+/* Titluri de secțiune */
+.v2-h2 {
+  font-size: clamp(28px, 4vw, 38px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  margin: 0;
+}
+.v2-h2 .accent,
+.accent {
+  color: var(--v2-blue);
+}
+
+/* Card generic */
+.v2-card {
+  background: var(--v2-surface);
+  border: 1px solid var(--v2-line-soft);
+  border-radius: var(--v2-r-card);
+}

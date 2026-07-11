@@ -1,6 +1,7 @@
 ---
 import { asc, eq } from 'drizzle-orm';
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import PageHeader from '../../../components/admin/PageHeader.astro';
 import EmptyState from '../../../components/admin/EmptyState.astro';
 import { getDb } from '../../../lib/server/db';
 import { packages } from '../../../lib/server/schema';
@@ -88,17 +89,13 @@ const INTERVAL_LABEL: Record<string, string> = {
 ---
 
 <AdminLayout title="Pachete">
-  <div class="admin-page-head">
-    <div>
-      <h1>Pachete</h1>
-      <p class="admin-sub">
-        Pachetele afișate pe <a href="/pachete" target="_blank" style="color:var(--electric)"
-          >/pachete</a
-        >. Prețurile marcate <code>[confirmă]</code> sunt drafturi de completat.
-      </p>
-    </div>
+  <PageHeader
+    title="Pachete"
+    sub="Pachetele afișate pe /pachete. Prețurile marcate [confirmă] sunt drafturi de completat."
+  >
+    <a href="/pachete" target="_blank" class="admin-btn admin-btn--ghost">Vezi /pachete ↗</a>
     <a href="/admin/pachete/nou" class="admin-btn">+ Pachet nou</a>
-  </div>
+  </PageHeader>
 
   {
     !db && (
@@ -144,14 +141,14 @@ const INTERVAL_LABEL: Record<string, string> = {
                         {p.name}
                       </a>
                       <br />
-                      <small style="color:var(--muted)">{p.slug}</small>
+                      <small class="u-muted">{p.slug}</small>
                     </td>
                     <td>{KIND_LABEL[p.kind]}</td>
                     <td class="num">
                       {p.priceCents === 0
                         ? '[confirmă]'
                         : `${centsToPrice(p.priceCents)} ${p.currency.trim()}`}
-                      <small style="color:var(--muted)"> {INTERVAL_LABEL[p.interval]}</small>
+                      <small class="u-muted"> {INTERVAL_LABEL[p.interval]}</small>
                     </td>
                     <td>
                       <span

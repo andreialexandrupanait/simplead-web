@@ -1,0 +1,231 @@
+---
+import { count, eq, sum } from 'drizzle-orm';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import PageHeader from '../../components/admin/PageHeader.astro';
+import StatCard from '../../components/admin/StatCard.astro';
+import { getDb } from '../../lib/server/db';
+import { abExposure, leads, orders } from '../../lib/server/schema';
+import { getPublicSettings } from '../../lib/server/public-settings';
+import { can } from '../../lib/server/authz';
+import { fmtMoney } from '../../lib/format';
+
+export const prerender = false;
+
+// Doar staff-ul cu drept de „settings.manage" vede statisticile testului.
+const allowed = await can(Astro.request.headers, { settings: ['manage'] });
+if (!allowed) return Astro.redirect('/admin');
+
+const pub = await getPublicSettings();
+const db = getDb();
+
+type Pair = { a: number; b: number };
+const toPair = (rows: { variant: string | null; n: number }[]): Pair => {
+  const p: Pair = { a: 0, b: 0 };
+  for (const r of rows) {
+    if (r.variant === 'a') p.a = Number(r.n);
+    else if (r.variant === 'b') p.b = Number(r.n);
+  }
+  return p;
+};
+
+let dbError = false;
+let exposures: Pair = { a: 0, b: 0 };
+let leadsByVariant: Pair = { a: 0, b: 0 };
+let paidOrders: Pair = { a: 0, b: 0 };
+let revenue: Pair = { a: 0, b: 0 };
+
+if (db) {
+  try {
+    const [expoRows, leadRows, orderRows] = await Promise.all([
+      db.select({ variant: abExposure.variant, n: count() }).from(abExposure).groupBy(abExposure.variant),
+      db.select({ variant: leads.variant, n: count() }).from(leads).groupBy(leads.variant),
+      db
+        .select({ variant: orders.variant, n: count(), rev: sum(orders.amountCents) })
+        .from(orders)
+        .where(eq(orders.status, 'paid'))
+        .groupBy(orders.variant),
+    ]);
+    exposures = toPair(expoRows);
+    leadsByVariant = toPair(leadRows);
+    paidOrders = toPair(orderRows);
+    revenue = toPair(orderRows.map((r) => ({ variant: r.variant, n: Number(r.rev ?? 0) })));
+  } catch (err) {
+    console.warn('[admin/experiment] Citirea statisticilor a eșuat:', err);
+    dbError = true;
+  }
+}
+
+// Rată de conversie (conversii / expuneri). Fără expuneri → necunoscută.
+const rate = (conv: number, expo: number): number | null => (expo > 0 ? (conv / expo) * 100 : null);
+const fmtRate = (r: number | null) => (r === null ? '—' : `${r.toFixed(1)}%`);
+// Uplift relativ B vs A pe o rată.
+const uplift = (ra: number | null, rb: number | null): number | null =>
+  ra === null || rb === null || ra === 0 ? null : ((rb - ra) / ra) * 100;
+const fmtUplift = (u: number | null) => (u === null ? '—' : `${u > 0 ? '+' : ''}${u.toFixed(0)}%`);
+
+const leadRateA = rate(leadsByVariant.a, exposures.a);
+const leadRateB = rate(leadsByVariant.b, exposures.b);
+const orderRateA = rate(paidOrders.a, exposures.a);
+const orderRateB = rate(paidOrders.b, exposures.b);
+
+const rows = [
+  { m: 'Expuneri (vizitatori)', a: String(exposures.a), b: String(exposures.b), d: '—' },
+  { m: 'Lead-uri (formular contact)', a: String(leadsByVariant.a), b: String(leadsByVariant.b), d: '—' },
+  { m: 'Rată lead', a: fmtRate(leadRateA), b: fmtRate(leadRateB), d: fmtUplift(uplift(leadRateA, leadRateB)) },
+  { m: 'Comenzi plătite', a: String(paidOrders.a), b: String(paidOrders.b), d: '—' },
+  { m: 'Venit', a: fmtMoney(revenue.a), b: fmtMoney(revenue.b), d: '—' },
+  { m: 'Rată comandă', a: fmtRate(orderRateA), b: fmtRate(orderRateB), d: fmtUplift(uplift(orderRateA, orderRateB)) },
+];
+
+// Pagini cu design v2 pentru preview rapid (forțează varianta prin ?v=).
+const previewPages = [
+  { label: 'Homepage', path: '/' },
+  { label: 'Despre', path: '/despre' },
+  { label: 'Servicii', path: '/servicii' },
+  { label: 'Pachete', path: '/pachete' },
+  { label: 'Blog', path: '/blog' },
+  { label: 'Contact', path: '/contact' },
+  { label: 'Mentenanță', path: '/mentenanta' },
+  { label: 'Întrebări', path: '/intrebari-frecvente' },
+];
+---
+
+<AdminLayout title="Experiment A/B">
+  <PageHeader
+    title="Experiment A/B"
+    sub="Compară versiunea actuală (A) cu redesign-ul (B). Adminii și boții sunt excluși din eșantion."
+  />
+
+  {dbError && <div class="admin-banner admin-banner--error">Nu am putut citi statisticile din baza de date.</div>}
+
+  <div
+    class="admin-card exp-status"
+    style={`border-color:${pub.abTestEnabled ? 'var(--signal, #f5d93f)' : ''}`}
+  >
+    <div>
+      <b>Testul A/B este {pub.abTestEnabled ? 'ACTIV' : 'oprit'}.</b>
+      <p class="admin-hint" style="margin:6px 0 0">
+        {
+          pub.abTestEnabled
+            ? 'Jumătate dintre vizitatorii noi (sticky ~90 zile) văd redesign-ul pe paginile disponibile.'
+            : 'Toți vizitatorii văd versiunea actuală. Tu poți previzualiza B oricând cu ?v=b.'
+        }
+        <a href="/admin/setari">Schimbă în Setări</a>.
+      </p>
+    </div>
+  </div>
+
+  <div class="admin-stats" style="margin-top:16px">
+    <StatCard label="Expuneri A" value={exposures.a} hint="versiunea actuală" />
+    <StatCard label="Expuneri B" value={exposures.b} hint="redesign" accent="var(--signal, #f5d93f)" />
+    <StatCard label="Lead-uri A / B" value={`${leadsByVariant.a} / ${leadsByVariant.b}`} />
+    <StatCard label="Comenzi plătite A / B" value={`${paidOrders.a} / ${paidOrders.b}`} />
+  </div>
+
+  <div class="admin-card" style="margin-top:16px">
+    <h2 style="margin:0 0 14px">Comparație</h2>
+    <div style="overflow-x:auto">
+      <table class="exp-table">
+        <thead>
+          <tr>
+            <th>Metrică</th>
+            <th>A (actual)</th>
+            <th>B (redesign)</th>
+            <th>Δ (B vs A)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            rows.map((r) => (
+              <tr>
+                <td>{r.m}</td>
+                <td>{r.a}</td>
+                <td>{r.b}</td>
+                <td class="exp-delta">{r.d}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="admin-hint" style="margin-top:12px">
+      Ratele se calculează ca (conversii / expuneri). Δ e uplift-ul relativ al lui B față de A. Statisticile
+      exclud adminii și boții; conversiile mai vechi decât testul apar fără variantă și nu sunt numărate aici.
+    </p>
+  </div>
+
+  <div class="admin-card" style="margin-top:16px">
+    <h2 style="margin:0 0 6px">Vezi cu ochii tăi</h2>
+    <p class="admin-hint" style="margin:0 0 14px">
+      Deschide orice pagină forțând varianta. Alegerea se ține într-un cookie până o schimbi.
+    </p>
+    <div class="exp-preview">
+      {
+        previewPages.map((p) => (
+          <div class="exp-preview__row">
+            <span class="exp-preview__name">{p.label}</span>
+            <span class="exp-preview__links">
+              <a href={`${p.path}?v=a`} target="_blank" rel="noopener">
+                Versiunea A ↗
+              </a>
+              <a href={`${p.path}?v=b`} target="_blank" rel="noopener">
+                Versiunea B ↗
+              </a>
+            </span>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .exp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+  .exp-table th,
+  .exp-table td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--admin-border);
+  }
+  .exp-table th {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--admin-text-soft, #6b7280);
+  }
+  .exp-table td:not(:first-child),
+  .exp-table th:not(:first-child) {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .exp-delta {
+    font-weight: 700;
+  }
+  .exp-preview__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--admin-border);
+  }
+  .exp-preview__row:last-child {
+    border-bottom: 0;
+  }
+  .exp-preview__name {
+    font-weight: 600;
+  }
+  .exp-preview__links {
+    display: inline-flex;
+    gap: 18px;
+    white-space: nowrap;
+  }
+  .exp-preview__links a {
+    font-weight: 600;
+    color: var(--electric, #0077fc);
+  }
+</style>

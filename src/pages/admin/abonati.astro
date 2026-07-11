@@ -1,6 +1,7 @@
 ---
 import { count, desc, ilike, eq, type SQL } from 'drizzle-orm';
 import AdminLayout from '../../layouts/AdminLayout.astro';
+import PageHeader from '../../components/admin/PageHeader.astro';
 import Toolbar from '../../components/admin/Toolbar.astro';
 import StatusBadge from '../../components/admin/StatusBadge.astro';
 import EmptyState from '../../components/admin/EmptyState.astro';
@@ -86,15 +87,10 @@ const exportUrl = `/api/admin/export/subscribers.csv${Astro.url.search}`;
 ---
 
 <AdminLayout title="Abonați">
-  <div class="admin-page-head">
-    <div>
-      <h1>Abonați newsletter</h1>
-      <p class="admin-sub">
-        Adunați din formularul din footer și de pe /resurse. Exportă lista pentru Postmark Broadcast
-        când trimiți newsletterul.
-      </p>
-    </div>
-  </div>
+  <PageHeader
+    title="Abonați newsletter"
+    sub="Adunați din formularul din footer și de pe /resurse. Exportă lista pentru Postmark Broadcast când trimiți newsletterul."
+  />
 
   {
     !db && (
@@ -141,13 +137,13 @@ const exportUrl = `/api/admin/export/subscribers.csv${Astro.url.search}`;
                   {rows.map((s) => (
                     <tr>
                       <td style="font-weight:600">{s.email}</td>
-                      <td style="color:var(--muted)">{s.source}</td>
+                      <td class="u-muted">{s.source}</td>
                       <td>
                         <StatusBadge status={s.status} />
                       </td>
-                      <td style="white-space:nowrap">
+                      <td class="u-nowrap">
                         {s.syncedAt ? (
-                          <span style="color:#0b6e63;font-weight:600" title={`Sincronizat: ${dateFmt.format(s.syncedAt)}`}>
+                          <span style="color:var(--admin-ok-fg);font-weight:600" title={`Sincronizat: ${dateFmt.format(s.syncedAt)}`}>
                             ✓ sincronizat
                           </span>
                         ) : (
@@ -160,7 +156,7 @@ const exportUrl = `/api/admin/export/subscribers.csv${Astro.url.search}`;
                           </form>
                         )}
                       </td>
-                      <td style="white-space:nowrap">{dateFmt.format(s.createdAt)}</td>
+                      <td class="u-nowrap">{dateFmt.format(s.createdAt)}</td>
                       <td>
                         <form method="post">
                           <input type="hidden" name="id" value={s.id} />

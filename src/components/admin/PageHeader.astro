@@ -1,0 +1,39 @@
+---
+/**
+ * Antet de pagină admin: titlu + subtitlu, opțional link „înapoi" și un slot
+ * de acțiuni în dreapta. Înlocuiește blocul .admin-page-head copiat pe fiecare
+ * pagină. `slot` implicit = butoanele de acțiune.
+ */
+interface Props {
+  /** Titlul apare în topbar (header standard), nu mai e repetat ca h1 aici. */
+  title?: string;
+  sub?: string;
+  back?: { href: string; label: string };
+}
+const { sub, back } = Astro.props;
+const hasActions = Astro.slots.has('default');
+const show = Boolean(back || sub || hasActions);
+---
+
+{
+  show && (
+    <div class="admin-page-head">
+      <div>
+        {back && (
+          <a class="admin-page-head__back" href={back.href}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+            {back.label}
+          </a>
+        )}
+        {sub && <p class="admin-sub" style="margin:0">{sub}</p>}
+      </div>
+      {hasActions && (
+        <div class="admin-actions" style="margin:0">
+          <slot />
+        </div>
+      )}
+    </div>
+  )
+}

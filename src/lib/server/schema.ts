@@ -124,6 +124,8 @@ export const leads = pgTable('leads', {
   message: text('message').notNull(),
   source: text('source').notNull().default('contact-form'),
   status: leadStatus('status').notNull().default('nou'),
+  // Varianta A/B (test de redesign) în care a venit lead-ul. Null = în afara testului.
+  variant: text('variant'),
   // Notițe interne (vizibile doar în admin).
   notes: text('notes').notNull().default(''),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -171,6 +173,8 @@ export const orders = pgTable('orders', {
   customerId: uuid('customer_id').references(() => customers.id),
   packageId: uuid('package_id').references(() => packages.id),
   status: orderStatus('status').notNull().default('pending'),
+  // Varianta A/B (test de redesign) capturată la checkout. Null = în afara testului.
+  variant: text('variant'),
   amountCents: integer('amount_cents').notNull(),
   currency: char('currency', { length: 3 }).notNull().default('EUR'),
   customerEmail: text('customer_email'),
@@ -248,4 +252,16 @@ export const projects = pgTable('projects', {
   seoDescription: text('seo_description'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Expuneri în testul A/B de redesign: un rând per vizitator NOU alocat (non-bot,
+ * non-admin, care primește pentru prima dată cookie-ul `sa_ab`). Serveşte drept
+ * numitor pentru rata de conversie din /admin/experiment.
+ */
+export const abExposure = pgTable('ab_exposure', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  variant: text('variant').notNull(),
+  path: text('path'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });

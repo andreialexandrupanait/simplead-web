@@ -1,0 +1,195 @@
+---
+/**
+ * Graficul principal al Panoului: serie zilnică ca arie+linie (sau bare).
+ * Geometria e SVG scalabil (preserveAspectRatio none + non-scaling-stroke),
+ * iar etichetele de axă sunt HTML deasupra ca să rămână crisp la orice lățime.
+ * Fără JS, fără librărie — culorile din tokeni, deci dark mode „just works".
+ */
+import { fmtDayShort } from '../../../lib/format';
+
+interface Point {
+  date: string;
+  value: number;
+}
+interface Props {
+  series: Point[];
+  height?: number;
+  accent?: string;
+  variant?: 'area' | 'bars';
+  format?: (n: number) => string;
+  ticks?: number;
+}
+const {
+  series,
+  height = 220,
+  accent = 'var(--electric)',
+  variant = 'area',
+  format = (n: number) => String(n),
+  ticks = 5,
+} = Astro.props;
+
+const W = 720;
+const H = 200;
+const padL = 6;
+const padR = 6;
+const padT = 12;
+const padB = 8;
+
+const n = series.length;
+const max = Math.max(1, ...series.map((p) => p.value));
+const innerW = W - padL - padR;
+const innerH = H - padT - padB;
+
+const xAt = (i: number) => (n <= 1 ? padL + innerW / 2 : padL + (i * innerW) / (n - 1));
+const yAt = (v: number) => padT + innerH - (v / max) * innerH;
+
+const pts = series.map((p, i) => [xAt(i), yAt(p.value)] as const);
+const line = pts.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ');
+const area = pts.length
+  ? `${line} L${pts[pts.length - 1][0].toFixed(1)} ${H - padB} L${pts[0][0].toFixed(1)} ${H - padB} Z`
+  : '';
+
+// Poziția maximului (peak) pentru marker.
+let peakIdx = 0;
+for (let i = 1; i < n; i++) if (series[i].value > series[peakIdx].value) peakIdx = i;
+const peak = pts[peakIdx];
+const showPeak = series[peakIdx]?.value > 0;
+
+// Etichete de axă X (câteva, echidistante).
+const tickIdx: number[] = [];
+if (n > 0) {
+  const step = Math.max(1, Math.floor((n - 1) / Math.max(1, ticks - 1)));
+  for (let i = 0; i < n; i += step) tickIdx.push(i);
+  if (tickIdx[tickIdx.length - 1] !== n - 1) tickIdx.push(n - 1);
+}
+
+// Bare: lățime pe slot.
+const barW = n > 0 ? Math.max(2, (innerW / n) * 0.62) : 0;
+
+const gridLines = [0.25, 0.5, 0.75];
+---
+
+<figure class="trend" style={`--trend-h:${height}px`} role="img" aria-label={`Serie de ${n} zile, maxim ${format(max)}`}>
+  <span class="trend__ymax">{format(max)}</span>
+  <div class="trend__plot">
+    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true">
+      {
+        gridLines.map((g) => (
+          <line
+            x1={padL}
+            x2={W - padR}
+            y1={padT + innerH * g}
+            y2={padT + innerH * g}
+            stroke="var(--admin-border)"
+            stroke-width="1"
+            vector-effect="non-scaling-stroke"
+          />
+        ))
+      }
+      {
+        variant === 'bars' ? (
+          series.map((p, i) => (
+            <rect
+              x={xAt(i) - barW / 2}
+              y={yAt(p.value)}
+              width={barW}
+              height={Math.max(0, H - padB - yAt(p.value))}
+              rx="1.5"
+              fill={accent}
+              opacity={p.value ? 0.85 : 0}
+            />
+          ))
+        ) : (
+          <>
+            {area && <path d={area} fill={accent} fill-opacity="0.08" stroke="none" />}
+            <path
+              d={line}
+              fill="none"
+              stroke={accent}
+              stroke-width="2"
+              stroke-linejoin="round"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            />
+          </>
+        )
+      }
+    </svg>
+    {
+      showPeak && (
+        <span
+          class="trend__peak"
+          style={`left:${(peak[0] / W) * 100}%;top:${(peak[1] / H) * 100}%`}
+          aria-hidden="true"
+        />
+      )
+    }
+  </div>
+  <div class="trend__xaxis" aria-hidden="true">
+    {
+      tickIdx.map((i) => (
+        <span style={`left:${(xAt(i) / W) * 100}%`}>{fmtDayShort(series[i].date)}</span>
+      ))
+    }
+  </div>
+</figure>
+
+<style>
+  .trend {
+    margin: 0;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .trend__ymax {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--admin-muted);
+    font-variant-numeric: tabular-nums;
+    background: var(--admin-surface);
+    padding: 0 4px;
+    z-index: 1;
+  }
+  .trend__plot {
+    position: relative;
+    height: var(--trend-h);
+  }
+  .trend__plot svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+  }
+  .trend__peak {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cyan);
+    outline: 2px solid var(--admin-surface);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .trend__xaxis {
+    position: relative;
+    height: 1.2em;
+    margin-top: 6px;
+  }
+  .trend__xaxis span {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: var(--admin-muted);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .trend__xaxis span:first-child {
+    transform: none;
+  }
+  .trend__xaxis span:last-child {
+    transform: translateX(-100%);
+  }
+</style>

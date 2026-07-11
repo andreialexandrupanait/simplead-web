@@ -1,12 +1,18 @@
 ---
 import { count, desc, eq, gte, sum } from 'drizzle-orm';
 import AdminLayout from '../../layouts/AdminLayout.astro';
+import PageHeader from '../../components/admin/PageHeader.astro';
+import Card from '../../components/admin/Card.astro';
 import StatCard from '../../components/admin/StatCard.astro';
+import TrendArea from '../../components/admin/charts/TrendArea.astro';
+import Funnel from '../../components/admin/charts/Funnel.astro';
 import { getDb } from '../../lib/server/db';
-import { leads, orders, packages, posts, subscribers } from '../../lib/server/schema';
+import { leads, orders, packages, posts, subscribers, tickets } from '../../lib/server/schema';
 import { getEncryptionKey } from '../../lib/server/crypto';
 import { getIntegration, INTEGRATIONS } from '../../lib/server/settings';
 import { uploadsWritable } from '../../lib/server/uploads';
+import { fillDaily, sumSeries, trendPct, type DailyPoint } from '../../lib/server/series';
+import { fmtDateTime, fmtMoney } from '../../lib/format';
 import { site } from '../../data/site';
 
 export const prerender = false;
@@ -14,79 +20,157 @@ export const prerender = false;
 const db = getDb();
 const hasEncryptionKey = getEncryptionKey() !== null;
 
-const now = Date.now();
-const d7 = new Date(now - 7 * 86_400_000);
-const d30 = new Date(now - 30 * 86_400_000);
+const now = new Date();
+const d7 = new Date(now.getTime() - 7 * 86_400_000);
+const d30 = new Date(now.getTime() - 30 * 86_400_000);
 
-type Activity = { at: Date; kind: string; label: string; href: string };
+type Activity = { at: Date; kind: string; label: string; href: string; tone?: string };
 
-let stats: {
+type Stats = {
   leadsNew: number;
   leads7d: number;
   orders30d: number;
   revenue30dCents: number;
+  revenueAllCents: number;
   subscribersTotal: number;
   postsPublished: number;
   packagesActive: number;
-} | null = null;
+  dailyRevenue: DailyPoint[];
+  dailyOrders: DailyPoint[];
+  dailyLeads: DailyPoint[];
+  dailySubs: DailyPoint[];
+  leadsByStatus: Record<string, number>;
+  ticketsOpen: number;
+  ticketsUrgent: number;
+  ordersPending: number;
+  ordersFailed: number;
+  ordersPaid30d: number;
+  revenueTrend: number | null;
+  ordersTrend: number | null;
+  leadsTrend: number | null;
+  subsTrend: number | null;
+};
+
+let stats: Stats | null = null;
 let activity: Activity[] = [];
 let dbError = false;
 
 if (db) {
   try {
     const [
-      [leadsNew],
-      [leads7d],
-      [orders30d],
-      [revenue30d],
-      [subsTotal],
-      [postsPub],
-      [pkgActive],
+      leadsByStatusRows,
+      orders30dRows,
+      revenueAll,
+      subsTotal,
+      subs30dRows,
+      postsPub,
+      pkgActive,
+      leads30dRows,
+      ticketsGrouped,
       recentLeads,
       recentOrders,
       recentPosts,
+      recentTickets,
     ] = await Promise.all([
-      db.select({ n: count() }).from(leads).where(eq(leads.status, 'nou')),
-      db.select({ n: count() }).from(leads).where(gte(leads.createdAt, d7)),
-      db.select({ n: count() }).from(orders).where(gte(orders.createdAt, d30)),
+      db.select({ status: leads.status, n: count() }).from(leads).groupBy(leads.status),
       db
-        .select({ s: sum(orders.amountCents) })
+        .select({ createdAt: orders.createdAt, amountCents: orders.amountCents, status: orders.status })
         .from(orders)
-        .where(eq(orders.status, 'paid')),
+        .where(gte(orders.createdAt, d30)),
+      db.select({ s: sum(orders.amountCents) }).from(orders).where(eq(orders.status, 'paid')),
       db.select({ n: count() }).from(subscribers),
+      db.select({ createdAt: subscribers.createdAt }).from(subscribers).where(gte(subscribers.createdAt, d30)),
       db.select({ n: count() }).from(posts).where(eq(posts.status, 'published')),
       db.select({ n: count() }).from(packages).where(eq(packages.active, true)),
+      db.select({ createdAt: leads.createdAt }).from(leads).where(gte(leads.createdAt, d30)),
+      db
+        .select({ status: tickets.status, priority: tickets.priority, n: count() })
+        .from(tickets)
+        .groupBy(tickets.status, tickets.priority),
       db.select().from(leads).orderBy(desc(leads.createdAt)).limit(5),
       db.select().from(orders).orderBy(desc(orders.createdAt)).limit(5),
       db.select().from(posts).orderBy(desc(posts.updatedAt)).limit(5),
+      db.select().from(tickets).orderBy(desc(tickets.updatedAt)).limit(5),
     ]);
+
+    const leadsByStatus: Record<string, number> = {};
+    for (const r of leadsByStatusRows) leadsByStatus[r.status] = r.n;
+
+    // Tichete de acționat: cele neînchise; urgente = prioritate „urgenta" neînchise.
+    const openStatuses = new Set(['deschis', 'in_lucru', 'oferta_trimisa']);
+    let ticketsOpen = 0;
+    let ticketsUrgent = 0;
+    for (const r of ticketsGrouped) {
+      if (openStatuses.has(r.status)) {
+        ticketsOpen += r.n;
+        if (r.priority === 'urgenta') ticketsUrgent += r.n;
+      }
+    }
+    const ordersPending = orders30dRows.filter((o) => o.status === 'pending').length;
+    const ordersFailed = orders30dRows.filter((o) => o.status === 'failed').length;
+    const ordersPaid30d = orders30dRows.filter((o) => o.status === 'paid').length;
+
+    const dailyRevenue = fillDaily(
+      orders30dRows.filter((o) => o.status === 'paid').map((o) => ({ date: o.createdAt, value: o.amountCents })),
+      30,
+      now,
+    );
+    const dailyOrders = fillDaily(orders30dRows.map((o) => ({ date: o.createdAt })), 30, now);
+    const dailyLeads = fillDaily(leads30dRows.map((l) => ({ date: l.createdAt })), 30, now);
+    const dailySubs = fillDaily(subs30dRows.map((s) => ({ date: s.createdAt })), 30, now);
+
     stats = {
-      leadsNew: leadsNew.n,
-      leads7d: leads7d.n,
-      orders30d: orders30d.n,
-      revenue30dCents: Number(revenue30d.s ?? 0),
-      subscribersTotal: subsTotal.n,
-      postsPublished: postsPub.n,
-      packagesActive: pkgActive.n,
+      leadsNew: leadsByStatus['nou'] ?? 0,
+      leads7d: leads30dRows.filter((l) => l.createdAt >= d7).length,
+      orders30d: orders30dRows.length,
+      revenue30dCents: sumSeries(dailyRevenue),
+      revenueAllCents: Number(revenueAll[0]?.s ?? 0),
+      subscribersTotal: subsTotal[0].n,
+      postsPublished: postsPub[0].n,
+      packagesActive: pkgActive[0].n,
+      dailyRevenue,
+      dailyOrders,
+      dailyLeads,
+      dailySubs,
+      leadsByStatus,
+      ticketsOpen,
+      ticketsUrgent,
+      ordersPending,
+      ordersFailed,
+      ordersPaid30d,
+      revenueTrend: trendPct(dailyRevenue, 7),
+      ordersTrend: trendPct(dailyOrders, 7),
+      leadsTrend: trendPct(dailyLeads, 7),
+      subsTrend: trendPct(dailySubs, 7),
     };
+
     activity = [
       ...recentLeads.map((l) => ({
         at: l.createdAt,
         kind: 'Lead',
         label: `${l.name} (${l.email})`,
         href: `/admin/leads/${l.id}`,
+        tone: 'info',
       })),
       ...recentOrders.map((o) => ({
         at: o.createdAt,
         kind: 'Comandă',
         label: `${o.customerEmail ?? 'client'} · ${(o.amountCents / 100).toFixed(0)} ${o.currency}`,
         href: `/admin/comenzi/${o.id}`,
+        tone: o.status === 'paid' ? 'ok' : o.status === 'pending' ? 'warn' : o.status === 'failed' ? 'danger' : undefined,
       })),
       ...recentPosts.map((p) => ({
         at: p.updatedAt,
         kind: p.status === 'published' ? 'Articol' : 'Draft',
         label: p.title,
         href: `/admin/articole/${p.id}`,
+      })),
+      ...recentTickets.map((t) => ({
+        at: t.updatedAt,
+        kind: 'Tichet',
+        label: `${t.name} · ${t.category}`,
+        href: `/admin/tichete/${t.id}`,
+        tone: t.priority === 'urgenta' ? 'danger' : 'info',
       })),
     ]
       .sort((a, b) => b.at.getTime() - a.at.getTime())
@@ -96,6 +180,56 @@ if (db) {
     dbError = true;
   }
 }
+
+// Pipeline lead-uri: etape ordonate cu ton + link către listă filtrată.
+const pipeline = stats
+  ? (
+      [
+        { key: 'nou', label: 'Noi', tone: 'electric' },
+        { key: 'contactat', label: 'Contactate', tone: 'muted' },
+        { key: 'calificat', label: 'Calificate', tone: 'muted' },
+        { key: 'castigat', label: 'Câștigate', tone: 'cyan' },
+        { key: 'pierdut', label: 'Pierdute', tone: 'muted' },
+      ] as const
+    ).map((s) => ({
+      label: s.label,
+      tone: s.tone,
+      value: stats!.leadsByStatus[s.key] ?? 0,
+      href: `/admin/leads?status=${s.key}`,
+    }))
+  : [];
+
+// Bandă „Necesită atenție": ce trebuie acționat azi. Contor 0 → stare „la zi".
+const attention = stats
+  ? [
+      {
+        label: 'Lead-uri de contactat',
+        value: stats.leadsNew,
+        note: stats.leadsNew ? 'necontactate' : 'toate contactate',
+        href: '/admin/leads?status=nou',
+        tone: 'info' as const,
+      },
+      {
+        label: 'Tichete deschise',
+        value: stats.ticketsOpen,
+        note: stats.ticketsUrgent ? `${stats.ticketsUrgent} urgente` : stats.ticketsOpen ? 'în lucru' : 'niciunul deschis',
+        href: '/admin/tichete',
+        tone: (stats.ticketsUrgent ? 'danger' : 'warn') as 'danger' | 'warn',
+      },
+      {
+        label: 'Comenzi de rezolvat',
+        value: stats.ordersPending + stats.ordersFailed,
+        note: stats.ordersFailed
+          ? `${stats.ordersFailed} plăți eșuate`
+          : stats.ordersPending
+            ? `${stats.ordersPending} în așteptare`
+            : 'nimic în așteptare',
+        href: '/admin/comenzi',
+        tone: (stats.ordersFailed ? 'danger' : 'warn') as 'danger' | 'warn',
+      },
+    ]
+  : [];
+const attentionTotal = attention.reduce((n, a) => n + a.value, 0);
 
 // Checklist de configurare: ce mai e de făcut până la vânzare.
 const canUpload = await uploadsWritable();
@@ -128,25 +262,16 @@ const checklist: { label: string; done: boolean; href?: string; action?: string 
     action: (stats?.postsPublished ?? 0) > 0 ? undefined : 'Scrie primul articol',
   },
 ];
-
-const fmtDate = (d: Date) =>
-  d.toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' }) +
-  ' ' +
-  d.toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
-const fmtMoney = (cents: number) => `${(cents / 100).toLocaleString('ro-RO')} €`;
+const doneCount = checklist.filter((c) => c.done).length;
+const allDone = doneCount === checklist.length;
+const pendingChecklist = checklist.filter((c) => !c.done);
 ---
 
-<AdminLayout title="Panou">
-  <div class="admin-page-head">
-    <div>
-      <h1>Bună, {site.founder.split(' ')[0]} 👋</h1>
-      <p class="admin-sub">Privire de ansamblu peste site și vânzări.</p>
-    </div>
-    <div class="admin-actions" style="margin:0">
-      <a class="admin-btn admin-btn--sm" href="/admin/articole/nou">+ Articol nou</a>
-      <a class="admin-btn admin-btn--ghost admin-btn--sm" href="/admin/pachete/nou">+ Pachet</a>
-    </div>
-  </div>
+<AdminLayout title="Panou" wide>
+  <PageHeader title={`Bună, ${site.founder.split(' ')[0]} 👋`} sub="Privire de ansamblu peste site și vânzări.">
+    <a class="admin-btn admin-btn--sm" href="/admin/articole/nou">+ Articol nou</a>
+    <a class="admin-btn admin-btn--ghost admin-btn--sm" href="/admin/pachete/nou">+ Pachet</a>
+  </PageHeader>
 
   {
     !db && (
@@ -167,110 +292,346 @@ const fmtMoney = (cents: number) => `${(cents / 100).toLocaleString('ro-RO')} �
 
   {
     stats && (
-      <div class="admin-stats">
-        <StatCard
-          label="Lead-uri noi"
-          value={stats.leadsNew}
-          hint={`${stats.leads7d} primite în ultimele 7 zile`}
-          href="/admin/leads?status=nou"
-        />
-        <StatCard
-          label="Comenzi (30 zile)"
-          value={stats.orders30d}
-          hint={`Încasări totale: ${fmtMoney(stats.revenue30dCents)}`}
-          href="/admin/comenzi"
-        />
-        <StatCard
-          label="Abonați newsletter"
-          value={stats.subscribersTotal}
-          hint="din footer și /resurse"
-          href="/admin/abonati"
-        />
-        <StatCard
-          label="Articole publicate"
-          value={stats.postsPublished}
-          hint={`${stats.packagesActive} pachete active la vânzare`}
-          href="/admin/articole"
-        />
-      </div>
+      <>
+        <section class="attention" aria-label="Necesită atenție">
+          {attention.map((a) => (
+            <a class:list={['attn', a.value === 0 && 'attn--calm']} href={a.href}>
+              <span class="attn__value">{a.value === 0 ? '✓' : a.value}</span>
+              <span class="attn__body">
+                <span class="attn__label">{a.label}</span>
+                <span class:list={['attn__note', a.value > 0 && `attn__note--${a.tone}`]}>
+                  {a.value === 0 ? 'la zi' : a.note}
+                </span>
+              </span>
+            </a>
+          ))}
+        </section>
+
+        <div class="dash-section-label">Cifre · ultimele 30 de zile</div>
+        <div class="admin-stats admin-stats--3">
+          <StatCard
+            label="Lead-uri (7 zile)"
+            value={stats.leads7d}
+            hint="din formularul de contact"
+            href="/admin/leads"
+            trend={stats.leadsTrend}
+            spark={stats.dailyLeads.map((p) => p.value)}
+          />
+          <StatCard
+            label="Comenzi (30 zile)"
+            value={stats.orders30d}
+            hint={`${stats.ordersPaid30d} plătite`}
+            href="/admin/comenzi"
+            trend={stats.ordersTrend}
+            spark={stats.dailyOrders.map((p) => p.value)}
+          />
+          <StatCard
+            label="Abonați newsletter"
+            value={stats.subscribersTotal}
+            hint="din footer și /resurse"
+            href="/admin/abonati"
+            trend={stats.subsTrend}
+            spark={stats.dailySubs.map((p) => p.value)}
+          />
+        </div>
+
+        <div class="dash-section-label">Vânzări</div>
+        <div class="dash-split">
+          <Card class="revenue-card">
+            <div class="revenue-card__head">
+              <div>
+                <span class="revenue-card__label">Încasări · ultimele 30 de zile</span>
+                <div class="revenue-card__value">
+                  {fmtMoney(stats.revenue30dCents)}
+                  {stats.revenueTrend != null && (
+                    <span class:list={['admin-stat__trend', stats.revenueTrend > 0 ? 'is-up' : stats.revenueTrend < 0 ? 'is-down' : '']}>
+                      {stats.revenueTrend > 0 ? '↑' : stats.revenueTrend < 0 ? '↓' : '—'} {Math.abs(stats.revenueTrend)}%
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div class="revenue-card__meta">
+                <span>
+                  <strong>{stats.ordersPaid30d}</strong> comenzi plătite
+                </span>
+              </div>
+            </div>
+            <TrendArea series={stats.dailyRevenue} height={200} format={(n) => fmtMoney(n)} />
+          </Card>
+
+          <Card title="Pipeline lead-uri" hint="Click pe un stadiu pentru lista filtrată.">
+            {pipeline.some((p) => p.value > 0) ? (
+              <Funnel stages={pipeline} />
+            ) : (
+              <p class="admin-hint" style="margin:0">Niciun lead încă.</p>
+            )}
+          </Card>
+        </div>
+
+        <div class="dash-section-label">Activitate & configurare</div>
+        <div class="admin-cols">
+          <Card title="Activitate recentă" hint="Ultimele lead-uri, comenzi, tichete și editări.">
+            {activity.length === 0 ? (
+              <p style="color:var(--admin-text-soft);font-size:0.92rem">
+                Nimic încă. Activitatea apare aici pe măsură ce site-ul lucrează.
+              </p>
+            ) : (
+              <ul class="admin-activity">
+                {activity.map((a) => (
+                  <li>
+                    <time>{fmtDateTime(a.at)}</time>
+                    <span class:list={['admin-tag', a.tone ? `admin-tag--${a.tone}` : 'admin-tag--plain']}>
+                      {a.kind}
+                    </span>
+                    <a href={a.href} class="admin-row-link">
+                      {a.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+
+          <div class="dash-stack">
+          {allDone ? (
+            <Card title="Configurare completă" hint="Toate integrările și pașii de start sunt gata.">
+              <p class="admin-tag admin-tag--ok" style="margin:0">✓ Site pregătit de vânzare</p>
+            </Card>
+          ) : (
+            <Card title="Pune site-ul la treabă" hint={`${doneCount} din ${checklist.length} pași gata — au mai rămas ${pendingChecklist.length}.`}>
+              <ul class="admin-checklist">
+                {pendingChecklist.map((item) => (
+                  <li>
+                    <span class="check-dot">·</span>
+                    {item.label}
+                    {item.action && item.href && (
+                      <a class="check-action" href={item.href}>
+                        {item.action} →
+                      </a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
+            <Card title="Conținut & catalog" hint="Ce e publicat pe site.">
+              <div class="dash-catalog">
+                <a href="/admin/articole"><strong>{stats.postsPublished}</strong> articole publicate</a>
+                <a href="/admin/pachete"><strong>{stats.packagesActive}</strong> pachete active</a>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </>
     )
   }
 
-  <div class="dash-cols">
-    <div class="admin-card">
-      <h2>Activitate recentă</h2>
-      <p class="admin-hint">Ultimele lead-uri, comenzi și editări de conținut.</p>
-      {
-        activity.length === 0 ? (
-          <p style="color:var(--muted);font-size:0.92rem">
-            Nimic încă. Activitatea apare aici pe măsură ce site-ul lucrează.
-          </p>
-        ) : (
-          <ul class="admin-activity">
-            {activity.map((a) => (
-              <li>
-                <time>{fmtDate(a.at)}</time>
-                <span class="admin-tag admin-tag--plain">{a.kind}</span>
-                <a href={a.href} class="admin-row-link">
-                  {a.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        )
-      }
-    </div>
-
-    <div class="admin-card">
-      <h2>Pune site-ul la treabă</h2>
-      <p class="admin-hint">Pașii rămași până când site-ul vinde singur.</p>
-      <ul class="admin-checklist">
-        {
-          checklist.map((item) => (
-            <li>
-              <span class:list={['check-dot', item.done && 'is-done']}>
-                {item.done ? '✓' : '·'}
-              </span>
-              {item.label}
-              {item.action && item.href && (
-                <a class="check-action" href={item.href}>
-                  {item.action} →
-                </a>
-              )}
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </div>
-
-  <div class="admin-card" style="margin-top:20px">
-    <h2>Date site</h2>
-    <p class="admin-hint">
-      Identitatea afișată public vine din cod (<code>src/data/site.ts</code>) și se aplică la
-      următorul deploy, nu se editează de aici.
-    </p>
-    <dl class="admin-kv">
-      <dt>Nume</dt>
-      <dd>{site.name}</dd>
-      <dt>Contact</dt>
-      <dd>{site.contact.email} · {site.contact.phone}</dd>
-      <dt>CIF / Reg. Com.</dt>
-      <dd>{site.legal.cif} · {site.legal.regCom}</dd>
-    </dl>
-  </div>
+  <details class="site-id-details">
+    <summary>Identitate site (nume, contact, CIF)</summary>
+    <Card class="site-id-card">
+      <p class="admin-hint">
+        Identitatea afișată public vine din cod (<code>src/data/site.ts</code>) și se aplică la
+        următorul deploy, nu se editează de aici.
+      </p>
+      <dl class="admin-kv">
+        <dt>Nume</dt>
+        <dd>{site.name}</dd>
+        <dt>Contact</dt>
+        <dd>{site.contact.email} · {site.contact.phone}</dd>
+        <dt>CIF / Reg. Com.</dt>
+        <dd>{site.legal.cif} · {site.legal.regCom}</dd>
+      </dl>
+    </Card>
+  </details>
 </AdminLayout>
 
 <style>
-  .dash-cols {
+  /* Bandă „Necesită atenție" — prima secțiune, acțiuni de azi. */
+  .attention {
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .attn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--r-lg);
+    color: inherit;
+    transition: border-color 0.15s ease;
+  }
+  .attn:hover {
+    border-color: color-mix(in srgb, var(--electric) 45%, var(--admin-border));
+  }
+  .attn__value {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--admin-text);
+    font-variant-numeric: tabular-nums;
+    min-width: 1.2em;
+    text-align: center;
+  }
+  .attn--calm .attn__value {
+    font-size: 1.5rem;
+    color: var(--admin-ok-fg);
+  }
+  .attn__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .attn__label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--admin-text);
+  }
+  .attn__note {
+    font-size: 0.82rem;
+    color: var(--admin-text-soft);
+  }
+  .attn__note--warn {
+    color: var(--admin-warn-fg);
+    font-weight: 600;
+  }
+  .attn__note--danger {
+    color: var(--admin-danger-accent);
+    font-weight: 600;
+  }
+  .attn--calm {
+    background: var(--admin-surface-2);
+  }
+
+  .dash-section-label {
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--admin-muted);
+    margin: 26px 0 12px;
+  }
+  .dash-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .dash-catalog {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .dash-catalog a {
+    color: var(--admin-text);
+    font-size: 0.92rem;
+  }
+  .dash-catalog a:hover {
+    color: var(--electric);
+  }
+  .dash-catalog strong {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    margin-right: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Încasări (lat) + Pipeline (îngust) unul lângă altul. */
+  .dash-split {
+    display: grid;
+    grid-template-columns: 1.7fr 1fr;
     gap: 20px;
     align-items: start;
+    margin-top: 4px;
   }
   @media (max-width: 1000px) {
-    .dash-cols {
+    .dash-split {
       grid-template-columns: 1fr;
+    }
+  }
+
+  .site-id-details {
+    margin-top: 20px;
+  }
+  .site-id-details > summary {
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--admin-text-soft);
+    padding: 10px 2px;
+    list-style: none;
+  }
+  .site-id-details > summary::-webkit-details-marker {
+    display: none;
+  }
+  .site-id-details > summary::before {
+    content: '▸ ';
+    color: var(--admin-muted);
+  }
+  .site-id-details[open] > summary::before {
+    content: '▾ ';
+  }
+  .site-id-details > summary:hover {
+    color: var(--electric);
+  }
+  .site-id-details .site-id-card {
+    margin-top: 10px;
+  }
+
+  .revenue-card {
+    margin-top: 4px;
+  }
+  .revenue-card__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .revenue-card__label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--admin-text-soft);
+  }
+  .revenue-card__value {
+    font-family: var(--font-display);
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: var(--admin-text);
+    line-height: 1.1;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .revenue-card__meta {
+    display: flex;
+    gap: 22px;
+    font-size: 0.86rem;
+    color: var(--admin-text-soft);
+    text-align: right;
+  }
+  .revenue-card__meta strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: var(--admin-text);
+    font-variant-numeric: tabular-nums;
+  }
+  .site-id-card {
+    margin-top: 20px;
+  }
+  @media (max-width: 560px) {
+    .revenue-card__meta {
+      text-align: left;
     }
   }
 </style>

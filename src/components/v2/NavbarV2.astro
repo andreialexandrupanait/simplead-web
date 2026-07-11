@@ -1,0 +1,186 @@
+---
+import Logo from '@components/ui/Logo.astro';
+import MobileMenu from '@components/react/MobileMenu';
+import { mainNav, servicesNav, supportNavItem } from '@data/nav';
+import { useTranslations, localeFromPath } from '@i18n/index';
+
+interface Props {
+  /** Navbar-ul stă peste hero (transparent până la scroll). */
+  transparent?: boolean;
+  /** Hero-ul de dedesubt e dark → text/logo alb până la scroll. */
+  overDark?: boolean;
+  activePath?: string;
+}
+const { transparent = false, overDark = false, activePath = Astro.url.pathname } = Astro.props;
+const t = useTranslations(localeFromPath(Astro.url.pathname));
+
+const isActive = (href: string) =>
+  href === '/' ? activePath === '/' : activePath.startsWith(href);
+---
+
+<header
+  data-nav-v2
+  data-transparent={transparent ? 'true' : 'false'}
+  class:list={['navv2', transparent ? 'navv2--over' : 'navv2--solid', overDark && 'navv2--dark']}
+>
+  <div class="v2-container navv2__inner">
+    <a class="navv2__logo" href="/" aria-label="Simplead, Acasă">
+      <Logo height={28} color="currentColor" />
+    </a>
+
+    <nav class="navv2__links" aria-label={t.nav.mainNav}>
+      {
+        mainNav.map((item) => (
+          <a
+            href={item.href}
+            class:list={['navv2__link', isActive(item.href) && 'is-active']}
+            {...(item.href === '/contact' ? { 'data-no-drawer': '' } : {})}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <a class="navv2__cta" href="/contact" data-no-drawer>{t.nav.cta}</a>
+
+    <div class="navv2__burger">
+      <MobileMenu
+        client:load
+        items={mainNav}
+        services={[...servicesNav, supportNavItem]}
+        ctaLabel={t.nav.cta}
+        ctaHref="/contact"
+        activePath={activePath}
+      />
+    </div>
+  </div>
+</header>
+
+<style>
+  .navv2 {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--v2-line);
+    transition:
+      background-color 0.25s ease,
+      border-color 0.25s ease;
+  }
+  .navv2--over {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    background: transparent;
+    border-bottom-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .navv2--over.is-solid {
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom-color: var(--v2-line);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .navv2__inner {
+    height: var(--v2-nav-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+  }
+  .navv2__logo {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    color: var(--v2-navy);
+  }
+  .navv2--over.navv2--dark .navv2__logo {
+    color: #fff;
+  }
+  .navv2--over.navv2--dark.is-solid .navv2__logo {
+    color: var(--v2-navy);
+  }
+
+  .navv2__links {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    margin-inline: auto;
+  }
+  .navv2__link {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #33415e;
+    transition: color 0.16s ease;
+  }
+  .navv2__link:hover,
+  .navv2__link.is-active {
+    color: var(--v2-blue);
+  }
+  .navv2--over.navv2--dark .navv2__link {
+    color: rgba(255, 255, 255, 0.82);
+  }
+  .navv2--over.navv2--dark .navv2__link:hover,
+  .navv2--over.navv2--dark .navv2__link.is-active {
+    color: #fff;
+  }
+  .navv2--over.navv2--dark.is-solid .navv2__link {
+    color: #33415e;
+  }
+  .navv2--over.navv2--dark.is-solid .navv2__link:hover,
+  .navv2--over.navv2--dark.is-solid .navv2__link.is-active {
+    color: var(--v2-blue);
+  }
+
+  .navv2__cta {
+    flex: none;
+    background: var(--v2-blue);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 13px 24px;
+    border-radius: var(--v2-r);
+    transition: background-color 0.18s ease;
+  }
+  .navv2__cta:hover {
+    background: var(--v2-navy);
+    color: #fff;
+  }
+
+  .navv2__burger {
+    display: none;
+    margin-left: auto;
+  }
+
+  @media (max-width: 900px) {
+    .navv2__links,
+    .navv2__cta {
+      display: none;
+    }
+    .navv2__burger {
+      display: block;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .navv2 {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Navbar „peste hero" devine solid la scroll.
+  const nav = document.querySelector<HTMLElement>("header[data-nav-v2][data-transparent='true']");
+  if (nav) {
+    const onScroll = () => nav.classList.toggle('is-solid', window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+</script>

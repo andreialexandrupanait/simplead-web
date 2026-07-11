@@ -44,7 +44,7 @@ const err = (field: string) => errors[field]?.[0];
             data-published-slug={publishedSlug ?? ''}
           />
           {err('slug') && <small class="field-error">{err('slug')}</small>}
-          <small id="pfSlugWarn" style="display:none;color:#7a6505">
+          <small id="pfSlugWarn" style="display:none;color:var(--admin-warn-fg)">
             Atenție: schimbarea slug-ului unui proiect publicat rupe linkurile existente.
           </small>
         </label>

@@ -36,6 +36,7 @@ export interface PublicSettings {
   hiddenHomeSections: string[]; // cheile secțiunilor de homepage ascunse
   constructionPages: string[]; // căile paginilor marcate „în construcție"
   maintenanceMode: boolean; // tot site-ul în mentenanță (vizitatorii văd 503)
+  abTestEnabled: boolean; // testul A/B de redesign e activ (altfel 100% varianta A)
   tracking: TrackingSettings;
 }
 
@@ -45,6 +46,7 @@ const KEYS = {
   hiddenHomeSections: 'site.hidden_home_sections',
   constructionPages: 'site.construction_pages',
   maintenanceMode: 'site.maintenance_mode',
+  abTestEnabled: 'site.ab_test_enabled',
   gtmId: 'site.gtm_id',
   ga4Id: 'site.ga4_id',
   clarityId: 'site.clarity_id',
@@ -69,6 +71,7 @@ const DEFAULTS: PublicSettings = {
   hiddenHomeSections: ['case-studies'],
   constructionPages: [],
   maintenanceMode: false,
+  abTestEnabled: false,
   tracking: { ...EMPTY_TRACKING },
 };
 
@@ -111,6 +114,7 @@ export async function getPublicSettings(): Promise<PublicSettings> {
       value.showPhone = map.get(KEYS.showPhone) === 'true';
       value.whatsappNumber = (map.get(KEYS.whatsappNumber) ?? '').replace(/[^\d]/g, '');
       value.maintenanceMode = map.get(KEYS.maintenanceMode) === 'true';
+      value.abTestEnabled = map.get(KEYS.abTestEnabled) === 'true';
       // Cheie prezentă = setare salvată din admin (poate fi listă goală).
       // Cheie absentă = niciodată salvată → folosim default-ul.
       if (map.has(KEYS.hiddenHomeSections)) {
@@ -141,6 +145,7 @@ export async function savePublicSettings(input: {
   hiddenHomeSections: string[];
   constructionPages: string[];
   maintenanceMode: boolean;
+  abTestEnabled: boolean;
 }): Promise<SavePublicResult> {
   const db = getDb();
   if (!db) {
@@ -154,6 +159,7 @@ export async function savePublicSettings(input: {
     { key: KEYS.hiddenHomeSections, value: JSON.stringify(hidden) },
     { key: KEYS.constructionPages, value: JSON.stringify(construction) },
     { key: KEYS.maintenanceMode, value: input.maintenanceMode ? 'true' : 'false' },
+    { key: KEYS.abTestEnabled, value: input.abTestEnabled ? 'true' : 'false' },
   ];
   try {
     for (const p of pairs) {

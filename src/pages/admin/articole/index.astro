@@ -1,6 +1,7 @@
 ---
 import { and, count, desc, eq, ilike, or, type SQL } from 'drizzle-orm';
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import PageHeader from '../../../components/admin/PageHeader.astro';
 import StatusBadge from '../../../components/admin/StatusBadge.astro';
 import EmptyState from '../../../components/admin/EmptyState.astro';
 import Pagination from '../../../components/admin/Pagination.astro';
@@ -71,16 +72,10 @@ const chipUrl = (status: string) => {
 ---
 
 <AdminLayout title="Articole">
-  <div class="admin-page-head">
-    <div>
-      <h1>Articole</h1>
-      <p class="admin-sub">
-        Blogul site-ului: publicarea e instant, fără rebuild.
-        <a href="/blog" target="_blank" style="color:var(--electric)">Vezi blogul ↗</a>
-      </p>
-    </div>
+  <PageHeader title="Articole" sub="Blogul site-ului: publicarea e instant, fără rebuild.">
+    <a href="/blog" target="_blank" class="admin-btn admin-btn--ghost">Vezi blogul ↗</a>
     <a href="/admin/articole/nou" class="admin-btn">+ Articol nou</a>
-  </div>
+  </PageHeader>
 
   {
     !db && (

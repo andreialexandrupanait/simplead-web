@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
+import PageHeader from '../../components/admin/PageHeader.astro';
 import { setFlash } from '../../lib/server/flash';
 import { getPublicSettings, savePublicSettings } from '../../lib/server/public-settings';
 import { HOME_SECTIONS, TOGGLEABLE_PAGES } from '../../data/sections';
@@ -23,115 +24,139 @@ if (Astro.request.method === 'POST') {
 const current = await getPublicSettings();
 ---
 
-<AdminLayout title="Setări site">
-  <div class="admin-page-head">
-    <div>
-      <h1>Setări site</h1>
-      <p class="admin-hint">Controlezi ce date de contact apar public. Emailul e mereu vizibil.</p>
-    </div>
-  </div>
+<AdminLayout title="Setări site" wide>
+  <PageHeader title="Setări site" sub="Controlezi ce date de contact apar public. Emailul e mereu vizibil." />
 
   {saveError && <div class="admin-banner admin-banner--error">{saveError}</div>}
 
-  <form method="post" style="max-width:560px">
-    <div
-      class="admin-card"
-      style={`border-color:${current.maintenanceMode ? 'var(--signal, #f5d93f)' : ''}`}
-    >
-      <h2>Mentenanță site</h2>
-      <label class="admin-field admin-check" style="align-self:start">
-        <input type="checkbox" name="maintenanceMode" value="1" checked={current.maintenanceMode} />
-        <span style="margin:0">Pune tot site-ul în mentenanță</span>
-      </label>
-      <p class="admin-hint" style="margin-top:8px">
-        Bifat: vizitatorii văd un ecran „în mentenanță" (503) pe toate paginile principale. Tu,
-        logat în admin, vezi site-ul normal, cu un banner de avertizare. Adminul rămâne accesibil.
-      </p>
-    </div>
+  <form method="post" class="settings">
+    <section class="settings-section">
+      <div class="settings-section__head">
+        <h2>Disponibilitate site</h2>
+        <p>Dacă site-ul e vizibil publicului și ce versiune de design primesc vizitatorii.</p>
+      </div>
 
-    <div class="admin-card" style="margin-top:20px">
-      <h2>Telefon</h2>
-      <label class="admin-field admin-check" style="align-self:start">
-        <input type="checkbox" name="showPhone" value="1" checked={current.showPhone} />
-        <span style="margin:0">Afișează numărul de telefon pe site</span>
-      </label>
-      <p class="admin-hint" style="margin-top:8px">
-        Debifat (implicit): numărul nu apare nicăieri: nici în pagini, nici în datele structurate
-        (Google). Bifat: reapare în hero-uri, în sertarul de contact și pe pagina Contact. Numărul
-        rămâne cel din configurație ({''}
-        <code>site.contact.phone</code>).
-      </p>
-    </div>
+      <div class:list={['setting-row', current.maintenanceMode && 'setting-row--flag']}>
+        <div class="setting-row__text">
+          <span class="setting-row__label">Mentenanță site</span>
+          <p class="setting-row__desc">
+            Bifat: vizitatorii văd un ecran „în mentenanță" (503) pe toate paginile principale. Tu,
+            logat în admin, vezi site-ul normal, cu un banner de avertizare. Adminul rămâne accesibil.
+          </p>
+        </div>
+        <label class="switch setting-row__control">
+          <input type="checkbox" name="maintenanceMode" value="1" checked={current.maintenanceMode} />
+          <span class="switch__track"></span>
+        </label>
+      </div>
 
-    <div class="admin-card" style="margin-top:20px">
-      <h2>WhatsApp</h2>
-      <label class="admin-field" style="margin-bottom:0">
-        <span
-          >Număr WhatsApp <small style="display:inline;color:var(--muted)"
-            >(cu prefix de țară, doar cifre)</small
-          ></span
-        >
-        <input
-          class="admin-input"
-          type="text"
-          name="whatsappNumber"
-          value={current.whatsappNumber}
-          placeholder="40755215135"
-          inputmode="numeric"
-          autocomplete="off"
-        />
-        <small>
-          Gol = WhatsApp ascuns. Setat = apare butonul „Scrie pe WhatsApp" în sertarul de contact,
-          pe pagina Contact și în hero-uri (când telefonul e ascuns).
-        </small>
-      </label>
-    </div>
+      <div class="setting-row">
+        <div class="setting-row__text">
+          <span class="setting-row__label">Test A/B redesign</span>
+          <p class="setting-row__desc">
+            Bifat: jumătate dintre vizitatori (aleator, sticky ~90 de zile) văd designul nou; restul
+            văd versiunea actuală. Ca admin ești exclus din eșantion și poți forța
+            <code>?v=a</code> / <code>?v=b</code>. Statistici în
+            <a href="/admin/experiment">Experiment A/B</a>.
+          </p>
+        </div>
+        <label class="switch setting-row__control">
+          <input type="checkbox" name="abTestEnabled" value="1" checked={current.abTestEnabled} />
+          <span class="switch__track"></span>
+        </label>
+      </div>
+    </section>
 
-    <div class="admin-card" style="margin-top:20px">
-      <h2>Secțiuni homepage</h2>
-      <p class="admin-hint" style="margin-bottom:14px">
-        Bifat = secțiunea apare pe homepage. Debifat = ascunsă pentru vizitatori (o poți reactiva
-        oricând când e gata).
-      </p>
-      {
-        HOME_SECTIONS.map((s) => (
-          <label class="admin-field admin-check" style="align-self:start;margin-bottom:10px">
-            <input
-              type="checkbox"
-              name={`section.${s.key}`}
-              value="1"
-              checked={!current.hiddenHomeSections.includes(s.key)}
-            />
-            <span style="margin:0">{s.label}</span>
-          </label>
-        ))
-      }
-    </div>
+    <section class="settings-section">
+      <div class="settings-section__head">
+        <h2>Contact public</h2>
+        <p>Ce date de contact apar pe site. Emailul e mereu vizibil.</p>
+      </div>
 
-    <div class="admin-card" style="margin-top:20px">
-      <h2>Pagini „în construcție"</h2>
-      <p class="admin-hint" style="margin-bottom:14px">
-        Bifat = pagina arată un ecran „în construcție" vizitatorilor. Tu (logat în admin) vezi
-        oricum pagina reală, ca să poți lucra la ea.
-      </p>
-      {
-        TOGGLEABLE_PAGES.map((p) => (
-          <label class="admin-field admin-check" style="align-self:start;margin-bottom:10px">
-            <input
-              type="checkbox"
-              name={`construction.${p.path}`}
-              value="1"
-              checked={current.constructionPages.includes(p.path)}
-            />
-            <span style="margin:0">
-              {p.label} <small style="color:var(--muted)">{p.path}</small>
-            </span>
-          </label>
-        ))
-      }
-    </div>
+      <div class="setting-row">
+        <div class="setting-row__text">
+          <span class="setting-row__label">Afișează numărul de telefon</span>
+          <p class="setting-row__desc">
+            Debifat (implicit): numărul nu apare nicăieri, nici în datele structurate (Google).
+            Bifat: reapare în hero-uri, în sertarul de contact și pe pagina Contact. Numărul rămâne
+            cel din configurație (<code>site.contact.phone</code>).
+          </p>
+        </div>
+        <label class="switch setting-row__control">
+          <input type="checkbox" name="showPhone" value="1" checked={current.showPhone} />
+          <span class="switch__track"></span>
+        </label>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-row__text">
+          <span class="setting-row__label">Număr WhatsApp</span>
+          <p class="setting-row__desc">
+            Gol = WhatsApp ascuns. Setat = apare butonul „Scrie pe WhatsApp" în sertarul de contact,
+            pe pagina Contact și în hero-uri (când telefonul e ascuns). Cu prefix de țară, doar cifre.
+          </p>
+        </div>
+        <div class="setting-row__control setting-row__control--input">
+          <input
+            class="admin-input"
+            type="text"
+            name="whatsappNumber"
+            value={current.whatsappNumber}
+            placeholder="40755215135"
+            inputmode="numeric"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <div class="settings-section__head">
+        <h2>Secțiuni homepage</h2>
+        <p>Bifat = secțiunea apare pe homepage. Debifat = ascunsă pentru vizitatori (o reactivezi oricând).</p>
+      </div>
+      <div class="setting-check-grid">
+        {
+          HOME_SECTIONS.map((s) => (
+            <label class="setting-check">
+              <input
+                type="checkbox"
+                name={`section.${s.key}`}
+                value="1"
+                checked={!current.hiddenHomeSections.includes(s.key)}
+              />
+              <span>{s.label}</span>
+            </label>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <div class="settings-section__head">
+        <h2>Pagini „în construcție"</h2>
+        <p>Bifat = pagina arată un ecran „în construcție" vizitatorilor. Tu, logat în admin, vezi pagina reală.</p>
+      </div>
+      <div class="setting-check-grid">
+        {
+          TOGGLEABLE_PAGES.map((p) => (
+            <label class="setting-check">
+              <input
+                type="checkbox"
+                name={`construction.${p.path}`}
+                value="1"
+                checked={current.constructionPages.includes(p.path)}
+              />
+              <span>{p.label} <small>{p.path}</small></span>
+            </label>
+          ))
+        }
+      </div>
+    </section>
 
     <div class="admin-savebar">
+      <span class="savebar-status">Modificările se aplică imediat după salvare.</span>
+      <span class="spacer"></span>
       <button type="submit" class="admin-btn">Salvează setările</button>
     </div>
   </form>

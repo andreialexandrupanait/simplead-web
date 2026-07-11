@@ -1,17 +1,45 @@
 ---
-/** Card de statistică pentru dashboard și listele admin. */
+/**
+ * Card de statistică pentru dashboard și listele admin. Opțional: `trend` (delta
+ * % → chip ↑/↓) și `spark` (mini-sparkline în footer). Props vechi (label/value/
+ * hint/href) rămân compatibile cu apelanții existenți.
+ */
+import Sparkline from './charts/Sparkline.astro';
+import { fmtDelta } from '../../lib/format';
+
 interface Props {
   label: string;
   value: string | number;
   hint?: string;
   href?: string;
+  trend?: number | null;
+  spark?: number[];
+  accent?: string;
 }
-const { label, value, hint, href } = Astro.props;
+const { label, value, hint, href, trend, spark, accent = 'var(--electric)' } = Astro.props;
 const Tag = href ? 'a' : 'div';
+const hasTrend = typeof trend === 'number';
+const trendClass = hasTrend ? (trend! > 0 ? 'is-up' : trend! < 0 ? 'is-down' : '') : '';
 ---
 
 <Tag class="admin-stat" href={href}>
-  <span class="admin-stat__label">{label}</span>
+  <div class="admin-stat__top">
+    <span class="admin-stat__label">{label}</span>
+    {
+      hasTrend && (
+        <span class:list={['admin-stat__trend', trendClass]}>
+          {trend! > 0 ? '↑' : trend! < 0 ? '↓' : '—'} {fmtDelta(trend!)}
+        </span>
+      )
+    }
+  </div>
   <span class="admin-stat__value">{value}</span>
   {hint && <span class="admin-stat__hint">{hint}</span>}
+  {
+    spark && spark.length > 1 && (
+      <span class="admin-stat__spark">
+        <Sparkline values={spark} width={220} height={30} stroke={accent} />
+      </span>
+    )
+  }
 </Tag>

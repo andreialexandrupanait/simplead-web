@@ -60,5 +60,9 @@ declare namespace App {
     pageUnderConstruction?: boolean;
     /** Tot site-ul e în mentenanță (pentru bannerul de admin). */
     siteMaintenance?: boolean;
+    /** Varianta A/B atribuită vizitatorului (test de redesign). */
+    abVariant?: import('./lib/server/ab').Variant;
+    /** Marcaj intern: request-ul e re-rularea după rewrite-ul către /v2 (nu-l seta manual). */
+    __abRewrite?: boolean;
   }
 }

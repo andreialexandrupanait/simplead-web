@@ -238,13 +238,13 @@ function tabUrl(key: string) {
                 <div style="display:flex;flex-direction:column;gap:10px">
                   {convEvents.events.map((ev) => (
                     <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-                      <span>{EVENT_LABELS[ev.name] ?? ev.name} <code style="color:var(--muted)">{ev.name}</code></span>
+                      <span>{EVENT_LABELS[ev.name] ?? ev.name} <code style="color:var(--admin-text-soft)">{ev.name}</code></span>
                       <strong class="num">{ev.count}</strong>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p style="color:var(--muted);margin:0">
+                <p style="color:var(--admin-text-soft);margin:0">
                   Nicio conversie în perioada aleasă (sau evenimentele nu au ajuns încă în GA4).
                 </p>
               )}
@@ -264,25 +264,27 @@ function tabUrl(key: string) {
           TikTok, Clarity rulează ca tag-uri în interiorul GTM. Site-ul trimite evenimente în{' '}
           <code>dataLayer</code> (vezi tab-ul <a href={tabUrl('evenimente')}>Evenimente</a>).
         </div>
-        <form method="post" style="max-width:640px">
+        <form method="post">
           <input type="hidden" name="section" value="coduri" />
-          {ID_FIELDS.map((f) => (
-            <div class="admin-card" style="margin-top:16px">
-              <label class="admin-field" style="margin-bottom:0">
-                <span>{f.label}</span>
-                <input
-                  class="admin-input"
-                  type="text"
-                  name={f.name}
-                  value={t?.[f.name]}
-                  placeholder={f.placeholder}
-                  autocomplete="off"
-                  spellcheck="false"
-                />
-                <small>{f.hint}</small>
-              </label>
+          <div class="admin-card">
+            <div class="admin-field-grid">
+              {ID_FIELDS.map((f) => (
+                <label class="admin-field" style="margin-bottom:0">
+                  <span>{f.label}</span>
+                  <input
+                    class="admin-input"
+                    type="text"
+                    name={f.name}
+                    value={t?.[f.name]}
+                    placeholder={f.placeholder}
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                  <small>{f.hint}</small>
+                </label>
+              ))}
             </div>
-          ))}
+          </div>
           <div class="admin-savebar">
             <button type="submit" class="admin-btn">
               Salvează
@@ -317,33 +319,35 @@ function tabUrl(key: string) {
           la ad-blockere/iOS. ID-urile de pixel/measurement se iau din tab-ul{' '}
           <a href={tabUrl('coduri')}>Coduri</a>.
         </div>
-        <form method="post" style="max-width:640px">
+        <form method="post">
           <input type="hidden" name="section" value="conversii" />
-          {CAPI_FIELDS.map((f) => {
-            const m = capi[f.name];
-            return (
-              <div class="admin-card" style="margin-top:16px">
-                <label class="admin-field" style="margin-bottom:0">
-                  <span>{f.label}</span>
-                  <input
-                    class="admin-input"
-                    type="password"
-                    name={f.name}
-                    placeholder={m.masked ?? 'nesetat'}
-                    autocomplete="off"
-                    spellcheck="false"
-                  />
-                  <small>{f.hint}</small>
-                  {m.masked && (
-                    <label class="admin-check" style="margin-top:8px">
-                      <input type="checkbox" name={`clear_${f.name}`} />
-                      <span>Șterge valoarea salvată</span>
-                    </label>
-                  )}
-                </label>
-              </div>
-            );
-          })}
+          <div class="admin-card">
+            <div class="admin-field-grid">
+              {CAPI_FIELDS.map((f) => {
+                const m = capi[f.name];
+                return (
+                  <label class="admin-field" style="margin-bottom:0">
+                    <span>{f.label}</span>
+                    <input
+                      class="admin-input"
+                      type="password"
+                      name={f.name}
+                      placeholder={m.masked ?? 'nesetat'}
+                      autocomplete="off"
+                      spellcheck="false"
+                    />
+                    <small>{f.hint}</small>
+                    {m.masked && (
+                      <label class="admin-check" style="margin-top:8px">
+                        <input type="checkbox" name={`clear_${f.name}`} />
+                        <span>Șterge valoarea salvată</span>
+                      </label>
+                    )}
+                  </label>
+                );
+              })}
+            </div>
+          </div>
           <div class="admin-savebar">
             <button type="submit" class="admin-btn">
               Salvează
@@ -388,7 +392,7 @@ function tabUrl(key: string) {
         )}
         <div class="admin-card">
           <h2 style="margin:0 0 8px">Google Tag Manager</h2>
-          <p style="color:var(--muted);margin:0 0 14px">
+          <p style="color:var(--admin-text-soft);margin:0 0 14px">
             Publică modificările din „Default Workspace" direct de aici. Editarea tag-urilor +
             re-provizionarea structurii se fac din GTM sau cu <code>scripts/gtm-rebuild.mjs</code>.
           </p>

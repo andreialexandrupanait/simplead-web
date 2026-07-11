@@ -1,6 +1,7 @@
 ---
 import { eq } from 'drizzle-orm';
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import PageHeader from '../../../components/admin/PageHeader.astro';
 import StatusBadge from '../../../components/admin/StatusBadge.astro';
 import { getDb } from '../../../lib/server/db';
 import { leads, leadStatus } from '../../../lib/server/schema';
@@ -55,18 +56,15 @@ const STATUS_LABEL: Record<string, string> = {
 ---
 
 <AdminLayout title={`Lead: ${lead.name}`}>
-  <div class="admin-page-head">
-    <div>
-      <a href="/admin/leads" style="font-size:0.88rem;color:var(--muted)">← Înapoi la lead-uri</a>
-      <h1 style="margin-top:6px">{lead.name}</h1>
-      <p class="admin-sub">
-        Primit pe {dateFmt.format(lead.createdAt)} · sursă: {lead.source}
-      </p>
-    </div>
+  <PageHeader
+    title={lead.name}
+    sub={`Primit pe ${dateFmt.format(lead.createdAt)} · sursă: ${lead.source}`}
+    back={{ href: '/admin/leads', label: 'Înapoi la lead-uri' }}
+  >
     <StatusBadge status={lead.status} />
-  </div>
+  </PageHeader>
 
-  <div class="lead-cols">
+  <div class="admin-cols">
     <div class="admin-card">
       <h2>Mesaj</h2>
       <p class="admin-hint">
@@ -143,16 +141,3 @@ const STATUS_LABEL: Record<string, string> = {
   </div>
 </AdminLayout>
 
-<style>
-  .lead-cols {
-    display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
-    gap: 20px;
-    align-items: start;
-  }
-  @media (max-width: 1000px) {
-    .lead-cols {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>

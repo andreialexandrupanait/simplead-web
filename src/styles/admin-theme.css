@@ -1,0 +1,131 @@
+/* ============================================================
+   Admin Simplead — contract de temă (light + dark).
+   Importat DOAR de AdminLayout.astro, deci nu atinge site-ul public.
+   Valorile light = exact look-ul de azi (paginile neconvertite nu se
+   mișcă). Dark = navy desaturat „deep tech", fără glass/mov/neon.
+   Accentele de brand (--electric/--cyan/--signal) vin din global.css
+   și rămân identice în ambele teme — firul vizual.
+   ============================================================ */
+
+.admin-body {
+  /* ----- Suprafețe & text ----- */
+  --admin-bg: #f5f7fa;
+  --admin-surface: #ffffff;
+  --admin-surface-2: #f5f7fa;
+  --admin-surface-inset: #fbfcfe;
+  --admin-border: #e1e6e8;
+  --admin-border-strong: #d7dde6;
+  --admin-text: #030d4a;
+  --admin-text-soft: #5b6788;
+  --admin-muted: #9aa7c7;
+  --admin-on-accent: #ffffff;
+
+  /* ----- Sidebar (navy solid, flat — fără gradient) ----- */
+  --admin-sidebar-bg: var(--ink);
+  --admin-sidebar-border: rgba(255, 255, 255, 0.1);
+  --admin-sidebar-flyout: #0a1b47;
+  --admin-sidebar-text: #c7d0ea;
+  --admin-sidebar-text-strong: #ffffff;
+  --admin-sidebar-hover: rgba(255, 255, 255, 0.07);
+
+  /* ----- Umbre ----- */
+  --admin-shadow-sm: 0 4px 12px -4px rgba(3, 13, 74, 0.08);
+  --admin-shadow-pop: 0 12px 32px -12px rgba(3, 13, 74, 0.5);
+  --admin-shadow-up: 0 -8px 28px -14px rgba(3, 13, 74, 0.35);
+
+  /* ----- Semantice ----- */
+  --admin-danger-bg: #fdf0f0;
+  --admin-danger-border: #efc7c7;
+  --admin-danger-fg: #8a2424;
+  --admin-danger-accent: #b3261e;
+  --admin-danger-btn-border: #e6b8b5;
+  --admin-ok-fg: #0b6e63;
+  --admin-warn-fg: #7a6505;
+
+  /* ----- Toast & overlay ----- */
+  --admin-toast-bg: #030d4a;
+  --admin-toast-fg: #ffffff;
+  --admin-scrim: rgba(3, 13, 74, 0.45);
+}
+
+.admin-body[data-theme='dark'] {
+  --admin-bg: #070f2e;
+  --admin-surface: #0c1738;
+  --admin-surface-2: #111f47;
+  --admin-surface-inset: #0a1330;
+  --admin-border: #22315f;
+  --admin-border-strong: #2c3d70;
+  --admin-text: #eaf0ff;
+  --admin-text-soft: #aab6d8;
+  --admin-muted: #7180a8;
+  --admin-on-accent: #ffffff;
+
+  --admin-sidebar-bg: #060c24;
+  --admin-sidebar-border: rgba(255, 255, 255, 0.08);
+  --admin-sidebar-flyout: #101d3d;
+  --admin-sidebar-text: #c7d0ea;
+  --admin-sidebar-text-strong: #ffffff;
+  --admin-sidebar-hover: rgba(255, 255, 255, 0.06);
+
+  --admin-shadow-sm: 0 4px 14px -6px rgba(0, 0, 0, 0.55);
+  --admin-shadow-pop: 0 16px 40px -14px rgba(0, 0, 0, 0.7);
+  --admin-shadow-up: 0 -10px 34px -16px rgba(0, 0, 0, 0.65);
+
+  --admin-danger-bg: rgba(255, 90, 90, 0.12);
+  --admin-danger-border: rgba(255, 120, 120, 0.35);
+  --admin-danger-fg: #ffb4ac;
+  --admin-danger-accent: #ff8f83;
+  --admin-danger-btn-border: rgba(255, 120, 120, 0.4);
+  --admin-ok-fg: #4fe3cf;
+  --admin-warn-fg: #f5d93f;
+
+  --admin-toast-bg: #111f47;
+  --admin-toast-fg: #eaf0ff;
+  --admin-scrim: rgba(0, 0, 0, 0.6);
+
+  /* Inelul de focus alb-pe-alb devine surface-pe-cyan pe dark. */
+  --focus-ring: 0 0 0 2px var(--admin-surface), 0 0 0 4px var(--cyan);
+}
+
+/* Tranziție lină la comutarea temei (nu pe reload — doar când clasa e prezentă). */
+.admin-body,
+.admin-body .admin-card,
+.admin-body .admin-stat,
+.admin-body .admin-topbar,
+.admin-body .admin-input,
+.admin-body .admin-select,
+.admin-body .admin-textarea {
+  transition:
+    background-color 0.2s var(--ease-snap, ease),
+    border-color 0.2s var(--ease-snap, ease),
+    color 0.2s var(--ease-snap, ease);
+}
+
+/* Preview markdown din editor pe dark: .prose-simplead e clasă PARTAJATĂ cu
+   blogul public, deci NU o modificăm în global.css — doar aici, admin-scoped. */
+.admin-body[data-theme='dark'] .admin-editor2__view,
+.admin-body[data-theme='dark'] .admin-editor__preview {
+  color-scheme: dark;
+}
+.admin-body[data-theme='dark'] .admin-editor2__view .prose-simplead,
+.admin-body[data-theme='dark'] .admin-editor__preview .prose-simplead {
+  color: var(--admin-text-soft);
+}
+.admin-body[data-theme='dark'] .admin-editor2__view .prose-simplead :is(h2, h3, h4, strong, blockquote),
+.admin-body[data-theme='dark'] .admin-editor__preview .prose-simplead :is(h2, h3, h4, strong, blockquote) {
+  color: var(--admin-text);
+}
+.admin-body[data-theme='dark'] .admin-editor2__view .prose-simplead :is(th, td),
+.admin-body[data-theme='dark'] .admin-editor__preview .prose-simplead :is(th, td) {
+  border-color: var(--admin-border);
+}
+.admin-body[data-theme='dark'] .admin-editor2__view .prose-simplead thead th,
+.admin-body[data-theme='dark'] .admin-editor__preview .prose-simplead thead th {
+  background: var(--admin-surface-2);
+  color: var(--admin-text);
+}
+.admin-body[data-theme='dark'] .admin-editor2__view .prose-simplead code,
+.admin-body[data-theme='dark'] .admin-editor__preview .prose-simplead code {
+  background: var(--admin-surface-2);
+  border-color: var(--admin-border);
+}

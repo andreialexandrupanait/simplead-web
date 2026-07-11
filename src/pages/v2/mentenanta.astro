@@ -1,0 +1,567 @@
+---
+import BaseLayoutV2 from '@layouts/BaseLayoutV2.astro';
+import ServiceHero from '@components/sections/ServiceHero.astro';
+import AppShowcase from '@components/sections/AppShowcase.astro';
+import ProjectsGrid from '@components/sections/ProjectsGrid.astro';
+import CtaNotch from '@components/sections/CtaNotch.astro';
+import FaqSection from '@components/sections/FaqSection.astro';
+import { mentenantaFaqs, appTopics } from '@data/content';
+import { getService } from '@data/services';
+import {
+  maintenanceBase as basePackages,
+  maintenanceAddons as addOns,
+} from '@lib/maintenance-plans';
+
+export const prerender = false;
+
+// Conținut IDENTIC cu varianta A (src/pages/mentenanta.astro). Doar prezentarea diferă.
+// Datele (serviciu, pachete, add-on-uri, FAQ, teme app) vin din ACELEAȘI surse ca live.
+const mnt = getService('mentenanta-website');
+
+const metaDescription =
+  'Calculator mentenanță web Simplead. Pachete de la 75€/lună, cu monitorizare continuă a site-ului, backup, securitate și suport. Prețul se calculează automat.';
+
+// Schema FAQPage (GEO): din FAQ-ul aprobat + întrebările despre aplicație.
+const appFaqs = appTopics.flatMap((t) => t.faqs);
+const faqSchema = {
+  '@type': 'FAQPage',
+  mainEntity: [...appFaqs, ...mentenantaFaqs].map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.body.join(' ') },
+  })),
+};
+---
+
+<BaseLayoutV2
+  title="Calculator Mentenanță Web"
+  description={metaDescription}
+  transparentNav={true}
+  navOverDark={true}
+  schema={faqSchema}
+>
+  <ServiceHero
+    title="Tu te ocupi de afacere, "
+    titleAccent="noi de partea tehnică"
+    sub="Îți monitorizăm site-ul continuu cu aplicația noastră internă, SimpleAd Manager, care urmărește uptime, securitate, performanță și backup. Așa prindem problemele înainte să le simți tu. Alege-ți pachetul mai jos; prețul se actualizează automat."
+    image={mnt?.image ?? ''}
+    imageAlt="Mentenanță website Simplead"
+    current="Mentenanță"
+  />
+
+  <AppShowcase topics={appTopics} variant="light" />
+
+  {/* ===== CALCULATOR (redesign v2, #calc) ===== */}
+  <section class="mn-calc-sec">
+    <div class="v2-container">
+      <form class="mn-calc" id="calc" method="post" action="/api/mentenanta-checkout">
+        <div class="mn-calc__main">
+          {/* 1. Pachet de bază */}
+          <fieldset class="mn-block">
+            <legend class="mn-step"><span>1</span> Pachet de bază</legend>
+            <div class="mn-pkgs">
+              {
+                basePackages.map((p, i) => (
+                  <label class="mn-pkg">
+                    <input
+                      type="radio"
+                      name="base"
+                      value={p.slug}
+                      data-price={p.price}
+                      data-label={p.name}
+                      checked={i === 0}
+                    />
+                    <span class="mn-pkg__card">
+                      <span class="mn-pkg__top">
+                        <span class="mn-pkg__name">{p.name}</span>
+                        <span class="mn-pkg__price">
+                          {p.price}€<small>/lună</small>
+                        </span>
+                      </span>
+                      <span class="mn-pkg__tag">{p.tag}</span>
+                      <ul class="mn-pkg__list">
+                        {p.items.map((it) => (
+                          <li>{it}</li>
+                        ))}
+                      </ul>
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          {/* 2. Opțiuni suplimentare */}
+          <fieldset class="mn-block">
+            <legend class="mn-step"><span>2</span> Opțiuni suplimentare</legend>
+            <div class="mn-addons">
+              {
+                addOns.map((a) => (
+                  <label class="mn-addon">
+                    <input
+                      type="checkbox"
+                      name="addons"
+                      value={a.slug}
+                      data-price={a.price}
+                      data-label={a.name}
+                    />
+                    <span class="mn-addon__box" aria-hidden="true">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M5 12l5 5L20 7" />
+                      </svg>
+                    </span>
+                    <span class="mn-addon__body">
+                      <span class="mn-addon__row">
+                        <span class="mn-addon__name">{a.name}</span>
+                        <span class="mn-addon__price">+{a.price}€/lună</span>
+                      </span>
+                      {a.desc && <span class="mn-addon__desc">{a.desc}</span>}
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+        </div>
+
+        {/* Sumar pachet (sidebar) */}
+        <aside class="mn-side">
+          <div class="mn-summary">
+            <h2 class="mn-summary__title">Pachetul tău</h2>
+            <ul class="mn-summary__list" id="summaryList"></ul>
+            <div class="mn-summary__total">
+              <span>Total estimat</span>
+              <strong id="summaryTotal">75 €/lună</strong>
+            </div>
+            <button type="submit" class="mn-summary__cta">Mergi la plată</button>
+            <p class="mn-summary__note">
+              Plată securizată prin Stripe, abonament lunar. Nu se adaugă TVA. Poți anula oricând.
+            </p>
+          </div>
+        </aside>
+      </form>
+    </div>
+  </section>
+
+  <ProjectsGrid
+    service="mentenanta"
+    title="Site-uri pe care le ținem live chiar acum"
+    showLive
+    variant="light"
+  />
+
+  <FaqSection
+    items={mentenantaFaqs}
+    variant="tint"
+    eyebrow="Întrebări frecvente"
+    title="Ai "
+    titleAccent="întrebări?"
+  />
+
+  {mnt && <CtaNotch title="Tu te ocupi de afacere." subtitle="Noi ne ocupăm de site." />}
+</BaseLayoutV2>
+
+<style>
+  /* ===== Secțiune calculator (v2) ===== */
+  .mn-calc-sec {
+    background-color: var(--v2-surface-soft);
+    background-image: radial-gradient(#e4eaf5 1.1px, transparent 1.1px);
+    background-size: 26px 26px;
+    border-top: 1px solid var(--v2-line);
+    padding: 96px 0;
+  }
+  .mn-calc {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 32px;
+    align-items: start;
+    /* ancora #calc nu intră sub navbar-ul fix */
+    scroll-margin-top: calc(var(--v2-nav-h) + 24px);
+  }
+  .mn-block {
+    border: 0;
+    padding: 0;
+    margin: 0 0 40px;
+  }
+  .mn-block:last-child {
+    margin-bottom: 0;
+  }
+  .mn-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: -0.01em;
+    color: var(--v2-navy);
+    margin-bottom: 22px;
+    padding: 0;
+  }
+  .mn-step span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--v2-blue);
+    color: #fff;
+    font-size: 0.92rem;
+    font-weight: 800;
+  }
+
+  /* Pachete de bază */
+  .mn-pkgs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .mn-pkg input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .mn-pkg__card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 24px 26px;
+    border: 2px solid var(--v2-line-soft);
+    border-radius: var(--v2-r-card);
+    background: var(--v2-surface);
+    cursor: pointer;
+    transition:
+      border-color 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+  .mn-pkg__card:hover {
+    border-color: var(--v2-blue-soft);
+  }
+  .mn-pkg input:checked + .mn-pkg__card {
+    border-color: var(--v2-blue);
+    box-shadow: 0 12px 28px rgba(32, 101, 236, 0.16);
+  }
+  .mn-pkg input:focus-visible + .mn-pkg__card {
+    outline: 2px solid var(--v2-blue);
+    outline-offset: 2px;
+  }
+  .mn-pkg__top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .mn-pkg__name {
+    font-weight: 800;
+    font-size: 1.18rem;
+    color: var(--v2-navy);
+  }
+  .mn-pkg__price {
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--v2-blue);
+  }
+  .mn-pkg__price small {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--v2-faint);
+  }
+  .mn-pkg__tag {
+    margin-top: 6px;
+    font-size: 0.86rem;
+    color: var(--v2-muted);
+  }
+  .mn-pkg__list {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mn-pkg__list li {
+    position: relative;
+    padding-left: 22px;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: var(--v2-navy);
+  }
+  .mn-pkg__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--v2-blue);
+  }
+
+  /* Opțiuni suplimentare */
+  .mn-addons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .mn-addon {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 18px 20px;
+    border: 1.5px solid var(--v2-line-soft);
+    border-radius: var(--v2-r-card);
+    background: var(--v2-surface);
+    cursor: pointer;
+    transition:
+      border-color 0.18s ease,
+      background-color 0.18s ease;
+  }
+  .mn-addon:hover {
+    border-color: var(--v2-blue-soft);
+  }
+  .mn-addon input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .mn-addon__box {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-top: 1px;
+    border: 1.5px solid #c3cddd;
+    border-radius: 6px;
+    color: #fff;
+    background: transparent;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease;
+  }
+  .mn-addon__box svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .mn-addon input:checked + .mn-addon__box {
+    background: var(--v2-blue);
+    border-color: var(--v2-blue);
+  }
+  .mn-addon input:checked + .mn-addon__box svg {
+    opacity: 1;
+  }
+  .mn-addon input:checked ~ .mn-addon__body .mn-addon__name {
+    color: var(--v2-blue);
+  }
+  .mn-addon:has(input:checked) {
+    border-color: var(--v2-tint-line);
+    background: var(--v2-tint);
+  }
+  .mn-addon input:focus-visible + .mn-addon__box {
+    outline: 2px solid var(--v2-blue);
+    outline-offset: 2px;
+  }
+  .mn-addon__body {
+    flex: 1;
+  }
+  .mn-addon__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .mn-addon__name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--v2-navy);
+  }
+  .mn-addon__price {
+    flex-shrink: 0;
+    font-weight: 800;
+    font-size: 0.96rem;
+    color: var(--v2-blue);
+  }
+  .mn-addon__desc {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: var(--v2-muted);
+  }
+
+  /* Sumar (sidebar) — card dark, stil v2 */
+  .mn-side {
+    position: sticky;
+    top: calc(var(--v2-nav-h) + 20px);
+  }
+  .mn-summary {
+    position: relative;
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--v2-navy-deep);
+    color: #fff;
+    padding: 28px;
+    box-shadow: 0 24px 56px rgba(13, 27, 62, 0.25);
+  }
+  .mn-summary__title {
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: #fff;
+    margin: 0 0 18px;
+  }
+  .mn-summary__list {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  /* Rândurile sunt injectate din JS (innerHTML), deci nu primesc scope-ul Astro. */
+  .mn-summary__list :global(li) {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.92rem;
+    color: #a9b4cc;
+  }
+  .mn-summary__list :global(li span:first-child) {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .mn-summary__list :global(li span:first-child::before) {
+    content: '';
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--v2-blue-soft);
+    transform: translateY(-2px);
+  }
+  .mn-summary__list :global(li span:last-child) {
+    flex-shrink: 0;
+    font-weight: 800;
+    color: #fff;
+  }
+  .mn-summary__total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .mn-summary__total span {
+    font-size: 0.96rem;
+    color: #a9b4cc;
+  }
+  .mn-summary__total strong {
+    font-weight: 800;
+    font-size: 1.7rem;
+    color: #fff;
+  }
+  .mn-summary__cta {
+    display: block;
+    width: 100%;
+    margin-top: 22px;
+    padding: 16px 24px;
+    text-align: center;
+    background: var(--v2-blue);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--v2-font);
+    font-weight: 700;
+    font-size: 0.86rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition:
+      background-color 0.18s ease,
+      color 0.18s ease;
+  }
+  .mn-summary__cta:hover {
+    background: #fff;
+    color: var(--v2-navy-deep);
+  }
+  .mn-summary__note {
+    margin: 12px 0 0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--v2-faint);
+    text-align: center;
+  }
+
+  @media (max-width: 900px) {
+    .mn-calc {
+      grid-template-columns: 1fr;
+    }
+    .mn-side {
+      position: static;
+    }
+  }
+  @media (max-width: 640px) {
+    .mn-calc-sec {
+      padding: 64px 0;
+    }
+    .mn-pkgs {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Aceeași logică de calcul ca varianta A (src/pages/mentenanta.astro).
+  const form = document.getElementById('calc') as HTMLFormElement | null;
+  const summaryList = document.getElementById('summaryList');
+  const summaryTotal = document.getElementById('summaryTotal');
+
+  if (form && summaryList && summaryTotal) {
+    const fmt = (n: number) => `${n} €/lună`;
+
+    const render = () => {
+      const rows: { label: string; price: number; addon: boolean }[] = [];
+
+      const pkg = form.querySelector<HTMLInputElement>('input[name="base"]:checked');
+      if (pkg) {
+        rows.push({
+          label: `Pachet ${pkg.dataset.label}`,
+          price: Number(pkg.dataset.price) || 0,
+          addon: false,
+        });
+      }
+
+      form.querySelectorAll<HTMLInputElement>('input[name="addons"]:checked').forEach((el) => {
+        rows.push({
+          label: el.dataset.label || '',
+          price: Number(el.dataset.price) || 0,
+          addon: true,
+        });
+      });
+
+      const total = rows.reduce((sum, r) => sum + r.price, 0);
+
+      summaryList.innerHTML = rows
+        .map(
+          (r) =>
+            `<li class="${r.addon ? 'is-addon' : 'is-base'}"><span>${r.label}</span><span>${r.price}€</span></li>`,
+        )
+        .join('');
+      summaryTotal.textContent = fmt(total);
+    };
+
+    form.addEventListener('change', render);
+    render();
+  }
+</script>

@@ -1,0 +1,48 @@
+---
+/**
+ * Card admin generic peste .admin-card. Opțional titlu + hint și slot-uri
+ * `head` (acțiuni în dreapta titlului) și `footer`. `flush` scoate padding-ul
+ * (pentru tabele/liste care ajung până la margini).
+ */
+interface Props {
+  title?: string;
+  hint?: string;
+  flush?: boolean;
+  class?: string;
+}
+const { title, hint, flush = false, class: klass } = Astro.props;
+const hasHead = Astro.slots.has('head');
+---
+
+<section class:list={['admin-card', flush && 'admin-card--flush', klass]}>
+  {
+    (title || hasHead) && (
+      <div class="admin-card__head" style={flush ? '' : 'display:flex;align-items:flex-start;justify-content:space-between;gap:12px'}>
+        <div>
+          {title && <h2>{title}</h2>}
+          {hint && <p class="admin-hint" style="margin-bottom:0">{hint}</p>}
+        </div>
+        {hasHead && <div class="admin-card__actions"><slot name="head" /></div>}
+      </div>
+    )
+  }
+  <slot />
+  {Astro.slots.has('footer') && <div class="admin-card__foot"><slot name="footer" /></div>}
+</section>
+
+<style>
+  .admin-card__head:not(:only-child) {
+    margin-bottom: 16px;
+  }
+  .admin-card__actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .admin-card__foot {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--admin-border);
+  }
+</style>

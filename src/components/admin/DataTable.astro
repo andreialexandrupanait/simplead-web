@@ -1,0 +1,52 @@
+---
+/**
+ * Shell de tabel admin: card flush + scroll orizontal + <thead> din `columns`.
+ * Rândurile vin din slot-ul implicit (parintele randează <tr>…</tr>).
+ * Slot `toolbar` = zonă deasupra tabelului (căutare/filtre). Slot `footer` =
+ * sub tabel (paginare).
+ */
+interface Column {
+  label: string;
+  numeric?: boolean;
+  width?: string;
+}
+interface Props {
+  columns: Column[];
+}
+const { columns } = Astro.props;
+const hasToolbar = Astro.slots.has('toolbar');
+const hasFooter = Astro.slots.has('footer');
+---
+
+<section class="admin-card admin-card--flush">
+  {hasToolbar && <div class="admin-datatable__toolbar"><slot name="toolbar" /></div>}
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          {columns.map((c) => <th class={c.numeric ? 'num' : undefined} style={c.width ? `width:${c.width}` : undefined}>{c.label}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        <slot />
+      </tbody>
+    </table>
+  </div>
+  {hasFooter && <div class="admin-datatable__footer"><slot name="footer" /></div>}
+</section>
+
+<style>
+  .admin-datatable__toolbar {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--admin-border);
+  }
+  .admin-datatable__toolbar :global(.admin-toolbar) {
+    margin-bottom: 0;
+  }
+  .admin-datatable__footer {
+    padding: 6px 18px 16px;
+  }
+  .admin-datatable__footer :global(.admin-pagination) {
+    padding-top: 8px;
+  }
+</style>

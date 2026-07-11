@@ -1,0 +1,380 @@
+---
+/*
+ * Layout pentru VARIANTA B (redesign) a testului A/B. Copie fidelă a
+ * BaseLayout.astro — același head, JSON-LD, consimțământ și tracking — cu trei
+ * diferențe: chrome-ul (NavbarV2/FooterV2), fonturile (Figtree) + tokenii
+ * (global-v2.css), și eliminarea prefixului `/v2` din URL la calcularea
+ * canonical/OG/hreflang/activePath (în interiorul rewrite-ului, Astro.url e /v2/…).
+ *
+ * NU se editează BaseLayout: varianta A rămâne neatinsă. Duplicarea head-ului e
+ * intenționată (izolare completă a celor două variante).
+ */
+import '../styles/fonts.css';
+import '../styles/global.css';
+import '../styles/fonts-v2.css';
+import '../styles/global-v2.css';
+import NavbarV2 from '@components/v2/NavbarV2.astro';
+import FooterV2 from '@components/v2/FooterV2.astro';
+import Analytics from '@components/Analytics.astro';
+import TrackingRuntime from '@components/TrackingRuntime.astro';
+import CookieBanner from '@components/CookieBanner.astro';
+import ScrollTop from '@components/ui/ScrollTop.astro';
+import ContactDrawer from '@components/react/ContactDrawer';
+import { site } from '@data/site';
+import { localeFromPath, localizePath, EN_LIVE } from '@i18n/index';
+import { getPublicSettings, whatsappHref } from '@lib/server/public-settings';
+import { stripV2 } from '@data/ab-pages';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  transparentNav?: boolean;
+  navOverDark?: boolean;
+  activePath?: string;
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+  canonicalQuery?: string;
+  prevUrl?: string;
+  nextUrl?: string;
+}
+
+// Calea publică curată (fără /v2) — canonical/OG/hreflang/activePath se bazează pe ea.
+const path = stripV2(Astro.url.pathname);
+
+const {
+  title,
+  description = site.description,
+  ogImage = '/og-default.png',
+  transparentNav = false,
+  navOverDark = false,
+  activePath = path,
+  noindex = false,
+  ogType = 'website',
+  schema,
+  canonicalQuery = '',
+  prevUrl,
+  nextUrl,
+} = Astro.props;
+
+const locale = localeFromPath(path);
+const fullTitle = title ? `${title} · ${site.name}` : `${site.name} · Grafică & marketing digital`;
+const origin = (Astro.site ?? new URL(Astro.url.origin)).toString().replace(/\/$/, '');
+const canonical = new URL(path + canonicalQuery, Astro.site ?? Astro.url.origin).href;
+const prevHref = prevUrl ? new URL(prevUrl, Astro.site ?? Astro.url.origin).href : null;
+const nextHref = nextUrl ? new URL(nextUrl, Astro.site ?? Astro.url.origin).href : null;
+const ogImageUrl = new URL(ogImage, Astro.site ?? Astro.url.origin).href;
+
+const altBase = Astro.site ?? Astro.url.origin;
+const roAlt = new URL(localizePath(path, 'ro'), altBase).href;
+const enAlt = new URL(localizePath(path, 'en'), altBase).href;
+const ogLocale = locale === 'en' ? 'en_US' : 'ro_RO';
+const ogLocaleAlt = locale === 'en' ? 'ro_RO' : 'en_US';
+
+const pub = await getPublicSettings();
+const waHref = whatsappHref(pub.whatsappNumber);
+
+const telephone = site.contact.phoneHref.replace('tel:', '');
+const phoneLd = pub.showPhone ? { telephone } : {};
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${origin}#organization`,
+      name: site.name,
+      url: origin,
+      logo: new URL('/favicon.svg', origin).href,
+      description: site.description,
+      founder: { '@id': `${origin}#founder` },
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: site.contact.city,
+        addressCountry: 'RO',
+      },
+      ...phoneLd,
+      email: site.contact.email,
+    },
+    {
+      '@type': 'LocalBusiness',
+      '@id': `${origin}#localbusiness`,
+      name: site.name,
+      url: origin,
+      image: ogImageUrl,
+      description: site.description,
+      ...phoneLd,
+      email: site.contact.email,
+      priceRange: '$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: site.contact.city,
+        addressCountry: 'RO',
+      },
+      areaServed: { '@type': 'Country', name: 'România' },
+      openingHoursSpecification: {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        opens: '09:00',
+        closes: '18:00',
+      },
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${origin}#website`,
+      url: origin,
+      name: site.name,
+      inLanguage: 'ro-RO',
+      publisher: { '@id': `${origin}#organization` },
+    },
+    {
+      '@type': 'Person',
+      '@id': `${origin}#founder`,
+      name: site.founder,
+      jobTitle: site.founderTitle,
+      url: site.founderSite,
+      sameAs: [site.founderSite, site.founderOrcid],
+      hasCredential: {
+        '@type': 'EducationalOccupationalCredential',
+        credentialCategory: 'degree',
+        name: site.founderCredential,
+      },
+      worksFor: { '@id': `${origin}#organization` },
+    },
+    ...(schema ? (Array.isArray(schema) ? schema : [schema]) : []),
+  ],
+};
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {
+      pub.tracking.gscVerification && (
+        <meta name="google-site-verification" content={pub.tracking.gscVerification} />
+      )
+    }
+    <link rel="canonical" href={canonical} />
+    {prevHref && <link rel="prev" href={prevHref} />}
+    {nextHref && <link rel="next" href={nextHref} />}
+    {
+      EN_LIVE && (
+        <>
+          <link rel="alternate" hreflang="ro" href={roAlt} />
+          <link rel="alternate" hreflang="en" href={enAlt} />
+          <link rel="alternate" hreflang="x-default" href={roAlt} />
+        </>
+      )
+    }
+    <link rel="alternate" type="application/rss+xml" title="Simplead · Blog" href="/rss.xml" />
+
+    <!-- Font redesign self-hosted (Figtree, variabil). @font-face în src/styles/fonts-v2.css. -->
+    <link rel="preload" href="/fonts/figtree-latin.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:locale" content={ogLocale} />
+    {EN_LIVE && <meta property="og:locale:alternate" content={ogLocaleAlt} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <meta name="theme-color" content="#ffffff" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
+    <Analytics />
+  </head>
+  <body
+    class:list={[
+      Astro.locals.isAdmin &&
+        (Astro.locals.siteMaintenance || Astro.locals.pageUnderConstruction) &&
+        'has-maint',
+    ]}
+    style={`--maint-h:${
+      (Astro.locals.isAdmin && Astro.locals.siteMaintenance ? 40 : 0) +
+      (Astro.locals.isAdmin && Astro.locals.pageUnderConstruction ? 40 : 0)
+    }px`}
+  >
+    {
+      Astro.locals.isAdmin &&
+        (Astro.locals.siteMaintenance || Astro.locals.pageUnderConstruction) && (
+          <div class="maint-bars">
+            {Astro.locals.siteMaintenance && (
+              <div class="maint-bar maint-bar--mnt">
+                Site în mentenanță, vezi doar tu (admin). <a href="/admin/setari">Setări</a>
+              </div>
+            )}
+            {Astro.locals.pageUnderConstruction && (
+              <div class="maint-bar maint-bar--cst">
+                Pagină „în construcție", vezi doar tu (admin). <a href="/admin/setari">Setări</a>
+              </div>
+            )}
+          </div>
+        )
+    }
+    <a href="#main" class="skip-link">Sari la conținut</a>
+    <NavbarV2 transparent={transparentNav} overDark={navOverDark} activePath={activePath} />
+    <main id="main">
+      <slot />
+    </main>
+
+    <style is:global>
+      .maint-bars {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 300;
+        display: flex;
+        flex-direction: column;
+      }
+      .maint-bar {
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding-inline: 16px;
+        font-family: var(--font-body);
+        font-size: 0.84rem;
+        font-weight: 600;
+        line-height: 1;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .maint-bar a {
+        text-decoration: underline;
+      }
+      .maint-bar--mnt {
+        background: var(--ink);
+        color: #fff;
+      }
+      .maint-bar--mnt a {
+        color: var(--signal, #f5d93f);
+      }
+      .maint-bar--cst {
+        background: var(--signal, #f5d93f);
+        color: var(--ink);
+      }
+      .maint-bar--cst a {
+        color: var(--ink);
+      }
+      body.has-maint {
+        padding-top: var(--maint-h, 40px);
+      }
+      body.has-maint .navv2 {
+        top: var(--maint-h, 40px) !important;
+      }
+    </style>
+    <FooterV2 />
+    <CookieBanner />
+    <TrackingRuntime />
+    <ScrollTop />
+
+    <ContactDrawer
+      client:idle
+      phone={pub.showPhone ? site.contact.phone : ''}
+      phoneHref={pub.showPhone ? site.contact.phoneHref : ''}
+      email={site.contact.email}
+      showPhone={pub.showPhone}
+      whatsappHref={waHref}
+    />
+
+    <script>
+      document.addEventListener('click', (e) => {
+        const target = e.target as Element | null;
+        const a = target?.closest?.('a[href*="/contact"]') as HTMLAnchorElement | null;
+        if (!a) return;
+        if (
+          e.defaultPrevented ||
+          (e as MouseEvent).button !== 0 ||
+          (e as MouseEvent).metaKey ||
+          (e as MouseEvent).ctrlKey ||
+          (e as MouseEvent).shiftKey ||
+          (e as MouseEvent).altKey
+        )
+          return;
+        if (a.hasAttribute('data-no-drawer') || a.getAttribute('target') === '_blank') return;
+        let url: URL;
+        try {
+          url = new URL(a.href, location.origin);
+        } catch {
+          return;
+        }
+        if (url.pathname !== '/contact') return;
+        if (typeof window.openContactDrawer !== 'function') return;
+        e.preventDefault();
+        window.openContactDrawer(url.searchParams.get('service') || '');
+      });
+    </script>
+
+    <script>
+      const els = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-reveal],[data-reveal-stagger]'),
+      );
+      if (els.length) {
+        if (!('IntersectionObserver' in window)) {
+          els.forEach((e) => e.classList.add('is-in'));
+        } else {
+          const io = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((en) => {
+                if (en.isIntersecting) {
+                  en.target.classList.add('is-in');
+                  io.unobserve(en.target);
+                }
+              });
+            },
+            { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+          );
+          els.forEach((e) => io.observe(e));
+          setTimeout(() => {
+            els.forEach((e) => {
+              if (!e.classList.contains('is-in')) e.classList.add('is-in');
+            });
+          }, 1200);
+        }
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 1000;
+    padding: 10px 16px;
+    border-radius: var(--r-sm, 8px);
+    background: var(--ink);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transform: translateY(-150%);
+    transition: transform 0.18s ease;
+  }
+  .skip-link:focus-visible {
+    transform: translateY(0);
+    outline: 2px solid var(--electric);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .skip-link {
+      transition: none;
+    }
+  }
+</style>

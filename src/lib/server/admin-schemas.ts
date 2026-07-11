@@ -276,6 +276,7 @@ export interface SiteSettingsFormData {
   hiddenHomeSections: string[];
   constructionPages: string[];
   maintenanceMode: boolean;
+  abTestEnabled: boolean;
 }
 
 export function parseSiteSettingsForm(form: FormData): SiteSettingsFormData {
@@ -292,7 +293,8 @@ export function parseSiteSettingsForm(form: FormData): SiteSettingsFormData {
     (p) => p.path,
   );
   const maintenanceMode = Boolean(form.get('maintenanceMode'));
-  return { ...base, hiddenHomeSections, constructionPages, maintenanceMode };
+  const abTestEnabled = Boolean(form.get('abTestEnabled'));
+  return { ...base, hiddenHomeSections, constructionPages, maintenanceMode, abTestEnabled };
 }
 
 /** Validare pentru formularul de proiecte de portofoliu din admin. */

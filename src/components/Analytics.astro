@@ -13,11 +13,14 @@ import { getPublicSettings } from '@lib/server/public-settings';
 const t = (await getPublicSettings()).tracking;
 
 const GTM_ID = t.gtmId || import.meta.env.GTM_ID || '';
+
+// Expunerea în testul A/B (varianta văzută). Adminii sunt excluși din raportare.
+const AB_VARIANT = Astro.locals.isAdmin ? '' : (Astro.locals.abVariant ?? '');
 ---
 
 {
   GTM_ID && (
-    <script is:inline define:vars={{ GTM_ID }}>
+    <script is:inline define:vars={{ GTM_ID, AB_VARIANT }}>
       (function () {
         const KEY = 'sa_consent';
         let gtmLoaded = false;
@@ -76,6 +79,15 @@ const GTM_ID = t.gtmId || import.meta.env.GTM_ID || '';
         window.saTrack = function (name, params) {
           window.dataLayer.push(Object.assign({ event: name }, params || {}));
         };
+
+        // Expunere test A/B: o dată per pagină, pe ambele variante (fără PII).
+        if (AB_VARIANT) {
+          window.dataLayer.push({
+            event: 'experiment_view',
+            experiment: 'redesign',
+            variant: AB_VARIANT,
+          });
+        }
 
         // La încărcare: aplică alegerea salvată (dacă există).
         let stored = null;

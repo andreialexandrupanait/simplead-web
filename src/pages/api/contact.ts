@@ -19,6 +19,12 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
+/** Varianta A/B a vizitatorului din cookie-ul `sa_ab` (pentru statisticile de conversie). */
+function abVariant(request: Request): 'a' | 'b' | null {
+  const m = (request.headers.get('cookie') ?? '').match(/(?:^|; )sa_ab=(a|b)(?:;|$)/);
+  return m ? (m[1] as 'a' | 'b') : null;
+}
+
 export const POST: APIRoute = async ({ request }) => {
   let payload: unknown;
   try {
@@ -50,7 +56,7 @@ export const POST: APIRoute = async ({ request }) => {
     try {
       await db
         .insert(leads)
-        .values({ name, email, phone, company: company || null, service, message });
+        .values({ name, email, phone, company: company || null, service, message, variant: abVariant(request) });
       leadStored = true;
     } catch (err) {
       console.warn('[contact] Salvarea lead-ului a eșuat:', err);

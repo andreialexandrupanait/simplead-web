@@ -1,6 +1,7 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import IntegrationLogo from '../../components/admin/IntegrationLogo.astro';
+import { slugify } from '../../lib/slug';
 import { getDb } from '../../lib/server/db';
 import { getEncryptionKey } from '../../lib/server/crypto';
 import { setFlash } from '../../lib/server/flash';
@@ -37,7 +38,8 @@ if (Astro.request.method === 'POST') {
         kind: 'ok',
         msg: `Setările ${INTEGRATIONS[integration].label} au fost salvate.`,
       });
-      return Astro.redirect('/admin/integrari', 303);
+      const savedGroup = (INTEGRATIONS[integration] as { group: string }).group;
+      return Astro.redirect(`/admin/integrari?tab=${slugify(savedGroup)}`, 303);
     }
     saveError = result.error;
   }
@@ -129,12 +131,19 @@ const masked = Object.fromEntries(
 const GROUP_ORDER = ['Plăți & facturare', 'Email', 'Notificări', 'Newsletter', 'Autentificare'];
 const grouped = GROUP_ORDER.map((group) => ({
   group,
+  slug: slugify(group),
   names: integrationNames.filter((n) => (INTEGRATIONS[n] as IntMeta).group === group),
+  configured: integrationNames.filter(
+    (n) => (INTEGRATIONS[n] as IntMeta).group === group && Object.values(masked[n]).some((f) => f.source),
+  ).length,
 })).filter((g) => g.names.length > 0);
 
 const totalConfigured = integrationNames.filter((n) =>
   Object.values(masked[n]).some((f) => f.source),
 ).length;
+
+const tabParam = Astro.url.searchParams.get('tab');
+const activeTab = grouped.find((g) => g.slug === tabParam) ?? grouped[0];
 ---
 
 <AdminLayout title="Integrări">
@@ -169,16 +178,22 @@ const totalConfigured = integrationNames.filter((n) =>
   }
   {saveError && <div class="admin-banner admin-banner--error">{saveError}</div>}
 
-  {
-    grouped.map(({ group, names }) => (
-      <section class="int-group">
-        <h2 class="int-group__title">{group}</h2>
-        <div class="int-grid">
-          {names.map((name) => {
-            const meta = INTEGRATIONS[name] as IntMeta;
-            const fields = Object.entries(meta.fields);
-            const configured = Object.values(masked[name]).some((f) => f.source);
-            return (
+  <div class="admin-count-chips int-tabs">
+    {grouped.map((g) => (
+      <a href={`?tab=${g.slug}`} class:list={[g.slug === activeTab.slug && 'is-active']}>
+        {g.group}
+        <span class="int-tab-count">{g.configured}/{g.names.length}</span>
+      </a>
+    ))}
+  </div>
+
+  <div class="int-grid">
+    {
+      activeTab.names.map((name) => {
+        const meta = INTEGRATIONS[name] as IntMeta;
+        const fields = Object.entries(meta.fields);
+        const configured = Object.values(masked[name]).some((f) => f.source);
+        return (
               <div class="admin-card int-card" id={name}>
                 <div class="int-card__head">
                   <IntegrationLogo name={name} />
@@ -248,12 +263,10 @@ const totalConfigured = integrationNames.filter((n) =>
                   </div>
                 </form>
               </div>
-            );
-          })}
-        </div>
-      </section>
-    ))
-  }
+        );
+      })
+    }
+  </div>
 </AdminLayout>
 
 <style>
@@ -272,17 +285,28 @@ const totalConfigured = integrationNames.filter((n) =>
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--muted);
+    color: var(--admin-text-soft);
     margin: 0 0 14px;
+  }
+  .int-tabs {
+    margin: 6px 0 22px;
+  }
+  .int-tab-count {
+    margin-left: 8px;
+    font-size: 0.76rem;
+    opacity: 0.7;
+    font-variant-numeric: tabular-nums;
   }
   .int-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
     gap: 18px;
-    align-items: start;
+    align-items: stretch;
   }
   .int-card {
     margin: 0;
+    display: flex;
+    flex-direction: column;
   }
   .int-card__head {
     display: flex;
@@ -313,20 +337,20 @@ const totalConfigured = integrationNames.filter((n) =>
   }
   .int-card__desc {
     margin: 12px 0 16px;
-    color: var(--muted);
+    color: var(--admin-text-soft);
     font-size: 0.92rem;
     line-height: 1.5;
   }
   .test-result {
     font-size: 0.9rem;
-    color: var(--muted);
+    color: var(--admin-text-soft);
   }
   .test-result.is-ok {
-    color: #0b6e63;
+    color: var(--admin-ok-fg);
     font-weight: 600;
   }
   .test-result.is-error {
-    color: #8a2424;
+    color: var(--admin-danger-fg);
     font-weight: 600;
   }
 </style>

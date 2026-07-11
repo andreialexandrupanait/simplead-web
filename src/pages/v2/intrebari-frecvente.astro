@@ -1,0 +1,585 @@
+---
+import BaseLayoutV2 from '@layouts/BaseLayoutV2.astro';
+import { faqs, generalFaqs, servicesFaqs, type Faq } from '@data/content';
+import { SUPPORT_ICON, type SupportIconKey } from '@data/support-services';
+
+export const prerender = false;
+
+// Conținut IDENTIC cu varianta A (src/pages/intrebari-frecvente.astro). Doar prezentarea diferă.
+// Hub-ul FAQ: general + colaborare/mentenanță + servicii, o singură schemă FAQPage.
+const groups: { id: string; title: string; icon: SupportIconKey; items: Faq[] }[] = [
+  { id: 'generale', title: 'Despre Simplead', icon: 'support', items: faqs },
+  { id: 'colaborare', title: 'Colaborare & mentenanță', icon: 'refresh', items: generalFaqs },
+  { id: 'servicii', title: 'Despre servicii', icon: 'spark', items: servicesFaqs },
+];
+
+const categories = groups.map((g) => ({
+  id: g.id,
+  title: g.title,
+  count: g.items.length,
+  iconSvg: SUPPORT_ICON[g.icon],
+}));
+
+// Text curat pentru schema FAQPage (fără HTML din răspunsuri).
+const toAnswer = (f: Faq) => [...f.body, ...(f.list ?? [])].join(' ').replace(/<[^>]+>/g, '');
+const origin = 'https://simplead.ro';
+const schema = {
+  '@type': 'FAQPage',
+  mainEntity: groups.flatMap((g) =>
+    g.items.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: toAnswer(f) },
+    })),
+  ),
+  url: `${origin}/intrebari-frecvente`,
+};
+
+const chev = '<path d="M9 6l6 6-6 6"/>';
+const search = '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>';
+const arrowR = '<path d="M5 12h14M13 6l6 6-6 6"/>';
+---
+
+<BaseLayoutV2
+  title="Întrebări frecvente"
+  description="Răspunsuri directe la întrebările despre serviciile Simplead: colaborare, prețuri, mentenanță, termene și procesul de lucru."
+  transparentNav={true}
+  navOverDark={true}
+  schema={schema}
+>
+  {/* ===== HERO (dark) ===== */}
+  <section class="fq-hero">
+    <div class="v2-container fq-hero__inner">
+      <div class="fq-hero__text" data-reveal>
+        <div class="fq-crumb">
+          <a href="/">Acasă</a>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={chev} />
+          <span class="cur">Întrebări frecvente</span>
+        </div>
+        <h1 class="fq-hero__title">Întrebări <span class="fq-blue">frecvente</span></h1>
+        <p class="fq-hero__sub">
+          Tot ce te întrebi despre cum lucrăm, ce livrăm, cât costă și ce se întâmplă după ce începem
+          — la un loc, fără jargon. Nu găsești răspunsul? Scrie-ne, revenim în 24 de ore lucrătoare.
+        </p>
+
+        <div class="fq-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={search} />
+          <input
+            type="search"
+            data-faq-search
+            placeholder="Caută o întrebare… (ex. preț, mentenanță, termen)"
+            aria-label="Caută în întrebări frecvente"
+            autocomplete="off"
+          />
+        </div>
+        <p class="fq-hint" data-faq-count aria-live="polite"></p>
+      </div>
+
+      <aside class="fq-panel" data-reveal>
+        <h3><span class="fq-dot"></span>Pe categorii</h3>
+        <ul>
+          {
+            categories.map((c) => (
+              <li>
+                <a href={`#${c.id}`}>
+                  <span class="fq-cat-ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={c.iconSvg} />
+                  </span>
+                  <span class="fq-cat-text">
+                    <span class="fq-cat-title">{c.title}</span>
+                    <span class="fq-cat-count">{c.count} întrebări</span>
+                  </span>
+                  <svg class="fq-cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={arrowR} />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  {/* ===== LISTE ÎNTREBĂRI ===== */}
+  <section class="fq-lists">
+    <div class="v2-container fq-lists__inner">
+      {
+        groups.map((g) => (
+          <div id={g.id} class="fq-group" data-faq-group>
+            <div class="fq-group__head">
+              <span class="fq-group__ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={SUPPORT_ICON[g.icon]} />
+              </span>
+              <h2 class="fq-group__title">{g.title}</h2>
+            </div>
+            <div class="fq-acc">
+              {g.items.map((f) => (
+                <div class="fq-item">
+                  <button class="fq-q" aria-expanded="false">
+                    <span>{f.q}</span>
+                    <span class="fq-chev" aria-hidden="true">▾</span>
+                  </button>
+                  <div class="fq-a">
+                    <div class="fq-a__inner">
+                      {f.body.map((p) => (
+                        <p set:html={p} />
+                      ))}
+                      {f.list && (
+                        <ul>
+                          {f.list.map((li) => (
+                            <li>{li}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+
+      <p class="fq-noresults" data-faq-noresults hidden>
+        Nicio întrebare nu se potrivește căutării tale. Încearcă alt cuvânt sau{' '}
+        <a href="/contact">scrie-ne direct</a>.
+      </p>
+    </div>
+  </section>
+
+  {/* ===== CTA ===== */}
+  <section class="fq-cta">
+    <div class="v2-container">
+      <div class="fq-cta__box">
+        <h2 class="fq-cta__title">N-ai găsit <span class="fq-blue">răspunsul</span>?</h2>
+        <p class="fq-cta__sub">Scrie-ne întrebarea ta. Prima discuție e fără obligații.</p>
+        <div class="fq-cta__actions">
+          <a class="v2-btn v2-btn--light" href="/contact">Cere o ofertă</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayoutV2>
+
+<style>
+  .fq-blue {
+    color: var(--v2-blue-soft);
+  }
+
+  /* ===== HERO (dark) ===== */
+  .fq-hero {
+    color: #fff;
+    background-color: var(--v2-navy-deep);
+    background-image:
+      radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      radial-gradient(ellipse 60% 55% at 12% 100%, rgba(32, 101, 236, 0.28), transparent 70%),
+      linear-gradient(135deg, #0c1633 0%, #102a63 55%, #0e2152 100%);
+    background-size:
+      24px 24px,
+      auto,
+      auto;
+  }
+  .fq-hero__inner {
+    padding: 96px 36px 88px;
+    display: grid;
+    grid-template-columns: 1.25fr 0.85fr;
+    gap: 64px;
+    align-items: center;
+  }
+  .fq-crumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #8593ad;
+  }
+  .fq-crumb a {
+    color: #8593ad;
+  }
+  .fq-crumb a:hover {
+    color: #fff;
+  }
+  .fq-crumb svg {
+    width: 14px;
+    height: 14px;
+  }
+  .fq-crumb .cur {
+    color: var(--v2-blue-soft);
+    font-weight: 700;
+  }
+  .fq-hero__title {
+    font-size: clamp(34px, 5.4vw, 52px);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    font-weight: 800;
+    margin: 26px 0 0;
+  }
+  .fq-hero__sub {
+    font-size: 17px;
+    line-height: 1.7;
+    color: #a9b4cc;
+    max-width: 620px;
+    margin: 20px 0 0;
+  }
+  .fq-search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 30px;
+    max-width: 480px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: var(--v2-r-card);
+    padding: 13px 18px;
+    transition: border-color 0.18s ease;
+  }
+  .fq-search:focus-within {
+    border-color: var(--v2-blue-soft);
+  }
+  .fq-search svg {
+    width: 18px;
+    height: 18px;
+    color: #8593ad;
+    flex: none;
+  }
+  .fq-search input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-family: var(--v2-font);
+    font-size: 15px;
+  }
+  .fq-search input::placeholder {
+    color: #6f7d99;
+  }
+  .fq-hint {
+    font-size: 13px;
+    color: #8593ad;
+    margin: 12px 0 0;
+    min-height: 18px;
+  }
+
+  .fq-panel {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--v2-r-lg);
+    padding: 26px 24px;
+  }
+  .fq-panel h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #e8ecf4;
+    margin: 0 0 18px;
+  }
+  .fq-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--v2-blue-soft);
+  }
+  .fq-panel ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .fq-panel a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--v2-r-card);
+    color: #fff;
+    transition:
+      border-color 0.18s ease,
+      background-color 0.18s ease;
+  }
+  .fq-panel a:hover {
+    border-color: var(--v2-blue-soft);
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .fq-cat-ic {
+    flex: none;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: rgba(32, 101, 236, 0.18);
+    color: var(--v2-blue-soft);
+  }
+  .fq-cat-ic svg {
+    width: 19px;
+    height: 19px;
+  }
+  .fq-cat-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .fq-cat-title {
+    font-size: 14.5px;
+    font-weight: 700;
+  }
+  .fq-cat-count {
+    font-size: 12.5px;
+    color: #8593ad;
+    margin-top: 2px;
+  }
+  .fq-cat-arrow {
+    width: 18px;
+    height: 18px;
+    color: #8593ad;
+    flex: none;
+  }
+
+  /* ===== LISTE ===== */
+  .fq-lists {
+    background-color: var(--v2-surface-soft);
+    border-top: 1px solid var(--v2-line);
+  }
+  .fq-lists__inner {
+    max-width: 920px;
+    padding: 72px 36px 88px;
+  }
+  .fq-group {
+    scroll-margin-top: 96px;
+  }
+  .fq-group + .fq-group {
+    margin-top: 56px;
+  }
+  .fq-group__head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0 0 24px;
+  }
+  .fq-group__ic {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--v2-tint);
+    color: var(--v2-blue);
+  }
+  .fq-group__ic svg {
+    width: 22px;
+    height: 22px;
+  }
+  .fq-group__title {
+    font-size: clamp(24px, 3.4vw, 28px);
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin: 0;
+  }
+  .fq-acc {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .fq-item {
+    background: var(--v2-surface);
+    border: 1px solid var(--v2-line-soft);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .fq-q {
+    width: 100%;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: var(--v2-font);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 19px 26px;
+    text-align: left;
+    color: var(--v2-navy);
+  }
+  .fq-q > span:first-child {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .fq-chev {
+    flex: none;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--v2-blue);
+    transition: transform 0.2s ease;
+  }
+  .fq-item.open .fq-chev {
+    transform: rotate(180deg);
+  }
+  .fq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.28s ease;
+  }
+  .fq-a__inner {
+    padding: 0 26px 22px;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--v2-muted);
+  }
+  .fq-a__inner p {
+    margin: 0 0 10px;
+  }
+  .fq-a__inner p:last-child,
+  .fq-a__inner ul:last-child {
+    margin-bottom: 0;
+  }
+  .fq-a__inner ul {
+    margin: 10px 0 0;
+    padding-left: 20px;
+  }
+  .fq-a__inner li {
+    margin: 4px 0;
+  }
+  .fq-a__inner :global(a) {
+    color: var(--v2-blue);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: 600;
+  }
+
+  .fq-noresults {
+    text-align: center;
+    color: var(--v2-muted);
+    font-size: 16px;
+    margin: 40px 0 0;
+  }
+  .fq-noresults a {
+    color: var(--v2-blue);
+    font-weight: 600;
+  }
+
+  /* Ascundere robustă la filtrare. */
+  .fq-item[hidden],
+  [data-faq-group][hidden] {
+    display: none !important;
+  }
+
+  /* ===== CTA ===== */
+  .fq-cta {
+    padding: 8px 0 96px;
+  }
+  .fq-cta__box {
+    background: linear-gradient(135deg, #0c1633 0%, #102a63 100%);
+    color: #fff;
+    border-radius: var(--v2-r-lg);
+    padding: 64px 48px;
+    text-align: center;
+  }
+  .fq-cta__title {
+    font-size: clamp(28px, 4vw, 38px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .fq-cta__sub {
+    font-size: 16px;
+    line-height: 1.65;
+    color: #a9b4cc;
+    max-width: 520px;
+    margin: 18px auto 0;
+  }
+  .fq-cta__actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 900px) {
+    .fq-hero__inner {
+      grid-template-columns: 1fr;
+      gap: 40px;
+      padding-top: 72px;
+      padding-bottom: 64px;
+    }
+  }
+  @media (max-width: 480px) {
+    .fq-cta__box {
+      padding: 48px 24px;
+    }
+    .fq-q {
+      padding: 16px 18px;
+    }
+    .fq-a__inner {
+      padding: 0 18px 18px;
+    }
+  }
+</style>
+
+<script>
+  // Acordeon single-open per grup.
+  const setOpen = (item: HTMLElement, open: boolean) => {
+    item.classList.toggle('open', open);
+    const a = item.querySelector<HTMLElement>('.fq-a');
+    const q = item.querySelector<HTMLButtonElement>('.fq-q');
+    if (a) a.style.maxHeight = open ? a.scrollHeight + 'px' : '0px';
+    if (q) q.setAttribute('aria-expanded', String(open));
+  };
+  document.querySelectorAll<HTMLElement>('.fq-acc').forEach((list) => {
+    const items = Array.from(list.querySelectorAll<HTMLElement>('.fq-item'));
+    items.forEach((item) => {
+      item.querySelector('.fq-q')?.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        items.forEach((other) => setOpen(other, false));
+        setOpen(item, !isOpen);
+      });
+    });
+  });
+
+  // Căutare live peste toate întrebările; ascunde grupurile goale + mesaj „niciun rezultat".
+  const input = document.querySelector<HTMLInputElement>('[data-faq-search]');
+  const countEl = document.querySelector<HTMLElement>('[data-faq-count]');
+  const noRes = document.querySelector<HTMLElement>('[data-faq-noresults]');
+  const groupEls = Array.from(document.querySelectorAll<HTMLElement>('[data-faq-group]'));
+  const itemEls = Array.from(document.querySelectorAll<HTMLElement>('.fq-item'));
+
+  const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  itemEls.forEach((it) => (it.dataset.text = norm(it.textContent || '')));
+
+  if (input) {
+    input.addEventListener('input', () => {
+      const q = norm(input.value.trim());
+      if (!q) {
+        itemEls.forEach((it) => (it.hidden = false));
+        groupEls.forEach((g) => (g.hidden = false));
+        if (noRes) noRes.hidden = true;
+        if (countEl) countEl.textContent = '';
+        return;
+      }
+      let total = 0;
+      itemEls.forEach((it) => {
+        const match = (it.dataset.text || '').includes(q);
+        it.hidden = !match;
+        if (match) total++;
+      });
+      groupEls.forEach((g) => {
+        g.hidden = !g.querySelector('.fq-item:not([hidden])');
+      });
+      if (noRes) noRes.hidden = total > 0;
+      if (countEl)
+        countEl.textContent = total ? `${total} ${total === 1 ? 'rezultat' : 'rezultate'}` : '';
+    });
+  }
+</script>

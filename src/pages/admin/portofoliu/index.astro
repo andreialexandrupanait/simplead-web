@@ -1,6 +1,7 @@
 ---
 import { and, asc, count, eq, ilike, or, type SQL } from 'drizzle-orm';
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import PageHeader from '../../../components/admin/PageHeader.astro';
 import Toolbar from '../../../components/admin/Toolbar.astro';
 import StatusBadge from '../../../components/admin/StatusBadge.astro';
 import EmptyState from '../../../components/admin/EmptyState.astro';
@@ -58,16 +59,10 @@ const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
 ---
 
 <AdminLayout title="Portofoliu">
-  <div class="admin-page-head">
-    <div>
-      <h1>Portofoliu</h1>
-      <p class="admin-sub">
-        Studiile de caz de pe site.
-        <a href="/portofoliu" target="_blank" style="color:var(--electric)">Vezi portofoliul ↗</a>
-      </p>
-    </div>
+  <PageHeader title="Portofoliu" sub="Studiile de caz de pe site.">
+    <a href="/portofoliu" target="_blank" class="admin-btn admin-btn--ghost">Vezi portofoliul ↗</a>
     <a href="/admin/portofoliu/nou" class="admin-btn">+ Proiect nou</a>
-  </div>
+  </PageHeader>
 
   {
     !db && (
@@ -137,7 +132,7 @@ const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
                           {p.title}
                         </a>
                         <br />
-                        <small style="color:var(--muted)">/portofoliu/{p.slug}</small>
+                        <small class="u-muted">/portofoliu/{p.slug}</small>
                       </td>
                       <td>{p.client || '–'}</td>
                       <td>{p.service}</td>

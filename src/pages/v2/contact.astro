@@ -1,0 +1,312 @@
+---
+import BaseLayoutV2 from '@layouts/BaseLayoutV2.astro';
+import ContactForm from '@components/react/ContactForm';
+import { site } from '@data/site';
+import { getPublicSettings, whatsappHref } from '@lib/server/public-settings';
+
+export const prerender = false;
+
+// Conținut IDENTIC cu varianta A (src/pages/contact.astro + ContactSection variant="page").
+// Doar prezentarea diferă. Formularul e același island React (POST /api/contact).
+const pub = await getPublicSettings();
+const waHref = whatsappHref(pub.whatsappNumber);
+const calLink = import.meta.env.CALCOM_LINK;
+---
+
+<BaseLayoutV2
+  title="Contact"
+  description="Hai să discutăm despre proiectul tău. Spune-ne pe scurt ce ai nevoie și revenim rapid. Prima discuție e fără obligații."
+  transparentNav={true}
+  navOverDark={false}
+>
+  {/* ===== HERO + FORMULAR ===== */}
+  <section class="ct-hero">
+    <div class="v2-container ct-hero__inner">
+      <div class="ct-crumb">
+        <a href="/">Acasă</a> <span>/</span> <span class="accent">Contact</span>
+      </div>
+      <h1 class="ct-hero__title">
+        Hai să discutăm despre <span class="accent">proiectul tău</span>
+      </h1>
+      <p class="ct-hero__sub">
+        Spune-ne pe scurt ce ai nevoie și revenim în 24 de ore lucrătoare. Prima discuție e fără
+        obligații.
+      </p>
+
+      <div class="ct-grid">
+        {/* ---- ASIDE ---- */}
+        <aside class="ct-aside" data-reveal>
+          <h2 class="ct-aside__title">Spune-ne ce ai în cap. Restul rezolvăm împreună.</h2>
+          <p class="ct-aside__lead">
+            Nu dai peste un robot și un mesaj rătăcit într-un inbox. Citim fiecare rând și revenim cu
+            întrebări bune, nu cu un răspuns la indigo.
+          </p>
+
+          <div class="ct-sign">
+            <img
+              src="/andrei.webp"
+              alt={site.founder}
+              width="56"
+              height="56"
+              loading="lazy"
+              style="object-position: center 22%"
+            />
+            <div>
+              <b>{site.founder}</b>
+              <small>fondator Simplead · {site.founderTitle}</small>
+            </div>
+          </div>
+
+          <div class="ct-tiles">
+            {
+              (pub.showPhone || true) && (
+                <a class="ct-tile" href={site.contact.phoneHref}>
+                  <span class="ct-tile__lbl">Telefon</span>
+                  <span class="ct-tile__val">{site.contact.phone}</span>
+                </a>
+              )
+            }
+            {
+              waHref && (
+                <a class="ct-tile" href={waHref} target="_blank" rel="noopener">
+                  <span class="ct-tile__lbl">WhatsApp</span>
+                  <span class="ct-tile__val">Scrie-ne pe WhatsApp</span>
+                </a>
+              )
+            }
+            <a class="ct-tile" href={`mailto:${site.contact.email}`}>
+              <span class="ct-tile__lbl">Email</span>
+              <span class="ct-tile__val ct-tile__val--blue">{site.contact.email}</span>
+            </a>
+            <div class="ct-tile ct-tile--static">
+              <span class="ct-tile__lbl">Program</span>
+              <span class="ct-tile__val">{site.contact.schedule}</span>
+            </div>
+          </div>
+        </aside>
+
+        {/* ---- FORMULAR (island reutilizat) ---- */}
+        <div class="ct-formwrap" data-reveal>
+          <ContactForm client:visible />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ===== CTA Cal.com (doar dacă e configurat) ===== */}
+  {
+    calLink && (
+      <section class="ct-cal">
+        <div class="v2-container">
+          <div class="ct-cal__box" data-reveal>
+            <h2 class="ct-cal__title">Preferi o discuție directă?</h2>
+            <p class="ct-cal__sub">
+              Programează o întâlnire la un moment care ți se potrivește.
+            </p>
+            <a class="v2-btn v2-btn--light" href={calLink} target="_blank" rel="noopener">
+              Programează o întâlnire
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </section>
+    )
+  }
+</BaseLayoutV2>
+
+<style>
+  /* ===== HERO ===== */
+  .ct-hero {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0) 35%, #ffffff 88%),
+      linear-gradient(#e9eef7 1px, transparent 1px),
+      linear-gradient(90deg, #e9eef7 1px, transparent 1px);
+    background-size:
+      auto,
+      88px 88px,
+      88px 88px;
+  }
+  .ct-hero__inner {
+    padding: 56px 36px 96px;
+  }
+  .ct-crumb {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--v2-faint);
+  }
+  .ct-crumb a {
+    color: var(--v2-faint);
+  }
+  .ct-crumb span {
+    margin: 0 6px;
+  }
+  .ct-crumb .accent {
+    font-weight: 700;
+    margin: 0;
+  }
+  .ct-hero__title {
+    font-size: clamp(32px, 5vw, 50px);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    font-weight: 800;
+    margin: 32px 0 0;
+    text-wrap: balance;
+  }
+  .ct-hero__sub {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--v2-muted);
+    max-width: 680px;
+    margin: 18px 0 0;
+  }
+
+  /* ===== LAYOUT GRID ===== */
+  .ct-grid {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 64px;
+    align-items: start;
+    margin-top: 56px;
+  }
+
+  /* ===== ASIDE ===== */
+  .ct-aside__title {
+    font-size: clamp(24px, 2.6vw, 28px);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin: 0;
+  }
+  .ct-aside__lead {
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--v2-muted);
+    margin: 18px 0 0;
+  }
+  .ct-sign {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 32px;
+    background: #fff;
+    border: 1px solid var(--v2-line-soft);
+    border-radius: 12px;
+    padding: 18px 22px;
+  }
+  .ct-sign img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex: none;
+  }
+  .ct-sign b {
+    display: block;
+    font-size: 15.5px;
+    font-weight: 800;
+  }
+  .ct-sign small {
+    display: block;
+    font-size: 13px;
+    color: var(--v2-faint);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .ct-tiles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .ct-tile {
+    display: block;
+    background: #fff;
+    border: 1px solid var(--v2-line-soft);
+    border-radius: 12px;
+    padding: 18px 22px;
+    transition: border-color 0.18s ease;
+  }
+  a.ct-tile:hover {
+    border-color: var(--v2-tint-line);
+  }
+  .ct-tile__lbl {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--v2-faint);
+  }
+  .ct-tile__val {
+    display: inline-block;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--v2-navy);
+    margin-top: 6px;
+  }
+  .ct-tile__val--blue {
+    color: var(--v2-blue);
+  }
+
+  /* ===== FORMULAR ===== */
+  /* Island-ul .cform își aduce propriul card (din sections.css). Nu-l dublăm. */
+  .ct-formwrap {
+    min-width: 0;
+  }
+
+  /* ===== CTA Cal.com ===== */
+  .ct-cal {
+    padding: 8px 0 96px;
+  }
+  .ct-cal__box {
+    background: linear-gradient(135deg, #0c1633 0%, #102a63 100%);
+    color: #fff;
+    border-radius: var(--v2-r-lg);
+    padding: 56px 48px;
+    text-align: center;
+  }
+  .ct-cal__title {
+    font-size: clamp(24px, 2.6vw, 34px);
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin: 0;
+  }
+  .ct-cal__sub {
+    font-size: 16px;
+    line-height: 1.65;
+    color: #a9b4cc;
+    margin: 14px auto 0;
+    max-width: 520px;
+  }
+  .ct-cal__box .v2-btn {
+    margin-top: 28px;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 900px) {
+    .ct-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+  @media (max-width: 480px) {
+    .ct-hero__inner {
+      padding-bottom: 64px;
+    }
+    .ct-tiles {
+      grid-template-columns: 1fr;
+    }
+    .ct-cal__box {
+      padding: 44px 24px;
+    }
+  }
+</style>

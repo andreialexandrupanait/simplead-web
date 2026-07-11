@@ -8,6 +8,12 @@ import { OTO_WINDOW_MS } from '../../lib/server/packages';
 
 export const prerender = false;
 
+/** Varianta A/B a vizitatorului din cookie-ul `sa_ab` (pentru statisticile de conversie). */
+function abVariant(request: Request): 'a' | 'b' | null {
+  const m = (request.headers.get('cookie') ?? '').match(/(?:^|; )sa_ab=(a|b)(?:;|$)/);
+  return m ? (m[1] as 'a' | 'b') : null;
+}
+
 /**
  * Inițiază o sesiune Stripe Checkout pentru un pachet (formular HTML de pe
  * /pachete sau /multumim). Fără Stripe sau DB configurate, degradează elegant:
@@ -88,6 +94,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
         amountCents,
         currency: pkg.currency,
         otoForOrderId: validatedOtoFor,
+        variant: abVariant(request),
       })
       .returning();
 

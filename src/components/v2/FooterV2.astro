@@ -1,0 +1,387 @@
+---
+import { footerNav, footerServices, footerLegal } from '@data/nav';
+import { site } from '@data/site';
+
+const year = new Date().getFullYear();
+const social = site.social;
+---
+
+<footer class="ftv2">
+  <div class="v2-container ftv2__inner">
+    <div class="ftv2__cols">
+      <!-- Brand -->
+      <div class="ftv2__brand">
+        <a class="ftv2__logo" href="/" aria-label="Simplead, Acasă">
+          <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+            <rect width="24" height="24" rx="6" fill="#ffffff"></rect>
+            <path d="M13.2 3.5 L6.5 13.5 h4.4 l-1.4 7 L16.9 10 h-4.6 z" fill="#0a0f1e"></path>
+          </svg>
+          <span>Simplead</span>
+        </a>
+        <p class="ftv2__about">
+          Simplead oferă servicii de grafică și marketing digital dezvoltate de {site.founder}. Punem
+          ordine în imagine, mesaj și prezența online, ca afacerile să se vadă mai clar online și să
+          aducă mai mulți clienți.
+        </p>
+        <a class="ftv2__founder" href={site.founderSite} target="_blank" rel="noopener">
+          <span class="ftv2__founder-kicker">Cercetare &amp;<br />neuromarketing</span>
+          <span class="ftv2__founder-site">panaitandrei.ro <span aria-hidden="true">↗</span></span>
+        </a>
+      </div>
+
+      <!-- Navigare -->
+      <div class="ftv2__col">
+        <div class="ftv2__label">Navigare</div>
+        <nav class="ftv2__links">
+          {
+            footerNav.map((i) => (
+              <a href={i.href} {...(i.href === '/contact' ? { 'data-no-drawer': '' } : {})}>
+                {i.label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+
+      <!-- Servicii -->
+      <div class="ftv2__col">
+        <div class="ftv2__label">Servicii</div>
+        <nav class="ftv2__links">
+          {footerServices.map((i) => <a href={i.href}>{i.label}</a>)}
+        </nav>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="ftv2__col ftv2__news">
+        <div class="ftv2__label">Newsletter</div>
+        <p class="ftv2__news-copy">Primește idei utile de marketing, o dată pe lună. Fără spam.</p>
+        <form class="ftv2__form" data-newsletter-v2>
+          <input
+            type="email"
+            name="email"
+            required
+            placeholder="Adresa ta de email"
+            aria-label="Adresa ta de email"
+          />
+          <input
+            type="text"
+            name="company"
+            tabindex="-1"
+            autocomplete="off"
+            aria-hidden="true"
+            style="position:absolute;left:-9999px"
+          />
+          <button type="submit">Mă abonez</button>
+        </form>
+        <p class="ftv2__news-msg" data-newsletter-v2-msg aria-live="polite"></p>
+        {
+          (social.facebook || social.instagram || social.linkedin) && (
+            <div class="ftv2__socials">
+              {social.facebook && (
+                <a href={social.facebook} target="_blank" rel="noopener" aria-label="Facebook">
+                  Facebook
+                </a>
+              )}
+              {social.instagram && (
+                <a href={social.instagram} target="_blank" rel="noopener" aria-label="Instagram">
+                  Instagram
+                </a>
+              )}
+              {social.linkedin && (
+                <a href={social.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn">
+                  LinkedIn
+                </a>
+              )}
+            </div>
+          )
+        }
+      </div>
+    </div>
+
+    <!-- Wordmark gigant -->
+    <div class="ftv2__wordmark" aria-hidden="true"><span>simplead</span></div>
+
+    <div class="ftv2__bottom">
+      <span>
+        © {year}
+        {site.legalName}. Toate drepturile rezervate.
+        {
+          (site.legal.cif || site.legal.regCom) && (
+            <span class="ftv2__legal">
+              {site.legal.cif && <>CIF: {site.legal.cif}</>}
+              {site.legal.cif && site.legal.regCom && ' · '}
+              {site.legal.regCom && <>Reg. Com.: {site.legal.regCom}</>}
+            </span>
+          )
+        }
+      </span>
+      <span class="ftv2__legal-links">
+        {footerLegal.map((i) => <a href={i.href}>{i.label}</a>)}
+      </span>
+    </div>
+    <p class="ftv2__fineprint">
+      Materialele aparțin Simplead, exceptând sursele menționate; o parte dintre imagini provin din
+      press kits, biblioteci stock sau colecții publice.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .ftv2 {
+    background-color: var(--v2-footer);
+    color: #9aa7bf;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-size: 26px 26px;
+  }
+  .ftv2__inner {
+    padding-top: 76px;
+  }
+  .ftv2__cols {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1.3fr;
+    gap: 56px;
+  }
+
+  .ftv2__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+  }
+  .ftv2__logo span {
+    font-weight: 800;
+    font-size: 19px;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+  .ftv2__about {
+    font-size: 13.5px;
+    line-height: 1.75;
+    margin: 20px 0 0;
+    color: var(--v2-faint);
+  }
+  .ftv2__founder {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 8px;
+    padding: 14px 18px;
+    color: #fff;
+    max-width: 320px;
+    transition: border-color 0.18s ease;
+  }
+  .ftv2__founder:hover {
+    border-color: var(--v2-mint);
+  }
+  .ftv2__founder-kicker {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--v2-faint);
+    line-height: 1.35;
+  }
+  .ftv2__founder-site {
+    font-size: 13.5px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+  .ftv2__founder-site span {
+    color: var(--v2-mint);
+  }
+
+  .ftv2__label {
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #e8ecf4;
+    margin-bottom: 20px;
+  }
+  .ftv2__links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 14px;
+  }
+  .ftv2__links a {
+    color: #9aa7bf;
+    transition: color 0.16s ease;
+  }
+  .ftv2__links a:hover {
+    color: #fff;
+  }
+
+  .ftv2__news-copy {
+    font-size: 13.5px;
+    line-height: 1.65;
+    margin: 0 0 16px;
+    color: var(--v2-faint);
+  }
+  .ftv2__form {
+    display: flex;
+    gap: 10px;
+  }
+  .ftv2__form input[type='email'] {
+    flex: 1;
+    min-width: 0;
+    background: #121a30;
+    border: 1px solid #263050;
+    border-radius: 6px;
+    padding: 13px 14px;
+    font-size: 13.5px;
+    font-family: var(--v2-font);
+    color: #fff;
+  }
+  .ftv2__form input::placeholder {
+    color: #5f6f8f;
+  }
+  .ftv2__form button {
+    background: var(--v2-blue);
+    color: #fff;
+    font-size: 13.5px;
+    font-weight: 700;
+    font-family: var(--v2-font);
+    padding: 13px 20px;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.18s ease;
+  }
+  .ftv2__form button:hover {
+    background: #1a55d0;
+  }
+  .ftv2__news-msg {
+    margin-top: 10px;
+    font-size: 13px;
+    min-height: 1.1em;
+  }
+  .ftv2__news-msg.is-ok {
+    color: var(--v2-mint);
+  }
+  .ftv2__news-msg.is-error {
+    color: #ff9d8f;
+  }
+  .ftv2__socials {
+    display: flex;
+    gap: 18px;
+    margin-top: 18px;
+    font-size: 13px;
+  }
+  .ftv2__socials a {
+    color: #9aa7bf;
+  }
+  .ftv2__socials a:hover {
+    color: #fff;
+  }
+
+  .ftv2__wordmark {
+    overflow: hidden;
+    margin-top: 48px;
+  }
+  .ftv2__wordmark span {
+    display: block;
+    text-align: center;
+    font-weight: 800;
+    font-size: clamp(72px, 18vw, 176px);
+    letter-spacing: -0.04em;
+    line-height: 0.74;
+    color: rgba(255, 255, 255, 0.04);
+    user-select: none;
+    transform: translateY(16%);
+  }
+
+  .ftv2__bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 22px 0 10px;
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 12.5px;
+    color: var(--v2-faint);
+  }
+  .ftv2__legal {
+    display: inline-block;
+    margin-left: 8px;
+    opacity: 0.85;
+  }
+  .ftv2__legal-links {
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
+  }
+  .ftv2__legal-links a {
+    color: #9aa7bf;
+  }
+  .ftv2__legal-links a:hover {
+    color: #fff;
+  }
+  .ftv2__fineprint {
+    padding: 6px 0 26px;
+    margin: 0;
+    font-size: 11.5px;
+    color: #5f6f8f;
+    text-align: center;
+  }
+
+  @media (max-width: 900px) {
+    .ftv2__cols {
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+    .ftv2__brand,
+    .ftv2__news {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 560px) {
+    .ftv2__cols {
+      grid-template-columns: 1fr;
+    }
+    .ftv2__bottom {
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+</style>
+
+<script>
+  // Abonarea la newsletter: POST către /api/newsletter, mesaj inline (ca varianta A).
+  const form = document.querySelector<HTMLFormElement>('[data-newsletter-v2]');
+  const msg = document.querySelector<HTMLElement>('[data-newsletter-v2-msg]');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!msg) return;
+    const email = (form.querySelector('input[name="email"]') as HTMLInputElement).value;
+    const company = (form.querySelector('input[name="company"]') as HTMLInputElement).value;
+    msg.className = 'ftv2__news-msg';
+    msg.textContent = 'Se trimite…';
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, company, source: 'footer' }),
+      });
+      const body = (await res.json()) as { ok: boolean; error?: string };
+      if (body.ok) {
+        msg.classList.add('is-ok');
+        msg.textContent = 'Gata, ești pe listă! Ne auzim o dată pe lună.';
+        form.reset();
+        (
+          window as unknown as { saTrack?: (e: string, p?: Record<string, unknown>) => void }
+        ).saTrack?.('sign_up', { method: 'footer' });
+      } else {
+        msg.classList.add('is-error');
+        msg.textContent = body.error ?? 'Ceva n-a mers. Încearcă din nou.';
+      }
+    } catch {
+      msg.classList.add('is-error');
+      msg.textContent = 'Eroare de rețea. Încearcă din nou.';
+    }
+  });
+</script>
