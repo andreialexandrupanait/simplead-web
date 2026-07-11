@@ -6,6 +6,7 @@ import { leads } from '../../lib/server/schema';
 import { sendEmail } from '../../lib/server/email';
 import { notifySlack } from '../../lib/server/slack';
 import { getContactToEmail } from '../../lib/server/settings';
+import { trackServerConversion, capiContextFromRequest } from '../../lib/server/capi';
 
 // Rută on-demand (POST la runtime). În dev e servită live de dev server;
 // la build, adaptorul node o împachetează ca funcție on-demand.
@@ -73,12 +74,21 @@ export const POST: APIRoute = async ({ request }) => {
 
   const emailResult = await sendEmail({ to, replyTo: email, subject, text });
 
-  // 3) Notificare Slack, fire-and-forget (nu blocăm răspunsul).
+  // 3) Conversie server-side (Meta CAPI + GA4 MP), dublează evenimentul din browser.
+  void trackServerConversion({
+    event: 'generate_lead',
+    email,
+    phone,
+    custom: { form_type: service || 'contact' },
+    ...capiContextFromRequest(request),
+  });
+
+  // 4) Notificare Slack, fire-and-forget (nu blocăm răspunsul).
   void notifySlack(
     `:incoming_envelope: Lead nou pe simplead.ro\n*${name}* <${email}> · ${phone}${company ? `\nFirmă/CUI: ${company}` : ''}${service ? `\nServiciu: ${service}` : ''}\n${message.length > 300 ? `${message.slice(0, 300)}...` : message}`,
   );
 
-  // 4) Auto-reply de confirmare către client (best-effort). Reply merge la noi.
+  // 5) Auto-reply de confirmare către client (best-effort). Reply merge la noi.
   void sendEmail({
     to: email,
     replyTo: to,

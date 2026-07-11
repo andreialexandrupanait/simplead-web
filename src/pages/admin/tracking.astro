@@ -41,31 +41,31 @@ const FIELDS: {
     name: 'gtmId',
     label: 'Google Tag Manager (container)',
     placeholder: 'GTM-XXXXXXX',
-    hint: 'Recomandat ca hub: adaugi tag-urile GA4/Meta/TikTok în interfața GTM. Site-ul trimite evenimente în dataLayer (page view, generate_lead, sign_up, purchase).',
+    hint: 'MOTORUL UNIC. Singurul care se încarcă direct în pagină. Toate tag-urile (GA4/Meta/TikTok/Clarity) rulează prin el, cu consimțământ la nivel de tag. Site-ul îi trimite evenimente în dataLayer.',
   },
   {
     name: 'ga4Id',
     label: 'Google Analytics 4',
     placeholder: 'G-XXXXXXXXXX',
-    hint: 'Measurement ID. Dacă îl configurezi și în GTM, lasă-l gol aici (altfel se dublează).',
+    hint: 'Measurement ID. NU se mai încarcă direct — se folosește pentru a provisiona tag-ul GA4 în GTM (scripts/gtm-provision.mjs) și pentru tracking server-side.',
   },
   {
     name: 'metaPixelId',
     label: 'Meta (Facebook) Pixel',
     placeholder: '123456789012345',
-    hint: 'Pixel ID din Meta Events Manager. Evenimente: PageView, Lead, CompleteRegistration, Purchase.',
+    hint: 'Pixel ID din Meta Events Manager. Folosit pentru tag-ul Meta din GTM și pentru Conversions API (server-side). Nu se mai încarcă nativ.',
   },
   {
     name: 'tiktokPixelId',
     label: 'TikTok Pixel',
     placeholder: 'CXXXXXXXXXXXXXXXXX',
-    hint: 'Pixel ID din TikTok Events Manager. Evenimente: page, SubmitForm, Subscribe, CompletePayment.',
+    hint: 'Pixel ID din TikTok Events Manager. Folosit pentru tag-ul TikTok din GTM. Nu se mai încarcă nativ.',
   },
   {
     name: 'clarityId',
     label: 'Microsoft Clarity',
     placeholder: 'xxxxxxxxxx',
-    hint: 'Project ID pentru heatmaps + session recordings.',
+    hint: 'Project ID pentru heatmaps + session recordings. Se adaugă ca tag în GTM (nu se mai încarcă nativ).',
   },
   {
     name: 'gscVerification',
@@ -81,8 +81,9 @@ const FIELDS: {
     <div>
       <h1>Tracking & analytics</h1>
       <p class="admin-hint">
-        ID-uri publice. Toate trackerele pornesc <strong>doar după acceptul din bannerul de
-        cookies</strong> (GDPR). Lasă gol ce nu folosești.
+        ID-uri publice. Toate trackerele pornesc <strong
+          >doar după acceptul din bannerul de cookies</strong
+        > (GDPR). Lasă gol ce nu folosești.
       </p>
     </div>
   </div>
@@ -90,12 +91,14 @@ const FIELDS: {
   {saveError && <div class="admin-banner admin-banner--error">{saveError}</div>}
 
   <div class="admin-banner">
-    <strong>Cum funcționează evenimentele.</strong> La conversii, site-ul trimite automat:
+    <strong>GTM e motorul unic.</strong> Doar containerul GTM se încarcă în pagină; GA4, Meta, TikTok
+    și Clarity rulează ca tag-uri <em>în interiorul</em> GTM (cu consimțământ pe fiecare tag). Site-ul
+    trimite evenimente în <code>dataLayer</code>: la conversii —
     <code>generate_lead</code> (contact/ofertă/tichet, pe /multumesc), <code>sign_up</code>
-    (newsletter) și <code>purchase</code> (după plata Stripe, pe /multumim). Se trimit în
-    <code>dataLayer</code> (pentru GTM) și, dacă ai pus pixelii direct aici, și nativ către
-    Meta/TikTok. <strong>Configurează fiecare platformă într-un singur loc</strong> (GTM SAU
-    nativ) ca să eviți dubla-numărare.
+    (newsletter), <code>purchase</code> (după plata Stripe, pe /multumim) — plus evenimentele pe care
+    le definești în <a href="/admin/evenimente">Evenimente</a>. ID-urile de mai jos hrănesc
+    provizionarea GTM (<code>scripts/gtm-provision.mjs</code>) și tracking-ul server-side
+    (Conversions API), nu se mai încarcă nativ.
   </div>
 
   <form method="post" style="max-width:640px">

@@ -19,5 +19,6 @@ Simplead_Pagina_Pachete_Preturi.md
 design/
 
 # prettier-plugin-astro nu poate parsa scripturile `is:inline` cu `define:vars`
-# (limitare cunoscută a plugin-ului). Frontmatter-ul e minimal; excludem fișierul.
+# (limitare cunoscută a plugin-ului). Frontmatter-ul e minimal; excludem fișierele.
 src/components/Analytics.astro
+src/components/TrackingRuntime.astro

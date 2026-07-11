@@ -125,7 +125,14 @@ const masked = Object.fromEntries(
   await Promise.all(integrationNames.map(async (name) => [name, await getMaskedIntegration(name)])),
 ) as Record<IntegrationName, Record<string, MaskedField>>;
 
-const GROUP_ORDER = ['Plăți & facturare', 'Email', 'Notificări', 'Newsletter', 'Autentificare'];
+const GROUP_ORDER = [
+  'Plăți & facturare',
+  'Email',
+  'Notificări',
+  'Newsletter',
+  'Tracking',
+  'Autentificare',
+];
 const grouped = GROUP_ORDER.map((group) => ({
   group,
   names: integrationNames.filter((n) => (INTEGRATIONS[n] as IntMeta).group === group),

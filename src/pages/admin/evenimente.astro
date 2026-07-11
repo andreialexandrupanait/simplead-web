@@ -1,0 +1,50 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import EventsAdmin from '../../components/react/EventsAdmin.tsx';
+import { can } from '../../lib/server/authz';
+import { TOGGLEABLE_PAGES } from '@data/sections';
+import { TRACKING_PRESETS } from '@data/tracking-events-defs';
+import { getPublishedPosts, getPublishedProjects } from '../../lib/server/content';
+
+export const prerender = false;
+
+// Doar cine gestionează setările (adminul). Middleware-ul a verificat deja staff.
+const allowed = await can(Astro.request.headers, { settings: ['manage'] });
+if (!allowed) return Astro.redirect('/admin');
+
+// Enumerarea paginilor oferite în UI: rădăcină + pagini statice + rădăcini
+// dinamice (blog/portofoliu, cu wildcard) + câteva slug-uri publicate.
+const [posts, projects] = await Promise.all([getPublishedPosts(), getPublishedProjects()]);
+const pages = [
+  { path: '*', label: 'Toate paginile' },
+  { path: '/', label: 'Acasă' },
+  ...TOGGLEABLE_PAGES.map((p) => ({ path: p.path, label: p.label })),
+  { path: '/blog/*', label: 'Toate articolele (blog)' },
+  { path: '/portofoliu/*', label: 'Toate proiectele' },
+  ...posts.slice(0, 50).map((p) => ({ path: `/blog/${p.slug}`, label: `Articol: ${p.title}` })),
+  ...projects
+    .slice(0, 50)
+    .map((p) => ({ path: `/portofoliu/${p.slug}`, label: `Proiect: ${p.title}` })),
+];
+---
+
+<AdminLayout title="Evenimente & tracking">
+  <div class="admin-page-head">
+    <div>
+      <h1>Evenimente</h1>
+      <p class="admin-sub">
+        Definește evenimente per pagină fără cod: click, submit, scroll, timp sau la deschidere.
+        Fiecare se trimite în <code>dataLayer</code> → GTM (unde le legi de GA4/Meta/TikTok).
+      </p>
+    </div>
+  </div>
+
+  <div class="admin-banner">
+    <strong>Cum funcționează.</strong> O regulă = un eveniment (ex. <code>click_whatsapp</code>) +
+    unde e activ (pagini) + ce îl declanșează. Evenimentele ajung în <code>dataLayer</code>; în GTM
+    creezi triggere „Custom Event" pe numele lor (le provisionează și
+    <code>scripts/gtm-provision.mjs</code>). Consimțământul e respectat în GTM, la nivel de tag.
+  </div>
+
+  <EventsAdmin client:load pages={pages} presets={TRACKING_PRESETS} />
+</AdminLayout>

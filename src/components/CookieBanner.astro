@@ -8,15 +8,13 @@
 import { getPublicSettings } from '@lib/server/public-settings';
 
 const t = (await getPublicSettings()).tracking;
+// GTM e motorul unic: dacă e configurat, poate conține atât tag-uri de analiză
+// cât și de marketing, deci activează ambele categorii de consimțământ.
+const hasGtm = Boolean(t.gtmId || import.meta.env.GTM_ID);
 const hasAnalytics = Boolean(
-  t.ga4Id ||
-    t.clarityId ||
-    t.gtmId ||
-    import.meta.env.GA4_ID ||
-    import.meta.env.GTM_ID ||
-    import.meta.env.CLARITY_ID,
+  hasGtm || t.ga4Id || t.clarityId || import.meta.env.GA4_ID || import.meta.env.CLARITY_ID,
 );
-const hasMarketing = Boolean(t.metaPixelId || t.tiktokPixelId);
+const hasMarketing = Boolean(hasGtm || t.metaPixelId || t.tiktokPixelId);
 const hasTrackers = hasAnalytics || hasMarketing;
 ---
 
@@ -33,7 +31,11 @@ const hasTrackers = hasAnalytics || hasMarketing;
           <button type="button" class="cookie-banner__btn" data-consent="none">
             Refuz
           </button>
-          <button type="button" class="cookie-banner__btn cookie-banner__btn--ghost" data-consent="prefs">
+          <button
+            type="button"
+            class="cookie-banner__btn cookie-banner__btn--ghost"
+            data-consent="prefs"
+          >
             Preferințe
           </button>
           <button
