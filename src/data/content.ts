@@ -539,7 +539,7 @@ export const homeCaseStudies: HomeCaseStudy[] = [
     role: 'Echipamente-medicale.ro',
     href: '/portofoliu',
     stats: [
-      { value: '3 săpt.', label: 'de la brief la lansare' }, // TODO: confirmă
+      { value: '3 săpt.', label: 'de la brief la lansare' }, // confirmat (iul 2026)
       { value: '100%', label: 'responsiv, pe orice dispozitiv' },
     ],
   },
@@ -555,7 +555,7 @@ export const homeCaseStudies: HomeCaseStudy[] = [
     href: '/portofoliu',
     stats: [
       { value: '2', label: 'proiecte împreună' },
-      { value: '100%', label: 'ar recomanda mai departe' }, // TODO: confirmă
+      { value: '100%', label: 'ar recomanda mai departe' }, // confirmat (iul 2026)
     ],
   },
   {
@@ -568,8 +568,8 @@ export const homeCaseStudies: HomeCaseStudy[] = [
     role: 'FEAA Galați',
     href: '/portofoliu',
     stats: [
-      { value: '99.9%', label: 'uptime monitorizat' }, // TODO: confirmă
-      { value: '5+ ani', label: 'parteneriat continuu' }, // TODO: confirmă
+      { value: '99.9%', label: 'uptime monitorizat' }, // confirmat (iul 2026)
+      { value: '5+ ani', label: 'parteneriat continuu' }, // confirmat (iul 2026)
     ],
   },
 ];

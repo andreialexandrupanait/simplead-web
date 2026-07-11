@@ -16,8 +16,11 @@
 - [x] ~~Confirmă integrările~~ **Verificat pe prod (11 iul)**: Stripe ✓, Postmark ✓, Google login ✓.
 - [x] **SmartBill — INACTIV intenționat** (decizia lui Andrei, 11 iul): facturarea se face manual; alerta email „comandă plătită fără factură" servește ca reminder per comandă.
 - [x] ~~Confirmă migrarea `0015`~~ **Verificat pe prod (11 iul)** — A/B deblocat (și PORNIT de Andrei).
-- [x] **Cifre confirmate** (11 iul): 12 ani, 72+ proiecte, 6 ani cea mai lungă colaborare (Marketing Deck) — aplicate pe despre (v1+v2), servicii, testimoniale.
+- [x] **Cifre confirmate** (11 iul): 12 ani, 72+ proiecte, 6 ani cea mai lungă colaborare (Marketing Deck) — aplicate pe despre (v1+v2), servicii, testimoniale. Confirmate și statisticile din studiile de caz (3 săpt. / 100% / 99.9% / 5+ ani).
+- [x] **Confirmate** (11 iul): email public `contact@simplead.ro`, timp de răspuns 24h lucrătoare, `/portofoliu` „în construcție" intenționat, testul A/B pornit intenționat.
+- [x] **Pagini legale finale** (11 iul): termeni/confidențialitate rescrise după modelul Marketing Deck + pagină nouă `/protectia-datelor` (GDPR); zero placeholder public.
 - [ ] 🟢 **Poză reală Gabriel** — încă nu există (rămâne monograma GT până o are).
+- [ ] 🟢 **Backup off-site** — lipsește doar destinația externă (Drive/S3/NAS/alt server); backup-ul local zilnic rulează.
 
 ### 🤖 Tehnic
 - [x] **Backup DB automat** (11 iul): `backup-db.sh` + cron 03:17 (`/etc/cron.d/simplead-db-backup`), retenție 7 zilnice/5 săptămânale, **restore testat**; documentat în README. Rămâne: copie off-site (S3/NAS/rclone) — necesită destinație de la tine.
