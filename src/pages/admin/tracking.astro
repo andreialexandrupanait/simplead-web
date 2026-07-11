@@ -1,128 +1,437 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
+import EventsAdmin from '../../components/react/EventsAdmin.tsx';
 import { setFlash } from '../../lib/server/flash';
+import { can } from '../../lib/server/authz';
 import {
   getPublicSettings,
   saveTrackingSettings,
   type TrackingSettings,
 } from '../../lib/server/public-settings';
+import { getMaskedIntegration, saveIntegration } from '../../lib/server/settings';
+import { getContainerStatus, type ContainerStatus } from '../../lib/server/gtm-api';
+import {
+  getKpis,
+  getConversionEvents,
+  type Ga4Kpis,
+  type EventRow,
+} from '../../lib/server/ga4-reports';
+import StatCard from '../../components/admin/StatCard.astro';
+import { getPublishedPosts, getPublishedProjects } from '../../lib/server/content';
+import { TOGGLEABLE_PAGES } from '@data/sections';
+import { TRACKING_PRESETS } from '@data/tracking-events-defs';
 
 export const prerender = false;
+
+// Hub-ul e nivel „setări" → doar adminul.
+const allowed = await can(Astro.request.headers, { settings: ['manage'] });
+if (!allowed) return Astro.redirect('/admin');
+
+const TABS = [
+  { key: 'prezentare', label: 'Prezentare' },
+  { key: 'coduri', label: 'Coduri' },
+  { key: 'evenimente', label: 'Evenimente' },
+  { key: 'conversii', label: 'Conversii' },
+  { key: 'gtm', label: 'GTM' },
+];
+const tabParam = Astro.url.searchParams.get('tab') ?? 'coduri';
+const tab = TABS.some((t) => t.key === tabParam) ? tabParam : 'coduri';
 
 let saveError: string | null = null;
 
 if (Astro.request.method === 'POST') {
   const form = await Astro.request.formData();
-  const data: TrackingSettings = {
-    gtmId: String(form.get('gtmId') ?? ''),
-    ga4Id: String(form.get('ga4Id') ?? ''),
-    clarityId: String(form.get('clarityId') ?? ''),
-    metaPixelId: String(form.get('metaPixelId') ?? ''),
-    tiktokPixelId: String(form.get('tiktokPixelId') ?? ''),
-    gscVerification: String(form.get('gscVerification') ?? ''),
-  };
-  const result = await saveTrackingSettings(data);
-  if (result.ok) {
-    setFlash(Astro.cookies, { kind: 'ok', msg: 'ID-urile de tracking au fost salvate.' });
-    return Astro.redirect('/admin/tracking', 303);
+  const section = String(form.get('section') ?? '');
+
+  if (section === 'coduri') {
+    const data: TrackingSettings = {
+      gtmId: String(form.get('gtmId') ?? ''),
+      ga4Id: String(form.get('ga4Id') ?? ''),
+      clarityId: String(form.get('clarityId') ?? ''),
+      metaPixelId: String(form.get('metaPixelId') ?? ''),
+      tiktokPixelId: String(form.get('tiktokPixelId') ?? ''),
+      gscVerification: String(form.get('gscVerification') ?? ''),
+    };
+    const result = await saveTrackingSettings(data);
+    if (result.ok) {
+      setFlash(Astro.cookies, { kind: 'ok', msg: 'ID-urile de tracking au fost salvate.' });
+      return Astro.redirect('/admin/tracking?tab=coduri', 303);
+    }
+    saveError = result.error;
+  } else if (section === 'conversii') {
+    const values = {
+      metaCapiToken: String(form.get('metaCapiToken') ?? ''),
+      ga4MpSecret: String(form.get('ga4MpSecret') ?? ''),
+    };
+    const clear: ('metaCapiToken' | 'ga4MpSecret')[] = [];
+    if (form.get('clear_metaCapiToken')) clear.push('metaCapiToken');
+    if (form.get('clear_ga4MpSecret')) clear.push('ga4MpSecret');
+    const result = await saveIntegration('conversions', values, clear);
+    if (result.ok) {
+      setFlash(Astro.cookies, { kind: 'ok', msg: 'Token-urile de conversii au fost salvate.' });
+      return Astro.redirect('/admin/tracking?tab=conversii', 303);
+    }
+    saveError = result.error;
   }
-  saveError = result.error;
 }
 
-const t = (await getPublicSettings()).tracking;
+// Date pregătite doar pentru tab-ul activ.
+const t = tab === 'coduri' ? (await getPublicSettings()).tracking : null;
 
-const FIELDS: {
-  name: keyof TrackingSettings;
-  label: string;
-  placeholder: string;
-  hint: string;
-}[] = [
+const capi = tab === 'conversii' ? await getMaskedIntegration('conversions') : null;
+
+const gtmStatus: ContainerStatus | null = tab === 'gtm' ? await getContainerStatus() : null;
+
+const rangeParam = Astro.url.searchParams.get('range') === '30' ? 30 : 7;
+let kpis: Ga4Kpis | null = null;
+let convEvents: { configured: boolean; error?: string; events?: EventRow[] } | null = null;
+if (tab === 'prezentare') {
+  [kpis, convEvents] = await Promise.all([getKpis(rangeParam), getConversionEvents(rangeParam)]);
+}
+const EVENT_LABELS: Record<string, string> = {
+  generate_lead: 'Lead-uri',
+  sign_up: 'Abonări',
+  purchase: 'Comenzi',
+};
+
+let eventPages: { path: string; label: string }[] = [];
+if (tab === 'evenimente') {
+  const [posts, projects] = await Promise.all([getPublishedPosts(), getPublishedProjects()]);
+  eventPages = [
+    { path: '*', label: 'Toate paginile' },
+    { path: '/', label: 'Acasă' },
+    ...TOGGLEABLE_PAGES.map((p) => ({ path: p.path, label: p.label })),
+    { path: '/blog/*', label: 'Toate articolele (blog)' },
+    { path: '/portofoliu/*', label: 'Toate proiectele' },
+    ...posts.slice(0, 50).map((p) => ({ path: `/blog/${p.slug}`, label: `Articol: ${p.title}` })),
+    ...projects
+      .slice(0, 50)
+      .map((p) => ({ path: `/portofoliu/${p.slug}`, label: `Proiect: ${p.title}` })),
+  ];
+}
+
+const ID_FIELDS: { name: keyof TrackingSettings; label: string; placeholder: string; hint: string }[] =
+  [
+    {
+      name: 'gtmId',
+      label: 'Google Tag Manager (container)',
+      placeholder: 'GTM-XXXXXXX',
+      hint: 'MOTORUL UNIC. Singurul care se încarcă direct în pagină. Toate tag-urile (GA4/Meta/TikTok/Clarity) rulează prin el, cu consimțământ la nivel de tag.',
+    },
+    {
+      name: 'ga4Id',
+      label: 'Google Analytics 4',
+      placeholder: 'G-XXXXXXXXXX',
+      hint: 'Measurement ID. Nu se încarcă direct — hrănește provizionarea GTM și tracking-ul server-side.',
+    },
+    {
+      name: 'metaPixelId',
+      label: 'Meta (Facebook) Pixel',
+      placeholder: '123456789012345',
+      hint: 'Pixel ID din Meta Events Manager. Pentru tag-ul Meta din GTM + Conversions API.',
+    },
+    {
+      name: 'tiktokPixelId',
+      label: 'TikTok Pixel',
+      placeholder: 'CXXXXXXXXXXXXXXXXX',
+      hint: 'Pixel ID din TikTok Events Manager. Pentru tag-ul TikTok din GTM.',
+    },
+    {
+      name: 'clarityId',
+      label: 'Microsoft Clarity',
+      placeholder: 'xxxxxxxxxx',
+      hint: 'Project ID pentru heatmaps + session recordings (ca tag în GTM).',
+    },
+    {
+      name: 'gscVerification',
+      label: 'Google Search Console — verificare',
+      placeholder: 'conținutul meta-tagului (fără <meta ...>)',
+      hint: 'Din GSC → „HTML tag": copiază DOAR valoarea content="..." (adăugăm noi meta-tagul în <head>).',
+    },
+  ];
+
+const CAPI_FIELDS: { name: 'metaCapiToken' | 'ga4MpSecret'; label: string; hint: string }[] = [
   {
-    name: 'gtmId',
-    label: 'Google Tag Manager (container)',
-    placeholder: 'GTM-XXXXXXX',
-    hint: 'MOTORUL UNIC. Singurul care se încarcă direct în pagină. Toate tag-urile (GA4/Meta/TikTok/Clarity) rulează prin el, cu consimțământ la nivel de tag. Site-ul îi trimite evenimente în dataLayer.',
+    name: 'metaCapiToken',
+    label: 'Meta Conversions API — token',
+    hint: 'Meta Events Manager → dataset → Settings → Conversions API → Generate access token (EAA…).',
   },
   {
-    name: 'ga4Id',
-    label: 'Google Analytics 4',
-    placeholder: 'G-XXXXXXXXXX',
-    hint: 'Measurement ID. NU se mai încarcă direct — se folosește pentru a provisiona tag-ul GA4 în GTM (scripts/gtm-provision.mjs) și pentru tracking server-side.',
-  },
-  {
-    name: 'metaPixelId',
-    label: 'Meta (Facebook) Pixel',
-    placeholder: '123456789012345',
-    hint: 'Pixel ID din Meta Events Manager. Folosit pentru tag-ul Meta din GTM și pentru Conversions API (server-side). Nu se mai încarcă nativ.',
-  },
-  {
-    name: 'tiktokPixelId',
-    label: 'TikTok Pixel',
-    placeholder: 'CXXXXXXXXXXXXXXXXX',
-    hint: 'Pixel ID din TikTok Events Manager. Folosit pentru tag-ul TikTok din GTM. Nu se mai încarcă nativ.',
-  },
-  {
-    name: 'clarityId',
-    label: 'Microsoft Clarity',
-    placeholder: 'xxxxxxxxxx',
-    hint: 'Project ID pentru heatmaps + session recordings. Se adaugă ca tag în GTM (nu se mai încarcă nativ).',
-  },
-  {
-    name: 'gscVerification',
-    label: 'Google Search Console — verificare',
-    placeholder: 'conținutul meta-tagului (fără <meta ...>)',
-    hint: 'Din GSC → metoda „HTML tag": copiază DOAR valoarea content="..." (adăugăm noi meta-tagul în <head>).',
+    name: 'ga4MpSecret',
+    label: 'GA4 Measurement Protocol — api_secret',
+    hint: 'GA4 → Admin → Data Streams → (stream) → Measurement Protocol API secrets → Create.',
   },
 ];
+
+function tabUrl(key: string) {
+  return `/admin/tracking?tab=${key}`;
+}
 ---
 
-<AdminLayout title="Tracking & analytics">
+<AdminLayout title="Tracking & Analytics">
   <div class="admin-page-head">
     <div>
-      <h1>Tracking & analytics</h1>
-      <p class="admin-hint">
-        ID-uri publice. Toate trackerele pornesc <strong
-          >doar după acceptul din bannerul de cookies</strong
-        > (GDPR). Lasă gol ce nu folosești.
+      <h1>Tracking & Analytics</h1>
+      <p class="admin-sub">
+        Un singur loc pentru coduri, evenimente, conversii și GTM. GTM e motorul unic; trackerele
+        pornesc doar după acceptul din bannerul de cookies (GDPR).
       </p>
+    </div>
+  </div>
+
+  <div class="admin-toolbar" style="margin-bottom:20px">
+    <div class="admin-count-chips">
+      {
+        TABS.map((tb) => (
+          <a href={tabUrl(tb.key)} class:list={[tab === tb.key && 'is-active']}>
+            {tb.label}
+          </a>
+        ))
+      }
     </div>
   </div>
 
   {saveError && <div class="admin-banner admin-banner--error">{saveError}</div>}
 
-  <div class="admin-banner">
-    <strong>GTM e motorul unic.</strong> Doar containerul GTM se încarcă în pagină; GA4, Meta, TikTok
-    și Clarity rulează ca tag-uri <em>în interiorul</em> GTM (cu consimțământ pe fiecare tag). Site-ul
-    trimite evenimente în <code>dataLayer</code>: la conversii —
-    <code>generate_lead</code> (contact/ofertă/tichet, pe /multumesc), <code>sign_up</code>
-    (newsletter), <code>purchase</code> (după plata Stripe, pe /multumim) — plus evenimentele pe care
-    le definești în <a href="/admin/evenimente">Evenimente</a>. ID-urile de mai jos hrănesc
-    provizionarea GTM (<code>scripts/gtm-provision.mjs</code>) și tracking-ul server-side
-    (Conversions API), nu se mai încarcă nativ.
-  </div>
+  {/* ---- Tab: Prezentare (GA4) ---- */}
+  {
+    tab === 'prezentare' && kpis && (
+      <>
+        {!kpis.configured && (
+          <div class="admin-banner admin-banner--warn">
+            <strong>GA4 neconectat.</strong> Ca să vezi date reale: setează <code>GA4_PROPERTY_ID</code>
+            {' '}(numeric, din GA4 → Admin → Property Settings) în mediul serverului și dă rol{' '}
+            <strong>Viewer</strong> service account-ului pe proprietatea GA4 (Admin → Property Access
+            Management).
+          </div>
+        )}
+        {kpis.configured && kpis.error && (
+          <div class="admin-banner admin-banner--error">Nu am putut citi GA4: {kpis.error}</div>
+        )}
+        {kpis.configured && !kpis.error && (
+          <>
+            <div class="admin-toolbar" style="margin-bottom:16px">
+              <div class="admin-count-chips">
+                <a
+                  href="/admin/tracking?tab=prezentare&range=7"
+                  class:list={[rangeParam === 7 && 'is-active']}
+                >
+                  7 zile
+                </a>
+                <a
+                  href="/admin/tracking?tab=prezentare&range=30"
+                  class:list={[rangeParam === 30 && 'is-active']}
+                >
+                  30 zile
+                </a>
+              </div>
+            </div>
+            <div class="admin-stats">
+              <StatCard label="Utilizatori" value={String(kpis.activeUsers ?? 0)} hint={`ultimele ${rangeParam} zile`} />
+              <StatCard label="Sesiuni" value={String(kpis.sessions ?? 0)} />
+              <StatCard label="Conversii" value={String(kpis.keyEvents ?? 0)} hint="key events" />
+              <StatCard label="Evenimente" value={String(kpis.eventCount ?? 0)} hint="total" />
+            </div>
+            <div class="admin-card" style="margin-top:20px">
+              <h2 style="margin:0 0 12px;font-size:1rem">Conversii pe tip</h2>
+              {convEvents?.events && convEvents.events.length > 0 ? (
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  {convEvents.events.map((ev) => (
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+                      <span>{EVENT_LABELS[ev.name] ?? ev.name} <code style="color:var(--muted)">{ev.name}</code></span>
+                      <strong class="num">{ev.count}</strong>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p style="color:var(--muted);margin:0">
+                  Nicio conversie în perioada aleasă (sau evenimentele nu au ajuns încă în GA4).
+                </p>
+              )}
+            </div>
+          </>
+        )}
+      </>
+    )
+  }
 
-  <form method="post" style="max-width:640px">
-    {
-      FIELDS.map((f) => (
-        <div class="admin-card" style="margin-top:16px">
-          <label class="admin-field" style="margin-bottom:0">
-            <span>{f.label}</span>
-            <input
-              class="admin-input"
-              type="text"
-              name={f.name}
-              value={t[f.name]}
-              placeholder={f.placeholder}
-              autocomplete="off"
-              spellcheck="false"
-            />
-            <small>{f.hint}</small>
-          </label>
+  {/* ---- Tab: Coduri ---- */}
+  {
+    tab === 'coduri' && (
+      <>
+        <div class="admin-banner">
+          <strong>GTM e motorul unic.</strong> Doar containerul GTM se încarcă în pagină; GA4, Meta,
+          TikTok, Clarity rulează ca tag-uri în interiorul GTM. Site-ul trimite evenimente în{' '}
+          <code>dataLayer</code> (vezi tab-ul <a href={tabUrl('evenimente')}>Evenimente</a>).
         </div>
-      ))
-    }
-    <div class="admin-savebar">
-      <button type="submit" class="admin-btn">Salvează</button>
-    </div>
-  </form>
+        <form method="post" style="max-width:640px">
+          <input type="hidden" name="section" value="coduri" />
+          {ID_FIELDS.map((f) => (
+            <div class="admin-card" style="margin-top:16px">
+              <label class="admin-field" style="margin-bottom:0">
+                <span>{f.label}</span>
+                <input
+                  class="admin-input"
+                  type="text"
+                  name={f.name}
+                  value={t?.[f.name]}
+                  placeholder={f.placeholder}
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+                <small>{f.hint}</small>
+              </label>
+            </div>
+          ))}
+          <div class="admin-savebar">
+            <button type="submit" class="admin-btn">
+              Salvează
+            </button>
+          </div>
+        </form>
+      </>
+    )
+  }
+
+  {/* ---- Tab: Evenimente ---- */}
+  {
+    tab === 'evenimente' && (
+      <>
+        <div class="admin-banner">
+          <strong>Evenimente no-code per pagină.</strong> O regulă = un eveniment (ex.{' '}
+          <code>click_whatsapp</code>) + unde e activ + ce îl declanșează. Ajung în{' '}
+          <code>dataLayer</code> → GTM.
+        </div>
+        <EventsAdmin client:load pages={eventPages} presets={TRACKING_PRESETS} />
+      </>
+    )
+  }
+
+  {/* ---- Tab: Conversii (CAPI) ---- */}
+  {
+    tab === 'conversii' && capi && (
+      <>
+        <div class="admin-banner">
+          <strong>Conversii server-side (CAPI).</strong> Trimite conversiile și din backend (Meta
+          Conversions API + GA4 Measurement Protocol), deduplicate cu <code>event_id</code>. Rezistent
+          la ad-blockere/iOS. ID-urile de pixel/measurement se iau din tab-ul{' '}
+          <a href={tabUrl('coduri')}>Coduri</a>.
+        </div>
+        <form method="post" style="max-width:640px">
+          <input type="hidden" name="section" value="conversii" />
+          {CAPI_FIELDS.map((f) => {
+            const m = capi[f.name];
+            return (
+              <div class="admin-card" style="margin-top:16px">
+                <label class="admin-field" style="margin-bottom:0">
+                  <span>{f.label}</span>
+                  <input
+                    class="admin-input"
+                    type="password"
+                    name={f.name}
+                    placeholder={m.masked ?? 'nesetat'}
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                  <small>{f.hint}</small>
+                  {m.masked && (
+                    <label class="admin-check" style="margin-top:8px">
+                      <input type="checkbox" name={`clear_${f.name}`} />
+                      <span>Șterge valoarea salvată</span>
+                    </label>
+                  )}
+                </label>
+              </div>
+            );
+          })}
+          <div class="admin-savebar">
+            <button type="submit" class="admin-btn">
+              Salvează
+            </button>
+          </div>
+        </form>
+      </>
+    )
+  }
+
+  {/* ---- Tab: GTM ---- */}
+  {
+    tab === 'gtm' && gtmStatus && (
+      <>
+        {!gtmStatus.configured && (
+          <div class="admin-banner admin-banner--warn">
+            <strong>GTM API neconectat.</strong> Setează <code>GOOGLE_SA_KEY</code>,{' '}
+            <code>GTM_ACCOUNT_ID</code> și <code>GTM_CONTAINER_ID</code> în mediul serverului ca să
+            vezi statusul și să publici de aici.
+          </div>
+        )}
+        {gtmStatus.configured && gtmStatus.error && (
+          <div class="admin-banner admin-banner--error">
+            Nu am putut citi containerul: {gtmStatus.error}
+          </div>
+        )}
+        {gtmStatus.configured && !gtmStatus.error && (
+          <div class="admin-stats" style="margin-bottom:20px">
+            <div class="admin-stat">
+              <div class="admin-stat__label">Container</div>
+              <div class="admin-stat__value" style="font-size:1.1rem">{gtmStatus.publicId}</div>
+              <div class="admin-stat__hint">versiune live v{gtmStatus.versionId}</div>
+            </div>
+            <div class="admin-stat">
+              <div class="admin-stat__label">Tag-uri</div>
+              <div class="admin-stat__value">{gtmStatus.tagsTotal}</div>
+              <div class="admin-stat__hint">
+                {gtmStatus.tagsActive} active · {gtmStatus.tagsPaused} pe pauză
+              </div>
+            </div>
+          </div>
+        )}
+        <div class="admin-card">
+          <h2 style="margin:0 0 8px">Google Tag Manager</h2>
+          <p style="color:var(--muted);margin:0 0 14px">
+            Publică modificările din „Default Workspace" direct de aici. Editarea tag-urilor +
+            re-provizionarea structurii se fac din GTM sau cu <code>scripts/gtm-rebuild.mjs</code>.
+          </p>
+          <div class="admin-actions">
+            {gtmStatus.configured && !gtmStatus.error && (
+              <button type="button" class="admin-btn" id="gtm-publish">
+                Publică modificările
+              </button>
+            )}
+            <a
+              class="admin-btn admin-btn--ghost admin-btn--sm"
+              href={gtmStatus.containerUrl ?? 'https://tagmanager.google.com/'}
+              target="_blank"
+              rel="noopener"
+            >
+              Deschide GTM ↗
+            </a>
+          </div>
+        </div>
+        <script is:inline>
+          document.getElementById('gtm-publish')?.addEventListener('click', async (e) => {
+            const btn = e.currentTarget;
+            btn.disabled = true;
+            const prev = btn.textContent;
+            btn.textContent = 'Se publică…';
+            try {
+              const res = await fetch('/api/admin/gtm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'publish' }),
+              });
+              const data = await res.json().catch(() => ({}));
+              if (!res.ok) throw new Error(data.error || 'Publicarea a eșuat.');
+              window.adminToast?.(`Publicat (v${data.versionId}).`, 'ok');
+              setTimeout(() => location.reload(), 800);
+            } catch (err) {
+              window.adminToast?.(err instanceof Error ? err.message : 'Eroare.', 'error');
+              btn.disabled = false;
+              btn.textContent = prev;
+            }
+          });
+        </script>
+      </>
+    )
+  }
 </AdminLayout>
