@@ -36,15 +36,17 @@ const padT = 12;
 const padB = 8;
 
 const n = series.length;
-const max = Math.max(1, ...series.map((p) => p.value));
+const max = Math.max(1, ...series.map((p: Point) => p.value));
 const innerW = W - padL - padR;
 const innerH = H - padT - padB;
 
 const xAt = (i: number) => (n <= 1 ? padL + innerW / 2 : padL + (i * innerW) / (n - 1));
 const yAt = (v: number) => padT + innerH - (v / max) * innerH;
 
-const pts = series.map((p, i) => [xAt(i), yAt(p.value)] as const);
-const line = pts.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ');
+const pts = series.map((p: Point, i: number) => [xAt(i), yAt(p.value)] as const);
+const line = pts
+  .map(([x, y]: readonly [number, number], i: number) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}`)
+  .join(' ');
 const area = pts.length
   ? `${line} L${pts[pts.length - 1][0].toFixed(1)} ${H - padB} L${pts[0][0].toFixed(1)} ${H - padB} Z`
   : '';
@@ -88,7 +90,7 @@ const gridLines = [0.25, 0.5, 0.75];
       }
       {
         variant === 'bars' ? (
-          series.map((p, i) => (
+          series.map((p: Point, i: number) => (
             <rect
               x={xAt(i) - barW / 2}
               y={yAt(p.value)}

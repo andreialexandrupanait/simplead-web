@@ -356,7 +356,7 @@ const pendingChecklist = checklist.filter((c) => !c.done);
                 </span>
               </div>
             </div>
-            <TrendArea series={stats.dailyRevenue} height={200} format={(n) => fmtMoney(n)} />
+            <TrendArea series={stats.dailyRevenue} height={200} format={(n: number) => fmtMoney(n)} />
           </Card>
 
           <Card title="Pipeline lead-uri" hint="Click pe un stadiu pentru lista filtrată.">
