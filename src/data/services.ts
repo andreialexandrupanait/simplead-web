@@ -137,7 +137,7 @@ export const services: Service[] = [
     ],
     tags: ['Actualizări', 'Securitate', 'Backup', 'Monitorizare'],
     image:
-      'https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&q=78&auto=format&fit=crop',
+      '/service-heroes/photo-1518770660439-4636190af475.webp',
     heroTitle: 'Tu te ocupi de afacere, ',
     heroTitleAccent: 'noi de partea tehnică',
     heroSub:
@@ -260,7 +260,7 @@ export const services: Service[] = [
     ],
     tags: ['UX/UI', 'WordPress', 'WooCommerce', 'SEO'],
     image:
-      'https://images.unsplash.com/photo-1551434678-e076c223a692?w=900&q=78&auto=format&fit=crop',
+      '/service-heroes/photo-1551434678-e076c223a692.webp',
     heroTitle: 'Site-uri și magazine online unde ',
     heroTitleAccent: 'oamenii găsesc ce caută și cumpără',
     heroSub:
@@ -418,7 +418,7 @@ export const services: Service[] = [
     ],
     tags: ['Branding', 'Print', 'Outdoor', 'Neuromarketing'],
     image:
-      'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=900&q=78&auto=format&fit=crop',
+      '/service-heroes/photo-1561070791-2526d30994b5.webp',
     heroTitle: 'O imagine coerentă, ',
     heroTitleAccent: 'ușor de recunoscut',
     heroSub:
@@ -573,7 +573,7 @@ export const services: Service[] = [
     ],
     tags: ['Strategie', 'Conținut', 'Comunitate', 'Raportare'],
     image:
-      'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=900&q=78&auto=format&fit=crop',
+      '/service-heroes/photo-1611162617474-5b21e879e113.webp',
     heroTitle: 'Social media care aduce ',
     heroTitleAccent: 'clienți, nu doar aprecieri',
     heroSub:
@@ -723,7 +723,7 @@ export const services: Service[] = [
     ],
     tags: ['Strategie', 'Neuromarketing', 'Analiză', 'Poziționare'],
     image:
-      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=900&q=78&auto=format&fit=crop',
+      '/service-heroes/photo-1460925895917-afdab827c52f.webp',
     heroTitle: 'Marketing bazat pe ',
     heroTitleAccent: 'cercetare, nu pe noroc',
     // TODO[de confirmat]: formularea despre pregătirea academică (doctor vs doctorand, cine).
@@ -1038,7 +1038,7 @@ export const services: Service[] = [
     ],
     tags: ['Automatizări', 'Monitorizare AI', 'Conținut', 'Integrări'],
     image:
-      'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=900&q=78&auto=format&fit=crop',
+      '/service-heroes/photo-1677442136019-21780ecad995.webp',
     heroTitle: 'AI pentru business, ',
     heroTitleAccent: 'folosit cu cap',
     heroSub:

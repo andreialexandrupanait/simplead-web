@@ -37,7 +37,7 @@ const wordCount = post.body.split(/\s+/).filter(Boolean).length;
 const takeaways = (post.takeaways ?? []).filter(Boolean);
 
 const isFounder = isFounderName(post.author);
-const authorAvatar = isFounder ? '/andrei.jpg' : null;
+const authorAvatar = isFounder ? '/andrei.webp' : null;
 const authorMonogram = post.author.trim().charAt(0).toUpperCase() || 'S';
 
 // O singură listă publicată → related (tag comun primele) + navigare prev/next.

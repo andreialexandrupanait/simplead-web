@@ -8,8 +8,14 @@ interface Props {
 }
 const { post } = Astro.props;
 const av = authorAvatar(post.author);
-// Thumbnail mai mic pentru carduri (cover-ul e stocat la w=1600): mai puțină lățime de bandă.
-const thumb = post.cover ? post.cover.replace(/([?&])w=\d+/, '$1w=800') : post.cover;
+// Thumbnail mai mic pentru carduri (mai puțină lățime de bandă). Coperele
+// self-hostate au un fișier `-800.webp` dedicat; pentru URL-uri externe (ex.
+// Unsplash, la postări noi din admin) reducem `w=` din query.
+const thumb = post.cover
+  ? post.cover.startsWith('/blog-covers/')
+    ? post.cover.replace(/\.webp$/, '-800.webp')
+    : post.cover.replace(/([?&])w=\d+/, '$1w=800')
+  : post.cover;
 const dateStr = (post.publishedAt ?? new Date()).toLocaleDateString('ro-RO', {
   year: 'numeric',
   month: 'short',

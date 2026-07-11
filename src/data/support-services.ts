@@ -101,7 +101,8 @@ export const SUPPORT_ICON: Record<SupportIconKey, string> = {
     '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L4 16.8 7.2 20l5.3-5.3a4 4 0 0 0 5.2-5.4l-2.5 2.5-2.3-2.3 2.3-2.3z"/>',
 };
 
-const IMG = (id: string) => `https://images.unsplash.com/${id}?w=900&q=78&auto=format&fit=crop`;
+// Hero-uri self-hostate în public/service-heroes/{id}.webp (1000px, webp).
+const IMG = (id: string) => `/service-heroes/${id}.webp`;
 
 export const supportServices: SupportService[] = [
   // ===================== WEB & HOSTING =====================
