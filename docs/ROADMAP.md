@@ -10,13 +10,14 @@
 
 ## FAZA 0 — Blocante „go-live definitiv"
 
-### 👤 De la tine (fără astea nu putem închide)
-- [ ] 🔴 **Date firmă** în `src/data/site.ts`: formă juridică + denumire legală completă (ex. „Simplead SRL"/„… PFA"), adresa completă a sediului, program, linkuri social (sau confirmă „fără social").
-- [ ] 🔴 **Pagini legale** — dă-mi datele ca să elimin `[confirmă:…]` din `src/pages/confidentialitate.astro:26` și `src/pages/termeni.astro:31`.
-- [x] ~~Confirmă integrările~~ **Verificat pe prod (11 iul)**: Stripe ✓ (`secret_key`+`webhook_secret` în DB), Postmark ✓ (`server_token`+`from_email` — emailurile pleacă), Google login ✓.
-- [ ] 🔴 **SmartBill incomplet**: are `cif`/`email`/`token`, dar **lipsește `series` (seria de facturi)** + `taxName`/`taxPercent` → facturarea automată nu poate emite. Completează în `/admin/integrari`.
-- [x] ~~Confirmă migrarea `0015`~~ **Verificat pe prod (11 iul)**: `ab_exposure` + `leads.variant`/`orders.variant` există — A/B deblocat tehnic.
-- [ ] 🟢 Poză reală Gabriel (`src/pages/despre.astro`) + confirmă cifrele „TODO" din `src/data/content.ts`.
+### 👤 De la tine
+- [x] **Date firmă** (11 iul, de la Andrei): SIMPLEAD S.R.L., CUI 41501661, Reg. Com. J2019001488175 (format nou ONRC), Strada Sucevei nr. 6, Galați; program L–V 09–18 confirmat; social: Facebook + Instagram (LinkedIn/YouTube — nu există). Aplicate în `site.ts`, JSON-LD (streetAddress/sameAs/legalName în ambele layout-uri), FooterV2 afișează social.
+- [x] **Pagini legale** — zero `[confirmă:…]`: operator complet (termeni + confidențialitate), hosting numit (Hetzner, UE), retenție mesaje **3 ani** (termenul general de prescripție — decizie delegată), prețuri formulate neutru pe TVA („prețul afișat = prețul final"), ore mentenanță fără reportare.
+- [x] ~~Confirmă integrările~~ **Verificat pe prod (11 iul)**: Stripe ✓, Postmark ✓, Google login ✓.
+- [x] **SmartBill — INACTIV intenționat** (decizia lui Andrei, 11 iul): facturarea se face manual; alerta email „comandă plătită fără factură" servește ca reminder per comandă.
+- [x] ~~Confirmă migrarea `0015`~~ **Verificat pe prod (11 iul)** — A/B deblocat (și PORNIT de Andrei).
+- [x] **Cifre confirmate** (11 iul): 12 ani, 72+ proiecte, 6 ani cea mai lungă colaborare (Marketing Deck) — aplicate pe despre (v1+v2), servicii, testimoniale.
+- [ ] 🟢 **Poză reală Gabriel** — încă nu există (rămâne monograma GT până o are).
 
 ### 🤖 Tehnic
 - [x] **Backup DB automat** (11 iul): `backup-db.sh` + cron 03:17 (`/etc/cron.d/simplead-db-backup`), retenție 7 zilnice/5 săptămânale, **restore testat**; documentat în README. Rămâne: copie off-site (S3/NAS/rclone) — necesită destinație de la tine.

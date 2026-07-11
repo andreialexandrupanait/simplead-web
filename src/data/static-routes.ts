@@ -38,5 +38,6 @@ export const staticRoutes: string[] = [
   '/contact',
   '/termeni',
   '/confidentialitate',
+  '/protectia-datelor',
   '/cookies',
 ];

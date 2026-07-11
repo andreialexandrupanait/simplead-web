@@ -96,6 +96,7 @@ export const footerServices: NavItem[] = [
 export const footerLegal: NavItem[] = [
   { label: 'Termeni și condiții', href: '/termeni' },
   { label: 'Politica de confidențialitate', href: '/confidentialitate' },
+  { label: 'Protecția datelor', href: '/protectia-datelor' },
   { label: 'Politica de cookies', href: '/cookies' },
 ];
 

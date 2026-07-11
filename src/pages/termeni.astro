@@ -4,9 +4,7 @@ import PageHeader from '@components/sections/PageHeader.astro';
 import { site } from '@data/site';
 import { getPublicSettings } from '@lib/server/public-settings';
 
-// DRAFT pregătit pentru verificare juridică. Marcajele [confirmă: ...] se
-// completează de Andrei / jurist înainte de lansarea vânzărilor online.
-const updated = '9 iunie 2026';
+const updated = '11 iulie 2026';
 const { showPhone } = await getPublicSettings();
 ---
 
@@ -24,97 +22,160 @@ const { showPhone } = await getPublicSettings();
   <section class="section section--light">
     <div class="container" style="max-width:820px">
       <div class="prose-simplead">
-        <h2>1. Cine suntem</h2>
+        <h2>1. Termeni generali și definiții</h2>
         <p>
-          Site-ul simplead.ro este operat de {site.legalName}
-          [confirmă: forma juridică exactă], cu sediul în {site.contact.city},
-          {site.contact.country} [confirmă: adresa completă a sediului], CIF {site.legal.cif},
-          înregistrată la Registrul Comerțului sub nr. {site.legal.regCom}. Ne poți contacta la
-          {site.contact.email}{showPhone ? ` sau ${site.contact.phone}` : ''}.
+          Site-ul simplead.ro este operat de {site.legalName}, cu sediul în{' '}
+          {site.contact.address}, CIF {site.legal.cif}, înregistrată la Registrul Comerțului sub
+          nr. {site.legal.regCom} (în continuare „Simplead", „noi" sau „operatorul"). Ne poți
+          contacta la {site.contact.email}{showPhone ? ` sau ${site.contact.phone}` : ''}.
+        </p>
+        <p>În sensul acestor termeni:</p>
+        <ul>
+          <li>
+            <strong>Client</strong> — persoana fizică sau juridică ce utilizează site-ul, plasează o
+            comandă sau achiziționează un serviciu Simplead.
+          </li>
+          <li>
+            <strong>Conținut</strong> — toate informațiile de pe site (texte, grafică, imagini, cod,
+            elemente de design), precum și informațiile transmise prin email sau alte mijloace de
+            comunicare.
+          </li>
+          <li>
+            <strong>Comandă</strong> — solicitarea clientului de a achiziționa unul sau mai multe
+            servicii, transmisă prin site (pagina <a href="/pachete">Pachete</a>) sau agreată în
+            scris.
+          </li>
+          <li>
+            <strong>Contract</strong> — acordul dintre Simplead și client, format prin confirmarea
+            comenzii; acești termeni fac parte din contract.
+          </li>
+        </ul>
+        <p>
+          Serviciile noastre includ: grafică și branding, web design, marketing, mentenanță website
+          (abonamente) și servicii rapide la preț fix. Utilizarea site-ului sau plasarea unei
+          comenzi înseamnă acceptarea acestor termeni. Ne rezervăm dreptul de a-i modifica;
+          versiunea curentă, cu data actualizării, e publicată mereu pe această pagină.
         </p>
 
-        <h2>2. Obiectul</h2>
+        <h2>2. Prelucrarea datelor cu caracter personal</h2>
         <p>
-          Acești termeni reglementează utilizarea site-ului și achiziția serviciilor Simplead:
-          pachete de servicii cu plată unică (design, site-uri, grafică), abonamente de mentenanță
-          website și produse digitale. Plasarea unei comenzi sau utilizarea site-ului înseamnă
-          acceptarea acestor termeni.
+          Prelucrăm datele tale conform Regulamentului (UE) 2016/679 (GDPR). Detaliile complete —
+          ce date colectăm, de ce, cât le păstrăm și ce drepturi ai — sunt în{' '}
+          <a href="/confidentialitate">politica de confidențialitate</a> și pe pagina dedicată{' '}
+          <a href="/protectia-datelor">protecției datelor cu caracter personal</a>.
         </p>
 
-        <h2>3. Comenzi și plată</h2>
+        <h2>3. Drepturi de autor și proprietate intelectuală</h2>
         <p>
-          Prețurile sunt afișate pe pagina <a href="/pachete">Pachete</a> și includ taxele aplicabile
-          [confirmă: regimul TVA al firmei]. Plata online se procesează prin Stripe; noi nu stocăm datele
-          cardului tău. Pentru abonamente, plata se reînnoiește automat la intervalul ales (lunar sau
-          anual) până la anulare. După fiecare plată primești factura fiscală pe email, emisă prin SmartBill.
+          Conținutul site-ului simplead.ro (texte, grafică, cod, elemente vizuale) ne aparține sau
+          e folosit cu acordul titularilor și nu poate fi reprodus, distribuit sau folosit comercial
+          fără acordul nostru scris. Drepturile asupra livrabelelor finale realizate pentru client
+          se transferă acestuia la plata integrală, conform ofertei. Ne rezervăm dreptul de a
+          include lucrările livrate în portofoliu, dacă nu agreăm altfel în scris.
+        </p>
+
+        <h2>4. Limitarea răspunderii</h2>
+        <p>
+          Livrăm serviciile cu diligență profesională. Răspunderea noastră totală e limitată la
+          valoarea plătită pentru serviciul în cauză. Nu răspundem pentru daune indirecte, pierderi
+          de profit sau pentru indisponibilități cauzate de terți (găzduire, platforme externe,
+          servicii de plată); la abonamentele de mentenanță intervenim conform planului ales.
+          Informațiile de pe site au caracter general și pot fi actualizate fără notificare
+          prealabilă.
+        </p>
+
+        <h2>5. Condiții de utilizare a site-ului</h2>
+        <p>
+          Te obligi să folosești site-ul în scopuri legitime: fără tentative de acces neautorizat,
+          fără perturbarea funcționării, fără copierea automată a conținutului și fără transmiterea
+          de date false prin formulare. Ne rezervăm dreptul de a restricționa accesul utilizatorilor
+          care încalcă aceste condiții.
+        </p>
+
+        <h2>6. Comenzi, prețuri și plată</h2>
+        <p>
+          Prețurile sunt afișate pe pagina <a href="/pachete">Pachete</a>, în moneda afișată acolo;
+          prețul afișat este prețul final de plată — nu adăugăm TVA. Plata online se procesează
+          prin Stripe; noi nu vedem și nu stocăm datele cardului tău. Pentru abonamente, plata se
+          reînnoiește automat la intervalul ales (lunar sau anual) până la anulare. După fiecare
+          plată primești factura fiscală pe email, emisă prin SmartBill.
         </p>
         <p>
           Comanda e confirmată pe email după procesarea plății. Te contactăm în cel mult o zi
-          lucrătoare pentru detaliile de început (brief, materiale, acces).
+          lucrătoare pentru detaliile de început (brief, materiale, acces). Termenele de livrare
+          sunt comunicate per pachet sau agreate la începutul proiectului; întârzierile din partea
+          clientului (materiale, răspunsuri, accese) prelungesc corespunzător termenul.
         </p>
 
-        <h2>4. Livrarea serviciilor</h2>
-        <p>
-          Termenele de livrare sunt comunicate per pachet sau agreate la începutul proiectului.
-          Livrarea depinde și de materialele și răspunsurile primite de la tine; întârzierile din
-          partea clientului prelungesc corespunzător termenul. Fiecare pachet include numărul de
-          runde de revizii specificat în descrierea lui.
-        </p>
-
-        <h2>5. Abonamentele de mentenanță</h2>
+        <h2>7. Abonamentele de mentenanță</h2>
         <p>
           Abonamentul acoperă serviciile listate în planul ales (actualizări, backup, monitorizare,
-          orele de modificări incluse). Orele neconsumate într-o lună nu se reportează [confirmă:
-          politica de reportare]. Poți anula oricând; anularea oprește facturarea de la următoarea
-          perioadă, fără rambursarea perioadei curente.
+          orele de modificări incluse). Orele neconsumate într-o lună nu se reportează. Închiderea
+          abonamentului se face cu un preaviz de 30 de zile, comunicat pe email; facturarea se
+          oprește la finalul perioadei de preaviz, fără rambursarea perioadei curente.
         </p>
 
-        <h2>6. Dreptul de retragere</h2>
+        <h2>8. Dreptul de retragere și garanții</h2>
         <p>
-          Conform OUG 34/2014, consumatorii se pot retrage din contract în 14 zile, fără motiv.
-          Pentru serviciile personalizate (design, grafică, dezvoltare la comandă), dreptul de
-          retragere încetează după ce execuția a început cu acordul tău expres, exprimat la plasarea
-          comenzii. Pentru retragere, scrie-ne la {site.contact.email}; rambursăm în cel mult 14
-          zile, prin același mijloc de plată.
+          Conform OUG 34/2014, consumatorii se pot retrage din contract în 14 zile calendaristice,
+          fără motiv. Excepție: conform art. 16 lit. a, dreptul de retragere încetează pentru
+          serviciile complet executate, dacă execuția a început cu acordul tău prealabil expres,
+          exprimat la plasarea comenzii. Pentru retragere, scrie-ne la {site.contact.email};
+          rambursăm în cel mult 14 zile, prin același mijloc de plată. Remediem cu prioritate, fără
+          costuri suplimentare, neconformitățile față de ceea ce am agreat în ofertă.
         </p>
 
-        <h2>7. Proprietate intelectuală</h2>
+        <h2>9. Newsletter</h2>
         <p>
-          Drepturile asupra livrabilelor finale se transferă clientului la plata integrală, conform
-          ofertei. Conținutul site-ului simplead.ro (texte, grafică, cod) ne aparține și nu poate fi
-          reprodus fără acord scris. Ne rezervăm dreptul de a include lucrările livrate în
-          portofoliu, dacă nu agreăm altfel.
+          Abonarea la newsletter se face doar explicit, prin formularul dedicat — nu te abonăm
+          automat la plasarea unei comenzi sau la trimiterea unui mesaj. Te poți dezabona oricând,
+          prin linkul din fiecare email sau scriindu-ne la {site.contact.email}. Datele de abonare
+          pot fi sincronizate cu platforma MailerLite, care trimite emailurile în numele nostru.
         </p>
 
-        <h2>8. Răspundere</h2>
+        <h2>10. Reclamații</h2>
         <p>
-          Livrăm serviciile cu diligență profesională. Răspunderea noastră totală e limitată la
-          valoarea plătită pentru serviciul în cauză. Nu răspundem pentru daune indirecte sau pentru
-          indisponibilități cauzate de terți (găzduire, platforme externe); la abonamentele de
-          mentenanță intervenim conform planului ales.
-        </p>
-
-        <h2>9. Soluționarea litigiilor</h2>
-        <p>
-          Încercăm întâi rezolvarea amiabilă: scrie-ne la {site.contact.email}. Poți apela și la
-          Autoritatea Națională pentru Protecția Consumatorilor:
-          <a href="https://anpc.ro" rel="noopener" target="_blank">anpc.ro</a>, respectiv la
-          platforma europeană de soluționare online a litigiilor (SOL):
+          Orice reclamație legată de serviciile noastre se transmite pe email, la{' '}
+          {site.contact.email}, în cel mult 30 de zile de la constatarea problemei. Analizăm și
+          răspundem cu o propunere de rezolvare. Te poți adresa și Autorității Naționale pentru
+          Protecția Consumatorilor:{' '}
+          <a href="https://anpc.ro" rel="noopener" target="_blank">anpc.ro</a>, respectiv
+          platformei europene de soluționare online a litigiilor (SOL):{' '}
           <a href="https://ec.europa.eu/consumers/odr" rel="noopener" target="_blank"
             >ec.europa.eu/consumers/odr</a
-          >. Litigiile nerezolvate amiabil sunt de competența instanțelor române.
+          >.
         </p>
 
-        <h2>10. Modificări</h2>
+        <h2>11. Forța majoră</h2>
+        <p>
+          Niciuna dintre părți nu răspunde pentru neexecutarea obligațiilor cauzată de un eveniment
+          de forță majoră, în sensul art. 1351 din Codul civil. Partea care invocă forța majoră
+          notifică cealaltă parte în cel mult 5 zile de la apariția evenimentului și transmite
+          certificarea emisă de Camera de Comerț în cel mult 15 zile. Obligațiile se suspendă pe
+          durata evenimentului; dacă acesta depășește o durată rezonabilă, oricare parte poate
+          înceta contractul fără daune.
+        </p>
+
+        <h2>12. Litigii</h2>
+        <p>
+          Încercăm întâi rezolvarea amiabilă: scrie-ne la {site.contact.email}. Litigiile
+          nerezolvate amiabil sunt de competența instanțelor de pe raza sediului operatorului, din
+          Galați, potrivit legii române.
+        </p>
+
+        <h2>13. Dispoziții finale</h2>
         <p>
           Putem actualiza acești termeni; versiunea curentă e publicată mereu aici, cu data
           actualizării. Pentru comenzile plasate se aplică termenii în vigoare la data comenzii.
+          Prevederile speciale agreate în scris cu clientul (ofertă, contract) au prioritate față
+          de acești termeni generali. Dacă o prevedere e declarată nulă, restul rămân valabile.
         </p>
-
         <p>
-          Vezi și <a href="/confidentialitate">politica de confidențialitate</a> și
+          Vezi și <a href="/confidentialitate">politica de confidențialitate</a>,{' '}
+          <a href="/protectia-datelor">protecția datelor cu caracter personal</a> și{' '}
           <a href="/cookies">politica de cookies</a>.
         </p>
+        <p>Data actualizării: {updated}.</p>
       </div>
     </div>
   </section>

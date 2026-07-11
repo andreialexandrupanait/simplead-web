@@ -3,13 +3,12 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import PageHeader from '@components/sections/PageHeader.astro';
 import { site } from '@data/site';
 
-// DRAFT pregătit pentru verificare juridică (GDPR).
-const updated = '9 iunie 2026';
+const updated = '11 iulie 2026';
 ---
 
 <BaseLayout
   title="Politica de confidențialitate"
-  description="Cum prelucrăm datele cu caracter personal pe simplead.ro: ce colectăm, de ce, cât păstrăm și ce drepturi ai."
+  description="Cum prelucrăm datele cu caracter personal pe simplead.ro: ce colectăm, de ce, cui le transmitem, cât le păstrăm și ce drepturi ai."
   transparentNav={true}
   navOverDark={true}
 >
@@ -21,69 +20,109 @@ const updated = '9 iunie 2026';
   <section class="section section--light">
     <div class="container" style="max-width:820px">
       <div class="prose-simplead">
-        <h2>1. Operatorul de date</h2>
+        <h2>1. Cine suntem și ce acoperă politica</h2>
         <p>
-          Datele tale sunt prelucrate de {site.legalName} [confirmă: forma juridică exactă], CIF {
-            site.legal.cif
-          }, Reg. Com. {site.legal.regCom}, {site.contact.city},
-          {site.contact.country}. Contact pentru protecția datelor: {site.contact.email}.
+          Datele tale sunt prelucrate de {site.legalName}, CIF {site.legal.cif}, Reg. Com.{' '}
+          {site.legal.regCom}, cu sediul în {site.contact.address}, în calitate de operator de
+          date. Politica acoperă prelucrarea datelor vizitatorilor site-ului simplead.ro și ale
+          clienților noștri. Contact pentru protecția datelor: {site.contact.email}. Drepturile
+          tale și modul de exercitare sunt detaliate și pe pagina{' '}
+          <a href="/protectia-datelor">Protecția datelor cu caracter personal</a>.
         </p>
 
-        <h2>2. Ce date colectăm și de ce</h2>
+        <h2>2. Ce date colectăm</h2>
         <p>
-          <strong>Formularul de contact:</strong> nume, email, telefon (opțional), serviciul de interes
-          și mesajul tău. Temei: pașii premergători încheierii unui contract, la cererea ta (art. 6 alin.
-          1 lit. b GDPR). Le folosim doar ca să îți răspundem și să pregătim oferta.
+          <strong>Date furnizate de tine:</strong> nume, email, telefon (opțional), firmă
+          (opțional), serviciul de interes și conținutul mesajelor — prin formularele de contact,
+          tichete de suport, abonarea la newsletter sau plasarea unei comenzi.
         </p>
         <p>
-          <strong>Comenzile online:</strong> nume, email și detaliile comenzii. Temei: executarea contractului
-          și obligațiile legale de facturare. Plata e procesată de Stripe; noi nu vedem și nu stocăm datele
-          cardului. Factura se emite prin SmartBill, pe datele furnizate de tine.
+          <strong>Date colectate automat:</strong> adresa IP, tipul de browser și dispozitiv,
+          paginile vizitate și durata vizitei — pentru securitate și, doar cu acordul tău, pentru
+          statistici de utilizare (vezi <a href="/cookies">politica de cookies</a>).
         </p>
         <p>
-          <strong>Cookie-uri de analiză:</strong> doar cu acordul tău (bannerul de cookies). Detalii în
-          <a href="/cookies">politica de cookies</a>. Temei: consimțământul (art. 6 alin. 1 lit. a
-          GDPR), pe care îl poți retrage oricând.
-        </p>
-
-        <h2>3. Cui transmitem date</h2>
-        <p>
-          Folosim furnizori care prelucrează date în numele nostru, strict pentru scopurile de mai
-          sus: Stripe (procesare plăți), SmartBill (facturare și e-Factura), Postmark (trimitere
-          emailuri), furnizorul de găzduire [confirmă: numele furnizorului de hosting] și, doar cu
-          acordul tău, serviciile de analiză (Google Analytics, Microsoft Clarity). Nu vindem și nu
-          închiriem datele tale.
+          <strong>Nu colectăm date sensibile</strong> (origine rasială sau etnică, opinii politice,
+          confesiune, date de sănătate, orientare sexuală) și nu îți cerem astfel de informații.
         </p>
 
-        <h2>4. Cât păstrăm datele</h2>
+        <h2>3. Temeiurile și scopurile prelucrării</h2>
         <p>
-          Mesajele din formular: cât e necesar pentru a-ți răspunde și a urmări discuția, cel mult
-          [confirmă: durata, ex. 2 ani]. Datele de facturare: 10 ani, conform legislației fiscale.
-          Datele de analiză: conform setărilor serviciilor respective, în formă agregată.
+          <strong>Executarea contractului și pașii premergători</strong> (art. 6 alin. 1 lit. b
+          GDPR): răspundem la solicitări, pregătim oferte, livrăm serviciile comandate. Plata e
+          procesată de Stripe; noi nu vedem și nu stocăm datele cardului.
+        </p>
+        <p>
+          <strong>Obligații legale</strong> (art. 6 alin. 1 lit. c): emiterea și păstrarea
+          facturilor (SmartBill), evidențele contabile și fiscale.
+        </p>
+        <p>
+          <strong>Interes legitim</strong> (art. 6 alin. 1 lit. f): securitatea site-ului,
+          prevenirea fraudei și a abuzurilor (ex. limitarea numărului de cereri), apărarea
+          drepturilor noastre.
+        </p>
+        <p>
+          <strong>Consimțământ</strong> (art. 6 alin. 1 lit. a): cookie-urile de analiză și
+          marketing (bannerul de cookies, pe categorii) și newsletterul. Îl poți retrage oricând,
+          fără penalități.
         </p>
 
-        <h2>5. Drepturile tale</h2>
+        <h2>4. Cui divulgăm datele</h2>
         <p>
-          Ai dreptul de acces, rectificare, ștergere, restricționare, portabilitate și opoziție,
-          plus dreptul de a-ți retrage consimțământul oricând (fără a afecta prelucrările
-          anterioare). Scrie-ne la {site.contact.email} și răspundem în cel mult 30 de zile. Dacă ceva
-          nu e în regulă, te poți adresa ANSPDCP:
+          Folosim persoane împuternicite care prelucrează date în numele nostru, strict pentru
+          scopurile de mai sus: Stripe (procesare plăți), SmartBill (facturare și e-Factura),
+          Postmark (emailuri tranzacționale), Hetzner (găzduire, centre de date în UE), MailerLite
+          (trimiterea newsletterului, doar pentru abonați) și, doar cu acordul tău, serviciile de
+          analiză și marketing (Google Analytics 4, Microsoft Clarity, Meta — încărcate prin Google
+          Tag Manager).
+        </p>
+        <p>
+          Putem divulga date autorităților publice doar la cerere legală justificată, precum și
+          consultanților noștri (contabil, avocat) când e necesar, sub obligații de
+          confidențialitate. <strong>Nu vindem și nu închiriem datele tale.</strong>
+        </p>
+
+        <h2>5. Unde stocăm datele și transferuri</h2>
+        <p>
+          Datele sunt stocate pe servere din Uniunea Europeană (Hetzner). Unii furnizori (ex.
+          Stripe, Google, Meta) pot transfera date în afara SEE; în aceste cazuri transferul se
+          face cu garanții adecvate conform GDPR (decizii de adecvare sau clauze contractuale
+          standard aprobate de Comisia Europeană).
+        </p>
+
+        <h2>6. Cât păstrăm datele</h2>
+        <p>
+          Mesajele din formulare: cât e necesar pentru a-ți răspunde și a urmări discuția, cel mult
+          3 ani (termenul general de prescripție). Datele de facturare: 10 ani, conform legislației
+          fiscale. Abonarea la newsletter: până la dezabonare. Datele de analiză: în formă
+          agregată, conform setărilor serviciilor respective.
+        </p>
+
+        <h2>7. Drepturile tale</h2>
+        <p>
+          Ai dreptul de informare și acces, rectificare, ștergere, restricționare, portabilitate,
+          opoziție și dreptul de a nu face obiectul unor decizii exclusiv automate, plus dreptul de
+          a-ți retrage consimțământul oricând (fără a afecta prelucrările anterioare). Fiecare
+          drept e explicat pe pagina <a href="/protectia-datelor">Protecția datelor</a>. Scrie-ne
+          la {site.contact.email} — răspundem în cel mult o lună. Te poți adresa și ANSPDCP:{' '}
           <a href="https://www.dataprotection.ro" rel="noopener" target="_blank"
             >dataprotection.ro</a
           >.
         </p>
 
-        <h2>6. Securitate</h2>
+        <h2>8. Cookie-uri și securitate</h2>
         <p>
-          Datele sunt transmise criptat (HTTPS) și stocate cu acces restricționat. Cheile și datele
-          sensibile din sistemele noastre sunt criptate; accesul la panoul de administrare e
-          protejat prin autentificare.
+          Cookie-urile de analiză și marketing se activează doar cu acordul tău, pe categorii, din
+          bannerul de cookies — detalii în <a href="/cookies">politica de cookies</a>. Datele sunt
+          transmise criptat (HTTPS) și stocate cu acces restricționat; datele sensibile din
+          sistemele noastre sunt criptate, iar panoul de administrare e protejat prin autentificare.
         </p>
 
-        <h2>7. Modificări</h2>
+        <h2>9. Modificări și contact</h2>
         <p>
           Actualizăm această politică atunci când se schimbă modul în care prelucrăm datele;
-          versiunea curentă, cu data actualizării, e publicată mereu pe această pagină.
+          versiunea curentă, cu data actualizării, e publicată mereu pe această pagină. Întrebări
+          despre datele tale: {site.contact.email}.
         </p>
       </div>
     </div>

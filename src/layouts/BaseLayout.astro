@@ -79,6 +79,14 @@ const waHref = whatsappHref(pub.whatsappNumber);
 // `telephone` intră în datele structurate doar când telefonul e public.
 const telephone = site.contact.phoneHref.replace('tel:', '');
 const phoneLd = pub.showPhone ? { telephone } : {};
+// Profilurile sociale reale (goale = omise din sameAs).
+const socialLinks = Object.values(site.social).filter(Boolean);
+const postalAddress = {
+  '@type': 'PostalAddress',
+  streetAddress: site.contact.street,
+  addressLocality: site.contact.city,
+  addressCountry: 'RO',
+};
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -98,11 +106,8 @@ const jsonLd = {
         value: site.legal.regCom,
       },
       founder: { '@id': `${origin}#founder` },
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: site.contact.city,
-        addressCountry: 'RO',
-      },
+      address: postalAddress,
+      ...(socialLinks.length ? { sameAs: socialLinks } : {}),
       ...phoneLd,
       email: site.contact.email,
     },
@@ -116,11 +121,8 @@ const jsonLd = {
       ...phoneLd,
       email: site.contact.email,
       priceRange: '$$',
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: site.contact.city,
-        addressCountry: 'RO',
-      },
+      address: postalAddress,
+      ...(socialLinks.length ? { sameAs: socialLinks } : {}),
       areaServed: { '@type': 'Country', name: 'România' },
       // Program: Luni–Vineri, 09:00–18:00 (din site.contact.schedule)
       openingHoursSpecification: {

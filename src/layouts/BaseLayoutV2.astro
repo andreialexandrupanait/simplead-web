@@ -77,6 +77,14 @@ const waHref = whatsappHref(pub.whatsappNumber);
 
 const telephone = site.contact.phoneHref.replace('tel:', '');
 const phoneLd = pub.showPhone ? { telephone } : {};
+// Paritate cu BaseLayout (v1): profiluri sociale + adresă completă în schema.
+const socialLinks = Object.values(site.social).filter(Boolean);
+const postalAddress = {
+  '@type': 'PostalAddress',
+  streetAddress: site.contact.street,
+  addressLocality: site.contact.city,
+  addressCountry: 'RO',
+};
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -84,15 +92,19 @@ const jsonLd = {
       '@type': 'Organization',
       '@id': `${origin}#organization`,
       name: site.name,
+      legalName: site.legalName,
       url: origin,
       logo: new URL('/favicon.svg', origin).href,
       description: site.description,
-      founder: { '@id': `${origin}#founder` },
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: site.contact.city,
-        addressCountry: 'RO',
+      taxID: site.legal.cif,
+      identifier: {
+        '@type': 'PropertyValue',
+        propertyID: 'Registrul Comerțului',
+        value: site.legal.regCom,
       },
+      founder: { '@id': `${origin}#founder` },
+      address: postalAddress,
+      ...(socialLinks.length ? { sameAs: socialLinks } : {}),
       ...phoneLd,
       email: site.contact.email,
     },
@@ -106,11 +118,8 @@ const jsonLd = {
       ...phoneLd,
       email: site.contact.email,
       priceRange: '$$',
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: site.contact.city,
-        addressCountry: 'RO',
-      },
+      address: postalAddress,
+      ...(socialLinks.length ? { sameAs: socialLinks } : {}),
       areaServed: { '@type': 'Country', name: 'România' },
       openingHoursSpecification: {
         '@type': 'OpeningHoursSpecification',

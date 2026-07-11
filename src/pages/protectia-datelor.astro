@@ -1,0 +1,135 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHeader from '@components/sections/PageHeader.astro';
+import { site } from '@data/site';
+
+const updated = '11 iulie 2026';
+---
+
+<BaseLayout
+  title="Protecția datelor cu caracter personal"
+  description="Drepturile tale conform GDPR pe simplead.ro: acces, rectificare, ștergere, portabilitate, opoziție — și cum le exerciți."
+  transparentNav={true}
+  navOverDark={true}
+>
+  <PageHeader
+    crumb={[{ label: 'Acasă', href: '/' }, { label: 'Protecția datelor' }]}
+    title="Protecția datelor cu caracter personal"
+    subtitle={`Ultima actualizare: ${updated}`}
+  />
+  <section class="section section--light">
+    <div class="container" style="max-width:820px">
+      <div class="prose-simplead">
+        <h2>1. Definiții</h2>
+        <p>
+          <strong>Operatorul</strong> este {site.legalName}, CIF {site.legal.cif}, Reg. Com.{' '}
+          {site.legal.regCom}, cu sediul în {site.contact.address}.{' '}
+          <strong>Persoana vizată</strong> este orice persoană fizică identificată sau
+          identificabilă ale cărei date le prelucrăm: vizitatori ai site-ului, persoane care ne
+          contactează, clienți. <strong>Prelucrarea</strong> înseamnă orice operațiune asupra
+          datelor: colectare, stocare, organizare, consultare, utilizare, divulgare, ștergere.
+        </p>
+
+        <h2>2. Scopurile prelucrării</h2>
+        <p>
+          <strong>Accesarea site-ului:</strong> la fiecare vizită se prelucrează automat date
+          tehnice (adresa IP, tipul de browser, paginile accesate) — pentru funcționarea și
+          securitatea site-ului.
+        </p>
+        <p>
+          <strong>Formularele online:</strong> când ne scrii (contact, suport, newsletter),
+          prelucrăm numele, emailul, telefonul (dacă îl dai) și conținutul mesajului — pentru a-ți
+          răspunde și a urmări discuția.
+        </p>
+        <p>
+          <strong>Comenzile:</strong> pentru comenzile plasate online prelucrăm datele necesare
+          livrării serviciului și facturării.
+        </p>
+
+        <h2>3. Temeiul juridic</h2>
+        <p>
+          Prelucrăm datele în baza art. 6 din Regulamentul (UE) 2016/679:{' '}
+          <strong>consimțământ</strong> (art. 6 alin. 1 lit. a — analiză, marketing, newsletter),{' '}
+          <strong>executarea contractului</strong> (lit. b — oferte, livrarea serviciilor),{' '}
+          <strong>obligație legală</strong> (lit. c — facturare, evidențe fiscale) și{' '}
+          <strong>interes legitim</strong> (lit. f — securitate, prevenirea fraudei).
+        </p>
+
+        <h2>4. Drepturile persoanei vizate</h2>
+        <ul>
+          <li>
+            <strong>Dreptul de informare și acces</strong> — poți afla dacă îți prelucrăm date și
+            poți primi o copie a lor, împreună cu informații despre scopuri, destinatari și durata
+            stocării.
+          </li>
+          <li>
+            <strong>Dreptul la rectificare</strong> — poți cere corectarea datelor inexacte sau
+            completarea celor incomplete.
+          </li>
+          <li>
+            <strong>Dreptul la ștergere („dreptul de a fi uitat")</strong> — poți cere ștergerea
+            datelor când nu mai sunt necesare scopului, când îți retragi consimțământul sau când te
+            opui prelucrării, cu excepția datelor pe care legea ne obligă să le păstrăm (ex.
+            facturi).
+          </li>
+          <li>
+            <strong>Dreptul la restricționarea prelucrării</strong> — poți cere „înghețarea"
+            prelucrării cât timp verificăm o contestație privind exactitatea datelor sau temeiul
+            prelucrării.
+          </li>
+          <li>
+            <strong>Dreptul la portabilitate</strong> — poți primi datele furnizate de tine într-un
+            format structurat, uzual, care poate fi citit automat, și le poți transmite altui
+            operator.
+          </li>
+          <li>
+            <strong>Dreptul la opoziție</strong> — te poți opune oricând prelucrărilor bazate pe
+            interes legitim și, în special, prelucrării în scop de marketing direct.
+          </li>
+          <li>
+            <strong>Protecție împotriva deciziilor exclusiv automate</strong> — ai dreptul să nu
+            faci obiectul unei decizii bazate exclusiv pe prelucrare automată care produce efecte
+            juridice asupra ta. Nu folosim astfel de decizii.
+          </li>
+          <li>
+            <strong>Dreptul de a depune plângere</strong> — la Autoritatea Națională de
+            Supraveghere a Prelucrării Datelor cu Caracter Personal (ANSPDCP):{' '}
+            <a href="https://www.dataprotection.ro" rel="noopener" target="_blank"
+              >dataprotection.ro</a
+            >, B-dul G-ral Gheorghe Magheru 28-30, București.
+          </li>
+        </ul>
+
+        <h2>5. Exercitarea drepturilor</h2>
+        <p>
+          Trimite o cerere la {site.contact.email}, cu suficiente informații cât să te putem
+          identifica. Răspundem în cel mult o lună de la primire; pentru cazuri complexe, termenul
+          se poate prelungi cu două luni, cu informarea ta. Exercitarea drepturilor e gratuită, cu
+          excepția cererilor vădit nefondate sau excesive, unde legea permite o taxă rezonabilă.
+        </p>
+
+        <h2>6. Transmiterea datelor către instituții publice</h2>
+        <p>
+          Putem divulga date autorităților competente (organe de cercetare penală, instanțe de
+          judecată, autorități fiscale) doar în cazurile prevăzute de lege și în limita cererii.
+        </p>
+
+        <h2>7. Cadrul legal</h2>
+        <p>
+          Prelucrarea se face în conformitate cu: Regulamentul (UE) 2016/679 (GDPR), Legea nr.
+          102/2005 privind înființarea și funcționarea ANSPDCP, Legea nr. 190/2018 privind măsurile
+          de punere în aplicare a GDPR și Legea nr. 363/2018 privind prelucrarea datelor de către
+          autorități în scopuri de prevenire și combatere a infracțiunilor.
+        </p>
+
+        <h2>8. Contact</h2>
+        <p>
+          Pentru orice întrebare legată de protecția datelor: {site.contact.email}. Detalii despre
+          ce date colectăm și cât le păstrăm găsești în{' '}
+          <a href="/confidentialitate">politica de confidențialitate</a>; despre cookie-uri, în{' '}
+          <a href="/cookies">politica de cookies</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

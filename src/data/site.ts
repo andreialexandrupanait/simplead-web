@@ -4,7 +4,7 @@
  */
 export const site = {
   name: 'Simplead',
-  legalName: 'Simplead', // TODO: denumire legală completă (SRL/PFA)
+  legalName: 'SIMPLEAD S.R.L.',
   tagline: 'Facem lucrurile simple. Și le bazăm pe neuroștiință.',
   description:
     'Studio de grafică și marketing digital din România. Branding, web și marketing fundamentate pe neuroștiință, nu pe noroc. Condus de Andrei Alexandru Panait, doctor în marketing, cu cercetare în neuromarketing.',
@@ -23,21 +23,23 @@ export const site = {
     email: 'contact@simplead.ro',
     city: 'Galați',
     country: 'România',
-    address: 'Galați, România', // TODO: adresă completă dacă e cazul
-    schedule: 'Luni-Vineri, 09:00-18:00', // TODO: confirmă programul
+    street: 'Strada Sucevei, nr. 6, Bl. M1, Sc. 1, Ap. 3',
+    address: 'Strada Sucevei, nr. 6, Bl. M1, Sc. 1, Ap. 3, Galați, România',
+    schedule: 'Luni-Vineri, 09:00-18:00',
     responseTime: '24', // ore lucrătoare
   },
 
   legal: {
     cif: '41501661',
-    regCom: 'RO J17/1488/2019',
+    // Formatul nou ONRC (înmatriculare 08.08.2019, fost J17/1488/2019).
+    regCom: 'J2019001488175',
   },
 
   social: {
-    facebook: '', // TODO
-    instagram: '', // TODO
-    linkedin: '', // TODO
-    youtube: '', // TODO
+    facebook: 'https://www.facebook.com/simplead.ro',
+    instagram: 'https://www.instagram.com/simplead.ro',
+    linkedin: '',
+    youtube: '',
   },
 } as const;
 
