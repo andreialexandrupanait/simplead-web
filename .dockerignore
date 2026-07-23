@@ -1,14 +1,31 @@
+# Build artifacts & deps (reinstalled/rebuilt inside the image)
 node_modules
 dist
+.astro
+.pnpm-store
+
+# VCS & CI
 .git
 .github
-.astro
-design
-docs
-*.log
+.gitattributes
+.husky
+
+# Secrets — never enter the build context (.env.example is allowed back below)
 .env
 .env.*
 !.env.example
+
+# Local dev / OS / editor
+docs
+design
+content-seed
+tests
+coverage
+*.log
+*.tmp
 .DS_Store
 Thumbs.db
+.vscode
+.idea
+*.ps1
 README.md
