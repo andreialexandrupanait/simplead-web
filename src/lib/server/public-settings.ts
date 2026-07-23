@@ -36,7 +36,10 @@ export interface PublicSettings {
   hiddenHomeSections: string[]; // cheile secțiunilor de homepage ascunse
   constructionPages: string[]; // căile paginilor marcate „în construcție"
   maintenanceMode: boolean; // tot site-ul în mentenanță (vizitatorii văd 503)
-  abTestEnabled: boolean; // testul A/B de redesign e activ (altfel 100% varianta A)
+  abTestEnabled: boolean; // testul A/B de redesign e activ (split 50/50)
+  // Versiunea servită TUTUROR vizitatorilor când testul A/B e OPRIT:
+  // 'a' = site-ul actual, 'b' = redesign-ul. Ignorată cât timp testul e activ.
+  abLiveVariant: 'a' | 'b';
   tracking: TrackingSettings;
 }
 
@@ -47,6 +50,7 @@ const KEYS = {
   constructionPages: 'site.construction_pages',
   maintenanceMode: 'site.maintenance_mode',
   abTestEnabled: 'site.ab_test_enabled',
+  abLiveVariant: 'site.ab_live_variant',
   gtmId: 'site.gtm_id',
   ga4Id: 'site.ga4_id',
   clarityId: 'site.clarity_id',
@@ -72,6 +76,7 @@ const DEFAULTS: PublicSettings = {
   constructionPages: [],
   maintenanceMode: false,
   abTestEnabled: false,
+  abLiveVariant: 'a',
   tracking: { ...EMPTY_TRACKING },
 };
 
@@ -115,6 +120,7 @@ export async function getPublicSettings(): Promise<PublicSettings> {
       value.whatsappNumber = (map.get(KEYS.whatsappNumber) ?? '').replace(/[^\d]/g, '');
       value.maintenanceMode = map.get(KEYS.maintenanceMode) === 'true';
       value.abTestEnabled = map.get(KEYS.abTestEnabled) === 'true';
+      value.abLiveVariant = map.get(KEYS.abLiveVariant) === 'b' ? 'b' : 'a';
       // Cheie prezentă = setare salvată din admin (poate fi listă goală).
       // Cheie absentă = niciodată salvată → folosim default-ul.
       if (map.has(KEYS.hiddenHomeSections)) {
@@ -146,6 +152,7 @@ export async function savePublicSettings(input: {
   constructionPages: string[];
   maintenanceMode: boolean;
   abTestEnabled: boolean;
+  abLiveVariant: 'a' | 'b';
 }): Promise<SavePublicResult> {
   const db = getDb();
   if (!db) {
@@ -160,6 +167,7 @@ export async function savePublicSettings(input: {
     { key: KEYS.constructionPages, value: JSON.stringify(construction) },
     { key: KEYS.maintenanceMode, value: input.maintenanceMode ? 'true' : 'false' },
     { key: KEYS.abTestEnabled, value: input.abTestEnabled ? 'true' : 'false' },
+    { key: KEYS.abLiveVariant, value: input.abLiveVariant === 'b' ? 'b' : 'a' },
   ];
   try {
     for (const p of pairs) {

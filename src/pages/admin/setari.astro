@@ -25,7 +25,10 @@ const current = await getPublicSettings();
 ---
 
 <AdminLayout title="Setări site" wide>
-  <PageHeader title="Setări site" sub="Controlezi ce date de contact apar public. Emailul e mereu vizibil." />
+  <PageHeader
+    title="Setări site"
+    sub="Controlezi ce date de contact apar public. Emailul e mereu vizibil."
+  />
 
   {saveError && <div class="admin-banner admin-banner--error">{saveError}</div>}
 
@@ -41,11 +44,17 @@ const current = await getPublicSettings();
           <span class="setting-row__label">Mentenanță site</span>
           <p class="setting-row__desc">
             Bifat: vizitatorii văd un ecran „în mentenanță" (503) pe toate paginile principale. Tu,
-            logat în admin, vezi site-ul normal, cu un banner de avertizare. Adminul rămâne accesibil.
+            logat în admin, vezi site-ul normal, cu un banner de avertizare. Adminul rămâne
+            accesibil.
           </p>
         </div>
         <label class="switch setting-row__control">
-          <input type="checkbox" name="maintenanceMode" value="1" checked={current.maintenanceMode} />
+          <input
+            type="checkbox"
+            name="maintenanceMode"
+            value="1"
+            checked={current.maintenanceMode}
+          />
           <span class="switch__track"></span>
         </label>
       </div>
@@ -64,6 +73,24 @@ const current = await getPublicSettings();
           <input type="checkbox" name="abTestEnabled" value="1" checked={current.abTestEnabled} />
           <span class="switch__track"></span>
         </label>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-row__text">
+          <span class="setting-row__label">Versiunea afișată vizitatorilor</span>
+          <p class="setting-row__desc">
+            Se aplică <b>când testul A/B e oprit</b>: alege ce design văd toți vizitatorii. „Actuală
+            (A)" = site-ul de acum; „Redesign (B)" = varianta nouă devine live pe toate paginile
+            care o au. Cât timp testul e activ, split-ul 50/50 are prioritate. Poți oricând
+            previzualiza cealaltă variantă cu <code>?v=a</code> / <code>?v=b</code>.
+          </p>
+        </div>
+        <div class="setting-row__control setting-row__control--input">
+          <select class="admin-input" name="abLiveVariant">
+            <option value="a" selected={current.abLiveVariant !== 'b'}>Actuală (A)</option>
+            <option value="b" selected={current.abLiveVariant === 'b'}>Redesign (B)</option>
+          </select>
+        </div>
       </div>
     </section>
 
@@ -93,7 +120,8 @@ const current = await getPublicSettings();
           <span class="setting-row__label">Număr WhatsApp</span>
           <p class="setting-row__desc">
             Gol = WhatsApp ascuns. Setat = apare butonul „Scrie pe WhatsApp" în sertarul de contact,
-            pe pagina Contact și în hero-uri (când telefonul e ascuns). Cu prefix de țară, doar cifre.
+            pe pagina Contact și în hero-uri (când telefonul e ascuns). Cu prefix de țară, doar
+            cifre.
           </p>
         </div>
         <div class="setting-row__control setting-row__control--input">
@@ -113,7 +141,10 @@ const current = await getPublicSettings();
     <section class="settings-section">
       <div class="settings-section__head">
         <h2>Secțiuni homepage</h2>
-        <p>Bifat = secțiunea apare pe homepage. Debifat = ascunsă pentru vizitatori (o reactivezi oricând).</p>
+        <p>
+          Bifat = secțiunea apare pe homepage. Debifat = ascunsă pentru vizitatori (o reactivezi
+          oricând).
+        </p>
       </div>
       <div class="setting-check-grid">
         {
@@ -135,7 +166,10 @@ const current = await getPublicSettings();
     <section class="settings-section">
       <div class="settings-section__head">
         <h2>Pagini „în construcție"</h2>
-        <p>Bifat = pagina arată un ecran „în construcție" vizitatorilor. Tu, logat în admin, vezi pagina reală.</p>
+        <p>
+          Bifat = pagina arată un ecran „în construcție" vizitatorilor. Tu, logat în admin, vezi
+          pagina reală.
+        </p>
       </div>
       <div class="setting-check-grid">
         {
@@ -147,7 +181,9 @@ const current = await getPublicSettings();
                 value="1"
                 checked={current.constructionPages.includes(p.path)}
               />
-              <span>{p.label} <small>{p.path}</small></span>
+              <span>
+                {p.label} <small>{p.path}</small>
+              </span>
             </label>
           ))
         }

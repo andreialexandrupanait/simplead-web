@@ -165,20 +165,30 @@ async function route(context: APIContext, next: MiddlewareNext): Promise<Respons
       }
     }
 
-    // ---- Test A/B redesign: atribuire variantă + rewrite intern către /v2 ----
-    // Varianta A = site-ul actual (neatins). Varianta B = redesign din src/pages/v2.
-    // Cât timp testul e OPRIT (și nimeni nu forțează manual), NU atingem nimic:
-    // fără cookie, fără headere, fără expunere — live-ul rămâne identic.
-    // Boții și adminii sunt EXCLUȘI din eșantion (control A); adminii pot forța
-    // manual varianta cu `?v=a` / `?v=b` (persistă peste kill-switch).
+    // ---- A/B redesign: atribuire variantă + rewrite intern către /v2 ----
+    // Varianta A = site-ul actual. Varianta B = redesign din src/pages/v2.
+    // Trei regimuri:
+    //   • Test A/B ACTIV  → split 50/50 sticky; boți+admini pe control A (anti-cloaking).
+    //   • Test OPRIT      → TOȚI văd versiunea aleasă în Setări (`abLiveVariant`):
+    //                       'a' = live-ul rămâne neatins; 'b' = redesign-ul devine live.
+    //   • Forțare `?v=`   → adminul previzualizează orice variantă, peste ambele regimuri
+    //                       (persistă în cookie-ul de forțare, supraviețuiește kill-switch-ului).
     const forceParam = context.url.searchParams.get('v');
     const forceCookie = readVariant(context.cookies, AB_FORCE_COOKIE);
     const abActive =
-      pub.abTestEnabled || forceParam === 'a' || forceParam === 'b' || forceCookie != null;
+      pub.abTestEnabled ||
+      forceParam === 'a' ||
+      forceParam === 'b' ||
+      forceCookie != null ||
+      pub.abLiveVariant === 'b';
 
     if (abActive) {
       const bot = isBot(context.request.headers.get('user-agent') ?? '');
       let variant: Variant;
+      // `sampled` = varianta ține de ACEST vizitator (experiment sau forțare), deci
+      // răspunsul e marcat privat/variabil (Vary) și expunerea intră în raportare.
+      // Versiunea live uniformă (test oprit) NU e „sampled": aceleași bytes pentru toți.
+      let sampled = true;
 
       if (!bot && (forceParam === 'a' || forceParam === 'b')) {
         // Override QA `?v=` — setează ambele cookie-uri (sticky + forțare).
@@ -187,36 +197,41 @@ async function route(context: APIContext, next: MiddlewareNext): Promise<Respons
         setVariantCookie(context.cookies, AB_FORCE_COOKIE, variant);
       } else if (!bot && forceCookie) {
         variant = forceCookie; // preview forțat persistă peste kill-switch
-      } else if (bot || context.locals.isAdmin) {
-        variant = 'a'; // control: boți + admin fără forțare (excluși din eșantion)
-      } else {
-        const existing = readVariant(context.cookies);
-        if (existing) {
-          variant = existing;
-        } else if (pub.abTestEnabled) {
-          variant = assignVariant();
-          setVariantCookie(context.cookies, AB_COOKIE, variant); // sticky
-        } else {
+      } else if (pub.abTestEnabled) {
+        // Experiment activ: boți+admini pe control A; restul, split sticky 50/50.
+        if (bot || context.locals.isAdmin) {
           variant = 'a';
+        } else {
+          const existing = readVariant(context.cookies);
+          if (existing) {
+            variant = existing;
+          } else {
+            variant = assignVariant();
+            setVariantCookie(context.cookies, AB_COOKIE, variant); // sticky
+          }
+          // Expunere: o dată per vizitator, la PRIMA pagină care CHIAR are v2 —
+          // cine aterizează pe o pagină fără v2 nu „vede" testul și nu intră în
+          // eșantion până nu ajunge pe o pagină din test (altfel diluează statistica).
+          if (hasV2(norm) && context.cookies.get('sa_ab_exp')?.value !== '1') {
+            recordExposure(variant, norm);
+            context.cookies.set('sa_ab_exp', '1', {
+              path: '/',
+              httpOnly: true,
+              sameSite: 'lax',
+              secure: import.meta.env.PROD,
+              maxAge: 60 * 60 * 24 * 90,
+            });
+          }
         }
-        // Expunere: o dată per vizitator, la PRIMA pagină care CHIAR are v2 —
-        // cine aterizează pe o pagină fără v2 nu „vede" testul și nu intră în
-        // eșantion până nu ajunge pe o pagină din test (altfel diluează statistica).
-        if (pub.abTestEnabled && hasV2(norm) && context.cookies.get('sa_ab_exp')?.value !== '1') {
-          recordExposure(variant, norm);
-          context.cookies.set('sa_ab_exp', '1', {
-            path: '/',
-            httpOnly: true,
-            sameSite: 'lax',
-            secure: import.meta.env.PROD,
-            maxAge: 60 * 60 * 24 * 90,
-          });
-        }
+      } else {
+        // Test OPRIT: versiunea live aleasă din Setări, uniform pentru toți (inclusiv boți).
+        variant = pub.abLiveVariant;
+        sampled = false;
       }
-      context.locals.abVariant = variant;
 
-      const forceB = forceParam === 'b' || forceCookie === 'b';
-      if (variant === 'b' && (pub.abTestEnabled || forceB) && hasV2(norm)) {
+      if (sampled) context.locals.abVariant = variant;
+
+      if (variant === 'b' && hasV2(norm)) {
         context.locals.__abRewrite = true;
         return context.rewrite(v2Path(norm));
       }

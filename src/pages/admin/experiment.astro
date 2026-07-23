@@ -38,7 +38,10 @@ let revenue: Pair = { a: 0, b: 0 };
 if (db) {
   try {
     const [expoRows, leadRows, orderRows] = await Promise.all([
-      db.select({ variant: abExposure.variant, n: count() }).from(abExposure).groupBy(abExposure.variant),
+      db
+        .select({ variant: abExposure.variant, n: count() })
+        .from(abExposure)
+        .groupBy(abExposure.variant),
       db.select({ variant: leads.variant, n: count() }).from(leads).groupBy(leads.variant),
       db
         .select({ variant: orders.variant, n: count(), rev: sum(orders.amountCents) })
@@ -71,11 +74,26 @@ const orderRateB = rate(paidOrders.b, exposures.b);
 
 const rows = [
   { m: 'Expuneri (vizitatori)', a: String(exposures.a), b: String(exposures.b), d: '—' },
-  { m: 'Lead-uri (formular contact)', a: String(leadsByVariant.a), b: String(leadsByVariant.b), d: '—' },
-  { m: 'Rată lead', a: fmtRate(leadRateA), b: fmtRate(leadRateB), d: fmtUplift(uplift(leadRateA, leadRateB)) },
+  {
+    m: 'Lead-uri (formular contact)',
+    a: String(leadsByVariant.a),
+    b: String(leadsByVariant.b),
+    d: '—',
+  },
+  {
+    m: 'Rată lead',
+    a: fmtRate(leadRateA),
+    b: fmtRate(leadRateB),
+    d: fmtUplift(uplift(leadRateA, leadRateB)),
+  },
   { m: 'Comenzi plătite', a: String(paidOrders.a), b: String(paidOrders.b), d: '—' },
   { m: 'Venit', a: fmtMoney(revenue.a), b: fmtMoney(revenue.b), d: '—' },
-  { m: 'Rată comandă', a: fmtRate(orderRateA), b: fmtRate(orderRateB), d: fmtUplift(uplift(orderRateA, orderRateB)) },
+  {
+    m: 'Rată comandă',
+    a: fmtRate(orderRateA),
+    b: fmtRate(orderRateB),
+    d: fmtUplift(uplift(orderRateA, orderRateB)),
+  },
 ];
 
 // Semnificație statistică (test z pe două proporții) pe cele două rate-cheie.
@@ -83,8 +101,14 @@ const rows = [
 const MIN_SAMPLE = 100;
 const minReached = minSampleReached(exposures.a, exposures.b, MIN_SAMPLE);
 const significance = [
-  { m: 'Rată lead', test: twoProportionTest(leadsByVariant.a, exposures.a, leadsByVariant.b, exposures.b) },
-  { m: 'Rată comandă', test: twoProportionTest(paidOrders.a, exposures.a, paidOrders.b, exposures.b) },
+  {
+    m: 'Rată lead',
+    test: twoProportionTest(leadsByVariant.a, exposures.a, leadsByVariant.b, exposures.b),
+  },
+  {
+    m: 'Rată comandă',
+    test: twoProportionTest(paidOrders.a, exposures.a, paidOrders.b, exposures.b),
+  },
 ].map(({ m, test }) => ({
   m,
   text: verdict(test, minReached),
@@ -113,7 +137,13 @@ const previewPages = [
     sub="Compară versiunea actuală (A) cu redesign-ul (B). Adminii și boții sunt excluși din eșantion."
   />
 
-  {dbError && <div class="admin-banner admin-banner--error">Nu am putut citi statisticile din baza de date.</div>}
+  {
+    dbError && (
+      <div class="admin-banner admin-banner--error">
+        Nu am putut citi statisticile din baza de date.
+      </div>
+    )
+  }
 
   <div
     class="admin-card exp-status"
@@ -125,7 +155,9 @@ const previewPages = [
         {
           pub.abTestEnabled
             ? 'Jumătate dintre vizitatorii noi (sticky ~90 zile) văd redesign-ul pe paginile disponibile.'
-            : 'Toți vizitatorii văd versiunea actuală. Tu poți previzualiza B oricând cu ?v=b.'
+            : pub.abLiveVariant === 'b'
+              ? 'Toți vizitatorii văd redesign-ul (B) — setat ca versiune live. Poți previzualiza A cu ?v=a.'
+              : 'Toți vizitatorii văd versiunea actuală (A). Poți previzualiza B oricând cu ?v=b.'
         }
         <a href="/admin/setari">Schimbă în Setări</a>.
       </p>
@@ -134,7 +166,12 @@ const previewPages = [
 
   <div class="admin-stats" style="margin-top:16px">
     <StatCard label="Expuneri A" value={exposures.a} hint="versiunea actuală" />
-    <StatCard label="Expuneri B" value={exposures.b} hint="redesign" accent="var(--signal, #f5d93f)" />
+    <StatCard
+      label="Expuneri B"
+      value={exposures.b}
+      hint="redesign"
+      accent="var(--signal, #f5d93f)"
+    />
     <StatCard label="Lead-uri A / B" value={`${leadsByVariant.a} / ${leadsByVariant.b}`} />
     <StatCard label="Comenzi plătite A / B" value={`${paidOrders.a} / ${paidOrders.b}`} />
   </div>
@@ -166,8 +203,9 @@ const previewPages = [
       </table>
     </div>
     <p class="admin-hint" style="margin-top:12px">
-      Ratele se calculează ca (conversii / expuneri). Δ e uplift-ul relativ al lui B față de A. Statisticile
-      exclud adminii și boții; conversiile mai vechi decât testul apar fără variantă și nu sunt numărate aici.
+      Ratele se calculează ca (conversii / expuneri). Δ e uplift-ul relativ al lui B față de A.
+      Statisticile exclud adminii și boții; conversiile mai vechi decât testul apar fără variantă și
+      nu sunt numărate aici.
     </p>
   </div>
 
@@ -185,8 +223,8 @@ const previewPages = [
     </div>
     <p class="admin-hint" style="margin-top:12px">
       Test z pe două proporții (two-tailed) pe conversii / expuneri. Verdictul apare doar după minim
-      {MIN_SAMPLE} expuneri per variantă; „≥95% încredere" înseamnă p&lt;0.05 — sub 5% șanse ca
-      diferența să fie doar zgomot. Fără verdict clar, nu opri și nu promova B.
+      {MIN_SAMPLE} expuneri per variantă; „≥95% încredere" înseamnă p&lt;0.05 — sub 5% șanse ca diferența
+      să fie doar zgomot. Fără verdict clar, nu opri și nu promova B.
     </p>
   </div>
 
