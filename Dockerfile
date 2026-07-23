@@ -40,15 +40,21 @@ ENV NODE_ENV=production \
 
 WORKDIR /app
 
+# curl is required by Coolify's container healthcheck (hits /api/health).
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 # Only what the server needs at runtime — no sources, no dev deps.
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/drizzle ./drizzle
-COPY --from=build /app/scripts/migrate.mjs ./scripts/migrate.mjs
-COPY --from=build /app/package.json ./package.json
+# COPY --chown sets ownership at copy time (no extra layer duplicating node_modules).
+COPY --from=build --chown=node:node /app/node_modules ./node_modules
+COPY --from=build --chown=node:node /app/dist ./dist
+COPY --from=build --chown=node:node /app/drizzle ./drizzle
+COPY --from=build --chown=node:node /app/scripts/migrate.mjs ./scripts/migrate.mjs
+COPY --from=build --chown=node:node /app/package.json ./package.json
 
 # Persistent uploads dir (mounted as a Coolify volume) owned by the non-root user.
-RUN mkdir -p /app/uploads && chown -R node:node /app
+RUN mkdir -p /app/uploads && chown node:node /app/uploads
 USER node
 
 EXPOSE 4321
