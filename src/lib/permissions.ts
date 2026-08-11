@@ -19,6 +19,8 @@ export const statement = {
   settings: ['manage'],
   clientArea: ['view'],
   audit: ['view'],
+  // Previzualizări de landing page pentru clienți (client.simplead.ro).
+  previews: ['view', 'publish', 'delete'],
 } as const;
 
 export const ac = createAccessControl(statement);
@@ -36,14 +38,17 @@ export const roles = {
     settings: ['manage'],
     clientArea: ['view'],
     audit: ['view'],
+    previews: ['view', 'publish', 'delete'],
   }),
   // Editor: tot conținutul + media, FĂRĂ useri/setări.
   editor: ac.newRole({
     content: ['publish', 'edit-any', 'edit-own', 'delete'],
+    previews: ['view', 'publish', 'delete'],
   }),
   // Author: doar propriul conținut, fără publicare la alții, fără useri.
   author: ac.newRole({
     content: ['edit-own'],
+    previews: ['view'],
   }),
   // Client: doar zona lui de cont/proiect.
   client: ac.newRole({

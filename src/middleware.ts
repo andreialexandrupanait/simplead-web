@@ -4,6 +4,7 @@ import { getAuth } from './lib/auth';
 import { isStaffUser, type SessionUser } from './lib/server/authz';
 import { getPublicSettings } from './lib/server/public-settings';
 import { getPublishedPosts } from './lib/server/content';
+import { isPreviewHost, servePreview } from './lib/server/preview-host';
 import { resolveLegacyRedirect } from './data/legacy-redirects';
 import { PAGE_PATHS, normalizePath } from './data/sections';
 import { hasV2, v2Path, stripV2 } from './data/ab-pages';
@@ -74,6 +75,14 @@ function harden(context: APIContext, response: Response): Response {
 }
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  // Hostul de preview-uri pentru clienți (client.simplead.ro) e servit complet
+  // separat: nu trece prin `route()` (redirecturi legacy cu query în DB,
+  // mentenanță, test A/B) și nici prin `harden()` (CSP-ul site-ului ar bloca
+  // resursele externe din HTML-ul clientului, iar X-Frame-Options n-are ce
+  // căuta acolo). `servePreview` își pune propriile headere, inclusiv noindex.
+  if (isPreviewHost(context.url.hostname)) {
+    return servePreview(context.url, context.request.method);
+  }
   return harden(context, await route(context, next));
 });
 

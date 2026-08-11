@@ -18,6 +18,7 @@
     "db:migrate": "node scripts/migrate.mjs",
     "db:seed": "node scripts/seed.mjs",
     "gen:key": "node scripts/gen-secrets.mjs",
+    "publish:client": "node scripts/sad-publish.mjs",
     "prepare": "husky || true"
   },
   "dependencies": {

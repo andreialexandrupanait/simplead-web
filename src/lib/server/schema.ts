@@ -7,6 +7,7 @@ import {
   pgTable,
   text,
   timestamp,
+  unique,
   uuid,
 } from 'drizzle-orm/pg-core';
 
@@ -265,3 +266,30 @@ export const abExposure = pgTable('ab_exposure', {
   path: text('path'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
+
+/**
+ * Preview-uri de landing page pentru clienți, servite pe `client.simplead.ro`.
+ * DOAR metadate: fișierele stau pe disc, în volumul persistent
+ * (`$UPLOADS_DIR/clients/<client_slug>/<version_slug>/`), ca publicarea unei
+ * versiuni noi să nu ceară redeploy.
+ *
+ * `isLive` = versiunea servită la /<client_slug> (fără versiune în URL). Cel
+ * mult una per client — invariantul e ținut de rutina de marcare, care resetează
+ * restul versiunilor aceluiași client în aceeași tranzacție.
+ */
+export const clientPreviews = pgTable(
+  'client_previews',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    clientSlug: text('client_slug').notNull(),
+    versionSlug: text('version_slug').notNull(),
+    // Etichetă umană opțională, ex. „Varianta cu video".
+    title: text('title').notNull().default(''),
+    isLive: boolean('is_live').notNull().default(false),
+    // user.id (text, ca-n Better Auth); null pentru publicările prin token CLI.
+    createdBy: text('created_by'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique('client_previews_slug_unique').on(t.clientSlug, t.versionSlug)],
+);

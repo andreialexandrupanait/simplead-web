@@ -5,6 +5,7 @@ import { randomBytes, scryptSync } from 'node:crypto';
 
 console.log(`APP_ENCRYPTION_KEY=${randomBytes(32).toString('hex')}`);
 console.log(`SESSION_SECRET=${randomBytes(32).toString('hex')}`);
+console.log(`PUBLISH_TOKEN=${randomBytes(32).toString('hex')}`);
 
 const idx = process.argv.indexOf('--password');
 if (idx !== -1) {

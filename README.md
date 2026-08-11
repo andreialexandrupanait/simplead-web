@@ -120,8 +120,51 @@ Toate sunt **opționale** în dev. Lipsa unei chei dezactivează elegant funcți
 | `SESSION_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH` | Autentificare `/admin` (generate cu `pnpm gen:key --password "..."`) |
 | `APP_ENCRYPTION_KEY` | Criptarea cheilor API salvate din `/admin/integrari` (64 hex, din `pnpm gen:key`) |
 | `POSTMARK_SERVER_TOKEN`, `STRIPE_SECRET_KEY`, `SMARTBILL_*`, `SLACK_WEBHOOK_URL` | Fallback-uri env pentru integrări; valorile principale se introduc din **/admin/integrari** (criptate în DB) |
+| `UPLOADS_DIR`        | Volum persistent: biblioteca media + previzualizările de client |
+| `PUBLISH_TOKEN`      | Publicare de previzualizări din CLI. **Gol = `/api/publish` e dezactivată (404)** |
+| `PREVIEW_HOST`       | Hostul previzualizărilor. Gol = `client.simplead.ro`          |
 
 Fără token Postmark, formularul de contact **simulează + loghează** (comportamentul istoric).
+
+---
+
+## 👥 Previzualizări de landing page pentru clienți
+
+Landing page-uri în HTML trimise clienților spre aprobare, servite pe
+**`client.simplead.ro`**, cu versiuni multiple per client:
+
+```
+https://client.simplead.ro/<client>/            → versiunea marcată „live"
+https://client.simplead.ro/<client>/<versiune>/ → o versiune anume
+```
+
+Fișierele stau în volumul persistent (`$UPLOADS_DIR/clients/<client>/<versiune>/`),
+nu în build — **publicarea e instantanee, fără redeploy**. În DB (`client_previews`)
+sunt doar metadatele. Linkurile sunt publice, dar au `X-Robots-Tag: noindex` și un
+`robots.txt` cu `Disallow: /` pe tot hostul.
+
+**Din admin:** `/admin/clienti` — drag & drop, copiere link, marcare „live", ștergere.
+
+**Din terminal:**
+
+```bash
+sad-publish landing.html liposomals v2
+sad-publish index.html hero.webp stil.css --client liposomals --version v3 --replace
+```
+
+Configurare CLI (o singură dată), în `~/.config/simplead/publish.env` cu `chmod 600`:
+
+```
+PUBLISH_TOKEN=<același token ca în env-ul aplicației>
+PUBLISH_URL=https://simplead.ro
+```
+
+Reguli utile: un singur fișier HTML în lot devine automat `index.html`; prima
+versiune a unui client devine automat cea „live"; reîncărcarea aceleiași versiuni
+suprascrie fișierele cu același nume (`--replace` curăță întâi folderul).
+
+Cod: `src/lib/server/client-previews.ts` (stocare + metadate),
+`src/lib/server/preview-host.ts` (rutarea pe host, apelată din `src/middleware.ts`).
 
 ---
 
@@ -142,7 +185,7 @@ src/
   i18n/         ro.ts (+ en.ts schelet) — locale implicit `ro`
   styles/       global.css (tokens design + Tailwind @theme)
   assets/logo/  SVG-uri logo (din kitul de brand)
-public/         favicon.svg, og-default.png, robots.txt
+public/         favicon.svg, og-default.png (robots.txt e rută SSR: src/pages/robots.txt.ts)
 design/         material de referință (NU se livrează — gitignored): handoff Claude Design, brand kit
 docs/           Copy_site_Simplead.md
 ```

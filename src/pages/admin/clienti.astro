@@ -1,0 +1,302 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import PageHeader from '../../components/admin/PageHeader.astro';
+import EmptyState from '../../components/admin/EmptyState.astro';
+import {
+  clientsDirWritable,
+  listPreviews,
+  previewUrl,
+  PREVIEW_HOST,
+} from '../../lib/server/client-previews';
+import { getDb } from '../../lib/server/db';
+
+export const prerender = false;
+
+const db = getDb();
+const writable = await clientsDirWritable();
+const clients = await listPreviews();
+
+const fmtSize = (b: number) =>
+  b > 1024 * 1024
+    ? `${(b / 1024 / 1024).toFixed(1)} MB`
+    : `${Math.max(1, Math.round(b / 1024))} KB`;
+const dateFmt = new Intl.DateTimeFormat('ro-RO', { dateStyle: 'medium', timeStyle: 'short' });
+---
+
+<AdminLayout title="Clienți" wide>
+  <PageHeader
+    title="Previzualizări clienți"
+    sub={`Landing page-uri în HTML, servite pe ${PREVIEW_HOST}. Publicarea e instantanee — fișierele stau într-un volum persistent, nu în build. Linkurile sunt publice, dar cu noindex.`}
+  />
+
+  {
+    !db && (
+      <div class="admin-banner admin-banner--warn">
+        <strong>Fără bază de date.</strong> Previzualizările nu pot fi listate sau publicate.
+      </div>
+    )
+  }
+  {
+    !writable && (
+      <div class="admin-banner admin-banner--error">
+        Directorul de upload nu poate fi scris. Verifică volumul <code>uploads</code>.
+      </div>
+    )
+  }
+
+  <div class="admin-card">
+    <h2 style="margin:0 0 4px;font-size:1rem">Publică o versiune</h2>
+    <p class="admin-hint" style="margin:0 0 16px">
+      Un singur fișier HTML devine automat <code>index.html</code>. Poți adăuga alături imagini, CSS
+      sau fonturi și să le referențiezi relativ. Reîncărcarea aceleiași versiuni suprascrie
+      fișierele cu același nume.
+    </p>
+
+    <form id="publishForm">
+      <div class="admin-field-grid">
+        <label class="admin-field">
+          <span>Client</span>
+          <input class="admin-input" name="client" placeholder="liposomals" required />
+          <small class="admin-hint">Apare în link: {PREVIEW_HOST}/<b>client</b>/</small>
+        </label>
+        <label class="admin-field">
+          <span>Versiune</span>
+          <input class="admin-input" name="version" placeholder="v1" value="v1" required />
+        </label>
+        <label class="admin-field">
+          <span>Etichetă (opțional)</span>
+          <input class="admin-input" name="title" placeholder="Varianta cu video" />
+        </label>
+      </div>
+
+      <label class="admin-check" style="margin:12px 0">
+        <input type="checkbox" name="replace" />
+        <span>Șterge fișierele existente ale versiunii înainte de încărcare</span>
+      </label>
+
+      <div class="admin-dropzone" id="drop">
+        Trage fișierele aici sau apasă ca să alegi (HTML, CSS, JS, imagini, fonturi, PDF — max 10 MB
+        fiecare).
+        <input type="file" id="fileInput" multiple hidden />
+      </div>
+      <div id="fileList" class="admin-hint" style="margin-top:8px"></div>
+
+      <div style="margin-top:16px;display:flex;gap:10px;align-items:center">
+        <button type="submit" class="admin-btn" id="publishBtn">Publică</button>
+        <span id="publishState" class="admin-hint"></span>
+      </div>
+    </form>
+  </div>
+
+  {
+    clients.length === 0 ? (
+      <div class="admin-card admin-card--flush" style="margin-top:20px">
+        <EmptyState
+          title="Nicio previzualizare încă"
+          hint="Încarcă primul HTML mai sus. Prima versiune a unui client devine automat cea servită la linkul scurt."
+        />
+      </div>
+    ) : (
+      clients.map((c) => (
+        <div class="admin-card" style="margin-top:20px">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+            <h2 style="margin:0;font-size:1rem">{c.clientSlug}</h2>
+            <code class="admin-tag admin-tag--plain">{previewUrl(c.clientSlug)}</code>
+            <button
+              type="button"
+              class="admin-btn admin-btn--ghost admin-btn--sm"
+              data-copy={previewUrl(c.clientSlug)}
+            >
+              Copiază linkul scurt
+            </button>
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Versiune</th>
+                  <th>Etichetă</th>
+                  <th>Fișiere</th>
+                  <th>Actualizat</th>
+                  <th style="width:320px" />
+                </tr>
+              </thead>
+              <tbody>
+                {c.versions.map((v) => (
+                  <tr data-row={v.id}>
+                    <td style="font-weight:600">
+                      {v.versionSlug}
+                      {v.isLive && (
+                        <span class="admin-tag admin-tag--ok" style="margin-left:8px">
+                          Live
+                        </span>
+                      )}
+                      {!v.hasIndex && (
+                        <span class="admin-tag admin-tag--danger" style="margin-left:8px">
+                          Fără index.html
+                        </span>
+                      )}
+                    </td>
+                    <td class="u-muted">{v.title || '—'}</td>
+                    <td class="u-muted">
+                      {v.files} · {fmtSize(v.bytes)}
+                    </td>
+                    <td class="u-muted">{dateFmt.format(v.updatedAt)}</td>
+                    <td>
+                      <div class="admin-actions">
+                        <a
+                          class="admin-btn admin-btn--ghost admin-btn--sm"
+                          href={v.url}
+                          target="_blank"
+                          rel="noopener"
+                        >
+                          Deschide
+                        </a>
+                        <button
+                          type="button"
+                          class="admin-btn admin-btn--ghost admin-btn--sm"
+                          data-copy={v.url}
+                        >
+                          Copiază
+                        </button>
+                        {!v.isLive && (
+                          <button
+                            type="button"
+                            class="admin-btn admin-btn--outline admin-btn--sm"
+                            data-live={v.id}
+                          >
+                            Fă live
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          class="admin-btn admin-btn--danger admin-btn--sm"
+                          data-delete={v.id}
+                          data-label={`${c.clientSlug}/${v.versionSlug}`}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))
+    )
+  }
+</AdminLayout>
+
+<script>
+  declare global {
+    interface Window {
+      adminToast?: (msg: string, kind?: 'ok' | 'error') => void;
+    }
+  }
+
+  const API = '/api/admin/client-previews';
+  const form = document.getElementById('publishForm') as HTMLFormElement | null;
+  const drop = document.getElementById('drop');
+  const fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
+  const fileList = document.getElementById('fileList');
+  const publishBtn = document.getElementById('publishBtn') as HTMLButtonElement | null;
+  const publishState = document.getElementById('publishState');
+
+  // `input.files` e read-only în majoritatea browserelor, așa că ținem lotul
+  // ales (prin dialog SAU prin drag & drop) într-un DataTransfer propriu.
+  const staged = new DataTransfer();
+
+  function renderStaged() {
+    if (!fileList) return;
+    const names = Array.from(staged.files).map((f) => f.name);
+    fileList.textContent = names.length ? `Selectate: ${names.join(', ')}` : '';
+  }
+
+  function stage(files: FileList) {
+    for (const f of Array.from(files)) staged.items.add(f);
+    renderStaged();
+  }
+
+  drop?.addEventListener('click', () => fileInput?.click());
+  drop?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    drop.classList.add('is-over');
+  });
+  drop?.addEventListener('dragleave', () => drop.classList.remove('is-over'));
+  drop?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    drop.classList.remove('is-over');
+    if (e.dataTransfer?.files.length) stage(e.dataTransfer.files);
+  });
+  fileInput?.addEventListener('change', () => {
+    if (fileInput.files?.length) stage(fileInput.files);
+  });
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (staged.files.length === 0) {
+      window.adminToast?.('Alege cel puțin un fișier.', 'error');
+      return;
+    }
+
+    const data = new FormData(form);
+    const body = new FormData();
+    body.append('client', String(data.get('client') ?? ''));
+    body.append('version', String(data.get('version') ?? ''));
+    body.append('title', String(data.get('title') ?? ''));
+    if (data.get('replace')) body.append('replace', 'true');
+    for (const f of Array.from(staged.files)) body.append('file', f);
+
+    if (publishBtn) publishBtn.disabled = true;
+    if (publishState) publishState.textContent = 'Se încarcă…';
+
+    try {
+      const res = await fetch(API, { method: 'POST', body });
+      const json = (await res.json()) as { error?: string; url?: string };
+      if (!res.ok) {
+        window.adminToast?.(json.error ?? 'Publicarea a eșuat.', 'error');
+        return;
+      }
+      if (json.url) await navigator.clipboard.writeText(json.url).catch(() => {});
+      window.adminToast?.('Publicat. Linkul e în clipboard.');
+      location.reload();
+    } catch {
+      window.adminToast?.('Publicarea a eșuat (rețea).', 'error');
+    } finally {
+      if (publishBtn) publishBtn.disabled = false;
+      if (publishState) publishState.textContent = '';
+    }
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(btn.dataset.copy!);
+      window.adminToast?.('Link copiat în clipboard.');
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-live]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const res = await fetch(`${API}/${btn.dataset.live}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isLive: true }),
+      });
+      if (res.ok) location.reload();
+      else window.adminToast?.('Marcarea a eșuat.', 'error');
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-delete]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const label = btn.dataset.label!;
+      if (!confirm(`Ștergi „${label}"? Linkul devine 404 imediat.`)) return;
+      const res = await fetch(`${API}/${btn.dataset.delete}`, { method: 'DELETE' });
+      if (res.ok) location.reload();
+      else window.adminToast?.('Ștergerea a eșuat.', 'error');
+    });
+  });
+</script>

@@ -46,6 +46,8 @@ export default defineConfig({
     allowedDomains: [
       { protocol: 'https', hostname: 'simplead.ro' },
       { protocol: 'https', hostname: 'www.simplead.ro' },
+      // Hostul previzualizărilor de client (vezi src/lib/server/preview-host.ts).
+      { protocol: 'https', hostname: 'client.simplead.ro' },
     ],
   },
   // Redirect-uri 301 de la slug-urile vechi de servicii la noua structură.
